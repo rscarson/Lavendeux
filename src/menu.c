@@ -8,6 +8,7 @@
 
     /* Window settings */
     #define WINDOW_CALLBACK "Ub3rParseMessage"
+    #define HOTKEY_ID 100
     #define ICON_ID 100
 
     /* Menu commands */
@@ -18,7 +19,8 @@
     /* Ugly globals */
     NOTIFYICONDATA nid;
     int current_index;
-    const wchar_t* stored_equations[MAX_EQUATIONS];
+    char last_equation[MAX_LEN];
+    char stored_equations[MAX_EQUATIONS][MAX_LEN];
 
     /* System specific stuff */
     LRESULT CALLBACK wndCallback(HWND, UINT, WPARAM, LPARAM);
@@ -26,11 +28,6 @@
 
     int updateMenu() {
         MSG msg;
-        char c;
-
-        if(_kbhit()) {
-            printf("Got a %d\n", _getch());
-        }
         
         /* Main loop */
         if (GetMessage(&msg, NULL, 0, 0))
@@ -53,8 +50,9 @@
 
         /* Init equation stores */
         current_index = 0;
+        last_equation[0] = 0;
         for (i=0; i<MAX_EQUATIONS; ++i)
-            addEquation(L"");
+            addEquation("");
 
         /* Get module instance */
         hInstance = GetModuleHandle(NULL);
@@ -97,6 +95,15 @@
             exit(EXIT_FAILURE);
         }
 
+        /* Register hotkey */
+        if (!RegisterHotKey(hWnd, HOTKEY_ID, MOD_CONTROL, VK_SPACE)) {
+            MessageBox(hWnd, 
+                "Cannot register hotkey!", 
+                "Error while starting",
+            MB_OK);
+            exit(EXIT_FAILURE);
+        }
+
         /* Start window */
         ShowWindow(hWnd, 0);
         UpdateWindow(hWnd);
@@ -116,41 +123,50 @@
 
     /* Callback function for the window */
     LRESULT CALLBACK wndCallback(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-        int equationIndex;
+        static UINT wndMsg = 0;
+        if (wndMsg == 0)
+            wndMsg = RegisterWindowMessage(WINDOW_CALLBACK);
+
+        const char* equation;
         char about_title[255];
         char about_msg[255];
 
-        const UINT wndMsg = RegisterWindowMessage(WINDOW_CALLBACK);
+        switch (message) {
+            case WM_HOTKEY:
+                strcpy(last_equation, fromClipboard());
+            break;
 
-        if (message == WM_COMMAND && LOWORD(wParam) == CMD_EXIT) {
-            Shell_NotifyIcon(NIM_DELETE, &nid);
-            PostQuitMessage(0);
-            return 0;
-        }
+            case WM_DESTROY:
+                Shell_NotifyIcon(NIM_DELETE, &nid);
+                PostQuitMessage(0);
+            break;
 
-        if (message == WM_COMMAND && LOWORD(wParam) == CMD_ABOUT) {
-            sprintf(about_title, ABOUT_TITLE, WINDOW_TITLE);
-            sprintf(about_msg, ABOUT_MSG, WINDOW_TITLE, MAJOR_VERSION, MINOR_VERSION, RELEASE_NUMBER);
+            case WM_COMMAND:
+                switch (LOWORD(wParam)) {
+                    case CMD_EXIT:
+                        Shell_NotifyIcon(NIM_DELETE, &nid);
+                        PostQuitMessage(0);
+                    break;
+                    
+                    case CMD_ABOUT:
+                        sprintf(about_title, ABOUT_TITLE, WINDOW_TITLE);
+                        sprintf(about_msg, ABOUT_MSG, WINDOW_TITLE, MAJOR_VERSION, MINOR_VERSION, RELEASE_NUMBER);
 
-            MessageBox(hWnd, 
-                about_msg, 
-                about_title,
-            MB_OK);
-        }
+                        MessageBox(hWnd, 
+                            about_msg, 
+                            about_title,
+                        MB_OK);
+                    break;
 
-        if (message == WM_COMMAND && LOWORD(wParam) >= CMD_CPX) {
-            equationIndex = LOWORD(wParam) - CMD_CPX;
-            toClipboard(stored_equations[equationIndex]);
-        }
-        
-        if (message == WM_DESTROY) {
-            Shell_NotifyIcon(NIM_DELETE, &nid);
-            PostQuitMessage(0);
-            return 0;
-        }
+                    default:
+                        if (LOWORD(wParam) < CMD_CPX) break;
+                        toClipboard(stored_equations[LOWORD(wParam) - CMD_CPX]);
+                }
+            break;
 
-        if (message == wndMsg && lParam == WM_RBUTTONUP) {
-            displayMenu(hWnd);
+            default:
+                if (message == wndMsg && lParam == WM_RBUTTONUP)
+                    displayMenu(hWnd);
         }
 
         return DefWindowProc(hWnd, message, wParam, lParam);
@@ -158,6 +174,7 @@
 
     void displayMenu(HWND hWnd)
     {
+        wchar_t wideString[MAX_LEN];
         int has_equation = 0;
         int i;
         POINT p;
@@ -171,8 +188,9 @@
 
         /* Equations */
         for (i=0; i<MAX_EQUATIONS; ++i)
-            if (wcslen(stored_equations[i]) > 0) {
-                AppendMenuW(hSubMenu, MF_STRING, CMD_CPX+i, stored_equations[i]);
+            if (strlen(stored_equations[i]) > 0) {
+                mbstowcs(wideString, stored_equations[i], strlen(stored_equations[i])+1);
+                AppendMenuW(hSubMenu, MF_STRING, CMD_CPX+i, wideString);
                 has_equation = 1;
             }
         if (!has_equation) {
@@ -189,19 +207,51 @@
 
     }
 
-    void addEquation(const wchar_t* equation) {
-        stored_equations[current_index] = equation;
-        current_index = (current_index+1) % MAX_EQUATIONS;
+    void addEquation(const char *equation) {
+        printf("Adding %s", equation);
+        strcpy(stored_equations[current_index++], equation);
+        current_index %= MAX_EQUATIONS;
     }
 
-    void toClipboard(const wchar_t *equation) {
-        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, wcslen(equation)+1);
-        memcpy(GlobalLock(hMem), equation, wcslen(equation)+1);
+    void toClipboard(const char *equation) {
+        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, strlen(equation)+1);
+        memcpy(GlobalLock(hMem), equation, strlen(equation)+1);
 
         GlobalUnlock(hMem);
-        OpenClipboard(0);
-        EmptyClipboard();
-        SetClipboardData(CF_TEXT, hMem);
-        CloseClipboard();
+        if (OpenClipboard(0)) {
+            EmptyClipboard();
+            SetClipboardData(CF_TEXT, hMem);
+            CloseClipboard();
+        }
+    }
+
+    const char* fromClipboard(void) {
+        HGLOBAL hMem;
+        const char* clipText = NULL;
+
+        if (OpenClipboard(0)) {
+            hMem = GetClipboardData(CF_TEXT);
+            if (hMem != NULL) {
+                clipText = GlobalLock(hMem);
+                GlobalUnlock(hMem);
+            }
+
+            CloseClipboard();
+        }
+
+        return clipText;
+    }
+
+    const char *lastEquation(void) {
+        char* value;
+
+        if (strlen(last_equation) == 0)
+            return NULL;
+
+        value = (char*) malloc(sizeof(char)*strlen(last_equation)+1);
+        strcpy(value, last_equation);
+
+        last_equation[0] = 0;
+        return value;
     }
 #endif

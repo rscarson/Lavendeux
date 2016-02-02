@@ -3,9 +3,16 @@
 #include "menu.h"
 
 int main() {
+	const char* equation;
 	initMenu();
 
-	while (updateMenu()) {}
+	while (updateMenu()) {
+		equation = lastEquation();
+		if (equation != NULL) {
+			addEquation(equation);
+			printf("%s\n", equation);
+		}
+	}
 
 	return 0;
 }
