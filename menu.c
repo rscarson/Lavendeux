@@ -15,7 +15,7 @@
 
 /* Ugly globals */
 NOTIFYICONDATA nid;
-wchar_t* stored_equations[MAX_EQUATIONS];
+const wchar_t* stored_equations[MAX_EQUATIONS];
 
 /* System specific stuff */
 HWND initWindow();
@@ -57,13 +57,14 @@ HWND initWindow() {
     }
 
     /* Load icon */
+    printf("Load icon...\n");
     hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(ICON_ID)); 
     if (!hIcon) {
-        printf("Unable to load icon!\n");
         exit(EXIT_FAILURE);
     }
 
     /* Register class */
+    printf("Class...\n");
     hClass.cbSize         = sizeof(hClass);
     hClass.style          = CS_HREDRAW | CS_VREDRAW;
     hClass.lpfnWndProc    = wndCallback;
@@ -79,9 +80,10 @@ HWND initWindow() {
     hClassAtom = RegisterClassEx(&hClass);
 
     /* Create the window */
+    printf("Create window...\n");
     hWnd = CreateWindowEx(0, WINDOW_CALLBACK, WINDOW_TITLE, 0, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
     if (GetLastError() != 0) {
-        printf("Unable to create window. Error code %d\n", GetLastError());
+        printf("Unable to create window.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -167,7 +169,7 @@ void displayMenu(HWND hWnd)
 }
 
 void addToClipboard(int targetIndex) {
-    wchar_t *equation = stored_equations[targetIndex];
+    const wchar_t *equation = stored_equations[targetIndex];
     HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, wcslen(equation)+1);
     memcpy(GlobalLock(hMem), equation, wcslen(equation)+1);
 

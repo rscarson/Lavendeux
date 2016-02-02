@@ -1,8 +1,8 @@
-ub3rparse.res:
-	windres ub3rparse.rc -O coff -o ub3rparse.res
+bin/ub3rparse.res:
+	windres src/ub3rparse.rc -O coff -o bin/ub3rparse.res
 
-menu.o:
-	gcc menu.c -o menu.o
+all: bin/ub3rparse.res
+	gcc bin/ub3rparse.res src/main.c src/menu.c -o bin/ub3rparse.exe -Wall -g
 
-all: ub3rparse.res menu.o
-	ln ub3rparse.res menu.o
+clean:
+	rm bin/*
