@@ -4,55 +4,41 @@
     #include <shellapi.h>
     #include <conio.h>
 
-    #include "menu.h"
+    #include "interface_win32.h"
+    #include "interface.h"
 
-    /* Window settings */
-    #define WINDOW_CALLBACK "Ub3rParseMessage"
-    #define HOTKEY_ID 100
-    #define ICON_ID 100
-
-    /* Menu commands */
-    #define CMD_EXIT 1000
-    #define CMD_ABOUT 1001
-    #define CMD_CPX 1010
-
-    /* Ugly globals */
+    /* Event globals */
     NOTIFYICONDATA nid;
-    int current_index;
-    char last_equation[MAX_LEN];
-    char stored_equations[MAX_EQUATIONS][MAX_LEN];
 
-    /* System specific stuff */
-    LRESULT CALLBACK wndCallback(HWND, UINT, WPARAM, LPARAM);
-    void displayMenu(HWND);
+    /* Stored callbacks */
+    parseCallback _parse_callback;
+    settingCallback _setting_callback;
+    exitCallback _exit_callback;
 
-    int updateMenu() {
-        MSG msg;
-        
-        /* Main loop */
-        if (GetMessage(&msg, NULL, 0, 0))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+    /* Menu equations */
+    char *stored_entries[MAX_EQUATIONS];
 
-            return 1;
-        }
-
-        return 0;
-    }
-
-    void initMenu() {
+    /** 
+     * Prepare and draw the interface 
+     * @param parse_callback Method to be called in event of the hotkeys being pressed
+     * @param setting_callback Method to be called in event of a setting changing
+     */
+    void init_interface(exitCallback exit_callback, parseCallback parse_callback, settingCallback setting_callback) {
         int i;
         HWND hWnd;
         HICON hIcon;
         WNDCLASSEX hClass;
         HINSTANCE hInstance;
 
+
+        /* Callback methods */
+        _parse_callback = parse_callback;
+        _setting_callback = setting_callback;
+        _exit_callback = exit_callback;
+
         /* Init equation stores */
-        current_index = 0;
-        last_equation[0] = 0;
         for (i=0; i<MAX_EQUATIONS; ++i)
-            addEquation("");
+            stored_entries[i] = NULL;
 
         /* Get module instance */
         hInstance = GetModuleHandle(NULL);
@@ -73,7 +59,7 @@
         /* Register class */
         hClass.cbSize         = sizeof(hClass);
         hClass.style          = CS_HREDRAW | CS_VREDRAW;
-        hClass.lpfnWndProc    = wndCallback;
+        hClass.lpfnWndProc    = wnd_callback;
         hClass.cbClsExtra     = 0;
         hClass.cbWndExtra     = 0;
         hClass.hInstance      = hInstance;
@@ -121,33 +107,61 @@
         Shell_NotifyIcon(NIM_ADD, &nid);
     }
 
-    /* Callback function for the window */
-    LRESULT CALLBACK wndCallback(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    /** 
+     * Check window messages, process events
+     */
+    void update_interface( void ) {
+        MSG msg;
+        
+        if (GetMessage(&msg, NULL, 0, 0))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+
+    /** 
+     * Windows event callbacks
+     */
+    LRESULT CALLBACK wnd_callback(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
         static UINT wndMsg = 0;
+
+        char about_title[0xFF];
+        char about_msg[0xFF];
+
+        /* Register for callbacks, but only once */
         if (wndMsg == 0)
             wndMsg = RegisterWindowMessage(WINDOW_CALLBACK);
 
-        const char* equation;
-        char about_title[255];
-        char about_msg[255];
-
+        /* What type of event is it */
         switch (message) {
+
+            /* New thing to process */
             case WM_HOTKEY:
-                strcpy(last_equation, fromClipboard());
+                _parse_callback(from_clipboard());
             break;
 
+            /* Time to exit */
             case WM_DESTROY:
                 Shell_NotifyIcon(NIM_DELETE, &nid);
                 PostQuitMessage(0);
+                _exit_callback();
             break;
 
+            /* Some other command type */
             case WM_COMMAND:
+
+                /* Which type of custom command */
                 switch (LOWORD(wParam)) {
+
+                    /* Exit through menu */
                     case CMD_EXIT:
                         Shell_NotifyIcon(NIM_DELETE, &nid);
                         PostQuitMessage(0);
+                        _exit_callback();
                     break;
                     
+                    /* Show about box */
                     case CMD_ABOUT:
                         sprintf(about_title, ABOUT_TITLE, WINDOW_TITLE);
                         sprintf(about_msg, ABOUT_MSG, WINDOW_TITLE, MAJOR_VERSION, MINOR_VERSION, RELEASE_NUMBER);
@@ -158,64 +172,92 @@
                         MB_OK);
                     break;
 
+                    /* One of the equations was clicked. Put in it the clipboard */
                     default:
                         if (LOWORD(wParam) < CMD_CPX) break;
-                        toClipboard(stored_equations[LOWORD(wParam) - CMD_CPX]);
+                        to_clipboard(stored_entries[LOWORD(wParam) - CMD_CPX]);
                 }
             break;
 
+            /* Show the menu */
             default:
                 if (message == wndMsg && lParam == WM_RBUTTONUP)
-                    displayMenu(hWnd);
+                    show_menu(hWnd);
         }
 
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
 
-    void displayMenu(HWND hWnd)
+    /* Show the menu interface */
+    void show_menu(HWND hWnd)
     {
-        wchar_t wideString[MAX_LEN];
         int has_equation = 0;
         int i;
         POINT p;
-        HMENU hSubMenu = CreatePopupMenu();
+        HMENU hMenu;
+        HMENU hAnglesMenu;
 
         /* Get position of cursor */
         GetCursorPos(&p);
 
-        /* Create the empty menu */
-        hSubMenu = CreatePopupMenu();
+        /* Create the empty menud */
+        hMenu = CreatePopupMenu();
+        hAnglesMenu = CreatePopupMenu();
 
         /* Equations */
         for (i=0; i<MAX_EQUATIONS; ++i)
-            if (strlen(stored_equations[i]) > 0) {
-                mbstowcs(wideString, stored_equations[i], strlen(stored_equations[i])+1);
-                AppendMenuW(hSubMenu, MF_STRING, CMD_CPX+i, wideString);
+            if (stored_entries[i] != NULL) {
+                AppendMenu(hMenu, MF_STRING, CMD_CPX+i, stored_entries[i]);
                 has_equation = 1;
             }
         if (!has_equation) {
-            AppendMenuW(hSubMenu, MF_STRING, 0, L"No equations in history");
+            AppendMenu(hMenu, MF_STRING, 0, "No equations in history");
         }
 
+        /* Settings */
+        AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+        AppendMenu(hMenu, MF_CHECKED, CMD_TOGGLE_SILENT_MODE, "Silent Errors");
+        AppendMenu(hAnglesMenu, MF_CHECKED, CMD_ANGLE_DEG, "Degrees");
+        AppendMenu(hAnglesMenu, MF_UNCHECKED, CMD_ANGLE_RAD, "Radians");
+        AppendMenu(hMenu, MF_POPUP, hAnglesMenu, "Angle Units");
+
         /* System menu */
-        AppendMenuW(hSubMenu, MF_SEPARATOR, 0, NULL);
-        AppendMenuW(hSubMenu, MF_STRING, CMD_ABOUT, L"About Ub3rParse");
-        AppendMenuW(hSubMenu, MF_STRING, CMD_EXIT, L"Exit");
+        AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+        AppendMenu(hMenu, MF_STRING, CMD_ABOUT, "About Ub3rParse");
+        AppendMenu(hMenu, MF_STRING, CMD_EXIT, "Exit");
 
         SetForegroundWindow(hWnd); // Win32 bug work-around
-        TrackPopupMenu(hSubMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hWnd, NULL);
+        TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hWnd, NULL);
 
     }
 
-    void addEquation(const char *equation) {
-        printf("Adding %s", equation);
-        strcpy(stored_equations[current_index++], equation);
-        current_index %= MAX_EQUATIONS;
+    /** 
+     * Add an entry to the menu history
+     * @param entry The string to add
+     */
+    void add_history(const char *entry) {
+        int i;
+
+        /* Free memory for last entry */
+        if (stored_entries[MAX_EQUATIONS-1] != NULL)
+            free(stored_entries[MAX_EQUATIONS-1]);
+
+        /* Shift all current entries by one */
+        for (i=MAX_EQUATIONS-2; i>=0; --i)
+            stored_entries[i+1] = stored_entries[i];
+
+        /* Allocate new entry */
+        stored_entries[0] = (char*) malloc(sizeof(char)*strlen(entry)+1);
+        strcpy( stored_entries[0], entry);
     }
 
-    void toClipboard(const char *equation) {
-        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, strlen(equation)+1);
-        memcpy(GlobalLock(hMem), equation, strlen(equation)+1);
+    /** 
+     * Copy string to system clipboard
+     * @param entry The string to add
+     */
+    void to_clipboard(const char *entry) {
+        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, strlen(entry)+1);
+        memcpy(GlobalLock(hMem), entry, strlen(entry)+1);
 
         GlobalUnlock(hMem);
         if (OpenClipboard(0)) {
@@ -225,7 +267,11 @@
         }
     }
 
-    const char* fromClipboard(void) {
+    /** 
+     * Get string from system clipboard
+     * @return const char* The string fetched
+     */
+    const char* from_clipboard( void ) {
         HGLOBAL hMem;
         const char* clipText = NULL;
 
@@ -240,18 +286,5 @@
         }
 
         return clipText;
-    }
-
-    const char *lastEquation(void) {
-        char* value;
-
-        if (strlen(last_equation) == 0)
-            return NULL;
-
-        value = (char*) malloc(sizeof(char)*strlen(last_equation)+1);
-        strcpy(value, last_equation);
-
-        last_equation[0] = 0;
-        return value;
     }
 #endif
