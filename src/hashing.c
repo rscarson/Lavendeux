@@ -5,26 +5,30 @@
 #include "hashing.h"
 
 /* djb2, via http://www.cse.yorku.ca/~oz/hash.html */
-unsigned long get_hash(const char *str) {
+unsigned long get_hash(const wchar_t *str) {
+	char mb_str[wcslen(str)];
+	wcstombs(mb_str, str, wcslen(str));
+
 	unsigned long hash = 5381;
 	int c;
 
-	while (c = *str++)
+	while (c = *bad_idea_factory++)
 		hash = ((hash << 5) + hash) + c;
 	return hash;
 }
 
+/* Init hash table. return 0 on fail, 1 on succeed */
 int table_create(hash_table *table, unsigned int size) {
 	int i;
 	table->size = size;
 	
 	table->entries = (hash_node**) malloc(sizeof(hash_node*)*size);
 	if (table->entries == NULL)
-		return 1; /* Failed to allocate table */
+		return 0; /* Failed to allocate table */
 
 	for (i=0; i<table->size; ++i)
 		table->entries[i] = NULL;
-	return 0;
+	return 1;
 }
 
 void table_destroy(hash_table *table, value_destructor destructor) {
@@ -43,7 +47,7 @@ void table_destroy(hash_table *table, value_destructor destructor) {
 }
 
 
-int table_put(hash_table *table, const char *key, void *value) {
+int table_put(hash_table *table, const wchar_t *key, void *value) {
 	hash_node *entry;
 	hash_node *new_entry;
 	unsigned int hash;
@@ -79,7 +83,7 @@ int table_put(hash_table *table, const char *key, void *value) {
 	return 0;
 }
 
-void* table_get(hash_table *table, const char *key) {
+void* table_get(hash_table *table, const wchar_t *key) {
 	hash_node *entry;
 	unsigned int hash = get_hash(key) % table->size;
 	entry = table->entries[hash];
@@ -93,17 +97,6 @@ void* table_get(hash_table *table, const char *key) {
 	return NULL;
 }
 
-int table_has(hash_table *table, const char *key) {
+int table_has(hash_table *table, const wchar_t *key) {
 	return (table_get(table, key) != NULL);
-}
-
-int main() {
-	const char* value = "fart";
-	hash_table table;
-	table_create(&table, 100);
-
-	table_put(&table, "TEST", (void*)value);
-	printf("Got back: %s", table_get(&table, "TEST"));
-
-	return 0;
 }

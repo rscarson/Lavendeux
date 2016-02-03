@@ -9,6 +9,10 @@ lib/libinterface.a:
 	gcc -c src/interface_win32.c -o obj/interface.o
 	ar rcs lib/libinterface.a obj/interface.o
 
+lib/libparse.a:
+	gcc -c src/parse.c -o obj/parse.o
+	ar rcs lib/libparse.a obj/parse.o
+
 obj/ub3rparse.tab.c:
 	bison --defines=obj/y.tab.h -o obj/ub3rparse.tab.c src/ub3rparse.y
 

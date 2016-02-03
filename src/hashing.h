@@ -1,8 +1,10 @@
 #ifndef HASHING_H
 	#define HASHING_H
 
+	#define HASH_DEFAULT_SIZE 100
+
 	typedef struct node {
-		const char* key;
+		const wchar_t* key;
 		void* value;
 
 		struct node *next;
@@ -15,11 +17,11 @@
 
 	typedef void (*value_destructor)(void*);
 
-	unsigned long get_hash(const char*);
+	unsigned long get_hash(const wchar_t*);
 	
 	int table_create(hash_table*, unsigned int);
 	void table_destroy(hash_table*, value_destructor);
 
-	int table_put(hash_table*, const char*, void*);
-	void* table_get(hash_table*, const char*);
+	int table_put(hash_table*, const wchar_t*, void*);
+	void* table_get(hash_table*, const wchar_t*);
 #endif
