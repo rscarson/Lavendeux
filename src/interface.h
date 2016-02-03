@@ -59,4 +59,10 @@
 	 */
 	const char* from_clipboard( void );
 
+	/**
+	 * Get the path to a valid configuration file
+	 * Search in current directory, then relevant home dir
+	 */
+	 const char* config_path( void );
+
 #endif

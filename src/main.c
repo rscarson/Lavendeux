@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ub3rparse.h"
 #include "interface.h"
 
 int main() {
@@ -14,12 +15,30 @@ int main() {
 }
 
 void parse_callback(const char *target) {
+	int next;
 	add_history(target);
 	printf("%s\n", target);
+
+	yyin = yy_scan_string(target);
+	while (!feof(yyin)) {
+		next = yyparse();
+		if (next == 1)
+			break;
+		else
+			printf("Found a %d\n", next);
+	}
 }
 
 void setting_callback(int setting, int value) {
-	printf("Setting %d = %d\n", setting, value);
+	switch (setting) {
+		case SETTING_ANGLE:
+			angle_mode = value;
+		break;
+
+		case SETTING_SILENT:
+			silent_mode = value;
+		break;
+	}
 }
 
 void exit_callback( void ) {

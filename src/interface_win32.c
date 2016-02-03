@@ -3,6 +3,7 @@
     #include <windows.h>
     #include <shellapi.h>
     #include <conio.h>
+    #include <Shlobj.h>
 
     #include "interface_win32.h"
     #include "interface.h"
@@ -18,6 +19,10 @@
     /* Menu equations */
     char *stored_entries[MAX_EQUATIONS];
 
+    /* Default options */
+    int silent_mode;
+    int angle_mode;
+
     /** 
      * Prepare and draw the interface 
      * @param parse_callback Method to be called in event of the hotkeys being pressed
@@ -30,7 +35,6 @@
         WNDCLASSEX hClass;
         HINSTANCE hInstance;
 
-
         /* Callback methods */
         _parse_callback = parse_callback;
         _setting_callback = setting_callback;
@@ -39,6 +43,10 @@
         /* Init equation stores */
         for (i=0; i<MAX_EQUATIONS; ++i)
             stored_entries[i] = NULL;
+
+        /* Default options */
+        silent_mode = SETTING_SILENT_ON;
+        angle_mode = SETTING_ANGLE_DEG;
 
         /* Get module instance */
         hInstance = GetModuleHandle(NULL);
@@ -172,6 +180,24 @@
                         MB_OK);
                     break;
 
+                    /* Change to degrees mode */
+                    case CMD_ANGLE_DEG:
+                        angle_mode = SETTING_ANGLE_DEG;
+                        _setting_callback(SETTING_ANGLE, SETTING_ANGLE_DEG);
+                    break;
+
+                    /* Change to radians mode */
+                    case CMD_ANGLE_RAD:
+                        angle_mode = SETTING_ANGLE_RAD;
+                        _setting_callback(SETTING_ANGLE, SETTING_ANGLE_RAD);
+                    break;
+
+                    /* Turn silent errors on and off mode */
+                    case CMD_TOGGLE_SILENT_MODE:
+                        silent_mode = (silent_mode==SETTING_SILENT_ON) ? SETTING_SILENT_OFF : SETTING_SILENT_ON;
+                        _setting_callback(SETTING_SILENT, silent_mode);
+                    break;
+
                     /* One of the equations was clicked. Put in it the clipboard */
                     default:
                         if (LOWORD(wParam) < CMD_CPX) break;
@@ -216,9 +242,9 @@
 
         /* Settings */
         AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-        AppendMenu(hMenu, MF_CHECKED, CMD_TOGGLE_SILENT_MODE, "Silent Errors");
-        AppendMenu(hAnglesMenu, MF_CHECKED, CMD_ANGLE_DEG, "Degrees");
-        AppendMenu(hAnglesMenu, MF_UNCHECKED, CMD_ANGLE_RAD, "Radians");
+        AppendMenu(hMenu, (silent_mode==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, "Silent Errors");
+        AppendMenu(hAnglesMenu, (angle_mode==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, "Degrees");
+        AppendMenu(hAnglesMenu, (angle_mode==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, "Radians");
         AppendMenu(hMenu, MF_POPUP, hAnglesMenu, "Angle Units");
 
         /* System menu */
@@ -248,6 +274,13 @@
 
         /* Allocate new entry */
         stored_entries[0] = (char*) malloc(sizeof(char)*strlen(entry)+1);
+        if (stored_entries[0] == NULL) {
+            MessageBox(NULL, 
+                "Failed to allocate memory!", 
+                "Runtime error",
+            MB_OK);
+            exit(EXIT_FAILURE);
+        }
         strcpy( stored_entries[0], entry);
     }
 
@@ -287,4 +320,22 @@
 
         return clipText;
     }
+
+    /**
+     * Get the path to a valid configuration file
+     * Search in current directory, then relevant home dir
+     */
+     const char* config_path( void ) {
+        char *path = (char*) malloc(sizeof(char)*MAX_PATH+1);
+        if (path == NULL) {
+            MessageBox(NULL, 
+                "Failed to allocate memory!", 
+                "Runtime error",
+            MB_OK);
+            exit(EXIT_FAILURE);
+        }
+        if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK)
+            return path;
+        return NULL;
+     }
 #endif

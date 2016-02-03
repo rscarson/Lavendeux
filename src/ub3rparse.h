@@ -5,7 +5,11 @@
 	void parse_callback(const char*);
 	void setting_callback(int, int);
 
+	/* Parsing stuff */
+	int yyparse();
+	extern FILE *yyin;
+
 	/* Settings */
-	char error_mode;
+	char angle_mode;
 	char silent_mode;
 #endif
