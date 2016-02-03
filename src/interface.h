@@ -3,6 +3,7 @@
 
     /* Window settings */
     #define WINDOW_TITLE "Ub3rParse"
+	#define CONFIG_FILENAME ".ub3rsettings"
     #define MAX_EQUATIONS 5
 	#define MAX_LEN 255
 
@@ -27,6 +28,7 @@
 	#define SETTING_SILENT 	1
 		#define SETTING_SILENT_ON  	0
 		#define SETTING_SILENT_OFF 	1  
+	#define SETTING_LANG	2 /*Values are language definitions in language.h */
 
 	/** 
 	 * Prepare and draw the interface 

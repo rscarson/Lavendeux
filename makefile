@@ -3,6 +3,10 @@ SHELL=C:/Windows/System32/cmd.exe
 bin/ub3rparse.res:
 	windres src/ub3rparse.rc -O coff -o bin/ub3rparse.res
 
+bin/libhashing.a:
+	gcc -c src/hashing.c -o bin/hashing.o
+	ar rcs lib/libhashing.a bin/hashing.o
+
 bin/libinterface.a:
 	gcc -c src/interface_win32.c -o bin/interface.o
 	ar rcs lib/libinterface.a bin/interface.o

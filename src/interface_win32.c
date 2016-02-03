@@ -7,6 +7,7 @@
 
     #include "interface_win32.h"
     #include "interface.h"
+    #include "language.h"
 
     /* Event globals */
     NOTIFYICONDATA nid;
@@ -22,6 +23,7 @@
     /* Default options */
     int silent_mode;
     int angle_mode;
+    int lang_mode;
 
     /** 
      * Prepare and draw the interface 
@@ -47,6 +49,7 @@
         /* Default options */
         silent_mode = SETTING_SILENT_ON;
         angle_mode = SETTING_ANGLE_DEG;
+        lang_mode = LANG_EN;
 
         /* Get module instance */
         hInstance = GetModuleHandle(NULL);
@@ -222,6 +225,7 @@
         POINT p;
         HMENU hMenu;
         HMENU hAnglesMenu;
+        HMENU hLangMenu;
 
         /* Get position of cursor */
         GetCursorPos(&p);
@@ -229,6 +233,7 @@
         /* Create the empty menud */
         hMenu = CreatePopupMenu();
         hAnglesMenu = CreatePopupMenu();
+        hLangMenu = CreatePopupMenu();
 
         /* Equations */
         for (i=0; i<MAX_EQUATIONS; ++i)
@@ -242,7 +247,12 @@
 
         /* Settings */
         AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+        AppendMenu(hLangMenu, (lang_mode==LANG_EN)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_EN, "English");
+        AppendMenu(hLangMenu, (lang_mode==LANG_FR)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_FR, "Français");
+        AppendMenu(hMenu, MF_POPUP, hLangMenu, "Language");
+
         AppendMenu(hMenu, (silent_mode==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, "Silent Errors");
+
         AppendMenu(hAnglesMenu, (angle_mode==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, "Degrees");
         AppendMenu(hAnglesMenu, (angle_mode==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, "Radians");
         AppendMenu(hMenu, MF_POPUP, hAnglesMenu, "Angle Units");
@@ -334,8 +344,10 @@
             MB_OK);
             exit(EXIT_FAILURE);
         }
-        if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK)
+        if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
+            strcat(path, CONFIG_FILENAME);
             return path;
+        }
         return NULL;
      }
 #endif
