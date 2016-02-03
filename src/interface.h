@@ -3,7 +3,7 @@
 
     /* Window settings */
     #define WINDOW_TITLE "Ub3rParse"
-	#define CONFIG_FILENAME ".ub3rsettings"
+	#define CONFIG_FILENAME L".ub3rsettings"
     #define MAX_EQUATIONS 5
 	#define MAX_LEN 255
 
@@ -18,7 +18,7 @@
 	
 	/* Pointer types */
 	typedef void (*exitCallback)();
-	typedef void (*parseCallback)(const char*);
+	typedef void (*parseCallback)(const wchar_t*);
 	typedef void (*settingCallback)(int, int);
 
 	/* Settings available */
@@ -47,24 +47,24 @@
 	 * Add an entry to the menu history
 	 * @param entry The string to add
 	 */
-	void add_history(const char*);
+	void add_history(const wchar_t*);
 
 	/** 
 	 * Copy string to system clipboard
 	 * @param entry The string to add
 	 */
-	void to_clipboard(const char*);
+	void to_clipboard(const wchar_t*);
 
     /** 
 	 * Get string from system clipboard
-	 * @return const char* The string fetched
+	 * @return const wchar_t* The string fetched
 	 */
-	const char* from_clipboard( void );
+	const wchar_t* from_clipboard( void );
 
 	/**
 	 * Get the path to a valid configuration file
 	 * Search in current directory, then relevant home dir
 	 */
-	 const char* config_path( void );
+	 const wchar_t* config_path( void );
 
 #endif

@@ -18,7 +18,7 @@
     exitCallback _exit_callback;
 
     /* Menu equations */
-    char *stored_entries[MAX_EQUATIONS];
+    wchar_t *stored_entries[MAX_EQUATIONS];
 
     /* Default options */
     int silent_mode;
@@ -201,6 +201,18 @@
                         _setting_callback(SETTING_SILENT, silent_mode);
                     break;
 
+                    /* English language */
+                    case CMD_LANG_EN:
+                        lang_mode = LANG_EN;
+                        _setting_callback(SETTING_LANG, lang_mode);
+                    break;
+
+                    /* French language */
+                    case CMD_LANG_FR:
+                        lang_mode = LANG_FR;
+                        _setting_callback(SETTING_LANG, lang_mode);
+                    break;
+
                     /* One of the equations was clicked. Put in it the clipboard */
                     default:
                         if (LOWORD(wParam) < CMD_CPX) break;
@@ -238,29 +250,29 @@
         /* Equations */
         for (i=0; i<MAX_EQUATIONS; ++i)
             if (stored_entries[i] != NULL) {
-                AppendMenu(hMenu, MF_STRING, CMD_CPX+i, stored_entries[i]);
+                AppendMenuW(hMenu, MF_STRING, CMD_CPX+i, stored_entries[i]);
                 has_equation = 1;
             }
         if (!has_equation) {
-            AppendMenu(hMenu, MF_STRING, 0, "No equations in history");
+            AppendMenuW(hMenu, MF_STRING, 0, lang_lookup[LANG_STR_NO_EQUATIONS][lang_mode]);
         }
 
         /* Settings */
-        AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-        AppendMenu(hLangMenu, (lang_mode==LANG_EN)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_EN, "English");
-        AppendMenu(hLangMenu, (lang_mode==LANG_FR)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_FR, "Français");
-        AppendMenu(hMenu, MF_POPUP, hLangMenu, "Language");
+        AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
+        AppendMenuW(hLangMenu, (lang_mode==LANG_EN)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_EN, L"English");
+        AppendMenuW(hLangMenu, (lang_mode==LANG_FR)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_FR, L"Français");
+        AppendMenuW(hMenu, MF_POPUP, (UINT) hLangMenu, lang_lookup[LANG_STR_LANGUAGE][lang_mode]);
 
-        AppendMenu(hMenu, (silent_mode==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, "Silent Errors");
+        AppendMenuW(hMenu, (silent_mode==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, lang_lookup[LANG_STR_SILENT_ERRS][lang_mode]);
 
-        AppendMenu(hAnglesMenu, (angle_mode==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, "Degrees");
-        AppendMenu(hAnglesMenu, (angle_mode==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, "Radians");
-        AppendMenu(hMenu, MF_POPUP, hAnglesMenu, "Angle Units");
+        AppendMenuW(hAnglesMenu, (angle_mode==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, lang_lookup[LANG_STR_DEGREES][lang_mode]);
+        AppendMenuW(hAnglesMenu, (angle_mode==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, lang_lookup[LANG_STR_RADIANS][lang_mode]);
+        AppendMenuW(hMenu, MF_POPUP, (UINT) hAnglesMenu, lang_lookup[LANG_STR_ANGLE_UNITS][lang_mode]);
 
         /* System menu */
-        AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-        AppendMenu(hMenu, MF_STRING, CMD_ABOUT, "About Ub3rParse");
-        AppendMenu(hMenu, MF_STRING, CMD_EXIT, "Exit");
+        AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
+        AppendMenuW(hMenu, MF_STRING, CMD_ABOUT, lang_lookup[LANG_STR_ABOUT][lang_mode]);
+        AppendMenuW(hMenu, MF_STRING, CMD_EXIT, lang_lookup[LANG_STR_EXIT][lang_mode]);
 
         SetForegroundWindow(hWnd); // Win32 bug work-around
         TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hWnd, NULL);
@@ -271,7 +283,7 @@
      * Add an entry to the menu history
      * @param entry The string to add
      */
-    void add_history(const char *entry) {
+    void add_history(const wchar_t *entry) {
         int i;
 
         /* Free memory for last entry */
@@ -283,29 +295,29 @@
             stored_entries[i+1] = stored_entries[i];
 
         /* Allocate new entry */
-        stored_entries[0] = (char*) malloc(sizeof(char)*strlen(entry)+1);
+        stored_entries[0] = (wchar_t*) malloc(sizeof(wchar_t)*wcslen(entry)+1);
         if (stored_entries[0] == NULL) {
-            MessageBox(NULL, 
-                "Failed to allocate memory!", 
-                "Runtime error",
+            MessageBoxW(NULL, 
+                L"Failed to allocate memory!", 
+                lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode],
             MB_OK);
             exit(EXIT_FAILURE);
         }
-        strcpy( stored_entries[0], entry);
+        wcscpy( stored_entries[0], entry);
     }
 
     /** 
      * Copy string to system clipboard
      * @param entry The string to add
      */
-    void to_clipboard(const char *entry) {
-        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, strlen(entry)+1);
-        memcpy(GlobalLock(hMem), entry, strlen(entry)+1);
+    void to_clipboard(const wchar_t *entry) {
+        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, wcslen(entry)+1);
+        memcpy(GlobalLock(hMem), entry, wcslen(entry)+1);
 
         GlobalUnlock(hMem);
         if (OpenClipboard(0)) {
             EmptyClipboard();
-            SetClipboardData(CF_TEXT, hMem);
+            SetClipboardData(CF_UNICODETEXT, hMem);
             CloseClipboard();
         }
     }
@@ -314,12 +326,12 @@
      * Get string from system clipboard
      * @return const char* The string fetched
      */
-    const char* from_clipboard( void ) {
+    const wchar_t* from_clipboard( void ) {
         HGLOBAL hMem;
-        const char* clipText = NULL;
+        const wchar_t* clipText = NULL;
 
         if (OpenClipboard(0)) {
-            hMem = GetClipboardData(CF_TEXT);
+            hMem = GetClipboardData(CF_UNICODETEXT);
             if (hMem != NULL) {
                 clipText = GlobalLock(hMem);
                 GlobalUnlock(hMem);
@@ -335,17 +347,17 @@
      * Get the path to a valid configuration file
      * Search in current directory, then relevant home dir
      */
-     const char* config_path( void ) {
-        char *path = (char*) malloc(sizeof(char)*MAX_PATH+1);
+     const wchar_t* config_path( void ) {
+        wchar_t *path = (wchar_t*) malloc(sizeof(wchar_t)*MAX_PATH+1);
         if (path == NULL) {
-            MessageBox(NULL, 
-                "Failed to allocate memory!", 
-                "Runtime error",
+            MessageBoxW(NULL, 
+                L"Failed to allocate memory!", 
+                lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode],
             MB_OK);
             exit(EXIT_FAILURE);
         }
-        if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
-            strcat(path, CONFIG_FILENAME);
+        if (SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
+            wcscat(path, CONFIG_FILENAME);
             return path;
         }
         return NULL;

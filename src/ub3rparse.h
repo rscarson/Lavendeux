@@ -2,12 +2,12 @@
 	#define UB3RPARSE_H
 
 	void exit_callback(void);
-	void parse_callback(const char*);
+	void parse_callback(const wchar_t*);
 	void setting_callback(int, int);
 
 	/* Parsing stuff */
-	int yyparse();
-	extern FILE *yyin;
+	//int yyparse();
+	//extern FILE *yyin;
 
 	/* Settings */
 	char angle_mode;

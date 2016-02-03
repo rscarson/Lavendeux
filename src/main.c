@@ -14,19 +14,19 @@ int main() {
 	return 0;
 }
 
-void parse_callback(const char *target) {
-	int next;
+void parse_callback(const wchar_t *target) {
+	//int next;
 	add_history(target);
-	printf("%s\n", target);
+	printf("%S\n", target);
 
-	yyin = yy_scan_string(target);
-	while (!feof(yyin)) {
-		next = yyparse();
-		if (next == 1)
-			break;
-		else
-			printf("Found a %d\n", next);
-	}
+	//yyin = yy_scan_string(target);
+	//while (!feof(yyin)) {
+	//	next = yyparse();
+	//	if (next == 1)
+	//		break;
+	//	else
+	//		printf("Found a %d\n", next);
+	//}
 }
 
 void setting_callback(int setting, int value) {
