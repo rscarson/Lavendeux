@@ -12,7 +12,7 @@ unsigned long get_hash(const wchar_t *str) {
 	unsigned long hash = 5381;
 	int c;
 
-	while (c = *bad_idea_factory++)
+	while (c = *mb_str++)
 		hash = ((hash << 5) + hash) + c;
 	return hash;
 }
@@ -58,7 +58,7 @@ int table_put(hash_table *table, const wchar_t *key, void *value) {
 	while (entry != NULL) {
 		if (strcmp(entry->key, key) == 0) {
 			entry->value = value;
-			return 0;
+			return 1;
 		}
 
 		if (entry->next != NULL)
@@ -68,7 +68,7 @@ int table_put(hash_table *table, const wchar_t *key, void *value) {
 
 	new_entry = (hash_node*) malloc(sizeof(hash_node));
 	if (new_entry == NULL)
-		return 1; /* Failed to allocate node */
+		return 0; /* Failed to allocate node */
 
 	new_entry->key = key;
 	new_entry->value = value;
@@ -80,7 +80,7 @@ int table_put(hash_table *table, const wchar_t *key, void *value) {
 		entry->next = new_entry;
 	}
 
-	return 0;
+	return 1;
 }
 
 void* table_get(hash_table *table, const wchar_t *key) {

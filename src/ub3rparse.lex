@@ -17,15 +17,16 @@ int linenumber = 1;
 
 "+" { return PLUS; }
 "-" { return MINUS; }
+"!" { return FACTORIAL; }
 "*" { return MUL; }
 "/" { return DIV; }
 "%" { return MOD; }
-"^" { return POW;}
+"**" { return POW;}
 
-"!" { return NOT; }
+"~" { return NOT; }
 "&" { return AND; }
 "|" { return OR; }
-"~" { return XOR; }
+"^" { return XOR; }
 "<" { return LSHIFT; }
 ">" { return RSHIFT; }
 

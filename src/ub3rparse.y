@@ -5,7 +5,7 @@
 
 /* Valid tokens */
 %token IDENTIFIER HEX BIN OCT SCI FLOAT INT
-%token PLUS MINUS MUL DIV MOD POW
+%token PLUS MINUS MUL FACTORIAL DIV MOD POW
 %token NOT AND OR XOR LSHIFT RSHIFT
 %token COMMA DECORATOR EQUAL LPAREN RPAREN NEWLINE
 
@@ -37,11 +37,16 @@ base_expression:
 
 not_expression:
 	base_expression
-	| NOT base_expression
+	| NOT not_expression
+	;
+
+factorial_expression:
+	not_expression
+	| factorial_expression FACTORIAL
 	;
 
 bool_expression:
-	not_expression
+	factorial_expression
 	| bool_expression bool_op bool_expression
 	;
 
@@ -65,14 +70,21 @@ function_arguments:
 	| function_arguments COMMA IDENTIFIER
 
 assign_expression:
-	functioncall_expression
-	| IDENTIFIER EQUAL functioncall_expression
-	| IDENTIFIER LPAREN function_arguments RPAREN EQUAL functioncall_expression
+	IDENTIFIER EQUAL functioncall_expression
 	;
 
+definition_expression:
+	IDENTIFIER LPAREN function_arguments RPAREN EQUAL functioncall_expression
+	;
+
+constant_expression:
+	functioncall_expression
+	| assign_expression
+	| definition_expression
+
 expression:
-	assign_expression
-	| assign_expression DECORATOR IDENTIFIER
+	constant_expression
+	| constant_expression DECORATOR IDENTIFIER
 
 %%
 
