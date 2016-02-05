@@ -12,9 +12,6 @@
 	#define FAILURE_INVALID_NAME	3
 	#define FAILURE_SYNTAX_ERROR	4
 	#define FAILURE_ALLOCATION		5
-
-	/* Relevant settings */
-	char angle_mode;
 	
 	/* Values of variable types */
 	#define VALUE_FLOAT 	0x00

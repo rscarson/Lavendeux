@@ -1,6 +1,15 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include "parse.h"
+
+	typedef struct {
+		int type;
+		value self;
+
+		int n_children;
+		parse_tree children[];
+	} parse_tree;
 %}
 
 /* Valid tokens */
