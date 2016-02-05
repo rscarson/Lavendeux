@@ -17,6 +17,7 @@
 	#define LANG_STR_DEGREES	 		0x07
 	#define LANG_STR_RADIANS		 	0x08
 	#define LANG_STR_RUNTIME_ERR	 	0x09
+	#define LANG_STR_SYNTAX_ERR			0x0A
 
 	/* Language table */
 	static const wchar_t* lang_lookup[][NUM_LANGS] = {
@@ -68,6 +69,11 @@
 		[LANG_STR_RUNTIME_ERR] = {
 			[LANG_EN] = L"Runtime error",
 			[LANG_FR] = L"Erreur en exécution"
+		},
+
+		[LANG_STR_SYNTAX_ERR] = {
+			[LANG_EN] = L"Syntax error",
+			[LANG_FR] = L"Erreur de syntaxe"
 		},
 	};
 #endif

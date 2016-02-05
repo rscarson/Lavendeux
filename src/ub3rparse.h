@@ -3,7 +3,7 @@
 
 	void exit_callback(void);
 	void parse_callback(const wchar_t*);
-	void setting_callback(int, int);
+	wchar_t* parse_expression(const wchar_t*);
 
 	/* Parsing stuff */
 	//int yyparse();

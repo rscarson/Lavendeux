@@ -7,6 +7,10 @@
     #define MAX_EQUATIONS 5
 	#define MAX_LEN 255
 
+	/* History settings */
+	#define HISTORY_SUFFIX L"[...]"
+	#define MAX_HISTORY_LEN 25
+
 	/* Application settings */
 	#define MAJOR_VERSION 2
 	#define MINOR_VERSION 0
@@ -19,7 +23,6 @@
 	/* Pointer types */
 	typedef void (*exitCallback)();
 	typedef void (*parseCallback)(const wchar_t*);
-	typedef void (*settingCallback)(int, int);
 
 	/* Settings available */
 	#define SETTING_ANGLE 	0
@@ -31,12 +34,11 @@
 	#define SETTING_LANG	2 /*Values are language definitions in language.h */
 
 	/** 
-	 * Prepare and draw the interface 
-	 * @param parse_callback Method to be called on exit
-	 * @param parse_callback Method to be called in event of the hotkeys being pressed
-	 * @param setting_callback Method to be called in event of a setting changing
-	 */
-	void init_interface(exitCallback, parseCallback, settingCallback);
+     * Prepare and draw the interface 
+     * @param exit_callback Method to be called in event of a quit
+     * @param parse_callback Method to be called in event of the hotkeys being pressed
+     */
+    void init_interface(exitCallback, parseCallback);
 	
 	/** 
 	 * Check window messages, process events
@@ -78,4 +80,11 @@
 	 */
 	void error_msg(const wchar_t*, const wchar_t*, char);
 
+	/**
+	 * Get the value of a given setting
+	 * @param setting The setting to fetch
+	 *
+	 * @return The setting's current value. -1 if setting is invalid
+	 */
+	int get_setting(int);
 #endif

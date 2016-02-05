@@ -20,7 +20,7 @@ obj/lex.yy.c:
 	flex -o obj/lex.yy.c src/ub3rparse.lex
 
 win32: obj/ub3rparse.res lib/libinterface.a
-	gcc obj/ub3rparse.res src/main.c -o bin/ub3rparse.exe -L./lib -linterface -Wall -g
+	gcc obj/ub3rparse.res src/main.c -o bin/ub3rparse.exe -L./lib -linterface -Wall -g -Wl,-subsystem,windows
 
 clean:
 	rm bin/* -f

@@ -11,18 +11,18 @@
 	#define FAILURE_INVALID_ARGS	2
 	#define FAILURE_INVALID_NAME	3
 	#define FAILURE_SYNTAX_ERROR	4
+	#define FAILURE_ALLOCATION		5
 
-	/* Settings */
+	/* Relevant settings */
 	char angle_mode;
-	char silent_mode;
 	
 	/* Values of variable types */
-	#define VALUE_FLOAT;
-	#define VALUE_INT;
-	#define VALUE_STRING;
-	typedef int_value_t long long int;
-	typedef float_value_t long double;
-	typedef {
+	#define VALUE_FLOAT 	0x00
+	#define VALUE_INT 		0x01
+	#define VALUE_STRING 	0x02
+	typedef long long int int_value_t;
+	typedef long double float_value_t;
+	typedef struct {
 		char type;
 
 		int_value_t iv;
@@ -44,7 +44,7 @@
 	hash_table functions;
 
 	int parse_equation(const wchar_t*, const wchar_t**);
-	int solve_equation(const wchar_t*, *value);
+	int solve_equation(const wchar_t*, value*);
 
 	int get_variable(const wchar_t*, value*);
 	int put_variable(const wchar_t*, value);

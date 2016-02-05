@@ -1,4 +1,5 @@
 #ifdef _WIN32
+
     #include <stdio.h>
     #include <windows.h>
     #include <shellapi.h>
@@ -14,7 +15,6 @@
 
     /* Stored callbacks */
     parseCallback _parse_callback;
-    settingCallback _setting_callback;
     exitCallback _exit_callback;
 
     /* Menu equations */
@@ -27,10 +27,10 @@
 
     /** 
      * Prepare and draw the interface 
+     * @param exit_callback Method to be called in event of a quit
      * @param parse_callback Method to be called in event of the hotkeys being pressed
-     * @param setting_callback Method to be called in event of a setting changing
      */
-    void init_interface(exitCallback exit_callback, parseCallback parse_callback, settingCallback setting_callback) {
+    void init_interface(exitCallback exit_callback, parseCallback parse_callback) {
         int i;
         HWND hWnd;
         HICON hIcon;
@@ -39,7 +39,6 @@
 
         /* Callback methods */
         _parse_callback = parse_callback;
-        _setting_callback = setting_callback;
         _exit_callback = exit_callback;
 
         /* Init equation stores */
@@ -171,31 +170,26 @@
                     /* Change to degrees mode */
                     case CMD_ANGLE_DEG:
                         angle_mode = SETTING_ANGLE_DEG;
-                        _setting_callback(SETTING_ANGLE, SETTING_ANGLE_DEG);
                     break;
 
                     /* Change to radians mode */
                     case CMD_ANGLE_RAD:
                         angle_mode = SETTING_ANGLE_RAD;
-                        _setting_callback(SETTING_ANGLE, SETTING_ANGLE_RAD);
                     break;
 
                     /* Turn silent errors on and off mode */
                     case CMD_TOGGLE_SILENT_MODE:
                         silent_mode = (silent_mode==SETTING_SILENT_ON) ? SETTING_SILENT_OFF : SETTING_SILENT_ON;
-                        _setting_callback(SETTING_SILENT, silent_mode);
                     break;
 
                     /* English language */
                     case CMD_LANG_EN:
                         lang_mode = LANG_EN;
-                        _setting_callback(SETTING_LANG, lang_mode);
                     break;
 
                     /* French language */
                     case CMD_LANG_FR:
                         lang_mode = LANG_FR;
-                        _setting_callback(SETTING_LANG, lang_mode);
                     break;
 
                     /* One of the equations was clicked. Put in it the clipboard */
@@ -217,6 +211,7 @@
     /* Show the menu interface */
     void show_menu(HWND hWnd)
     {
+        wchar_t buffer[MAX_HISTORY_LEN + wcslen(HISTORY_SUFFIX) + 1];
         int has_equation = 0;
         int i;
         POINT p;
@@ -235,7 +230,11 @@
         /* Equations */
         for (i=0; i<MAX_EQUATIONS; ++i)
             if (stored_entries[i] != NULL) {
-                AppendMenuW(hMenu, MF_STRING, CMD_CPX+i, stored_entries[i]);
+                wcsncpy(buffer, stored_entries[i], MAX_HISTORY_LEN);
+                buffer[MAX_HISTORY_LEN] = L'\0';
+                if (wcslen(stored_entries[i]) > MAX_HISTORY_LEN)
+                    wcscat(buffer, HISTORY_SUFFIX);
+                AppendMenuW(hMenu, MF_STRING, CMD_CPX+i, buffer);
                 has_equation = 1;
             }
         if (!has_equation) {
@@ -280,7 +279,7 @@
             stored_entries[i+1] = stored_entries[i];
 
         /* Allocate new entry */
-        stored_entries[0] = (wchar_t*) malloc(sizeof(wchar_t)*wcslen(entry)+1);
+        stored_entries[0] = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(entry)+1));
         if (stored_entries[0] == NULL)
             error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode], L"Failed to allocate memory!", 1);
         wcscpy( stored_entries[0], entry);
@@ -291,8 +290,8 @@
      * @param entry The string to add
      */
     void to_clipboard(const wchar_t *entry) {
-        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, wcslen(entry)+1);
-        memcpy(GlobalLock(hMem), entry, wcslen(entry)+1);
+        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, sizeof(wchar_t)*(wcslen(entry)+1));
+        memcpy(GlobalLock(hMem), entry, sizeof(wchar_t)*(wcslen(entry)+1));
 
         GlobalUnlock(hMem);
         if (OpenClipboard(0)) {
@@ -328,7 +327,7 @@
      * Search in current directory, then relevant home dir
      */
     const wchar_t* config_path( void ) {
-        wchar_t *path = (wchar_t*) malloc(sizeof(wchar_t)*MAX_PATH+1);
+        wchar_t *path = (wchar_t*) malloc(sizeof(wchar_t)*(MAX_PATH+1));
         if (path == NULL)
             error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode], L"Failed to allocate memory!", 1);
         if (SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
@@ -345,14 +344,34 @@
      * @param fatal if non 0, exit
      */
     void error_msg(const wchar_t* title, const wchar_t* msg, char fatal) {
-        if (silent_mode == SETTING_SILENT_OFF || fatal)
-        MessageBoxW(NULL, 
-            title, 
-            msg,
-        MB_OK);
+        if (silent_mode == SETTING_SILENT_OFF || fatal) {
+            MessageBoxW(NULL, 
+                msg,
+                title,
+            MB_OK);
+        }
 
-    if (fatal)
-        exit(EXIT_FAILURE);
+        if (fatal)
+            exit(EXIT_FAILURE);
+    }
+
+    /**
+     * Get the value of a given setting
+     * @param setting The setting to fetch
+     *
+     * @return The setting's current value. -1 if setting is invalid
+     */
+    int get_setting(int setting) {
+        switch (setting) {
+            case SETTING_ANGLE:
+                return angle_mode;
+            case SETTING_SILENT:
+                return silent_mode;
+            case SETTING_LANG:
+                return lang_mode;
+        }
+
+        return -1;
     }
 
 #endif

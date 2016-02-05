@@ -13,11 +13,11 @@
  */
 int parse_init() {
 	if (!table_create(variables, HASH_DEFAULT_SIZE))
-		return FAILURE_UNKNOWN;
+		return FAILURE_ALLOCATION;
 	if (!table_create(functions, HASH_DEFAULT_SIZE))
-		return FAILURE_UNKNOWN;
+		return FAILURE_ALLOCATION;
 	if (!init_builtins(variables))
-		return FAILURE_UNKNOWN;
+		return FAILURE_ALLOCATION;
 
 	return NO_FAILURE;
 }
@@ -67,7 +67,7 @@ int get_variable(const wchar_t* name, value* dst) {
  */
 int put_variable(const wchar_t* name, value* src) {
 	if (!table_put(variables, name, src))
-		return FAILURE_UNKNOWN;
+		return FAILURE_ALLOCATION;
 	return NO_FAILURE;
 }
 
@@ -115,7 +115,7 @@ int solve_function(const wchar_t* name, value[] args, int n_args, value* value) 
 			table_remove(variables, definition->arguments[i]);
 		else
 			if (put_variable(definition->arguments[i], argument_backups[i]) != NO_FAILURE)
-				parse_result = FAILURE_UNKNOWN;
+				parse_result = FAILURE_ALLOCATION;
 	}
 
 	return parse_result;
@@ -154,7 +154,7 @@ char float_value(value* v, float_value_t *out) {
 		break;
 	}
 
-	return FAILURE_UNKNOWN;
+	return FAILURE_ALLOCATION;
 }
 
 char int_value(value* v, int_value_t *out) {
@@ -178,5 +178,5 @@ char int_value(value* v, int_value_t *out) {
 		break;
 	}
 
-	return FAILURE_UNKNOWN;
+	return FAILURE_ALLOCATION;
 }

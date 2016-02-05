@@ -15,7 +15,7 @@ int init_builtins(hash_table variables) {
 	if (
 		!table_put(variables, BUILTIN_PI, BUILTIN_PI_VALUE) ||
 		!table_put(variables, BUILTIN_E, BUILTIN_E_VALUE)
-	) return FAILURE_UNKNOWN;
+	) return FAILURE_ALLOCATION;
 
 	if (
 		!table_put(builtins, builtin_function{builtin_ceil, 1}) ||
@@ -39,7 +39,7 @@ int init_builtins(hash_table variables) {
 
 		!table_put(builtins, builtin_function{builtin_sqrt, 1}) ||
 		!table_put(builtins, builtin_function{builtin_root, 2})
-	) return FAILURE_UNKNOWN;
+	) return FAILURE_ALLOCATION;
 }
 
 /**
@@ -139,7 +139,7 @@ int builtin_tan(value args[], value* result) {
 	float_value_type in = float_value(args[0]);
 	if (fmodl(in, M_PI/2.0))
 		return FAILURE_INVALID_ARGS;
-	if (angle_mode == SETTING_ANGLE_DEG)
+	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -154,7 +154,7 @@ int builtin_tan(value args[], value* result) {
  */
 int builtin_cos(value args[], value* result) {
 	float_value_type in = float_value(args[0]);
-	if (angle_mode == SETTING_ANGLE_DEG)
+	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -169,7 +169,7 @@ int builtin_cos(value args[], value* result) {
  */
 int builtin_sin(value args[], value* result) {
 	float_value_type in = float_value(args[0]);
-	if (angle_mode == SETTING_ANGLE_DEG)
+	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -184,7 +184,7 @@ int builtin_sin(value args[], value* result) {
  */
 int builtin_atan(value args[], value* result) {
 	float_value_type in = float_value(args[0]);
-	if (angle_mode == SETTING_ANGLE_DEG)
+	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -199,7 +199,7 @@ int builtin_atan(value args[], value* result) {
  */
 int builtin_acos(value args[], value* result) {
 	float_value_type in = float_value(args[0]);
-	if (angle_mode == SETTING_ANGLE_DEG)
+	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -214,7 +214,7 @@ int builtin_acos(value args[], value* result) {
  */
 int builtin_asin(value args[], value* result) {
 	float_value_type in = float_value(args[0]);
-	if (angle_mode == SETTING_ANGLE_DEG)
+	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -229,7 +229,7 @@ int builtin_asin(value args[], value* result) {
  */
 int builtin_tanh(value args[], value* result) {
 	float_value_type in = float_value(args[0]);
-	if (angle_mode == SETTING_ANGLE_DEG)
+	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -244,7 +244,7 @@ int builtin_tanh(value args[], value* result) {
  */
 int builtin_cosh(value args[], value* result) {
 	float_value_type in = float_value(args[0]);
-	if (angle_mode == SETTING_ANGLE_DEG)
+	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -259,7 +259,7 @@ int builtin_cosh(value args[], value* result) {
  */
 int builtin_sinh(value args[], value* result) {
 	float_value_type in = float_value(args[0]);
-	if (angle_mode == SETTING_ANGLE_DEG)
+	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
