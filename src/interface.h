@@ -3,7 +3,7 @@
 
     /* Window settings */
     #define WINDOW_TITLE "Ub3rParse"
-	#define CONFIG_FILENAME L".ub3rsettings"
+	#define CONFIG_FILENAME "/.ub3rsettings"
     #define MAX_EQUATIONS 5
 	#define MAX_LEN 255
 
@@ -29,8 +29,8 @@
 		#define SETTING_ANGLE_DEG 	0
 		#define SETTING_ANGLE_RAD 	1
 	#define SETTING_SILENT 	1
-		#define SETTING_SILENT_ON  	0
-		#define SETTING_SILENT_OFF 	1  
+		#define SETTING_SILENT_OFF 	0  
+		#define SETTING_SILENT_ON  	1
 	#define SETTING_LANG	2 /*Values are language definitions in language.h */
 
 	/** 
@@ -70,7 +70,7 @@
 	 *
 	 * @return Path to the configuration file
 	 */
-	const wchar_t* config_path( void );
+	const char* config_path( void );
 
 	/**
 	 * Get the path to a valid configuration file
@@ -87,4 +87,11 @@
 	 * @return The setting's current value. -1 if setting is invalid
 	 */
 	int get_setting(int);
+
+	/**
+	 * St the value of a given setting
+	 * @param setting The setting to modify
+	 * @param value The value to store
+	 */
+	void set_setting(int, int);
 #endif

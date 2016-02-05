@@ -8,7 +8,16 @@
 #include "interface.h"
 
 int main() {
+	FILE *config = fopen(config_path(), "r");
+	int setting, value;
+
 	init_interface(exit_callback, parse_callback);
+
+	/* Read in settings */
+	if (config != NULL) {
+		while (fscanf(config, "%d=%d\n", &setting, &value) == 2)
+			set_setting(setting, value);
+	}
 
 	while (1) {
 		update_interface();
@@ -187,12 +196,20 @@ wchar_t* parse_expression(const wchar_t* expression) {
 	line[i] = L'\0';
 	wcscat(line, response);
 
-	/* Place into clipboard */
 	return line;
 }
 
 void exit_callback( void ) {
-	printf("Bye!\n");
+	/* Open config */
+	FILE *config = fopen(config_path(), "w");
+
+	/* Write all settings out */
+	fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
+	fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));
+	fprintf(config, "%d=%d\n", SETTING_LANG, get_setting(SETTING_LANG));
+
+	/* Close up and leave */
+	fclose(config);
 	exit(0);
 }
 

@@ -326,12 +326,13 @@
      * Get the path to a valid configuration file
      * Search in current directory, then relevant home dir
      */
-    const wchar_t* config_path( void ) {
-        wchar_t *path = (wchar_t*) malloc(sizeof(wchar_t)*(MAX_PATH+1));
+    const char* config_path( void ) {
+        char *path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
         if (path == NULL)
             error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode], L"Failed to allocate memory!", 1);
-        if (SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
-            wcscat(path, CONFIG_FILENAME);
+
+        if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
+            strcat(path, CONFIG_FILENAME);
             return path;
         }
         return NULL;
@@ -372,6 +373,22 @@
         }
 
         return -1;
+    }
+
+    /**
+     * St the value of a given setting
+     * @param setting The setting to modify
+     * @param value The value to store
+     */
+    void set_setting(int setting, int value) {
+        switch (setting) {
+            case SETTING_ANGLE:
+                angle_mode = value;
+            case SETTING_SILENT:
+                silent_mode = value;
+            case SETTING_LANG:
+                lang_mode = value;
+        }
     }
 
 #endif
