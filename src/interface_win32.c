@@ -20,10 +20,8 @@
     /* Menu equations */
     wchar_t *stored_entries[MAX_EQUATIONS];
 
-    /* Default options */
-    int silent_mode;
-    int angle_mode;
-    int lang_mode;
+    /* Options */
+    int settings[N_SETTINGS];
 
     /** 
      * Prepare and draw the interface 
@@ -46,9 +44,8 @@
             stored_entries[i] = NULL;
 
         /* Default options */
-        silent_mode = SETTING_SILENT_ON;
-        angle_mode = SETTING_ANGLE_DEG;
-        lang_mode = LANG_EN;
+        for (i=0; i<N_SETTINGS; ++i)
+            settings[i] = 0;
 
         /* Get module instance */
         hInstance = GetModuleHandle(NULL);
@@ -169,27 +166,27 @@
 
                     /* Change to degrees mode */
                     case CMD_ANGLE_DEG:
-                        angle_mode = SETTING_ANGLE_DEG;
+                        settings[SETTING_ANGLE] = SETTING_ANGLE_DEG;
                     break;
 
                     /* Change to radians mode */
                     case CMD_ANGLE_RAD:
-                        angle_mode = SETTING_ANGLE_RAD;
+                        settings[SETTING_ANGLE] = SETTING_ANGLE_RAD;
                     break;
 
                     /* Turn silent errors on and off mode */
                     case CMD_TOGGLE_SILENT_MODE:
-                        silent_mode = (silent_mode==SETTING_SILENT_ON) ? SETTING_SILENT_OFF : SETTING_SILENT_ON;
+                        settings[SETTING_SILENT] = (settings[SETTING_SILENT]==SETTING_SILENT_ON) ? SETTING_SILENT_OFF : SETTING_SILENT_ON;
                     break;
 
                     /* English language */
                     case CMD_LANG_EN:
-                        lang_mode = LANG_EN;
+                        settings[SETTING_LANG] = LANG_EN;
                     break;
 
                     /* French language */
                     case CMD_LANG_FR:
-                        lang_mode = LANG_FR;
+                        settings[SETTING_LANG] = LANG_FR;
                     break;
 
                     /* One of the equations was clicked. Put in it the clipboard */
@@ -238,25 +235,25 @@
                 has_equation = 1;
             }
         if (!has_equation) {
-            AppendMenuW(hMenu, MF_STRING, 0, lang_lookup[LANG_STR_NO_EQUATIONS][lang_mode]);
+            AppendMenuW(hMenu, MF_STRING, 0, lang_lookup[LANG_STR_NO_EQUATIONS][settings[SETTING_LANG]]);
         }
 
         /* Settings */
         AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
-        AppendMenuW(hLangMenu, (lang_mode==LANG_EN)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_EN, L"English");
-        AppendMenuW(hLangMenu, (lang_mode==LANG_FR)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_FR, L"Français");
-        AppendMenuW(hMenu, MF_POPUP, (UINT) hLangMenu, lang_lookup[LANG_STR_LANGUAGE][lang_mode]);
+        AppendMenuW(hLangMenu, (settings[SETTING_LANG]==LANG_EN)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_EN, L"English");
+        AppendMenuW(hLangMenu, (settings[SETTING_LANG]==LANG_FR)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_FR, L"Français");
+        AppendMenuW(hMenu, MF_POPUP, (UINT) hLangMenu, lang_lookup[LANG_STR_LANGUAGE][settings[SETTING_LANG]]);
 
-        AppendMenuW(hMenu, (silent_mode==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, lang_lookup[LANG_STR_SILENT_ERRS][lang_mode]);
+        AppendMenuW(hMenu, (settings[SETTING_SILENT]==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, lang_lookup[LANG_STR_SILENT_ERRS][settings[SETTING_LANG]]);
 
-        AppendMenuW(hAnglesMenu, (angle_mode==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, lang_lookup[LANG_STR_DEGREES][lang_mode]);
-        AppendMenuW(hAnglesMenu, (angle_mode==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, lang_lookup[LANG_STR_RADIANS][lang_mode]);
-        AppendMenuW(hMenu, MF_POPUP, (UINT) hAnglesMenu, lang_lookup[LANG_STR_ANGLE_UNITS][lang_mode]);
+        AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, lang_lookup[LANG_STR_DEGREES][settings[SETTING_LANG]]);
+        AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, lang_lookup[LANG_STR_RADIANS][settings[SETTING_LANG]]);
+        AppendMenuW(hMenu, MF_POPUP, (UINT) hAnglesMenu, lang_lookup[LANG_STR_ANGLE_UNITS][settings[SETTING_LANG]]);
 
         /* System menu */
         AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
-        AppendMenuW(hMenu, MF_STRING, CMD_ABOUT, lang_lookup[LANG_STR_ABOUT][lang_mode]);
-        AppendMenuW(hMenu, MF_STRING, CMD_EXIT, lang_lookup[LANG_STR_EXIT][lang_mode]);
+        AppendMenuW(hMenu, MF_STRING, CMD_ABOUT, lang_lookup[LANG_STR_ABOUT][settings[SETTING_LANG]]);
+        AppendMenuW(hMenu, MF_STRING, CMD_EXIT, lang_lookup[LANG_STR_EXIT][settings[SETTING_LANG]]);
 
         SetForegroundWindow(hWnd); // Win32 bug work-around
         TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hWnd, NULL);
@@ -281,7 +278,7 @@
         /* Allocate new entry */
         stored_entries[0] = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(entry)+1));
         if (stored_entries[0] == NULL)
-            error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode], L"Failed to allocate memory!", 1);
+            error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][settings[SETTING_LANG]], L"Failed to allocate memory!", 1);
         wcscpy( stored_entries[0], entry);
     }
 
@@ -329,7 +326,7 @@
     const char* config_path( void ) {
         char *path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
         if (path == NULL)
-            error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode], L"Failed to allocate memory!", 1);
+            error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][settings[SETTING_LANG]], L"Failed to allocate memory!", 1);
 
         if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
             strcat(path, CONFIG_FILENAME);
@@ -345,7 +342,7 @@
      * @param fatal if non 0, exit
      */
     void error_msg(const wchar_t* title, const wchar_t* msg, char fatal) {
-        if (silent_mode == SETTING_SILENT_OFF || fatal) {
+        if (settings[SETTING_SILENT] == SETTING_SILENT_OFF || fatal) {
             MessageBoxW(NULL, 
                 msg,
                 title,
@@ -362,33 +359,21 @@
      *
      * @return The setting's current value. -1 if setting is invalid
      */
-    int get_setting(int setting) {
-        switch (setting) {
-            case SETTING_ANGLE:
-                return angle_mode;
-            case SETTING_SILENT:
-                return silent_mode;
-            case SETTING_LANG:
-                return lang_mode;
-        }
+    int get_setting(unsigned int setting) {
+        if (setting < N_SETTINGS)
+            return settings[setting];
 
         return -1;
     }
 
     /**
-     * St the value of a given setting
+     * Set the value of a given setting
      * @param setting The setting to modify
      * @param value The value to store
      */
-    void set_setting(int setting, int value) {
-        switch (setting) {
-            case SETTING_ANGLE:
-                angle_mode = value;
-            case SETTING_SILENT:
-                silent_mode = value;
-            case SETTING_LANG:
-                lang_mode = value;
-        }
+    void set_setting(unsigned int setting, int value) {
+        if (setting < N_SETTINGS)
+            settings[setting] = value;
     }
 
 #endif

@@ -25,12 +25,14 @@
 	typedef void (*parseCallback)(const wchar_t*);
 
 	/* Settings available */
+	/* 0 Value should be default */
+	#define N_SETTINGS 3
 	#define SETTING_ANGLE 	0
 		#define SETTING_ANGLE_DEG 	0
 		#define SETTING_ANGLE_RAD 	1
 	#define SETTING_SILENT 	1
-		#define SETTING_SILENT_OFF 	0  
-		#define SETTING_SILENT_ON  	1
+		#define SETTING_SILENT_ON  	0
+		#define SETTING_SILENT_OFF 	1  
 	#define SETTING_LANG	2 /*Values are language definitions in language.h */
 
 	/** 
@@ -86,12 +88,12 @@
 	 *
 	 * @return The setting's current value. -1 if setting is invalid
 	 */
-	int get_setting(int);
+	int get_setting(unsigned int);
 
 	/**
-	 * St the value of a given setting
+	 * Set the value of a given setting
 	 * @param setting The setting to modify
 	 * @param value The value to store
 	 */
-	void set_setting(int, int);
+	void set_setting(unsigned int, int);
 #endif

@@ -204,8 +204,8 @@ void exit_callback( void ) {
 	FILE *config = fopen(config_path(), "w");
 
 	/* Write all settings out */
-	fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
 	fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));
+	fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
 	fprintf(config, "%d=%d\n", SETTING_LANG, get_setting(SETTING_LANG));
 
 	/* Close up and leave */

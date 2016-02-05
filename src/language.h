@@ -3,7 +3,7 @@
 	
 	/* Language types */
 	#define NUM_LANGS 2
-	#define LANG_EN 0
+	#define LANG_EN 0 /* 0 will be default language */
 	#define LANG_FR 1
 
 	/* Language strings */
