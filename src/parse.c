@@ -16,6 +16,9 @@ int parse_init() {
 		return FAILURE_UNKNOWN;
 	if (!table_create(functions, HASH_DEFAULT_SIZE))
 		return FAILURE_UNKNOWN;
+	if (!init_builtins(variables))
+		return FAILURE_UNKNOWN;
+
 	return NO_FAILURE;
 }
 
@@ -31,21 +34,21 @@ int parse_equation(const wchar_t* equation, const wchar_t** response){}
 /**
  * Process an equation
  * @param equation The expression to solve
- * @param value A pointer to a double to store the result in
+ * @param value A pointer to a value to store the result in
  *
  * @return int The result of the operation
  */
-int solve_equation(const wchar_t* equation, *double value){}
+int solve_equation(const wchar_t* equation, *value value){}
 
 /**
  * Get a variable's value
  * @param name The name of the variable
- * @param dst A pointer to a double to store the result in
+ * @param dst A pointer to a value to store the result in
  *
  * @return int The result of the operation
  */
-int get_variable(const wchar_t* name, double* dst) {
-	double *value = table_get(variables, name, value);
+int get_variable(const wchar_t* name, value* dst) {
+	value *value = table_get(variables, name, value);
 
 	if (value != NULL) {
 		*dst = *value;
@@ -62,7 +65,7 @@ int get_variable(const wchar_t* name, double* dst) {
  *
  * @return int The result of the operation
  */
-int put_variable(const wchar_t* name, double* src) {
+int put_variable(const wchar_t* name, value* src) {
 	if (!table_put(variables, name, src))
 		return FAILURE_UNKNOWN;
 	return NO_FAILURE;
@@ -73,15 +76,19 @@ int put_variable(const wchar_t* name, double* src) {
  * @param name The callable name of the function
  * @param args A list of the resolved arguments to pass in
  * @param n_args The length of the args array
- * @param value A pointer to a double that will hold the return value
+ * @param value A pointer to a value that will hold the return value
  *
  * @return int The result of the operation
  */
-int solve_function(const wchar_t* name, double[] args, int n_args, double* value) {
+int solve_function(const wchar_t* name, value[] args, int n_args, value* value) {
 	int i;
 	int parse_result = NO_FAILURE;
-	double *argument_backups[n_args];
+	value *argument_backups[n_args];
 	function *definition;
+
+	/* Builtin? */
+	if (is_builtin(name))
+		 return call_builtin(name, args, n_args, value);
 
 	/* Get the definition */
 	definition = table_get(functions, name);
@@ -123,4 +130,53 @@ int solve_function(const wchar_t* name, double[] args, int n_args, double* value
  */
 int put_function(const wchar_t* name, function *definition) {
 	return table_put(functions, name, definition);
+}
+
+char float_value(value* v, float_value_t *out) {
+	value* resolved;
+	int result;
+
+	switch (v->type) {
+		case VALUE_INT:
+			*out = (float_value_t) v->iv;
+			return NO_FAILURE;
+		break;
+
+		case VALUE_FLOAT:
+			*out = v->fv;
+			return NO_FAILURE;
+		break;
+
+		case VALUE_STRING:
+			if( (result = get_variable(v->sv, resolved)) == NO_FAILURE )
+				return float_value(resolved, out);
+			else return result;
+		break;
+	}
+
+	return FAILURE_UNKNOWN;
+}
+
+char int_value(value* v, int_value_t *out) {
+	value* resolved;
+	
+	switch (v->type) {
+		case VALUE_INT:
+			*out = v->iv;
+			return NO_FAILURE;
+		break;
+
+		case VALUE_FLOAT:
+			*out = (int_value_t) v->fv;
+			return NO_FAILURE;
+		break;
+
+		case VALUE_STRING:
+			if( (result = get_variable(v->sv, resolved)) == NO_FAILURE )
+				return int_value(resolved, out);
+			else return result;
+		break;
+	}
+
+	return FAILURE_UNKNOWN;
 }

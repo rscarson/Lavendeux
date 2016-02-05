@@ -1,8 +1,17 @@
 #ifndef BUILTINS_H
 	#define BUILTINS_H
 
+	#include "hashing.h"
+	#include <math.h>
+
+	/* Builtin variabls */
+	#define BUILTIN_PI L"pi"
+		#define BUILTIN_PI_VALUE PI
+	#define BUILTIN_E L"e"
+		#define BUILTIN_E_VALUE M_E
+
 	/* A builtin function looks like this */
-	typedef int(*builtin)(double[], double*);
+	typedef int(*builtin)(value[], value*);
 	typedef struct {
 		builtin fn;
 		int n_args;
@@ -11,32 +20,32 @@
 	/* Store builtin functions */
 	hash_table builtins;
 
-	int init_builtins();
-	int call_builtin(const wchar_t*, double[], int, double*);
+	int init_builtins(hash_table);
+	int call_builtin(const wchar_t*, value[], int, value*);
 
 	/* Builtins */
-	int builtin_floor(double[], double*);
-	int builtin_ceil(double[], double*);
-	int builtin_round(double[], double*);
-	int builtin_abs(double[], double*);
+	int builtin_floor(value[], value*);
+	int builtin_ceil(value[], value*);
+	int builtin_round(value[], value*);
+	int builtin_abs(value[], value*);
 
-	int builtin_tan(double[], double*);
-	int builtin_cos(double[], double*);
-	int builtin_sin(double[], double*);
-	int builtin_atan(double[], double*);
-	int builtin_acos(double[], double*);
-	int builtin_asin(double[], double*);
-	int builtin_rtan(double[], double*);
-	int builtin_rcos(double[], double*);
-	int builtin_rsin(double[], double*);
-	int builtin_tanh(double[], double*);
-	int builtin_cosh(double[], double*);
-	int builtin_sinh(double[], double*);
+	int builtin_tan(value[], value*);
+	int builtin_cos(value[], value*);
+	int builtin_sin(value[], value*);
+	int builtin_atan(value[], value*);
+	int builtin_acos(value[], value*);
+	int builtin_asin(value[], value*);
+	int builtin_rtan(value[], value*);
+	int builtin_rcos(value[], value*);
+	int builtin_rsin(value[], value*);
+	int builtin_tanh(value[], value*);
+	int builtin_cosh(value[], value*);
+	int builtin_sinh(value[], value*);
 
-	int builtin_log10(double[], double*);
-	int builtin_ln(double[], double*);
-	int builtin_log(double[], double*);
+	int builtin_log10(value[], value*);
+	int builtin_ln(value[], value*);
+	int builtin_log(value[], value*);
 
-	int builtin_sqrt(double[], double*);
-	int builtin_root(double[], double*);
+	int builtin_sqrt(value[], value*);
+	int builtin_root(value[], value*);
 #endif

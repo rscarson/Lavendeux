@@ -19,9 +19,7 @@ obj/ub3rparse.tab.c:
 obj/lex.yy.c:
 	flex -o obj/lex.yy.c src/ub3rparse.lex
 
-#win32: obj/ub3rparse.res lib/libinterface.a obj/ub3rparse.tab.c obj/lex.yy.c
 win32: obj/ub3rparse.res lib/libinterface.a
-	#gcc obj/ub3rparse.res src/main.c obj/lex.yy.c obj/ub3rparse.tab.c -o bin/ub3rparse.exe -L./lib -linterface -Wall -g
 	gcc obj/ub3rparse.res src/main.c -o bin/ub3rparse.exe -L./lib -linterface -Wall -g
 
 clean:

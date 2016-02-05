@@ -24,4 +24,7 @@
 
 	int table_put(hash_table*, const wchar_t*, void*);
 	void* table_get(hash_table*, const wchar_t*);
+
+	void table_remove(hash_table*, const wchar_t*, value_destructor);
+	int table_has(hash_table*, const wchar_t*);
 #endif

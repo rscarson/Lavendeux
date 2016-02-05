@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <wchar.h>
 
 #include "ub3rparse.h"
+#include "language.h"
 #include "interface.h"
 
 int main() {
@@ -15,30 +17,12 @@ int main() {
 }
 
 void parse_callback(const wchar_t *target) {
-	//int next;
-	add_history(target);
-	printf("%S\n", target);
+}
 
-	//yyin = yy_scan_string(target);
-	//while (!feof(yyin)) {
-	//	next = yyparse();
-	//	if (next == 1)
-	//		break;
-	//	else
-	//		printf("Found a %d\n", next);
-	//}
+void parse_expression(const wchar_t* expression) {
 }
 
 void setting_callback(int setting, int value) {
-	switch (setting) {
-		case SETTING_ANGLE:
-			angle_mode = value;
-		break;
-
-		case SETTING_SILENT:
-			silent_mode = value;
-		break;
-	}
 }
 
 void exit_callback( void ) {

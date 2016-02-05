@@ -57,6 +57,7 @@
 
     /** 
 	 * Get string from system clipboard
+	 *
 	 * @return const wchar_t* The string fetched
 	 */
 	const wchar_t* from_clipboard( void );
@@ -64,7 +65,17 @@
 	/**
 	 * Get the path to a valid configuration file
 	 * Search in current directory, then relevant home dir
+	 *
+	 * @return Path to the configuration file
 	 */
-	 const wchar_t* config_path( void );
+	const wchar_t* config_path( void );
+
+	/**
+	 * Get the path to a valid configuration file
+	 * @param title The title of the error message
+	 * @param msg The error message
+	 * @param fatal if non 0, exit
+	 */
+	void error_msg(const wchar_t*, const wchar_t*, char);
 
 #endif

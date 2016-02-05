@@ -17,7 +17,13 @@ unsigned long get_hash(const wchar_t *str) {
 	return hash;
 }
 
-/* Init hash table. return 0 on fail, 1 on succeed */
+/**
+ * Create a hash table
+ * @param table Pointer to an empty hash_table structure
+ * @param size Hash table size.
+ *
+ * @return 1 on success, 0 otherwise
+ */
 int table_create(hash_table *table, unsigned int size) {
 	int i;
 	table->size = size;
@@ -31,6 +37,11 @@ int table_create(hash_table *table, unsigned int size) {
 	return 1;
 }
 
+/**
+ * Free a hash table
+ * @param table Pointer to the hash_table
+ * @param destructor Function able to free whatever it is the table contains, or NULL
+ */
 void table_destroy(hash_table *table, value_destructor destructor) {
 	int i;
 	hash_node *entry;
@@ -38,7 +49,9 @@ void table_destroy(hash_table *table, value_destructor destructor) {
 	for (i=0; i<table->size; ++i) {
 		entry = table->entries[i];
 		while (entry != NULL) {
-			destructor(entry->value);
+			if (destructor != NULL)
+				destructor(entry->value);
+			free(entry);
 			entry = entry->next;
 		}
 	}
@@ -46,7 +59,14 @@ void table_destroy(hash_table *table, value_destructor destructor) {
 	free(table->entries);
 }
 
-
+/**
+ * Add to a hash table
+ * @param table Pointer to the hash_table
+ * @param key entry key
+ * @param value Pointer to thing we will store
+ *
+ * @return 1 on success, 0 otherwise
+ */
 int table_put(hash_table *table, const wchar_t *key, void *value) {
 	hash_node *entry;
 	hash_node *new_entry;
@@ -56,7 +76,7 @@ int table_put(hash_table *table, const wchar_t *key, void *value) {
 	entry = table->entries[hash];
 
 	while (entry != NULL) {
-		if (strcmp(entry->key, key) == 0) {
+		if (wcscmp(entry->key, key) == 0) {
 			entry->value = value;
 			return 1;
 		}
@@ -83,13 +103,20 @@ int table_put(hash_table *table, const wchar_t *key, void *value) {
 	return 1;
 }
 
+/**
+ * Retrieve a value from a hash table
+ * @param table Pointer to the hash_table
+ * @param key entry key
+ *
+ * @return A pointer to the thing, or NULL if not found
+ */
 void* table_get(hash_table *table, const wchar_t *key) {
 	hash_node *entry;
 	unsigned int hash = get_hash(key) % table->size;
 	entry = table->entries[hash];
 
 	while (entry != NULL) {
-		if (strcmp(entry->key, key) == 0)
+		if (wcscmp(entry->key, key) == 0)
 			return entry->value;
 		entry = entry->next;
 	}
@@ -97,6 +124,43 @@ void* table_get(hash_table *table, const wchar_t *key) {
 	return NULL;
 }
 
+/**
+ * Delete a hash table entry
+ * @param table Pointer to the hash_table
+ * @param key entry key
+ * @param destructor Function able to free whatever it is the table contains, or NULL
+ */
+void table_remove(hash_table *table, const wchar_t *key, value_destructor destructor) {
+	hash_node *entry;
+	hash_node *prev;
+	unsigned int hash = get_hash(key) % table->size;
+
+	entry = table->entries[hash];
+	prev = NULL;
+
+	while (entry != NULL) {
+		if (wcscmp(entry->key, key) == 0) {
+			if (prev != NULL)
+				prev->next = entry->next;
+			
+			if (destructor != NULL)
+				destructor(entry->value);
+			free(entry);
+			break;
+		}
+
+		prev = entry;
+		entry = entry->next;
+	}
+}
+
+/**
+ * Query for a value
+ * @param table Pointer to the hash_table
+ * @param key entry key
+ *
+ * @return 1 if found, 0 if not
+ */
 int table_has(hash_table *table, const wchar_t *key) {
 	return (table_get(table, key) != NULL);
 }

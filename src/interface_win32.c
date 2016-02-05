@@ -53,13 +53,8 @@
 
         /* Get module instance */
         hInstance = GetModuleHandle(NULL);
-        if (!hInstance) {
-            MessageBox(hWnd, 
-                "Cannot get handle to module", 
-                "Error while starting",
-            MB_OK);
-            exit(EXIT_FAILURE);
-        }
+        if (!hInstance)
+            error_msg(L"Error while starting", L"Cannot get handle to module", 1);
 
         /* Load icon */
         hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(ICON_ID)); 
@@ -84,22 +79,12 @@
 
         /* Create the window */
         hWnd = CreateWindowEx(0, WINDOW_CALLBACK, WINDOW_TITLE, 0, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
-        if (GetLastError() != 0) {
-            MessageBox(hWnd, 
-                "Cannot get handle to window", 
-                "Error while starting",
-            MB_OK);
-            exit(EXIT_FAILURE);
-        }
+        if (GetLastError() != 0)
+            error_msg(L"Error while starting", L"Cannot get handle to window", 1);
 
         /* Register hotkey */
-        if (!RegisterHotKey(hWnd, HOTKEY_ID, MOD_CONTROL, VK_SPACE)) {
-            MessageBox(hWnd, 
-                "Cannot register hotkey!", 
-                "Error while starting",
-            MB_OK);
-            exit(EXIT_FAILURE);
-        }
+        if (!RegisterHotKey(hWnd, HOTKEY_ID, MOD_CONTROL, VK_SPACE))
+            error_msg(L"Error while starting", L"Cannot register hotkey!", 1);
 
         /* Start window */
         ShowWindow(hWnd, 0);
@@ -296,13 +281,8 @@
 
         /* Allocate new entry */
         stored_entries[0] = (wchar_t*) malloc(sizeof(wchar_t)*wcslen(entry)+1);
-        if (stored_entries[0] == NULL) {
-            MessageBoxW(NULL, 
-                L"Failed to allocate memory!", 
-                lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode],
-            MB_OK);
-            exit(EXIT_FAILURE);
-        }
+        if (stored_entries[0] == NULL)
+            error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode], L"Failed to allocate memory!", 1);
         wcscpy( stored_entries[0], entry);
     }
 
@@ -347,19 +327,32 @@
      * Get the path to a valid configuration file
      * Search in current directory, then relevant home dir
      */
-     const wchar_t* config_path( void ) {
+    const wchar_t* config_path( void ) {
         wchar_t *path = (wchar_t*) malloc(sizeof(wchar_t)*MAX_PATH+1);
-        if (path == NULL) {
-            MessageBoxW(NULL, 
-                L"Failed to allocate memory!", 
-                lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode],
-            MB_OK);
-            exit(EXIT_FAILURE);
-        }
+        if (path == NULL)
+            error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][lang_mode], L"Failed to allocate memory!", 1);
         if (SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
             wcscat(path, CONFIG_FILENAME);
             return path;
         }
         return NULL;
      }
+
+    /**
+     * Get the path to a valid configuration file
+     * @param title The title of the error message
+     * @param msg The error message
+     * @param fatal if non 0, exit
+     */
+    void error_msg(const wchar_t* title, const wchar_t* msg, char fatal) {
+        if (silent_mode == SETTING_SILENT_OFF || fatal)
+        MessageBoxW(NULL, 
+            title, 
+            msg,
+        MB_OK);
+
+    if (fatal)
+        exit(EXIT_FAILURE);
+    }
+
 #endif

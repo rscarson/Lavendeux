@@ -8,8 +8,4 @@
 	/* Parsing stuff */
 	//int yyparse();
 	//extern FILE *yyin;
-
-	/* Settings */
-	char angle_mode;
-	char silent_mode;
 #endif
