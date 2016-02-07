@@ -1,31 +1,36 @@
-obj/ub3rparse.res:
-	windres src/ub3rparse.rc -O coff -o obj/ub3rparse.res
+SRC_DIR = src
+LIB_DIR = lib
+OBJ_DIR = obj
+BIN_DIR = bin
+INC_DIR = include
+
+LEX_SOURCE = $(SRC_DIR)/lex.c
+LEX_HEADER = $(SRC_DIR)/lex.h
+TAB_SOURCE = $(INC_DIR)/tab.c
+TAB_HEADER = $(INC_DIR)/tab.h
+
+CC = gcc
+COMPILE_FLAGS = -I./$(INC_DIR) -L./lib -linterface -Wall -g
+WIN32_FLAGS =  -Wl,-subsystem,windows
+
+$(OBJ_DIR)/ub3rparse.res:
+	windres $(SRC_DIR)/ub3rparse.rc -O coff -o $(OBJ_DIR)/ub3rparse.res
 
 lib/libhashing.a:
-	gcc -c src/hashing.c -o obj/hashing.o
-	ar rcs lib/libhashing.a obj/hashing.o
+	gcc -c $(SRC_DIR)/hashing.c -o $(OBJ_DIR)/hashing.o
+	ar rcs lib/libhashing.a $(OBJ_DIR)/hashing.o
 
 lib/libinterface.a:
-	gcc -c src/interface_win32.c -o obj/interface.o
-	ar rcs lib/libinterface.a obj/interface.o
+	gcc -c $(SRC_DIR)/interface_win32.c -o $(OBJ_DIR)/interface.o
+	ar rcs lib/libinterface.a $(OBJ_DIR)/interface.o
 
 lib/libparse.a:
-	gcc -c src/parse.c -o obj/parse.o
-	ar rcs lib/libparse.a obj/parse.o
+	gcc -c $(SRC_DIR)/parse.c -o $(OBJ_DIR)/parse.o
+	ar rcs lib/libparse.a $(OBJ_DIR)/parse.o
 
-obj/ub3rparse.tab.c:
-	bison --defines=obj/y.tab.h -o obj/ub3rparse.tab.c src/ub3rparse.y
+grammar:
+	bison $(SRC_DIR)\grammar.y --output=$(TAB_SOURCE) --defines=$(TAB_HEADER)
+	flex --outfile=$(LEX_SOURCE) --header-file=$(LEX_HEADER) -B $(SRC_DIR)\grammar.lex
 
-obj/lex.yy.c:
-	flex -o obj/lex.yy.c src/ub3rparse.lex
-
-win32: obj/ub3rparse.res lib/libinterface.a
-	gcc obj/ub3rparse.res src/main.c -o bin/ub3rparse.exe -L./lib -linterface -Wall -g -Wl,-subsystem,windows
-
-clean:
-	rm bin/* -f
-	rm lib/* -f 
-	rm obj/* -f 
-	touch bin/.gitkeep
-	touch lib/.gitkeep
-	touch obj/.gitkeep
+win32: $(OBJ_DIR)/ub3rparse.res grammar
+	$(CC) $(OBJ_DIR)/ub3rparse.res $(SRC_DIR)/main.c -o $(BIN_DIR)/ub3rparse.exe $(COMPILE_FLAGS) $(WIN32_FLAGS)

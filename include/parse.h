@@ -21,6 +21,7 @@
 	typedef long double float_value_t;
 	typedef struct {
 		char type;
+		int token;
 
 		int_value_t iv;
 		float_value_t fv;

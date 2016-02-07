@@ -30,6 +30,9 @@ int parse_init() {
  * @return int The result of the operation
  */
 int parse_equation(const wchar_t* equation, const wchar_t** response){}
+/*
+USE yy_push_state(LEFTSIDE)
+*/
 
 /**
  * Process an equation

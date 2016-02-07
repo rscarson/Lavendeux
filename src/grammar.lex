@@ -1,5 +1,5 @@
 %{
-#include "y.tab.h"
+#include "ub3rparse.tab.h"
 int yyerror(char *s);
 int linenumber = 1;
 %}
@@ -13,7 +13,7 @@ int linenumber = 1;
 0o[0-7]+ { return OCT; }
 -?[0-9]*(\\.[0-9]+)?(E|e)(\\+|-)?[0-9]+ { return SCI; }
 -?[0-9]*\\.[0-9]+ { return FLOAT; }
--?[0-9]+ { return INT; }
+-?[0-9]+ { yylval = yytext; return INT; }
 
 "+" { return PLUS; }
 "-" { return MINUS; }
@@ -36,5 +36,6 @@ int linenumber = 1;
 "(" { return LPAREN; }
 ")" { return RPAREN; }
 [ \t] ;
-\n { ++linenumber; return NEWLINE; }
+\n { ++linenumber; }
+\r ;
 %%
