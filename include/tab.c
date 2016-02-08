@@ -58,14 +58,20 @@
 
 	#include <stdio.h>
 	#include <stdlib.h>
-	//#include "parse.h"
+
+	#include "parse.h"
 
 	int yylex(void);
 	int yyerror(char*);
 
+	int is_stored_expression = 0;
+	wchar_t *expression_name;
+	wchar_t expression_text[];
+	function stored_expression;
+
 
 /* Line 172 of glr.c  */
-#line 69 "include/tab.c"
+#line 75 "include/tab.c"
 
 
 
@@ -100,7 +106,7 @@ static YYSTYPE yyval_default;
 
 
 /* Line 243 of glr.c  */
-#line 104 "include/tab.c"
+#line 110 "include/tab.c"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -199,7 +205,7 @@ YYID (i)
 #define YYLAST   173
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  28
+#define YYNTOKENS  29
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  7
 /* YYNRULES -- Number of rules.  */
@@ -214,7 +220,7 @@ YYID (i)
 
 /* YYTRANSLATE(X) -- Bison symbol number corresponding to X.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   282
+#define YYMAXUTOK   283
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -250,7 +256,7 @@ static const unsigned char yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27
+      25,    26,    27,    28
 };
 
 #if YYDEBUG
@@ -267,29 +273,29 @@ static const unsigned char yyprhs[] =
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const signed char yyrhs[] =
 {
-      29,     0,    -1,    33,    -1,    29,    11,     3,    -1,     3,
-      -1,     4,    -1,     5,    -1,     6,    -1,     7,    -1,     8,
-      -1,     9,    -1,    30,    -1,    13,    31,    14,    -1,    31,
-      15,    31,    -1,    31,    16,    31,    -1,    31,    17,    31,
-      -1,    31,    19,    31,    -1,    31,    18,    31,    -1,    31,
-      21,    31,    -1,    31,    20,    31,    -1,    31,    24,    31,
-      -1,    31,    23,    31,    -1,    31,    22,    31,    -1,    31,
-      25,    31,    -1,    31,    26,    -1,    27,    31,    -1,     3,
-      13,    14,    -1,     3,    13,    31,    14,    -1,     3,    13,
-      32,    14,    -1,    31,    10,    31,    -1,    32,    10,    31,
-      -1,    31,    -1,     3,    12,    33,    -1,     3,    13,    14,
-      12,    33,    -1,     3,    13,     3,    14,    12,    33,    -1,
-       3,    13,    34,    14,    12,    33,    -1,     3,    10,     3,
-      -1,    34,    10,     3,    -1
+      30,     0,    -1,    34,    -1,    30,    12,     4,    -1,     4,
+      -1,     5,    -1,     6,    -1,     7,    -1,     8,    -1,     9,
+      -1,    10,    -1,    31,    -1,    14,    32,    15,    -1,    32,
+      16,    32,    -1,    32,    17,    32,    -1,    32,    18,    32,
+      -1,    32,    20,    32,    -1,    32,    19,    32,    -1,    32,
+      22,    32,    -1,    32,    21,    32,    -1,    32,    25,    32,
+      -1,    32,    24,    32,    -1,    32,    23,    32,    -1,    32,
+      26,    32,    -1,    32,    27,    -1,    28,    32,    -1,     4,
+      14,    15,    -1,     4,    14,    32,    15,    -1,     4,    14,
+      33,    15,    -1,    32,    11,    32,    -1,    33,    11,    32,
+      -1,    32,    -1,     4,    13,    34,    -1,     4,    14,    15,
+      13,    34,    -1,     4,    14,     4,    15,    13,    34,    -1,
+       4,    14,    35,    15,    13,    34,    -1,     4,    11,     4,
+      -1,    35,    11,     4,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned char yyrline[] =
 {
-       0,    27,    27,    28,    31,    32,    33,    34,    35,    36,
-      37,    41,    42,    43,    44,    45,    46,    47,    48,    49,
-      50,    51,    52,    53,    54,    55,    56,    57,    58,    62,
-      63,    67,    68,    69,    70,    71,    75,    76
+       0,    33,    33,    34,    38,    39,    40,    41,    42,    43,
+      44,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+      57,    58,    59,    60,    61,    62,    63,    64,    65,    69,
+      70,    74,    75,    76,    77,    78,    82,    83
 };
 #endif
 
@@ -298,22 +304,22 @@ static const unsigned char yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "IDENTIFIER", "HEX", "BIN", "OCT", "SCI",
-  "FLOAT", "INT", "COMMA", "DECORATOR", "EQUAL", "LPAREN", "RPAREN", "OR",
-  "XOR", "AND", "RSHIFT", "LSHIFT", "MINUS", "PLUS", "MOD", "DIV", "MUL",
-  "POW", "FACTORIAL", "NOT", "$accept", "expression", "value",
-  "constant_expression", "expression_list", "assignment_expression",
-  "identifier_list", 0
+  "$end", "error", "$undefined", "value", "IDENTIFIER", "HEX", "BIN",
+  "OCT", "SCI", "FLOAT", "INT", "COMMA", "DECORATOR", "EQUAL", "LPAREN",
+  "RPAREN", "OR", "XOR", "AND", "RSHIFT", "LSHIFT", "MINUS", "PLUS", "MOD",
+  "DIV", "MUL", "POW", "FACTORIAL", "NOT", "$accept", "expression",
+  "atomic_value", "constant_expression", "expression_list",
+  "assignment_expression", "identifier_list", 0
 };
 #endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const unsigned char yyr1[] =
 {
-       0,    28,    29,    29,    30,    30,    30,    30,    30,    30,
-      30,    31,    31,    31,    31,    31,    31,    31,    31,    31,
-      31,    31,    31,    31,    31,    31,    31,    31,    31,    32,
-      32,    33,    33,    33,    33,    33,    34,    34
+       0,    29,    30,    30,    31,    31,    31,    31,    31,    31,
+      31,    32,    32,    32,    32,    32,    32,    32,    32,    32,
+      32,    32,    32,    32,    32,    32,    32,    32,    32,    33,
+      33,    34,    34,    34,    34,    34,    35,    35
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -366,23 +372,23 @@ static const signed char yydefgoto[] =
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -20
+#define YYPACT_NINF -21
 static const short int yypact[] =
 {
-      67,    -2,   -20,   -20,   -20,   -20,   -20,   -20,    80,    80,
-      29,   -20,   119,   -20,    67,    30,    12,   107,   -20,   -20,
-      25,    80,    80,    80,    80,    80,    80,    80,    80,    80,
-      80,    80,   -20,   -20,    -1,    35,    94,    16,    17,    55,
-     -20,   -20,   130,   140,    77,   147,   147,   -19,   -19,    20,
-      20,    20,    22,    39,    40,    67,    80,   -20,    80,   -20,
-      50,    42,   -20,   -20,    67,   -20,   119,   119,   -20,    67,
-     -20,   -20
+      66,    -4,   -21,   -21,   -21,   -21,   -21,   -21,    79,    79,
+      13,   -21,   118,   -21,    66,    29,    14,   106,   -21,   -21,
+      36,    79,    79,    79,    79,    79,    79,    79,    79,    79,
+      79,    79,   -21,   -21,    15,    32,    93,    16,    31,    54,
+     -21,   -21,   129,   139,    76,   146,   146,   -20,   -20,   -15,
+     -15,   -15,    20,    44,    39,    66,    79,   -21,    79,   -21,
+      49,    41,   -21,   -21,    66,   -21,   118,   118,   -21,    66,
+     -21,   -21
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const signed char yypgoto[] =
 {
-     -20,   -20,   -20,    -7,   -20,   -14,   -20
+     -21,   -21,   -21,    -7,   -21,   -14,   -21
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -392,11 +398,11 @@ static const signed char yypgoto[] =
 #define YYTABLE_NINF -1
 static const unsigned char yytable[] =
 {
-      33,    17,    18,    28,    29,    30,    31,    32,    36,    53,
-      14,    15,    39,    54,    42,    43,    44,    45,    46,    47,
-      48,    49,    50,    51,    52,    39,    58,    60,    41,    19,
-      59,    61,    36,    34,     2,     3,     4,     5,     6,     7,
-      20,    65,    63,     8,    35,    31,    32,    55,    32,    66,
+      33,    17,    18,    28,    29,    30,    31,    32,    36,    14,
+      15,    31,    32,    19,    42,    43,    44,    45,    46,    47,
+      48,    49,    50,    51,    52,    20,    53,    58,    39,    39,
+      54,    59,    36,    34,     2,     3,     4,     5,     6,     7,
+      41,    65,    60,     8,    35,    55,    61,    32,    63,    66,
       70,    67,    64,    68,    69,    71,     0,     9,    16,     2,
        3,     4,     5,     6,     7,     0,     0,     0,     8,    62,
        1,     2,     3,     4,     5,     6,     7,     0,     0,     0,
@@ -418,10 +424,10 @@ static const unsigned char yytable[] =
    yyconfl is terminated by a rule number of 0.  */
 static const unsigned char yyconflp[] =
 {
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     1,
-       0,     0,     0,     3,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     1,     0,     0,     0,
+       3,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
@@ -447,38 +453,38 @@ static const short int yyconfl[] =
 
 static const signed char yycheck[] =
 {
-      14,     8,     9,    22,    23,    24,    25,    26,    15,    10,
-      12,    13,    13,    14,    21,    22,    23,    24,    25,    26,
-      27,    28,    29,    30,    31,    13,    10,    10,     3,     0,
-      14,    14,    39,     3,     4,     5,     6,     7,     8,     9,
-      11,    55,     3,    13,    14,    25,    26,    12,    26,    56,
-      64,    58,    12,     3,    12,    69,    -1,    27,     3,     4,
-       5,     6,     7,     8,     9,    -1,    -1,    -1,    13,    14,
-       3,     4,     5,     6,     7,     8,     9,    -1,    -1,    -1,
-      13,    -1,    27,     3,     4,     5,     6,     7,     8,     9,
-      -1,    -1,    -1,    13,    27,    18,    19,    20,    21,    22,
-      23,    24,    25,    26,    10,    -1,    -1,    27,    14,    15,
-      16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-      26,    14,    15,    16,    17,    18,    19,    20,    21,    22,
-      23,    24,    25,    26,    15,    16,    17,    18,    19,    20,
-      21,    22,    23,    24,    25,    26,    16,    17,    18,    19,
-      20,    21,    22,    23,    24,    25,    26,    17,    18,    19,
-      20,    21,    22,    23,    24,    25,    26,    20,    21,    22,
-      23,    24,    25,    26
+      14,     8,     9,    23,    24,    25,    26,    27,    15,    13,
+      14,    26,    27,     0,    21,    22,    23,    24,    25,    26,
+      27,    28,    29,    30,    31,    12,    11,    11,    14,    14,
+      15,    15,    39,     4,     5,     6,     7,     8,     9,    10,
+       4,    55,    11,    14,    15,    13,    15,    27,     4,    56,
+      64,    58,    13,     4,    13,    69,    -1,    28,     4,     5,
+       6,     7,     8,     9,    10,    -1,    -1,    -1,    14,    15,
+       4,     5,     6,     7,     8,     9,    10,    -1,    -1,    -1,
+      14,    -1,    28,     4,     5,     6,     7,     8,     9,    10,
+      -1,    -1,    -1,    14,    28,    19,    20,    21,    22,    23,
+      24,    25,    26,    27,    11,    -1,    -1,    28,    15,    16,
+      17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+      27,    15,    16,    17,    18,    19,    20,    21,    22,    23,
+      24,    25,    26,    27,    16,    17,    18,    19,    20,    21,
+      22,    23,    24,    25,    26,    27,    17,    18,    19,    20,
+      21,    22,    23,    24,    25,    26,    27,    18,    19,    20,
+      21,    22,    23,    24,    25,    26,    27,    21,    22,    23,
+      24,    25,    26,    27
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const unsigned char yystos[] =
 {
-       0,     3,     4,     5,     6,     7,     8,     9,    13,    27,
-      29,    30,    31,    33,    12,    13,     3,    31,    31,     0,
-      11,    15,    16,    17,    18,    19,    20,    21,    22,    23,
-      24,    25,    26,    33,     3,    14,    31,    32,    34,    13,
-      14,     3,    31,    31,    31,    31,    31,    31,    31,    31,
-      31,    31,    31,    10,    14,    12,    10,    14,    10,    14,
-      10,    14,    14,     3,    12,    33,    31,    31,     3,    12,
-      33,    33
+       0,     4,     5,     6,     7,     8,     9,    10,    14,    28,
+      30,    31,    32,    34,    13,    14,     4,    32,    32,     0,
+      12,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25,    26,    27,    34,     4,    15,    32,    33,    35,    14,
+      15,     4,    32,    32,    32,    32,    32,    32,    32,    32,
+      32,    32,    32,    11,    15,    13,    11,    15,    11,    15,
+      11,    15,    15,     4,    13,    34,    32,    32,     4,    13,
+      34,    34
 };
 
 
@@ -920,259 +926,203 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
         case 2:
 
 /* Line 936 of glr.c  */
-#line 27 "src\\grammar.y"
+#line 33 "src\\grammar.y"
     { printf("expression/assignment_expression\n"); ;}
     break;
 
   case 3:
 
 /* Line 936 of glr.c  */
-#line 28 "src\\grammar.y"
-    { printf("DECORATOR\n"); ;}
-    break;
-
-  case 4:
-
-/* Line 936 of glr.c  */
-#line 31 "src\\grammar.y"
-    { printf("IDENTIFIER\n"); ;}
-    break;
-
-  case 5:
-
-/* Line 936 of glr.c  */
-#line 32 "src\\grammar.y"
-    { printf("HEX\n"); ;}
-    break;
-
-  case 6:
-
-/* Line 936 of glr.c  */
-#line 33 "src\\grammar.y"
-    { printf("BIN\n"); ;}
-    break;
-
-  case 7:
-
-/* Line 936 of glr.c  */
 #line 34 "src\\grammar.y"
-    { printf("OCT\n"); ;}
-    break;
-
-  case 8:
-
-/* Line 936 of glr.c  */
-#line 35 "src\\grammar.y"
-    { printf("SCI\n"); ;}
-    break;
-
-  case 9:
-
-/* Line 936 of glr.c  */
-#line 36 "src\\grammar.y"
-    { printf("FLOAT\n"); ;}
-    break;
-
-  case 10:
-
-/* Line 936 of glr.c  */
-#line 37 "src\\grammar.y"
-    { printf("%s\n", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval)); ;}
-    break;
-
-  case 11:
-
-/* Line 936 of glr.c  */
-#line 41 "src\\grammar.y"
-    { printf("value\n"); ;}
+    { printf("DECORATOR\n"); ;}
     break;
 
   case 12:
 
 /* Line 936 of glr.c  */
-#line 42 "src\\grammar.y"
+#line 49 "src\\grammar.y"
     { printf("parened expression\n"); ;}
     break;
 
   case 13:
 
 /* Line 936 of glr.c  */
-#line 43 "src\\grammar.y"
+#line 50 "src\\grammar.y"
     { printf("OR\n"); ;}
     break;
 
   case 14:
 
 /* Line 936 of glr.c  */
-#line 44 "src\\grammar.y"
+#line 51 "src\\grammar.y"
     { printf("XOR\n"); ;}
     break;
 
   case 15:
 
 /* Line 936 of glr.c  */
-#line 45 "src\\grammar.y"
+#line 52 "src\\grammar.y"
     { printf("AND\n"); ;}
     break;
 
   case 16:
 
 /* Line 936 of glr.c  */
-#line 46 "src\\grammar.y"
+#line 53 "src\\grammar.y"
     { printf("LSHIFT\n"); ;}
     break;
 
   case 17:
 
 /* Line 936 of glr.c  */
-#line 47 "src\\grammar.y"
+#line 54 "src\\grammar.y"
     { printf("RSHIFT\n"); ;}
     break;
 
   case 18:
 
 /* Line 936 of glr.c  */
-#line 48 "src\\grammar.y"
+#line 55 "src\\grammar.y"
     { printf("%s PLUS %s\n", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval)); ;}
     break;
 
   case 19:
 
 /* Line 936 of glr.c  */
-#line 49 "src\\grammar.y"
+#line 56 "src\\grammar.y"
     { printf("%s MINUS %s\n", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval)); ;}
     break;
 
   case 20:
 
 /* Line 936 of glr.c  */
-#line 50 "src\\grammar.y"
+#line 57 "src\\grammar.y"
     { printf("%s MUL %s\n", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval)); ;}
     break;
 
   case 21:
 
 /* Line 936 of glr.c  */
-#line 51 "src\\grammar.y"
+#line 58 "src\\grammar.y"
     { printf("%s DIV %s\n", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval)); ;}
     break;
 
   case 22:
 
 /* Line 936 of glr.c  */
-#line 52 "src\\grammar.y"
+#line 59 "src\\grammar.y"
     { printf("%s MOD %s\n", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval)); ;}
     break;
 
   case 23:
 
 /* Line 936 of glr.c  */
-#line 53 "src\\grammar.y"
+#line 60 "src\\grammar.y"
     { printf("%s POW %s\n", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval)); ;}
     break;
 
   case 24:
 
 /* Line 936 of glr.c  */
-#line 54 "src\\grammar.y"
+#line 61 "src\\grammar.y"
     { printf("FACTORIAL\n"); ;}
     break;
 
   case 25:
 
 /* Line 936 of glr.c  */
-#line 55 "src\\grammar.y"
+#line 62 "src\\grammar.y"
     { printf("NOT\n"); ;}
     break;
 
   case 26:
 
 /* Line 936 of glr.c  */
-#line 56 "src\\grammar.y"
+#line 63 "src\\grammar.y"
     { printf("f()\n"); ;}
     break;
 
   case 27:
 
 /* Line 936 of glr.c  */
-#line 57 "src\\grammar.y"
+#line 64 "src\\grammar.y"
     { printf("f(x)\n"); ;}
     break;
 
   case 28:
 
 /* Line 936 of glr.c  */
-#line 58 "src\\grammar.y"
+#line 65 "src\\grammar.y"
     { printf("f(x,y)\n"); ;}
     break;
 
   case 29:
 
 /* Line 936 of glr.c  */
-#line 62 "src\\grammar.y"
+#line 69 "src\\grammar.y"
     { printf("1+1,1+1\n"); ;}
     break;
 
   case 30:
 
 /* Line 936 of glr.c  */
-#line 63 "src\\grammar.y"
+#line 70 "src\\grammar.y"
     { printf("1+1,1+1,...\n"); ;}
     break;
 
   case 31:
 
 /* Line 936 of glr.c  */
-#line 67 "src\\grammar.y"
+#line 74 "src\\grammar.y"
     { printf("constant_expression/assignment_expression\n"); ;}
     break;
 
   case 32:
 
 /* Line 936 of glr.c  */
-#line 68 "src\\grammar.y"
+#line 75 "src\\grammar.y"
     { printf("x=\n"); ;}
     break;
 
   case 33:
 
 /* Line 936 of glr.c  */
-#line 69 "src\\grammar.y"
-    { printf("f()=x\n"); ;}
+#line 76 "src\\grammar.y"
+    {;}
     break;
 
   case 34:
 
 /* Line 936 of glr.c  */
-#line 70 "src\\grammar.y"
+#line 77 "src\\grammar.y"
     { printf("f(x)=\n"); ;}
     break;
 
   case 35:
 
 /* Line 936 of glr.c  */
-#line 71 "src\\grammar.y"
+#line 78 "src\\grammar.y"
     { printf("f(x,y)=\n"); ;}
     break;
 
   case 36:
 
 /* Line 936 of glr.c  */
-#line 75 "src\\grammar.y"
+#line 82 "src\\grammar.y"
     { printf("x,y\n"); ;}
     break;
 
   case 37:
 
 /* Line 936 of glr.c  */
-#line 76 "src\\grammar.y"
+#line 83 "src\\grammar.y"
     { printf("x,y,...\n"); ;}
     break;
 
 
 
 /* Line 936 of glr.c  */
-#line 1176 "include/tab.c"
+#line 1126 "include/tab.c"
       default: break;
     }
 
@@ -2859,7 +2809,7 @@ yypdumpstack (yyGLRStack* yystackp)
 
 
 /* Line 2634 of glr.c  */
-#line 79 "src\\grammar.y"
+#line 86 "src\\grammar.y"
 
 
 #include <stdio.h>

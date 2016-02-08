@@ -183,3 +183,15 @@ char int_value(value* v, int_value_t *out) {
 
 	return FAILURE_ALLOCATION;
 }
+
+char value_type(value* v) {
+	value* resolved;
+
+	if (v->type == VALUE_STRING)
+		if(get_variable(v->sv, resolved) == NO_FAILURE) 
+			return value_type(resolved);
+		else
+			return VALUE_ERROR;
+
+	return v->type;
+}

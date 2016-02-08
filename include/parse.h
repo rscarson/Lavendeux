@@ -14,14 +14,14 @@
 	#define FAILURE_ALLOCATION		5
 	
 	/* Values of variable types */
-	#define VALUE_FLOAT 	0x00
-	#define VALUE_INT 		0x01
-	#define VALUE_STRING 	0x02
+	#define VALUE_ERROR 	0x00
+	#define VALUE_FLOAT 	0x01
+	#define VALUE_INT 		0x02
+	#define VALUE_STRING 	0x03
 	typedef long long int int_value_t;
 	typedef long double float_value_t;
 	typedef struct {
 		char type;
-		int token;
 
 		int_value_t iv;
 		float_value_t fv;
@@ -52,4 +52,5 @@
 
 	char float_value(value*, float_value_t*);
 	char int_value(value*, int_value_t*);
+	char value_type(value*);
 #endif

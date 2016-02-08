@@ -1,15 +1,22 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
-	//#include "parse.h"
+
+	#include "parse.h"
 
 	int yylex(void);
 	int yyerror(char*);
+
+	int is_stored_expression = 0;
+	wchar_t *expression_name;
+	wchar_t expression_text[];
+	function stored_expression;
 %}
 
 /* Valid tokens */
-%token IDENTIFIER HEX BIN OCT SCI FLOAT INT
+%token value IDENTIFIER HEX BIN OCT SCI FLOAT INT
 %token COMMA DECORATOR EQUAL LPAREN RPAREN
+%token END 0 "end of expression"
 %left OR
 %left XOR
 %left AND
@@ -26,21 +33,25 @@
 expression:
 	assignment_expression { printf("expression/assignment_expression\n"); }
 	| expression DECORATOR IDENTIFIER { printf("DECORATOR\n"); }
+	;
 
-value:
-	IDENTIFIER { printf("IDENTIFIER\n"); }
-	| HEX  { printf("HEX\n"); }
-	| BIN  { printf("BIN\n"); }
-	| OCT { printf("OCT\n"); }
-	| SCI  { printf("SCI\n"); }
-	| FLOAT  { printf("FLOAT\n"); }
-	| INT { printf("%s\n", $1); }
+atomic_value:
+	IDENTIFIER
+	| HEX
+	| BIN
+	| OCT
+	| SCI
+	| FLOAT
+	| INT
 	;
 
 constant_expression:
-	value { printf("value\n"); }
-	| LPAREN constant_expression RPAREN { printf("parened expression\n"); }
-	| constant_expression OR constant_expression { printf("OR\n"); }
+	atomic_value
+	| LPAREN constant_expression RPAREN
+	| constant_expression OR constant_expression {
+		if (value_type($1) == VALUE_ERROR || value_type($3) == VALUE_ERROR)
+		if (value_type($1) == VALUE_FLOAT || value_type($3) == VALUE_FLOAT)
+	}
 	| constant_expression XOR constant_expression { printf("XOR\n"); }
 	| constant_expression AND constant_expression { printf("AND\n"); }
 	| constant_expression LSHIFT constant_expression { printf("LSHIFT\n"); }
@@ -66,7 +77,7 @@ expression_list:
 assignment_expression:
 	constant_expression { printf("constant_expression/assignment_expression\n"); }
 	| IDENTIFIER EQUAL assignment_expression { printf("x=\n"); }
-	| IDENTIFIER LPAREN RPAREN EQUAL assignment_expression { printf("f()=x\n"); }
+	| IDENTIFIER LPAREN RPAREN EQUAL assignment_expression {}
 	| IDENTIFIER LPAREN IDENTIFIER RPAREN EQUAL assignment_expression { printf("f(x)=\n"); }
 	| IDENTIFIER LPAREN identifier_list RPAREN EQUAL assignment_expression { printf("f(x,y)=\n"); }
 	;
