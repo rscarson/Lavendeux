@@ -23,6 +23,41 @@ int parse_init() {
 }
 
 /**
+ * Get a text representation of an error code
+ * @param code The error code
+ *
+ * @return Error message string
+ */
+const char* error_msg(int code) {
+	switch (code) {
+		case FAILURE_UNKNOWN:
+			return "Unknown error";
+		break;
+
+		case NO_FAILURE:
+			return "No error";
+		break;
+
+		case FAILURE_INVALID_ARGS:
+			return "Invalid arguments supplied to function";
+		break;
+
+		case FAILURE_INVALID_NAME:
+			return "Unrecognized or invalid function or variable name"
+		break;
+
+		case FAILURE_SYNTAX_ERROR:
+			return "Syntax error";
+		break;
+
+		case FAILURE_ALLOCATION:
+			return "Failed to allocate memory"
+		break;
+
+	}
+}
+
+/**
  * Process an equation and format the response
  * @param equation The expression to solve
  * @param response String buffer pointer to put the result in
@@ -30,9 +65,6 @@ int parse_init() {
  * @return int The result of the operation
  */
 int parse_equation(const wchar_t* equation, const wchar_t** response){}
-/*
-USE yy_push_state(LEFTSIDE)
-*/
 
 /**
  * Process an equation
@@ -135,7 +167,7 @@ int put_function(const wchar_t* name, function *definition) {
 	return table_put(functions, name, definition);
 }
 
-char float_value(value* v, float_value_t *out) {
+int float_value(value* v, float_value_t *out) {
 	value* resolved;
 	int result;
 
@@ -160,7 +192,7 @@ char float_value(value* v, float_value_t *out) {
 	return FAILURE_ALLOCATION;
 }
 
-char int_value(value* v, int_value_t *out) {
+int int_value(value* v, int_value_t *out) {
 	value* resolved;
 	
 	switch (v->type) {
@@ -184,14 +216,17 @@ char int_value(value* v, int_value_t *out) {
 	return FAILURE_ALLOCATION;
 }
 
-char value_type(value* v) {
+int value_type(value* v, char* type) {
 	value* resolved;
+	int result;
 
-	if (v->type == VALUE_STRING)
-		if(get_variable(v->sv, resolved) == NO_FAILURE) 
-			return value_type(resolved);
-		else
-			return VALUE_ERROR;
-
-	return v->type;
+	if (v->type == VALUE_STRING) {
+		result = get_variable(v->sv, resolved);
+		if (result != NO_FAILURE)
+			return result;
+		return value_type(resolved, type);
+	}
+		
+	*type = v->type;
+	return NO_FAILURE;
 }

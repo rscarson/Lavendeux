@@ -41,6 +41,8 @@
 	/* User defined methods. string->function */
 	hash_table functions;
 
+	const char* error_msg(int code);
+
 	int parse_equation(const wchar_t*, const wchar_t**);
 	int solve_equation(const wchar_t*, value*);
 
@@ -50,7 +52,7 @@
 	int solve_function(const wchar_t*, value[], int, value*);
 	int put_function(const wchar_t*, function*);
 
-	char float_value(value*, float_value_t*);
-	char int_value(value*, int_value_t*);
-	char value_type(value*);
+	int float_value(value*, float_value_t*);
+	int int_value(value*, int_value_t*);
+	int value_type(value*, char*);
 #endif

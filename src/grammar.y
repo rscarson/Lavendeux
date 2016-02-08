@@ -49,8 +49,12 @@ constant_expression:
 	atomic_value
 	| LPAREN constant_expression RPAREN
 	| constant_expression OR constant_expression {
-		if (value_type($1) == VALUE_ERROR || value_type($3) == VALUE_ERROR)
-		if (value_type($1) == VALUE_FLOAT || value_type($3) == VALUE_FLOAT)
+		char left_type;
+		char right_type;
+		if (value_type($1, &left_type) != NO_FAILURE || value_type($3, &right_type) != NO_FAILURE)
+			yyerror("")
+		
+		if (left_type == VALUE_FLOAT || right_type == VALUE_FLOAT)
 	}
 	| constant_expression XOR constant_expression { printf("XOR\n"); }
 	| constant_expression AND constant_expression { printf("AND\n"); }
