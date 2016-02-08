@@ -20,7 +20,7 @@ int linenumber = 1;
 0x[0-9a-fA-F]+ { 
 	/* Store token value */
 	yylval.type = VALUE_INT;
-	yylval.in = strtoll(yylval[2], yylen, 16);
+	yylval.iv = strtoll(yylval[2], yylen, 16);
 
 	return HEX;
 }
@@ -28,7 +28,7 @@ int linenumber = 1;
 0b[0-1]+ { 
 	/* Store token value */
 	yylval.type = VALUE_INT;
-	yylval.in = strtoll(yylval[2], yylen, 2);
+	yylval.iv = strtoll(yylval[2], yylen, 2);
 
 	return BIN;
 }
@@ -36,12 +36,20 @@ int linenumber = 1;
 0o[0-7]+ { 
 	/* Store token value */
 	yylval.type = VALUE_INT;
-	yylval.in = strtoll(yylval[2], yylen, 8);
+	yylval.iv = strtoll(yylval[2], yylen, 8);
 
 	return OCT;
 }
 
 -?[0-9]*(\\.[0-9]+)?(E|e)(\\+|-)?[0-9]+ { 
+	float_type_t left;
+	int_type_t right;
+	scanf("%LfE%Ld", &left, &right);
+
+	/* Store token value */
+	yylval.type = VALUE_FLOAT;
+	yylval.fv = frexpl(left, right);
+
 	return SCI;
 }
 

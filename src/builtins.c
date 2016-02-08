@@ -11,7 +11,7 @@
  *
  * @return Result of the operation
  */
-int init_builtins(hash_table variables) {
+int init_builtins(hash_table *variables) {
 	if (
 		!table_put(variables, BUILTIN_PI, BUILTIN_PI_VALUE) ||
 		!table_put(variables, BUILTIN_E, BUILTIN_E_VALUE)

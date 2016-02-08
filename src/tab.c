@@ -63,6 +63,9 @@
 
 	#define YYSTYPE value
 
+	wchar_t* parse_result;
+	char PARSER_ERROR[EXPRESSION_MAX_LEN];
+
 	int yylex(void);
 	int yyerror(char*);
 
@@ -79,7 +82,7 @@
 
 
 /* Line 171 of glr.c  */
-#line 83 "include/tab.c"
+#line 86 "src/tab.c"
 
 
 
@@ -114,7 +117,7 @@ static YYSTYPE yyval_default;
 
 
 /* Line 242 of glr.c  */
-#line 118 "include/tab.c"
+#line 121 "src/tab.c"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -209,18 +212,18 @@ YYID (i)
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  7
+#define YYFINAL  8
 /* YYLAST -- Last index in YYTABLE.  */
 #define YYLAST   141
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  28
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  8
+#define YYNNTS  9
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  39
+#define YYNRULES  40
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  70
+#define YYNSTATES  71
 /* YYMAXRHS -- Maximum number of symbols on right-hand side of rule.  */
 #define YYMAXRHS 5
 /* YYMAXLEFT -- Maximum number of symbols to the left of a handle
@@ -273,38 +276,40 @@ static const unsigned char yytranslate[] =
    YYRHS.  */
 static const unsigned char yyprhs[] =
 {
-       0,     0,     3,     5,     9,    11,    13,    15,    17,    19,
-      21,    23,    25,    29,    33,    37,    41,    45,    49,    53,
-      57,    61,    65,    69,    73,    76,    79,    83,    88,    93,
-      97,   101,   102,   107,   113,   119,   121,   125,   128,   132
+       0,     0,     3,     5,     7,    11,    13,    15,    17,    19,
+      21,    23,    25,    27,    31,    35,    39,    43,    47,    51,
+      55,    59,    63,    67,    71,    75,    78,    81,    85,    90,
+      95,    99,   103,   104,   109,   115,   121,   123,   127,   130,
+     134
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const signed char yyrhs[] =
 {
-      29,     0,    -1,    34,    -1,    34,    11,     3,    -1,     3,
-      -1,     4,    -1,     5,    -1,     6,    -1,     7,    -1,     8,
-      -1,     9,    -1,    30,    -1,    13,    31,    14,    -1,    31,
-      15,    31,    -1,    31,    16,    31,    -1,    31,    17,    31,
-      -1,    31,    19,    31,    -1,    31,    18,    31,    -1,    31,
-      21,    31,    -1,    31,    20,    31,    -1,    31,    24,    31,
-      -1,    31,    23,    31,    -1,    31,    22,    31,    -1,    31,
-      25,    31,    -1,    31,    26,    -1,    27,    31,    -1,     3,
-      13,    14,    -1,     3,    13,    31,    14,    -1,     3,    13,
-      32,    14,    -1,    31,    10,    31,    -1,    32,    10,    31,
-      -1,    -1,     3,    13,    14,    12,    -1,     3,    13,     3,
-      14,    12,    -1,     3,    13,    35,    14,    12,    -1,    34,
-      -1,     3,    12,    31,    -1,    33,    31,    -1,     3,    10,
-       3,    -1,    35,    10,     3,    -1
+      29,     0,    -1,    30,    -1,    35,    -1,    35,    11,     3,
+      -1,     3,    -1,     4,    -1,     5,    -1,     6,    -1,     7,
+      -1,     8,    -1,     9,    -1,    31,    -1,    13,    32,    14,
+      -1,    32,    15,    32,    -1,    32,    16,    32,    -1,    32,
+      17,    32,    -1,    32,    19,    32,    -1,    32,    18,    32,
+      -1,    32,    21,    32,    -1,    32,    20,    32,    -1,    32,
+      24,    32,    -1,    32,    23,    32,    -1,    32,    22,    32,
+      -1,    32,    25,    32,    -1,    32,    26,    -1,    27,    32,
+      -1,     3,    13,    14,    -1,     3,    13,    32,    14,    -1,
+       3,    13,    33,    14,    -1,    32,    10,    32,    -1,    33,
+      10,    32,    -1,    -1,     3,    13,    14,    12,    -1,     3,
+      13,     3,    14,    12,    -1,     3,    13,    36,    14,    12,
+      -1,    35,    -1,     3,    12,    32,    -1,    34,    32,    -1,
+       3,    10,     3,    -1,    36,    10,     3,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,    43,    43,    60,    73,    76,    79,    82,    85,    88,
-      91,    97,   100,   103,   122,   141,   160,   179,   198,   224,
-     250,   276,   310,   344,   378,   404,   423,   426,   431,   438,
-     449,   461,   462,   475,   499,   523,   526,   538,   545,   567
+       0,    46,    46,    52,    69,    82,    85,    88,    91,    94,
+      97,   100,   106,   109,   112,   131,   150,   169,   188,   207,
+     233,   259,   285,   319,   353,   387,   413,   432,   435,   440,
+     447,   458,   470,   471,   484,   508,   532,   535,   547,   554,
+     576
 };
 #endif
 
@@ -317,27 +322,30 @@ static const char *const yytname[] =
   "BIN", "OCT", "SCI", "FLOAT", "INT", "COMMA", "DECORATOR", "EQUAL",
   "LPAREN", "RPAREN", "OR", "XOR", "AND", "RSHIFT", "LSHIFT", "MINUS",
   "PLUS", "MOD", "DIV", "MUL", "POW", "FACTORIAL", "NOT", "$accept",
-  "expression", "atomic_value", "constant_expression", "expression_list",
-  "leftside_funct_expression", "assignment_expression", "identifier_list", 0
+  "output", "expression", "atomic_value", "constant_expression",
+  "expression_list", "leftside_funct_expression", "assignment_expression",
+  "identifier_list", 0
 };
 #endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const unsigned char yyr1[] =
 {
-       0,    28,    29,    29,    30,    30,    30,    30,    30,    30,
-      30,    31,    31,    31,    31,    31,    31,    31,    31,    31,
-      31,    31,    31,    31,    31,    31,    31,    31,    31,    32,
-      32,    33,    33,    33,    33,    34,    34,    34,    35,    35
+       0,    28,    29,    30,    30,    31,    31,    31,    31,    31,
+      31,    31,    32,    32,    32,    32,    32,    32,    32,    32,
+      32,    32,    32,    32,    32,    32,    32,    32,    32,    32,
+      33,    33,    34,    34,    34,    34,    35,    35,    35,    36,
+      36
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const unsigned char yyr2[] =
 {
-       0,     2,     1,     3,     1,     1,     1,     1,     1,     1,
-       1,     1,     3,     3,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,     2,     2,     3,     4,     4,     3,
-       3,     0,     4,     5,     5,     1,     3,     2,     3,     3
+       0,     2,     1,     1,     3,     1,     1,     1,     1,     1,
+       1,     1,     1,     3,     3,     3,     3,     3,     3,     3,
+       3,     3,     3,     3,     3,     2,     2,     3,     4,     4,
+       3,     3,     0,     4,     5,     5,     1,     3,     2,     3,
+       3
 };
 
 /* YYDPREC[RULE-NUM] -- Dynamic precedence of rule #RULE-NUM (0 if none).  */
@@ -346,7 +354,8 @@ static const unsigned char yydprec[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0
 };
 
 /* YYMERGER[RULE-NUM] -- Index of merging function for rule #RULE-NUM.  */
@@ -355,7 +364,8 @@ static const unsigned char yymerger[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0
 };
 
 /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
@@ -363,19 +373,20 @@ static const unsigned char yymerger[] =
    error.  */
 static const unsigned char yydefact[] =
 {
-      31,     0,     0,     0,     2,     0,     0,     1,     4,     5,
-       6,     7,     8,     9,    10,     0,     0,    11,    37,     0,
-      36,     0,     0,     0,     0,     0,    25,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    24,     3,
-       0,     0,    32,     0,     0,    26,     0,     0,    12,    13,
-      14,    15,    17,    16,    19,    18,    22,    21,    20,    23,
-      38,    33,    39,    34,     0,    27,     0,    28,    29,    30
+      32,     0,     0,     2,     0,     3,     0,     0,     1,     5,
+       6,     7,     8,     9,    10,    11,     0,     0,    12,    38,
+       0,    37,     0,     0,     0,     0,     0,    26,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    25,
+       4,     0,     0,    33,     0,     0,    27,     0,     0,    13,
+      14,    15,    16,    18,    17,    20,    19,    23,    22,    21,
+      24,    39,    34,    40,    35,     0,    28,     0,    29,    30,
+      31
 };
 
 /* YYPDEFGOTO[NTERM-NUM].  */
 static const signed char yydefgoto[] =
 {
-      -1,     2,    17,    18,    47,     3,     4,    23
+      -1,     2,     3,    18,    19,    48,     4,     5,    24
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
@@ -383,43 +394,44 @@ static const signed char yydefgoto[] =
 #define YYPACT_NINF -18
 static const short int yypact[] =
 {
-      39,     8,    52,    42,     1,    42,    -1,   -18,    40,   -18,
-     -18,   -18,   -18,   -18,   -18,    42,    42,   -18,    81,    59,
-      81,    44,   126,    46,    30,    69,   -18,    42,    42,    42,
-      42,    42,    42,    42,    42,    42,    42,    42,   -18,   -18,
-      61,   127,   -18,    62,   128,   -18,    56,    53,   -18,    92,
-     102,   111,   -17,   -17,    -8,    -8,    15,    15,    15,   115,
-     -18,   -18,   -18,   -18,    42,   -18,    42,   -18,    81,    81
+      39,     8,    52,   -18,    42,     1,    42,    -1,   -18,    40,
+     -18,   -18,   -18,   -18,   -18,   -18,    42,    42,   -18,    81,
+      59,    81,    44,   126,    46,    30,    69,   -18,    42,    42,
+      42,    42,    42,    42,    42,    42,    42,    42,    42,   -18,
+     -18,    61,   127,   -18,    62,   128,   -18,    56,    53,   -18,
+      92,   102,   111,   -17,   -17,    -8,    -8,    15,    15,    15,
+     115,   -18,   -18,   -18,   -18,    42,   -18,    42,   -18,    81,
+      81
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const signed char yypgoto[] =
 {
-     -18,   -18,   -18,    -5,   -18,   -18,   -18,   -18
+     -18,   -18,   -18,   -18,    -6,   -18,   -18,   -18,   -18
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
    positive, shift that token.  If negative, reduce the rule which
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
-#define YYTABLE_NINF -3
+#define YYTABLE_NINF -4
 static const signed char yytable[] =
 {
-      20,    -2,    21,    32,    33,    34,    35,    36,    37,    38,
-      25,    26,    19,    22,    34,    35,    36,    37,    38,    46,
-       5,     6,    49,    50,    51,    52,    53,    54,    55,    56,
-      57,    58,    59,     8,     9,    10,    11,    12,    13,    14,
-      37,    38,     1,    15,    45,     8,     9,    10,    11,    12,
-      13,    14,     7,    24,    40,    15,    43,    16,    41,    68,
-      44,    69,    39,    66,    60,    62,    64,    67,     0,    16,
-      65,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-      36,    37,    38,    48,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,    38,    27,    28,    29,    30,
-      31,    32,    33,    34,    35,    36,    37,    38,    28,    29,
-      30,    31,    32,    33,    34,    35,    36,    37,    38,    29,
-      30,    31,    32,    33,    34,    35,    36,    37,    38,    30,
-      31,    32,    33,    34,    35,    36,    37,    38,    42,    61,
-      63,    38
+      21,    -3,    22,    33,    34,    35,    36,    37,    38,    39,
+      26,    27,    20,    23,    35,    36,    37,    38,    39,    47,
+       6,     7,    50,    51,    52,    53,    54,    55,    56,    57,
+      58,    59,    60,     9,    10,    11,    12,    13,    14,    15,
+      38,    39,     1,    16,    46,     9,    10,    11,    12,    13,
+      14,    15,     8,    25,    41,    16,    44,    17,    42,    69,
+      45,    70,    40,    67,    61,    63,    65,    68,     0,    17,
+      66,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+      37,    38,    39,    49,    28,    29,    30,    31,    32,    33,
+      34,    35,    36,    37,    38,    39,    28,    29,    30,    31,
+      32,    33,    34,    35,    36,    37,    38,    39,    29,    30,
+      31,    32,    33,    34,    35,    36,    37,    38,    39,    30,
+      31,    32,    33,    34,    35,    36,    37,    38,    39,    31,
+      32,    33,    34,    35,    36,    37,    38,    39,    43,    62,
+      64,    39
 };
 
 /* YYCONFLP[YYPACT[STATE-NUM]] -- Pointer into YYCONFL of start of
@@ -449,18 +461,18 @@ static const unsigned char yyconflp[] =
    0, pointed into by YYCONFLP.  */
 static const short int yyconfl[] =
 {
-       0,    31,     0,    35,     0,    35,     0
+       0,    32,     0,    36,     0,    36,     0
 };
 
 static const signed char yycheck[] =
 {
-       5,     0,     3,    20,    21,    22,    23,    24,    25,    26,
-      15,    16,    11,    14,    22,    23,    24,    25,    26,    24,
-      12,    13,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,     3,     4,     5,     6,     7,     8,     9,
+       6,     0,     3,    20,    21,    22,    23,    24,    25,    26,
+      16,    17,    11,    14,    22,    23,    24,    25,    26,    25,
+      12,    13,    28,    29,    30,    31,    32,    33,    34,    35,
+      36,    37,    38,     3,     4,     5,     6,     7,     8,     9,
       25,    26,     3,    13,    14,     3,     4,     5,     6,     7,
-       8,     9,     0,    13,    10,    13,    10,    27,    14,    64,
-      14,    66,     3,    10,     3,     3,    10,    14,    -1,    27,
+       8,     9,     0,    13,    10,    13,    10,    27,    14,    65,
+      14,    67,     3,    10,     3,     3,    10,    14,    -1,    27,
       14,    15,    16,    17,    18,    19,    20,    21,    22,    23,
       24,    25,    26,    14,    15,    16,    17,    18,    19,    20,
       21,    22,    23,    24,    25,    26,    15,    16,    17,    18,
@@ -475,13 +487,14 @@ static const signed char yycheck[] =
    symbol of state STATE-NUM.  */
 static const unsigned char yystos[] =
 {
-       0,     3,    29,    33,    34,    12,    13,     0,     3,     4,
-       5,     6,     7,     8,     9,    13,    27,    30,    31,    11,
-      31,     3,    14,    35,    13,    31,    31,    15,    16,    17,
-      18,    19,    20,    21,    22,    23,    24,    25,    26,     3,
-      10,    14,    12,    10,    14,    14,    31,    32,    14,    31,
-      31,    31,    31,    31,    31,    31,    31,    31,    31,    31,
-       3,    12,     3,    12,    10,    14,    10,    14,    31,    31
+       0,     3,    29,    30,    34,    35,    12,    13,     0,     3,
+       4,     5,     6,     7,     8,     9,    13,    27,    31,    32,
+      11,    32,     3,    14,    36,    13,    32,    32,    15,    16,
+      17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+       3,    10,    14,    12,    10,    14,    14,    32,    33,    14,
+      32,    32,    32,    32,    32,    32,    32,    32,    32,    32,
+      32,     3,    12,     3,    12,    10,    14,    10,    14,    32,
+      32
 };
 
 
@@ -923,7 +936,16 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
         case 2:
 
 /* Line 936 of glr.c  */
-#line 43 "src\\grammar.y"
+#line 46 "src\\grammar.y"
+    {
+		parse_result = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).sv;
+	;}
+    break;
+
+  case 3:
+
+/* Line 936 of glr.c  */
+#line 52 "src\\grammar.y"
     {
 		((*yyvalp)).type = TYPE_STRING;
 		((*yyvalp)).sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
@@ -943,10 +965,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 3:
+  case 4:
 
 /* Line 936 of glr.c  */
-#line 60 "src\\grammar.y"
+#line 69 "src\\grammar.y"
     {
 		((*yyvalp)).type = TYPE_STRING;
 		((*yyvalp)).sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
@@ -959,34 +981,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 4:
-
-/* Line 936 of glr.c  */
-#line 73 "src\\grammar.y"
-    {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
-	;}
-    break;
-
   case 5:
-
-/* Line 936 of glr.c  */
-#line 76 "src\\grammar.y"
-    {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
-	;}
-    break;
-
-  case 6:
-
-/* Line 936 of glr.c  */
-#line 79 "src\\grammar.y"
-    {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
-	;}
-    break;
-
-  case 7:
 
 /* Line 936 of glr.c  */
 #line 82 "src\\grammar.y"
@@ -995,7 +990,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 8:
+  case 6:
 
 /* Line 936 of glr.c  */
 #line 85 "src\\grammar.y"
@@ -1004,7 +999,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 9:
+  case 7:
 
 /* Line 936 of glr.c  */
 #line 88 "src\\grammar.y"
@@ -1013,7 +1008,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 10:
+  case 8:
 
 /* Line 936 of glr.c  */
 #line 91 "src\\grammar.y"
@@ -1022,7 +1017,16 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 11:
+  case 9:
+
+/* Line 936 of glr.c  */
+#line 94 "src\\grammar.y"
+    {
+		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+	;}
+    break;
+
+  case 10:
 
 /* Line 936 of glr.c  */
 #line 97 "src\\grammar.y"
@@ -1031,19 +1035,37 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 12:
+  case 11:
 
 /* Line 936 of glr.c  */
 #line 100 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (3))].yystate.yysemantics.yysval);
+		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+	;}
+    break;
+
+  case 12:
+
+/* Line 936 of glr.c  */
+#line 106 "src\\grammar.y"
+    {
+		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
 	;}
     break;
 
   case 13:
 
 /* Line 936 of glr.c  */
-#line 103 "src\\grammar.y"
+#line 109 "src\\grammar.y"
+    {
+		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (3))].yystate.yysemantics.yysval);
+	;}
+    break;
+
+  case 14:
+
+/* Line 936 of glr.c  */
+#line 112 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1065,10 +1087,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 14:
+  case 15:
 
 /* Line 936 of glr.c  */
-#line 122 "src\\grammar.y"
+#line 131 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1090,10 +1112,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 15:
+  case 16:
 
 /* Line 936 of glr.c  */
-#line 141 "src\\grammar.y"
+#line 150 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1115,10 +1137,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 16:
+  case 17:
 
 /* Line 936 of glr.c  */
-#line 160 "src\\grammar.y"
+#line 169 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1140,10 +1162,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 17:
+  case 18:
 
 /* Line 936 of glr.c  */
-#line 179 "src\\grammar.y"
+#line 188 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1165,10 +1187,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 18:
+  case 19:
 
 /* Line 936 of glr.c  */
-#line 198 "src\\grammar.y"
+#line 207 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1197,10 +1219,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 19:
+  case 20:
 
 /* Line 936 of glr.c  */
-#line 224 "src\\grammar.y"
+#line 233 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1229,10 +1251,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 20:
+  case 21:
 
 /* Line 936 of glr.c  */
-#line 250 "src\\grammar.y"
+#line 259 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1261,10 +1283,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 21:
+  case 22:
 
 /* Line 936 of glr.c  */
-#line 276 "src\\grammar.y"
+#line 285 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1301,10 +1323,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 22:
+  case 23:
 
 /* Line 936 of glr.c  */
-#line 310 "src\\grammar.y"
+#line 319 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1341,10 +1363,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 23:
+  case 24:
 
 /* Line 936 of glr.c  */
-#line 344 "src\\grammar.y"
+#line 353 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &result);
@@ -1381,10 +1403,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 24:
+  case 25:
 
 /* Line 936 of glr.c  */
-#line 378 "src\\grammar.y"
+#line 387 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval), NULL, &result);
@@ -1413,10 +1435,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 25:
+  case 26:
 
 /* Line 936 of glr.c  */
-#line 404 "src\\grammar.y"
+#line 413 "src\\grammar.y"
     {
 		int result;
 		char type = expression_type(NULL, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval), &result);
@@ -1438,19 +1460,19 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 26:
+  case 27:
 
 /* Line 936 of glr.c  */
-#line 423 "src\\grammar.y"
+#line 432 "src\\grammar.y"
     {
 		solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).sv, NULL, 0, &((*yyvalp)));
 	;}
     break;
 
-  case 27:
+  case 28:
 
 /* Line 936 of glr.c  */
-#line 426 "src\\grammar.y"
+#line 435 "src\\grammar.y"
     {
 		value args = value[1];
 		value[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval);
@@ -1458,20 +1480,20 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 28:
+  case 29:
 
 /* Line 936 of glr.c  */
-#line 431 "src\\grammar.y"
+#line 440 "src\\grammar.y"
     {
 		solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval).sv, e_list, e_list_size, &((*yyvalp)));
 		free(e_list);
 	;}
     break;
 
-  case 29:
+  case 30:
 
 /* Line 936 of glr.c  */
-#line 438 "src\\grammar.y"
+#line 447 "src\\grammar.y"
     {
 		e_list = (value[]) malloc(sizeof(value)*2);
 		if (e_list == NULL) {
@@ -1485,10 +1507,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 30:
+  case 31:
 
 /* Line 936 of glr.c  */
-#line 449 "src\\grammar.y"
+#line 458 "src\\grammar.y"
     {
 		e_list_size++;
 		e_list = (value[]) realloc(sizeof(value)*(e_list_size));
@@ -1501,10 +1523,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 32:
+  case 33:
 
 /* Line 936 of glr.c  */
-#line 462 "src\\grammar.y"
+#line 471 "src\\grammar.y"
     {
 		is_stored_expression = 1;
 		expression_name = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval).sv;
@@ -1520,10 +1542,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 33:
+  case 34:
 
 /* Line 936 of glr.c  */
-#line 475 "src\\grammar.y"
+#line 484 "src\\grammar.y"
     {
 		is_stored_expression = 1;
 		expression_name = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval).sv;
@@ -1550,10 +1572,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 34:
+  case 35:
 
 /* Line 936 of glr.c  */
-#line 499 "src\\grammar.y"
+#line 508 "src\\grammar.y"
     {
 		is_stored_expression = 1;
 		expression_name = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval).sv;
@@ -1576,19 +1598,19 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 35:
+  case 36:
 
 /* Line 936 of glr.c  */
-#line 523 "src\\grammar.y"
+#line 532 "src\\grammar.y"
     {
 		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
 	;}
     break;
 
-  case 36:
+  case 37:
 
 /* Line 936 of glr.c  */
-#line 526 "src\\grammar.y"
+#line 535 "src\\grammar.y"
     {
 		value *v = (value*) malloc(sizeof(value));
 		if (v == NULL) {
@@ -1603,20 +1625,20 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 37:
+  case 38:
 
 /* Line 936 of glr.c  */
-#line 538 "src\\grammar.y"
+#line 547 "src\\grammar.y"
     {
 		is_stored_expression = 0;
 		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval);
 	;}
     break;
 
-  case 38:
+  case 39:
 
 /* Line 936 of glr.c  */
-#line 545 "src\\grammar.y"
+#line 554 "src\\grammar.y"
     {
 		i_list_size = 2;
 		i_list = malloc(sizeof(wchar_t*)*i_list_size);
@@ -1641,10 +1663,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	;}
     break;
 
-  case 39:
+  case 40:
 
 /* Line 936 of glr.c  */
-#line 567 "src\\grammar.y"
+#line 576 "src\\grammar.y"
     {
 		i_list_size++;
 		i_list = realloc(sizeof(wchar_t*)*i_list_size);
@@ -1665,7 +1687,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
 
 /* Line 936 of glr.c  */
-#line 1669 "include/tab.c"
+#line 1691 "src/tab.c"
       default: break;
     }
 
@@ -3352,7 +3374,7 @@ yypdumpstack (yyGLRStack* yystackp)
 
 
 /* Line 2634 of glr.c  */
-#line 584 "src\\grammar.y"
+#line 593 "src\\grammar.y"
 
 
 #include <stdio.h>
@@ -3362,13 +3384,14 @@ extern int yylex();
 extern int yyparse();
 
 
-int yyerror(char *s)
-{
+int yyerror(char *s) {
 	extern int yylineno;
 	extern char *yytext;
 
-	printf("%s at symbol '%c', line %d", s, *yytext, yylineno);
+	sprintf(PARSER_ERROR, "%s at symbol '%c', line %d", s, *yytext, yylineno);
 	return 1;
 }
 
-
+char* get_error( void ) {
+	return PARSER_ERROR;
+}

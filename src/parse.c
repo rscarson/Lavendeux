@@ -43,7 +43,7 @@ const char* error_msg(int code) {
 		break;
 
 		case FAILURE_INVALID_NAME:
-			return "Unrecognized or invalid function or variable name"
+			return "Unrecognized or invalid function or variable name";
 		break;
 
 		case FAILURE_SYNTAX_ERROR:
@@ -51,10 +51,15 @@ const char* error_msg(int code) {
 		break;
 
 		case FAILURE_ALLOCATION:
-			return "Failed to allocate memory"
+			return "Failed to allocate memory";
 		break;
 
+		case FAILURE_TYPE:
+			return "Operation not valid for given type";
+		break;
 	}
+
+	return "";
 }
 
 /**
@@ -62,18 +67,32 @@ const char* error_msg(int code) {
  * @param equation The expression to solve
  * @param response String buffer pointer to put the result in
  *
- * @return int The result of the operation
+ * @return int 0 if failed, non 0 otherwise
  */
-int parse_equation(const wchar_t* equation, const wchar_t** response){}
+extern void yy_scan_string(const char*);
+extern int yyparse( void );
+extern char* get_error( void );
+extern wchar_t* parse_result;
+int parse_equation(const wchar_t* equation, const wchar_t** response){
+	value out;
+	const char* equation_mbs = malloc(sizeof(char)*(wcslen(equation+1)));
+	if (equation_mbs == NULL) {
+		*response = error_msg(FAILURE_ALLOCATION);
+		return 0;
+	}
+	}
 
-/**
- * Process an equation
- * @param equation The expression to solve
- * @param value A pointer to a value to store the result in
- *
- * @return int The result of the operation
- */
-int solve_equation(const wchar_t* equation, *value value){}
+	wcstombs(equation_mbs, equation);
+	yy_scan_string(equation_mbs);
+
+	if (yyparse() == 1) {
+		*response = get_error();
+		return 0;
+	}
+
+	*response = parse_result;
+	return 1;
+}
 
 /**
  * Get a variable's value
@@ -167,6 +186,13 @@ int put_function(const wchar_t* name, function *definition) {
 	return table_put(functions, name, definition);
 }
 
+int_value_t ifactorial(int_value_t in) {
+	if (in <= 0)
+		return 1;
+
+	return ifactorial(in-1) * in;
+}
+
 int float_value(value* v, float_value_t *out) {
 	value* resolved;
 	int result;
@@ -229,4 +255,37 @@ int value_type(value* v, char* type) {
 		
 	*type = v->type;
 	return NO_FAILURE;
+}
+
+/**
+ * Return the expected type of an expression
+ * @param left Pointer to left value or NULL
+ * @param right Pointer to right value or NULL
+ *
+ * @return A value type
+ */
+char expression_type(value* left, value* right, int *result) {
+	char left_type;
+	char right_type;
+	result = NO_FAILURE;
+	
+	if (left != NULL) {
+		result = value_type(left, &left_type);
+		if (result != NO_FAILURE)
+			return VALUE_ERROR;
+		
+		if (left_type == VALUE_FLOAT)
+			return VALUE_FLOAT;
+	}
+	
+	if (right != NULL) {
+		result = value_type(right, &right_type);
+		if (result != NO_FAILURE)
+			return VALUE_ERROR;
+		
+		if (right_type == VALUE_FLOAT)
+			return VALUE_FLOAT;
+	}
+
+	return VALUE_INT;
 }
