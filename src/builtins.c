@@ -43,6 +43,16 @@ int init_builtins(hash_table *variables) {
 }
 
 /**
+ * Determine if a function is a builtin
+ * @param name The name of the function to call
+ *
+ * @return 0 if not builtin
+ */
+int is_builtin(const wchar_t* name) {
+	return table_has(builtins, name);
+}
+
+/**
  * Call a builtin function
  * @param name The name of the function to call
  * @param args Arguments to pass in

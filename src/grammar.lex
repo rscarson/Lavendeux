@@ -1,10 +1,11 @@
 %{
-#include "ub3rparse.tab.h"
+#include "tab.h"
+#include "parse.h"
 int yyerror(char *s);
 int linenumber = 1;
 %}
 
-%option noyywrap
+%option noyywrap reentrant bison-bridge
 
 %%
 

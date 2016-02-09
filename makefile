@@ -5,7 +5,7 @@ BIN_DIR = bin
 INC_DIR = include
 
 LEX_SOURCE = $(SRC_DIR)/lex.c
-LEX_HEADER = $(SRC_DIR)/lex.h
+LEX_HEADER = $(INC_DIR)/lex.h
 TAB_SOURCE = $(SRC_DIR)/tab.c
 TAB_HEADER = $(INC_DIR)/tab.h
 
@@ -24,7 +24,7 @@ lib/libinterface.a:
 	gcc -c $(SRC_DIR)/interface_win32.c -o $(OBJ_DIR)/interface.o
 	ar rcs lib/libinterface.a $(OBJ_DIR)/interface.o
 
-lib/libparse.a:
+lib/libparse.a: grammar
 	gcc -c $(SRC_DIR)/parse.c -o $(OBJ_DIR)/parse.o $(COMPILE_FLAGS)
 	gcc -c $(LEX_SOURCE) -o $(OBJ_DIR)/lex.o $(COMPILE_FLAGS)
 	gcc -c $(TAB_SOURCE) -o $(OBJ_DIR)/tab.o $(COMPILE_FLAGS)

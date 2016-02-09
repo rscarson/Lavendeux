@@ -1,102 +1,10 @@
-src/parse.c: In function 'parse_equation':
-src/parse.c:80:13: warning: assignment from incompatible pointer type [enabled by default]
-   *response = error_msg(FAILURE_ALLOCATION);
-             ^
-src/parse.c:77:8: warning: unused variable 'out' [-Wunused-variable]
-  value out;
-        ^
-src/parse.c: At top level:
-src/parse.c:85:2: warning: data definition has no type or storage class [enabled by default]
-  wcstombs(equation_mbs, equation);
-  ^
-src/parse.c:85:2: warning: type defaults to 'int' in declaration of 'wcstombs' [-Wimplicit-int]
-src/parse.c:85:2: warning: parameter names (without types) in function declaration [enabled by default]
-src/parse.c:85:2: error: conflicting types for 'wcstombs'
-In file included from src/parse.c:3:0:
-c:\mingw\include\stdlib.h:344:40: note: previous declaration of 'wcstombs' was here
- _CRTIMP size_t __cdecl __MINGW_NOTHROW wcstombs (char*, const wchar_t*, size_t);
-                                        ^
-src/parse.c:86:2: warning: data definition has no type or storage class [enabled by default]
-  yy_scan_string(equation_mbs);
-  ^
-src/parse.c:86:2: warning: type defaults to 'int' in declaration of 'yy_scan_string' [-Wimplicit-int]
-src/parse.c:86:2: warning: parameter names (without types) in function declaration [enabled by default]
-src/parse.c:86:2: error: conflicting types for 'yy_scan_string'
-src/parse.c:72:13: note: previous declaration of 'yy_scan_string' was here
- extern void yy_scan_string(const char*);
-             ^
-src/parse.c:88:2: error: expected identifier or '(' before 'if'
-  if (yyparse() == 1) {
-  ^
-src/parse.c:93:2: warning: data definition has no type or storage class [enabled by default]
-  *response = parse_result;
-  ^
-src/parse.c:93:3: warning: type defaults to 'int' in declaration of 'response' [-Wimplicit-int]
-  *response = parse_result;
-   ^
-src/parse.c:93:14: warning: initialization from incompatible pointer type [enabled by default]
-  *response = parse_result;
-              ^
-src/parse.c:93:2: error: initializer element is not constant
-  *response = parse_result;
-  ^
-src/parse.c:94:2: error: expected identifier or '(' before 'return'
-  return 1;
-  ^
-src/parse.c:95:1: error: expected identifier or '(' before '}' token
- }
- ^
-src/parse.c: In function 'get_variable':
-src/parse.c:105:2: error: too many arguments to function 'table_get'
-  value *value = table_get(variables, name, value);
-  ^
-In file included from ./include/parse.h:4:0,
-                 from src/parse.c:5:
-./include/hashing.h:26:8: note: declared here
-  void* table_get(hash_table*, const wchar_t*);
-        ^
-src/parse.c: At top level:
-src/parse.c:122:5: error: conflicting types for 'put_variable'
- int put_variable(const wchar_t* name, value* src) {
-     ^
+src\grammar.y: conflicts: 2 shift/reduce, 1 reduce/reduce
+In file included from src/parse.c:8:0:
+./include/parse.h:32:4: error: 'value' redeclared as different kind of symbol
+  } value;
+    ^
 In file included from src/parse.c:5:0:
-./include/parse.h:53:6: note: previous declaration of 'put_variable' was here
-  int put_variable(const wchar_t*, value);
+./include/tab.h:42:6: note: previous definition of 'value' was here
+      value = 258,
       ^
-src/parse.c:137:49: error: expected ';', ',' or ')' before 'args'
- int solve_function(const wchar_t* name, value[] args, int n_args, value* value) {
-                                                 ^
-src/parse.c: In function 'int_value':
-src/parse.c:236:9: error: 'result' undeclared (first use in this function)
-    if( (result = get_variable(v->sv, resolved)) == NO_FAILURE )
-         ^
-src/parse.c:236:9: note: each undeclared identifier is reported only once for each function it appears in
-src/parse.c: At top level:
-src/parse.c:267:6: error: conflicting types for 'expression_type'
- char expression_type(value* left, value* right, int *result) {
-      ^
-In file included from src/parse.c:5:0:
-./include/parse.h:63:7: note: previous declaration of 'expression_type' was here
-  char expression_type(value*, value*);
-       ^
-src/parse.c: In function 'expression_type':
-src/parse.c:270:9: warning: assignment makes pointer from integer without a cast [enabled by default]
-  result = NO_FAILURE;
-         ^
-src/parse.c:273:10: warning: assignment makes pointer from integer without a cast [enabled by default]
-   result = value_type(left, &left_type);
-          ^
-src/parse.c:274:14: warning: comparison between pointer and integer [enabled by default]
-   if (result != NO_FAILURE)
-              ^
-src/parse.c:282:10: warning: assignment makes pointer from integer without a cast [enabled by default]
-   result = value_type(right, &right_type);
-          ^
-src/parse.c:283:14: warning: comparison between pointer and integer [enabled by default]
-   if (result != NO_FAILURE)
-              ^
-src/parse.c: In function 'parse_equation':
-src/parse.c:83:2: warning: control reaches end of non-void function [-Wreturn-type]
-  }
-  ^
 make: *** [lib/libparse.a] Error 1

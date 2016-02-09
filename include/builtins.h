@@ -21,6 +21,7 @@
 	hash_table *builtins;
 
 	int init_builtins(hash_table*);
+	int is_builtin(const wchar_t*);
 	int call_builtin(const wchar_t*, value[], int, value*);
 
 	/* Builtins */

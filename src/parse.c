@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "tab.h"
+#include "lex.h"
+
 #include "parse.h"
 #include "hashing.h"
 #include "builtins.h"
@@ -69,28 +72,34 @@ const char* error_msg(int code) {
  *
  * @return int 0 if failed, non 0 otherwise
  */
-extern void yy_scan_string(const char*);
-extern int yyparse( void );
-extern char* get_error( void );
-extern wchar_t* parse_result;
-int parse_equation(const wchar_t* equation, const wchar_t** response){
-	value out;
-	const char* equation_mbs = malloc(sizeof(char)*(wcslen(equation+1)));
+extern int yyparse (yyscan_t, int, int*, value*, char[]);
+int parse_equation(const wchar_t* equation, value* response){
+	char parse_error[255];
+	yyscan_t myscanner;
+
+	yylex_init(&myscanner);
+
+	char* equation_mbs = malloc(sizeof(char)*(wcslen(equation)+1));
 	if (equation_mbs == NULL) {
-		*response = error_msg(FAILURE_ALLOCATION);
-		return 0;
-	}
-	}
+		response->sv = malloc(sizeof(wchar_t)*(strlen(error_msg(FAILURE_ALLOCATION))+1));
+		mbstowcs(response->sv, error_msg(FAILURE_ALLOCATION), strlen(error_msg(FAILURE_ALLOCATION)));
 
-	wcstombs(equation_mbs, equation);
-	yy_scan_string(equation_mbs);
-
-	if (yyparse() == 1) {
-		*response = get_error();
+    	yylex_destroy(myscanner);
 		return 0;
 	}
 
-	*response = parse_result;
+	wcstombs(equation_mbs, equation, wcslen(equation));
+	yy_scan_string(equation_mbs, myscanner);
+
+	if (yyparse(myscanner, 0, NULL, response, parse_error) == 1) {
+		response->sv = malloc(sizeof(wchar_t)*(strlen(parse_error)+1));
+		mbstowcs(response->sv, parse_error, strlen(parse_error));
+
+    	yylex_destroy(myscanner);
+		return 0;
+	}
+
+    yylex_destroy(myscanner);
 	return 1;
 }
 
@@ -102,10 +111,10 @@ int parse_equation(const wchar_t* equation, const wchar_t** response){
  * @return int The result of the operation
  */
 int get_variable(const wchar_t* name, value* dst) {
-	value *value = table_get(variables, name, value);
+	value *v = table_get(variables, name);
 
-	if (value != NULL) {
-		*dst = *value;
+	if (v != NULL) {
+		*dst = *v;
 		return NO_FAILURE;
 	}
 
@@ -134,7 +143,7 @@ int put_variable(const wchar_t* name, value* src) {
  *
  * @return int The result of the operation
  */
-int solve_function(const wchar_t* name, value[] args, int n_args, value* value) {
+int solve_function(const wchar_t* name, value args[], int n_args, value* v) {
 	int i;
 	int parse_result = NO_FAILURE;
 	value *argument_backups[n_args];
@@ -142,7 +151,7 @@ int solve_function(const wchar_t* name, value[] args, int n_args, value* value) 
 
 	/* Builtin? */
 	if (is_builtin(name))
-		 return call_builtin(name, args, n_args, value);
+		 return call_builtin(name, args, n_args, v);
 
 	/* Get the definition */
 	definition = table_get(functions, name);
@@ -151,22 +160,22 @@ int solve_function(const wchar_t* name, value[] args, int n_args, value* value) 
 
 	/* Wrong number of arguments> */
 	if (n_args != definition->n_args)
-		return FAILURE_INVALID_ARGUMENTS;
+		return FAILURE_INVALID_ARGS;
 
 	/* Backup existing values, replace with argument values */
 	for (i=0; i<n_args; ++i) {
 		get_variable(definition->arguments[i], argument_backups[i]);
-		put_variable(definition->arguments[i], args[i]);
+		put_variable(definition->arguments[i], &args[i]);
 	}
 
 	/* Do the thing */
 	if (parse_result == NO_FAILURE)
-		parse_result = solve_equation(definition->expression, value);
+		parse_result = parse_equation(definition->expression, v);
 
 	/* Clean up values */
 	for (i=0; i<n_args; ++i) {
 		if (argument_backups[i] == NULL)
-			table_remove(variables, definition->arguments[i]);
+			table_remove(variables, definition->arguments[i], NULL);
 		else
 			if (put_variable(definition->arguments[i], argument_backups[i]) != NO_FAILURE)
 				parse_result = FAILURE_ALLOCATION;
@@ -194,7 +203,7 @@ int_value_t ifactorial(int_value_t in) {
 }
 
 int float_value(value* v, float_value_t *out) {
-	value* resolved;
+	value* resolved = NULL;
 	int result;
 
 	switch (v->type) {
@@ -219,7 +228,8 @@ int float_value(value* v, float_value_t *out) {
 }
 
 int int_value(value* v, int_value_t *out) {
-	value* resolved;
+	value* resolved = NULL;
+	int result;
 	
 	switch (v->type) {
 		case VALUE_INT:
@@ -243,7 +253,7 @@ int int_value(value* v, int_value_t *out) {
 }
 
 int value_type(value* v, char* type) {
-	value* resolved;
+	value* resolved = NULL;
 	int result;
 
 	if (v->type == VALUE_STRING) {
@@ -267,11 +277,11 @@ int value_type(value* v, char* type) {
 char expression_type(value* left, value* right, int *result) {
 	char left_type;
 	char right_type;
-	result = NO_FAILURE;
+	*result = NO_FAILURE;
 	
 	if (left != NULL) {
-		result = value_type(left, &left_type);
-		if (result != NO_FAILURE)
+		*result = value_type(left, &left_type);
+		if (*result != NO_FAILURE)
 			return VALUE_ERROR;
 		
 		if (left_type == VALUE_FLOAT)
@@ -279,8 +289,8 @@ char expression_type(value* left, value* right, int *result) {
 	}
 	
 	if (right != NULL) {
-		result = value_type(right, &right_type);
-		if (result != NO_FAILURE)
+		*result = value_type(right, &right_type);
+		if (*result != NO_FAILURE)
 			return VALUE_ERROR;
 		
 		if (right_type == VALUE_FLOAT)
@@ -288,4 +298,17 @@ char expression_type(value* left, value* right, int *result) {
 	}
 
 	return VALUE_INT;
+}
+
+/* On error, put code in value->iv */
+value verify_expression(value* left, value* right) {
+	value v;
+	int error;
+
+	v.type = expression_type(left, right, &error);
+	if (error == VALUE_ERROR) {
+		v.iv = error;
+	}
+
+	return v;
 }

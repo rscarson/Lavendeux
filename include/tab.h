@@ -1,8 +1,9 @@
-/* A Bison parser, made by GNU Bison 2.4.2.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton interface for Bison GLR parsers in C
    
-      Copyright (C) 2002-2006, 2009-2010 Free Software Foundation, Inc.
+      Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,31 +39,32 @@
       know about them.  */
    enum yytokentype {
      END = 0,
-     IDENTIFIER = 258,
-     HEX = 259,
-     BIN = 260,
-     OCT = 261,
-     SCI = 262,
-     FLOAT = 263,
-     INT = 264,
-     COMMA = 265,
-     DECORATOR = 266,
-     EQUAL = 267,
-     LPAREN = 268,
-     RPAREN = 269,
-     OR = 270,
-     XOR = 271,
-     AND = 272,
-     RSHIFT = 273,
-     LSHIFT = 274,
-     MINUS = 275,
-     PLUS = 276,
-     MOD = 277,
-     DIV = 278,
-     MUL = 279,
-     POW = 280,
-     FACTORIAL = 281,
-     NOT = 282
+     value = 258,
+     IDENTIFIER = 259,
+     HEX = 260,
+     BIN = 261,
+     OCT = 262,
+     SCI = 263,
+     FLOAT = 264,
+     INT = 265,
+     COMMA = 266,
+     DECORATOR = 267,
+     EQUAL = 268,
+     LPAREN = 269,
+     RPAREN = 270,
+     OR = 271,
+     XOR = 272,
+     AND = 273,
+     RSHIFT = 274,
+     LSHIFT = 275,
+     MINUS = 276,
+     PLUS = 277,
+     MOD = 278,
+     DIV = 279,
+     MUL = 280,
+     POW = 281,
+     FACTORIAL = 282,
+     NOT = 283
    };
 #endif
 
@@ -85,7 +87,7 @@ typedef struct YYLTYPE
 
 
 
-extern YYSTYPE yylval;
+
 
 
 

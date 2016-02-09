@@ -28,7 +28,7 @@
 
 		int_value_t iv;
 		float_value_t fv;
-		const wchar_t* sv;
+		wchar_t* sv;
 	} value;
 
 	typedef struct {
@@ -47,10 +47,10 @@
 	const char* error_msg(int code);
 	const wchar_t* decorate(value*);
 
-	int parse_equation(const wchar_t*, const wchar_t**);
+	int parse_equation(const wchar_t*, value*);
 
 	int get_variable(const wchar_t*, value*);
-	int put_variable(const wchar_t*, value);
+	int put_variable(const wchar_t*, value*);
 
 	int solve_function(const wchar_t*, value[], int, value*);
 	int put_function(const wchar_t*, function*);
@@ -60,5 +60,5 @@
 	int float_value(value*, float_value_t*);
 	int int_value(value*, int_value_t*);
 	int value_type(value*, char*);
-	char expression_type(value*, value*);
+	char expression_type(value*, value*, int*);
 #endif
