@@ -12,6 +12,7 @@ int main() {
 	int setting, value;
 
 	init_interface(exit_callback, parse_callback);
+	parse_init();
 
 	/* Read in settings */
 	if (config != NULL) {
@@ -109,6 +110,7 @@ void parse_callback(const wchar_t *target) {
 wchar_t* parse_expression(const wchar_t* expression) {
 	wchar_t* line;
 	wchar_t* response;
+	value v;
 	int i, len, result;
 
 	/* Get string length */
@@ -135,8 +137,7 @@ wchar_t* parse_expression(const wchar_t* expression) {
 
 	/* Copy string portion, and solve it */
 	wcscpy(line, &expression[i]);
-	response = L"ok ;)";
-	result = NO_FAILURE;//parse
+	result = parse_equation(line, &v);
 
 	/* Add to expression history */
 	add_history(line);
@@ -187,14 +188,14 @@ wchar_t* parse_expression(const wchar_t* expression) {
 
 	/* Prepare final container */
 	free(line);
-	line = (wchar_t*) malloc(sizeof(wchar_t)*(i+wcslen(response)+1));
+	line = (wchar_t*) malloc(sizeof(wchar_t)*(i+wcslen(v.sv)+1));
 	if (line == NULL)
 		error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
 
 	/* Copy response over */
 	wcsncpy(line, expression, i);
 	line[i] = L'\0';
-	wcscat(line, response);
+	wcscat(line, v.sv);
 
 	return line;
 }

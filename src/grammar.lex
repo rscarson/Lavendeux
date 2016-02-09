@@ -1,8 +1,19 @@
 %{
-#include "tab.h"
-#include "parse.h"
-int yyerror(char *s);
-int linenumber = 1;
+	#include "parse.h"
+
+	#ifndef YYSTYPE
+		typedef value YYSTYPE;
+		#define YYSTYPE value
+	#endif
+
+	#include "tab.h"
+
+	#include <stdlib.h>
+	#include <math.h>
+	#include <wchar.h>
+
+	int yyerror(char *s);
+	int linenumber = 1;
 %}
 
 %option noyywrap reentrant bison-bridge
@@ -11,60 +22,80 @@ int linenumber = 1;
 
 [a-zA-Z_][a-zA-Z0-9_]* {
 	/* Store token value */
-	yylval.type = VALUE_STRING;
-	yylval.sv = (wchar_t*) malloc(sizeof(wchar_t)*(yylen+1))
-	mbstowcs(yylval.sv, yytext, yylen);
+	yylval->type = VALUE_STRING;
+	yylval->sv = (wchar_t*) malloc(sizeof(wchar_t)*(yyget_leng(yyscanner)+1));
+	mbstowcs(yylval->sv, yytext, yyget_leng(yyscanner));
 
 	return IDENTIFIER; 
 }
 
 0x[0-9a-fA-F]+ { 
+	char* end_ptr;
+
 	/* Store token value */
-	yylval.type = VALUE_INT;
-	yylval.iv = strtoll(yylval[2], yylen, 16);
+	yylval->type = VALUE_INT;
+
+	end_ptr = &(yytext[yyget_leng(yyscanner)-1]);
+	yylval->iv = strtoll(&(yytext[2]), &end_ptr, 16);
 
 	return HEX;
 }
 
 0b[0-1]+ { 
+	char* end_ptr;
+
 	/* Store token value */
-	yylval.type = VALUE_INT;
-	yylval.iv = strtoll(yylval[2], yylen, 2);
+	yylval->type = VALUE_INT;
+
+	end_ptr = &(yytext[yyget_leng(yyscanner)-1]);
+	yylval->iv = strtoll(&(yytext[2]), &end_ptr, 2);
 
 	return BIN;
 }
 
 0o[0-7]+ { 
+	char* end_ptr;
+
 	/* Store token value */
-	yylval.type = VALUE_INT;
-	yylval.iv = strtoll(yylval[2], yylen, 8);
+	yylval->type = VALUE_INT;
+
+	end_ptr = &(yytext[yyget_leng(yyscanner)-1]);
+	yylval->iv = strtoll(&(yytext[2]), &end_ptr, 8);
 
 	return OCT;
 }
 
 -?[0-9]*(\\.[0-9]+)?(E|e)(\\+|-)?[0-9]+ { 
-	float_type_t left;
-	int_type_t right;
-	scanf("%LfE%Ld", &left, &right);
+	float_value_t left;
+	int_value_t right;
+	scanf("%lfE%d", (double*) &left, (int*) &right);
 
 	/* Store token value */
-	yylval.type = VALUE_FLOAT;
-	yylval.fv = frexpl(left, right);
+	yylval->type = VALUE_FLOAT;
+	yylval->fv = frexpl(left, (int*) &right);
 
 	return SCI;
 }
 
 -?[0-9]*\\.[0-9]+ { 
+	char* end_ptr;
+
 	/* Store token value */
-	yylval.type = VALUE_FLOAT;
-	yylval.fv = stold(yylval, yylen);
+	yylval->type = VALUE_FLOAT;
+	
+	end_ptr = &(yytext[yyget_leng(yyscanner)-1]);
+	yylval->fv = strtold(yytext, &end_ptr);
 
 	return FLOAT;
 }
 -?[0-9]+ { 
+	char* end_ptr;
+
 	/* Store token value */
-	yylval.type = VALUE_INT;
-	yylval.in = strtoll(yylval, yylen, 10);
+	yylval->type = VALUE_INT;
+
+	end_ptr = &(yytext[yyget_leng(yyscanner)]);
+	yylval->iv = strtoll(yytext, &end_ptr, 10);
 
 	return INT;
 }
@@ -131,9 +162,9 @@ int linenumber = 1;
 
 "=" { 
 	/* Store remaining text */
-	yylval.type = VALUE_STRING;
-	yylval.sv = (wchar_t*) malloc(sizeof(wchar_t)*(strlen(yytext)-yylen+1))
-	mbstowcs(yylval.sv, yytext[1], strlen(yytext)-yylen);
+	yylval->type = VALUE_STRING;
+	yylval->sv = (wchar_t*) malloc(sizeof(wchar_t)*(strlen(yytext)-yyget_leng(yyscanner)+1));
+	mbstowcs(yylval->sv, &yytext[1], strlen(yytext)-yyget_leng(yyscanner));
 
 	return EQUAL; 
 }

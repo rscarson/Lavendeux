@@ -6,7 +6,7 @@
 	#define EXPRESSION_MAX_LEN 255
 
 	/* Helper macros */
-	#define TO_RADIANS(x) x * PI / 180.0
+	#define TO_RADIANS(x) x * M_PI / 180.0
 
 	#define FAILURE_UNKNOWN			0
 	#define NO_FAILURE				1
@@ -35,7 +35,7 @@
 		const wchar_t* expression;
 
 		int n_args;
-		const wchar_t* arguments[];
+		wchar_t* arguments[];
 	} function;
 
 	/* Defined variables. string->value */
@@ -44,8 +44,8 @@
 	/* User defined methods. string->function */
 	hash_table *functions;
 
-	const char* error_msg(int code);
-	const wchar_t* decorate(value*);
+	int parse_init();
+	const char* code_to_msg(int code);
 
 	int parse_equation(const wchar_t*, value*);
 
@@ -57,8 +57,9 @@
 
 	int_value_t ifactorial(int_value_t in);
 
-	int float_value(value*, float_value_t*);
-	int int_value(value*, int_value_t*);
-	int value_type(value*, char*);
-	char expression_type(value*, value*, int*);
+	int float_value(const value*, float_value_t*);
+	int int_value(const value*, int_value_t*);
+	int value_type(const value*, char*);
+	char expression_type(const value*, const value*, int*);
+	value verify_expression(const value*, const value*);
 #endif

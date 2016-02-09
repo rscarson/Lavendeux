@@ -1,6 +1,8 @@
 #ifndef HASHING_H
 	#define HASHING_H
 
+	#include <stdlib.h>
+
 	#define HASH_DEFAULT_SIZE 100
 
 	typedef struct node {

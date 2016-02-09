@@ -6,7 +6,7 @@
 
 	/* Builtin variabls */
 	#define BUILTIN_PI L"pi"
-		#define BUILTIN_PI_VALUE PI
+		#define BUILTIN_PI_VALUE M_PI
 	#define BUILTIN_E L"e"
 		#define BUILTIN_E_VALUE M_E
 
@@ -21,6 +21,7 @@
 	hash_table *builtins;
 
 	int init_builtins(hash_table*);
+	int builtin_put(const wchar_t*, builtin, int);
 	int is_builtin(const wchar_t*);
 	int call_builtin(const wchar_t*, value[], int, value*);
 

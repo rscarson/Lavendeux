@@ -12,7 +12,7 @@ unsigned long get_hash(const wchar_t *str) {
 	unsigned long hash = 5381;
 	int c;
 
-	while (c = *mb_str++)
+	while ((c = (*mb_str)++))
 		hash = ((hash << 5) + hash) + c;
 	return hash;
 }

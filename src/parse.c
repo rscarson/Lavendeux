@@ -31,7 +31,7 @@ int parse_init() {
  *
  * @return Error message string
  */
-const char* error_msg(int code) {
+const char* code_to_msg(int code) {
 	switch (code) {
 		case FAILURE_UNKNOWN:
 			return "Unknown error";
@@ -81,8 +81,8 @@ int parse_equation(const wchar_t* equation, value* response){
 
 	char* equation_mbs = malloc(sizeof(char)*(wcslen(equation)+1));
 	if (equation_mbs == NULL) {
-		response->sv = malloc(sizeof(wchar_t)*(strlen(error_msg(FAILURE_ALLOCATION))+1));
-		mbstowcs(response->sv, error_msg(FAILURE_ALLOCATION), strlen(error_msg(FAILURE_ALLOCATION)));
+		response->sv = malloc(sizeof(wchar_t)*(strlen(code_to_msg(FAILURE_ALLOCATION))+1));
+		mbstowcs(response->sv, code_to_msg(FAILURE_ALLOCATION), strlen(code_to_msg(FAILURE_ALLOCATION)));
 
     	yylex_destroy(myscanner);
 		return 0;
@@ -202,7 +202,7 @@ int_value_t ifactorial(int_value_t in) {
 	return ifactorial(in-1) * in;
 }
 
-int float_value(value* v, float_value_t *out) {
+int float_value(const value* v, float_value_t *out) {
 	value* resolved = NULL;
 	int result;
 
@@ -227,7 +227,7 @@ int float_value(value* v, float_value_t *out) {
 	return FAILURE_ALLOCATION;
 }
 
-int int_value(value* v, int_value_t *out) {
+int int_value(const value* v, int_value_t *out) {
 	value* resolved = NULL;
 	int result;
 	
@@ -252,7 +252,7 @@ int int_value(value* v, int_value_t *out) {
 	return FAILURE_ALLOCATION;
 }
 
-int value_type(value* v, char* type) {
+int value_type(const value* v, char* type) {
 	value* resolved = NULL;
 	int result;
 
@@ -274,7 +274,7 @@ int value_type(value* v, char* type) {
  *
  * @return A value type
  */
-char expression_type(value* left, value* right, int *result) {
+char expression_type(const value* left, const value* right, int *result) {
 	char left_type;
 	char right_type;
 	*result = NO_FAILURE;
@@ -301,7 +301,7 @@ char expression_type(value* left, value* right, int *result) {
 }
 
 /* On error, put code in value->iv */
-value verify_expression(value* left, value* right) {
+value verify_expression(const value* left, const value* right) {
 	value v;
 	int error;
 
