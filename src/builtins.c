@@ -14,6 +14,8 @@
 int init_builtins(hash_table *variables) {
 	value* builtin_pi;
 	value* builtin_e;
+	
+	table_create(&builtins, HASH_DEFAULT_SIZE);
 
 	builtin_pi = malloc(sizeof(value));
 	builtin_e = malloc(sizeof(value));
@@ -65,7 +67,7 @@ int builtin_put(const wchar_t* name, builtin fn, int args) {
 	entry->fn = fn;
 	entry->n_args = args;
 
-	if (!table_put(builtins, name, entry))
+	if (!table_put(&builtins, name, entry))
 		return FAILURE_ALLOCATION;
 	return NO_FAILURE;
 }
@@ -77,7 +79,7 @@ int builtin_put(const wchar_t* name, builtin fn, int args) {
  * @return 0 if not builtin
  */
 int is_builtin(const wchar_t* name) {
-	return table_has(builtins, name);
+	return table_has(&builtins, name);
 }
 
 /**
@@ -92,7 +94,7 @@ int is_builtin(const wchar_t* name) {
 int call_builtin(const wchar_t* name, value args[], int n_args, value* v) {
 	int result;
 
-	builtin_function *fn = table_get(builtins, name);
+	builtin_function *fn = table_get(&builtins, name);
 	if (fn == NULL)
 		return FAILURE_INVALID_NAME;
 

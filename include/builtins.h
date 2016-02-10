@@ -18,7 +18,7 @@
 	} builtin_function;
 
 	/* Store builtin functions */
-	hash_table *builtins;
+	hash_table builtins;
 
 	int init_builtins(hash_table*);
 	int builtin_put(const wchar_t*, builtin, int);

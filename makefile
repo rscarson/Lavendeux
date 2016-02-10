@@ -35,3 +35,5 @@ grammar:
 
 win32: $(OBJ_DIR)/ub3rparse.res grammar $(LIB_DIR)/libinterface.a lib/libparse.a
 	$(CC) $(OBJ_DIR)/ub3rparse.res $(SRC_DIR)/main.c -o $(BIN_DIR)/ub3rparse.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS)
+
+all: win32

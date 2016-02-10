@@ -63,10 +63,10 @@ expression:
 
 		switch ($1.type) {
 			case VALUE_FLOAT:
-				swprintf($$.sv, L"%llf", $1.fv);
+				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%llf", &$1.fv);
 				break;
 			case VALUE_INT:
-				swprintf($$.sv, L"%lld", $1.iv);
+				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%lld", &$1.iv);
 				break;
 		}
 	}

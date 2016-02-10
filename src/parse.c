@@ -15,11 +15,11 @@
  * @return int The result of the operation
  */
 int parse_init() {
-	if (!table_create(variables, HASH_DEFAULT_SIZE))
+	if (!table_create(&variables, HASH_DEFAULT_SIZE))
 		return FAILURE_ALLOCATION;
-	if (!table_create(functions, HASH_DEFAULT_SIZE))
+	if (!table_create(&functions, HASH_DEFAULT_SIZE))
 		return FAILURE_ALLOCATION;
-	if (!init_builtins(variables))
+	if (!init_builtins(&variables))
 		return FAILURE_ALLOCATION;
 
 	return NO_FAILURE;
@@ -111,7 +111,7 @@ int parse_equation(const wchar_t* equation, value* response){
  * @return int The result of the operation
  */
 int get_variable(const wchar_t* name, value* dst) {
-	value *v = table_get(variables, name);
+	value *v = table_get(&variables, name);
 
 	if (v != NULL) {
 		*dst = *v;
@@ -129,7 +129,7 @@ int get_variable(const wchar_t* name, value* dst) {
  * @return int The result of the operation
  */
 int put_variable(const wchar_t* name, value* src) {
-	if (!table_put(variables, name, src))
+	if (!table_put(&variables, name, src))
 		return FAILURE_ALLOCATION;
 	return NO_FAILURE;
 }
@@ -154,7 +154,7 @@ int solve_function(const wchar_t* name, value args[], int n_args, value* v) {
 		 return call_builtin(name, args, n_args, v);
 
 	/* Get the definition */
-	definition = table_get(functions, name);
+	definition = table_get(&functions, name);
 	if (definition == NULL)
 		return FAILURE_INVALID_NAME;
 
@@ -175,7 +175,7 @@ int solve_function(const wchar_t* name, value args[], int n_args, value* v) {
 	/* Clean up values */
 	for (i=0; i<n_args; ++i) {
 		if (argument_backups[i] == NULL)
-			table_remove(variables, definition->arguments[i], NULL);
+			table_remove(&variables, definition->arguments[i], NULL);
 		else
 			if (put_variable(definition->arguments[i], argument_backups[i]) != NO_FAILURE)
 				parse_result = FAILURE_ALLOCATION;
@@ -192,7 +192,7 @@ int solve_function(const wchar_t* name, value args[], int n_args, value* v) {
  * @return int The result of the operation
  */
 int put_function(const wchar_t* name, function *definition) {
-	return table_put(functions, name, definition);
+	return table_put(&functions, name, definition);
 }
 
 int_value_t ifactorial(int_value_t in) {

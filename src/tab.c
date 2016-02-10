@@ -1,8 +1,9 @@
-/* A Bison parser, made by GNU Bison 2.4.2.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton implementation for Bison GLR parsers in C
    
-      Copyright (C) 2002-2006, 2009-2010 Free Software Foundation, Inc.
+      Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,7 +37,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.4.2"
+#define YYBISON_VERSION "2.4.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "glr.c"
@@ -52,7 +53,7 @@
 
 /* Copy the first part of user declarations.  */
 
-/* Line 171 of glr.c  */
+/* Line 172 of glr.c  */
 #line 1 "src\\grammar.y"
 
 	#include <stdio.h>
@@ -78,8 +79,8 @@
 	int yyerror (yyscan_t, int, list **value_list, value*, char[], const char*);
 
 
-/* Line 171 of glr.c  */
-#line 83 "src/tab.c"
+/* Line 172 of glr.c  */
+#line 84 "src/tab.c"
 
 
 
@@ -113,15 +114,15 @@ static YYSTYPE yyval_default;
 /* Copy the second part of user declarations.  */
 
 
-/* Line 242 of glr.c  */
-#line 118 "src/tab.c"
+/* Line 243 of glr.c  */
+#line 119 "src/tab.c"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #ifndef YY_
-# if defined YYENABLE_NLS && YYENABLE_NLS
+# if YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -191,8 +192,7 @@ YYID (i)
 #ifndef __attribute__
 /* This feature is available in gcc versions 2.5 and later.  */
 # if (! defined __GNUC__ || __GNUC__ < 2 \
-      || (__GNUC__ == 2 && __GNUC_MINOR__ < 5) \
-      || (defined __STRICT_ANSI__ && __STRICT_ANSI__))
+      || (__GNUC__ == 2 && __GNUC_MINOR__ < 5) || __STRICT_ANSI__)
 #  define __attribute__(Spec) /* empty */
 # endif
 #endif
@@ -971,10 +971,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
 		switch ((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).type) {
 			case VALUE_FLOAT:
-				swprintf(((*yyvalp)).sv, L"%llf", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).fv);
+				swprintf(((*yyvalp)).sv, EXPRESSION_MAX_LEN, L"%llf", &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).fv);
 				break;
 			case VALUE_INT:
-				swprintf(((*yyvalp)).sv, L"%lld", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).iv);
+				swprintf(((*yyvalp)).sv, EXPRESSION_MAX_LEN, L"%lld", &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).iv);
 				break;
 		}
 	;}

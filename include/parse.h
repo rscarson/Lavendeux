@@ -39,10 +39,10 @@
 	} function;
 
 	/* Defined variables. string->value */
-	hash_table *variables;
+	hash_table variables;
 
 	/* User defined methods. string->function */
-	hash_table *functions;
+	hash_table functions;
 
 	int parse_init();
 	const char* code_to_msg(int code);
