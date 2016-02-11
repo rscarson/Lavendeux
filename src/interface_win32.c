@@ -11,6 +11,7 @@
     #include "language.h"
 
     /* Event globals */
+    HWND hWnd;
     NOTIFYICONDATA nid;
 
     /* Stored callbacks */
@@ -30,7 +31,6 @@
      */
     void init_interface(exitCallback exit_callback, parseCallback parse_callback) {
         int i;
-        HWND hWnd;
         HICON hIcon;
         WNDCLASSEX hClass;
         HINSTANCE hInstance;
@@ -343,7 +343,8 @@
      */
     void error_msg(const wchar_t* title, const wchar_t* msg, char fatal) {
         if (settings[SETTING_SILENT] == SETTING_SILENT_OFF || fatal) {
-            MessageBoxW(NULL, 
+            SetForegroundWindow(hWnd);
+            MessageBoxW(hWnd, 
                 msg,
                 title,
             MB_OK);

@@ -5,6 +5,8 @@
 
 	#include "parse.h"
 
+	#define YYERROR_CODE(c) result->iv=c; yyerror(scanner, parsing_off, value_list, result, parse_error, code_to_msg(c));
+
 	#ifndef YYSTYPE
 		typedef value YYSTYPE;
 		#define YYSTYPE value
@@ -18,7 +20,6 @@
 		value elements[];
 	} list;
 
-	int yylex(YYSTYPE* yylval_param, yyscan_t yyscanner);
 	int yyerror (yyscan_t, int, list **value_list, value*, char[], const char*);
 %}
 
@@ -57,23 +58,23 @@ expression:
 	assignment_expression {
 		$$.sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
 		if ($$.sv == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
 		switch ($1.type) {
 			case VALUE_FLOAT:
-				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%llf", &$1.fv);
+				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%llf", $1.fv);
 				break;
 			case VALUE_INT:
-				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%lld", &$1.iv);
+				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%lld", $1.iv);
 				break;
 		}
 	}
 	| assignment_expression DECORATOR IDENTIFIER {
 		$$.sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
 		if ($$.sv == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
@@ -116,13 +117,13 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					strcpy(parse_error, code_to_msg(FAILURE_TYPE));
+					YYERROR_CODE(FAILURE_TYPE);
 					YYABORT;
 				break;
 
@@ -135,13 +136,13 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					strcpy(parse_error, code_to_msg(FAILURE_TYPE));
+					YYERROR_CODE(FAILURE_TYPE);
 					YYABORT;
 				break;
 
@@ -154,13 +155,13 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					strcpy(parse_error, code_to_msg(FAILURE_TYPE));
+					YYERROR_CODE(FAILURE_TYPE);
 					YYABORT;
 				break;
 
@@ -173,13 +174,13 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					strcpy(parse_error, code_to_msg(FAILURE_TYPE));
+					YYERROR_CODE(FAILURE_TYPE);
 					YYABORT;
 				break;
 
@@ -192,13 +193,13 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					strcpy(parse_error, code_to_msg(FAILURE_TYPE));
+					YYERROR_CODE(FAILURE_TYPE);
 					YYABORT;
 				break;
 
@@ -211,7 +212,7 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
@@ -237,7 +238,7 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
@@ -263,7 +264,7 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
@@ -289,7 +290,7 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
@@ -301,7 +302,7 @@ constant_expression:
 					float_value(&$3, &fright_op);
 
 					if (fright_op == 0.0) {
-						strcpy(parse_error, code_to_msg(FAILURE_INVALID_ARGS));
+						YYERROR_CODE(FAILURE_INVALID_ARGS);
 						YYABORT;
 					}
 					$$.fv = fleft_op / fright_op;
@@ -312,7 +313,7 @@ constant_expression:
 					int_value(&$3, &iright_op);
 
 					if (iright_op == 0) {
-						strcpy(parse_error, code_to_msg(FAILURE_INVALID_ARGS));
+						YYERROR_CODE(FAILURE_INVALID_ARGS);
 						YYABORT;
 					}
 					$$.iv = ileft_op / iright_op;
@@ -323,14 +324,14 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
 			int_value_t left_op, right_op;
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					strcpy(parse_error, code_to_msg(FAILURE_TYPE));
+					YYERROR_CODE(FAILURE_TYPE);
 					YYABORT;
 				break;
 
@@ -339,7 +340,7 @@ constant_expression:
 					int_value(&$3, &right_op);
 
 					if (right_op == 0) {
-						strcpy(parse_error, code_to_msg(FAILURE_INVALID_ARGS));
+						YYERROR_CODE(FAILURE_INVALID_ARGS);
 						YYABORT;
 					}
 					$$.iv = left_op % right_op;
@@ -350,7 +351,7 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
@@ -362,7 +363,7 @@ constant_expression:
 					float_value(&$3, &fright_op);
 
 					if (fright_op == 0.0) {
-						strcpy(parse_error, code_to_msg(FAILURE_INVALID_ARGS));
+						YYERROR_CODE(FAILURE_INVALID_ARGS);
 						YYABORT;
 					}
 					$$.fv = powl(fleft_op, fright_op);
@@ -373,7 +374,7 @@ constant_expression:
 					int_value(&$3, &iright_op);
 
 					if (iright_op == 0) {
-						strcpy(parse_error, code_to_msg(FAILURE_INVALID_ARGS));
+						YYERROR_CODE(FAILURE_INVALID_ARGS);
 						YYABORT;
 					}
 					$$.iv = (int_value_t) powl(fleft_op, fright_op);
@@ -384,14 +385,14 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(&$1, NULL);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
 			int_value_t left_op;
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					strcpy(parse_error, code_to_msg(FAILURE_TYPE));
+					YYERROR_CODE(FAILURE_TYPE);
 					YYABORT;
 				break;
 
@@ -399,7 +400,7 @@ constant_expression:
 					int_value(&$1, &left_op);
 
 					if (left_op < 0) {
-						strcpy(parse_error, code_to_msg(FAILURE_INVALID_ARGS));
+						YYERROR_CODE(FAILURE_INVALID_ARGS);
 						YYABORT;
 					}
 					$$.iv = ifactorial(left_op);
@@ -410,13 +411,13 @@ constant_expression:
 		if (!parsing_off) {
 			$$ = verify_expression(NULL, &$2);
 			if ($$.type == VALUE_ERROR) {
-				strcpy(parse_error, code_to_msg($$.iv));
+				YYERROR_CODE($$.iv);
 				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					strcpy(parse_error, code_to_msg(FAILURE_TYPE));
+					YYERROR_CODE(FAILURE_TYPE);
 					YYABORT;
 				break;
 
@@ -449,7 +450,7 @@ expression_list:
 		if (!parsing_off) {
 			*value_list = malloc(sizeof(list) + sizeof(value)*2);
 			if ((*value_list) == NULL) {
-				strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+				YYERROR_CODE(FAILURE_ALLOCATION);
 				YYABORT;
 			}
 			(*value_list)->size = 2;
@@ -463,7 +464,7 @@ expression_list:
 			(*value_list)->size++;
 			(*value_list) = realloc(*value_list, sizeof(list) + sizeof(value)*((*value_list)->size));
 			if ((*value_list)->elements == NULL) {
-				strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+				YYERROR_CODE(FAILURE_ALLOCATION);
 				YYABORT;
 			}
 
@@ -479,13 +480,13 @@ left_opside_funct_expression:
 
 		fn = (function*) malloc(sizeof(function));
 		if (fn == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
 		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
 		if (fn->expression == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
@@ -499,19 +500,19 @@ left_opside_funct_expression:
 
 		fn = (function*) malloc(sizeof(function) + sizeof(wchar_t*));
 		if (fn == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
 		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
 		if (fn->expression == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
 		fn->arguments[0] = malloc(sizeof(wchar_t)*(wcslen($3.sv)+1));
 		if (fn->arguments[0] == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
@@ -527,13 +528,13 @@ left_opside_funct_expression:
 
 		fn = (function*) malloc(sizeof(function) + sizeof(wchar_t*)*(*value_list)->size);
 		if (fn == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
 		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
 		if (fn->expression == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
@@ -548,13 +549,10 @@ left_opside_funct_expression:
 
 
 assignment_expression:
-	assignment_expression {
-		$$ = $1;
-	}
-	| IDENTIFIER EQUAL constant_expression {
+	IDENTIFIER EQUAL constant_expression {
 		value *v = (value*) malloc(sizeof(value));
 		if (v == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
@@ -573,7 +571,7 @@ identifier_list:
 	IDENTIFIER COMMA IDENTIFIER {
 		(*value_list) = malloc(sizeof(list) + sizeof(value)*2);
 		if ((*value_list)->elements == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 		(*value_list)->size = 2;
@@ -585,7 +583,7 @@ identifier_list:
 		(*value_list)->size++;
 		(*value_list) = realloc(*value_list, sizeof(list) + sizeof(value)*(*value_list)->size);
 		if ((*value_list) == NULL) {
-			strcpy(parse_error, code_to_msg(FAILURE_ALLOCATION));
+			YYERROR_CODE(FAILURE_ALLOCATION);
 			YYABORT;
 		}
 
@@ -596,5 +594,7 @@ identifier_list:
 %%
 
 int yyerror(yyscan_t scanner, int parsing_off, list **value_list, value* result, char response[], const char* msg) {
+	result->iv = FAILURE_SYNTAX_ERROR;
+	sprintf(response, "Error: %s at '%s'", msg, yyget_text(scanner));
 	return 1;
 }

@@ -10,7 +10,7 @@ TAB_SOURCE = $(SRC_DIR)/tab.c
 TAB_HEADER = $(INC_DIR)/tab.h
 
 CC = gcc
-COMPILE_FLAGS = -I./$(INC_DIR) -L./$(LIB_DIR) -Wall -g
+COMPILE_FLAGS = -I./$(INC_DIR) -L./$(LIB_DIR) -Wall -g -Wno-unused
 WIN32_FLAGS =  -Wl,-subsystem,windows
 
 $(OBJ_DIR)/ub3rparse.res:
@@ -30,10 +30,11 @@ $(LIB_DIR)/libparse.a: grammar
 	ar rcs $(LIB_DIR)/libparse.a $(OBJ_DIR)/decorators.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/parse.o $(OBJ_DIR)/lex.o $(OBJ_DIR)/tab.o $(OBJ_DIR)/hashing.o
 
 grammar:
-	bison $(SRC_DIR)\grammar.y --output=$(TAB_SOURCE) --defines=$(TAB_HEADER)
+	bison $(SRC_DIR)\grammar.y --output=$(TAB_SOURCE) --defines=$(TAB_HEADER) --verbose --report-file=report.txt
 	flex --outfile=$(LEX_SOURCE) --header-file=$(LEX_HEADER) -B $(SRC_DIR)\grammar.lex
 
-win32: $(OBJ_DIR)/ub3rparse.res grammar $(LIB_DIR)/libinterface.a lib/libparse.a
-	$(CC) $(OBJ_DIR)/ub3rparse.res $(SRC_DIR)/main.c -o $(BIN_DIR)/ub3rparse.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS)
+win32: $(OBJ_DIR)/ub3rparse.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a
+	$(CC) $(OBJ_DIR)/ub3rparse.res $(SRC_DIR)/main.c -o $(BIN_DIR)/ub3rparse.exe -linterface -lparse $(COMPILE_FLAGS)
+#$(WIN32_FLAGS)
 
 all: win32

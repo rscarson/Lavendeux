@@ -85,7 +85,7 @@ int parse_equation(const wchar_t* equation, value* response){
 		mbstowcs(response->sv, code_to_msg(FAILURE_ALLOCATION), strlen(code_to_msg(FAILURE_ALLOCATION)));
 
     	yylex_destroy(myscanner);
-		return 0;
+		return FAILURE_ALLOCATION;
 	}
 
 	wcstombs(equation_mbs, equation, wcslen(equation));
@@ -96,7 +96,7 @@ int parse_equation(const wchar_t* equation, value* response){
 		mbstowcs(response->sv, parse_error, strlen(parse_error));
 
     	yylex_destroy(myscanner);
-		return 0;
+		return response->iv;
 	}
 
     yylex_destroy(myscanner);
@@ -306,7 +306,7 @@ value verify_expression(const value* left, const value* right) {
 	int error;
 
 	v.type = expression_type(left, right, &error);
-	if (error == VALUE_ERROR) {
+	if (v.type == VALUE_ERROR) {
 		v.iv = error;
 	}
 

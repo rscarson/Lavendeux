@@ -176,7 +176,7 @@ wchar_t* parse_expression(const wchar_t* expression) {
 		break;
 		
 		case FAILURE_SYNTAX_ERROR:
-			error_msg(lang_lookup[LANG_STR_SYNTAX_ERR][get_setting(SETTING_LANG)], L"Syntax error in supplied expression", 0);
+			error_msg(lang_lookup[LANG_STR_SYNTAX_ERR][get_setting(SETTING_LANG)], v.sv, 0);
 		
 			response = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(expression)+1));
 			if (response == NULL)
