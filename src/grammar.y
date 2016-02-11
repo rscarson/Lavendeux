@@ -5,7 +5,8 @@
 
 	#include "parse.h"
 
-	#define YYERROR_CODE(c) result->iv=c; yyerror(scanner, parsing_off, value_list, result, parse_error, code_to_msg(c));
+	#define YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, parsing_off, value_list, result, parse_error, s); YYABORT;
+	#define YYERROR_CODE(c) YYERROR_MSG(c, code_to_msg(c));
 
 	#ifndef YYSTYPE
 		typedef value YYSTYPE;
@@ -55,11 +56,11 @@ output:
 	;
 
 expression:
-	assignment_expression {
+	constant_expression {
+		$$ = $1;
 		$$.sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
 		if ($$.sv == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		switch ($1.type) {
@@ -71,11 +72,26 @@ expression:
 				break;
 		}
 	}
-	| assignment_expression DECORATOR IDENTIFIER {
+	| assignment_expression {
+		$$ = $1;
 		$$.sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
 		if ($$.sv == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
+		}
+
+		switch ($1.type) {
+			case VALUE_FLOAT:
+				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%llf", $1.fv);
+				break;
+			case VALUE_INT:
+				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%lld", $1.iv);
+				break;
+		}
+	}
+	| expression DECORATOR IDENTIFIER {
+		$$.sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
+		if ($$.sv == NULL) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 
 		decorate($1.sv, &$3, $$.sv);
@@ -118,13 +134,11 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_CODE(FAILURE_TYPE);
-					YYABORT;
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
@@ -137,13 +151,11 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_CODE(FAILURE_TYPE);
-					YYABORT;
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
@@ -156,13 +168,11 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_CODE(FAILURE_TYPE);
-					YYABORT;
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
@@ -175,13 +185,11 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_CODE(FAILURE_TYPE);
-					YYABORT;
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
@@ -194,13 +202,11 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_CODE(FAILURE_TYPE);
-					YYABORT;
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
@@ -213,7 +219,6 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			float_value_t fleft_op, fright_op;
@@ -239,7 +244,6 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			float_value_t fleft_op, fright_op;
@@ -265,7 +269,6 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			float_value_t fleft_op, fright_op;
@@ -291,7 +294,6 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			float_value_t fleft_op, fright_op;
@@ -302,8 +304,7 @@ constant_expression:
 					float_value(&$3, &fright_op);
 
 					if (fright_op == 0.0) {
-						YYERROR_CODE(FAILURE_INVALID_ARGS);
-						YYABORT;
+						YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
 					}
 					$$.fv = fleft_op / fright_op;
 				break;
@@ -313,8 +314,7 @@ constant_expression:
 					int_value(&$3, &iright_op);
 
 					if (iright_op == 0) {
-						YYERROR_CODE(FAILURE_INVALID_ARGS);
-						YYABORT;
+						YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
 					}
 					$$.iv = ileft_op / iright_op;
 			}
@@ -325,14 +325,12 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			int_value_t left_op, right_op;
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_CODE(FAILURE_TYPE);
-					YYABORT;
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to modulus");
 				break;
 
 				case VALUE_INT:
@@ -340,8 +338,7 @@ constant_expression:
 					int_value(&$3, &right_op);
 
 					if (right_op == 0) {
-						YYERROR_CODE(FAILURE_INVALID_ARGS);
-						YYABORT;
+						YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
 					}
 					$$.iv = left_op % right_op;
 			}
@@ -352,7 +349,6 @@ constant_expression:
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			float_value_t fleft_op, fright_op;
@@ -362,22 +358,14 @@ constant_expression:
 					float_value(&$1, &fleft_op);
 					float_value(&$3, &fright_op);
 
-					if (fright_op == 0.0) {
-						YYERROR_CODE(FAILURE_INVALID_ARGS);
-						YYABORT;
-					}
 					$$.fv = powl(fleft_op, fright_op);
 				break;
 
 				case VALUE_INT:
 					int_value(&$1, &ileft_op);
 					int_value(&$3, &iright_op);
-
-					if (iright_op == 0) {
-						YYERROR_CODE(FAILURE_INVALID_ARGS);
-						YYABORT;
-					}
-					$$.iv = (int_value_t) powl(fleft_op, fright_op);
+					
+					$$.iv = (int_value_t) powl(ileft_op, iright_op);
 			}
 		}
 	}
@@ -386,14 +374,12 @@ constant_expression:
 			$$ = verify_expression(&$1, NULL);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			int_value_t left_op;
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_CODE(FAILURE_TYPE);
-					YYABORT;
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to factorial");
 				break;
 
 				case VALUE_INT:
@@ -401,7 +387,6 @@ constant_expression:
 
 					if (left_op < 0) {
 						YYERROR_CODE(FAILURE_INVALID_ARGS);
-						YYABORT;
 					}
 					$$.iv = ifactorial(left_op);
 			}
@@ -412,13 +397,11 @@ constant_expression:
 			$$ = verify_expression(NULL, &$2);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
-				YYABORT;
 			}
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_CODE(FAILURE_TYPE);
-					YYABORT;
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
@@ -451,7 +434,6 @@ expression_list:
 			*value_list = malloc(sizeof(list) + sizeof(value)*2);
 			if ((*value_list) == NULL) {
 				YYERROR_CODE(FAILURE_ALLOCATION);
-				YYABORT;
 			}
 			(*value_list)->size = 2;
 
@@ -465,7 +447,6 @@ expression_list:
 			(*value_list) = realloc(*value_list, sizeof(list) + sizeof(value)*((*value_list)->size));
 			if ((*value_list)->elements == NULL) {
 				YYERROR_CODE(FAILURE_ALLOCATION);
-				YYABORT;
 			}
 
 			(*value_list)->elements[(*value_list)->size-1] = $3;
@@ -474,20 +455,18 @@ expression_list:
 	;
 
 left_opside_funct_expression:
-	| IDENTIFIER LPAREN RPAREN EQUAL {
+	IDENTIFIER LPAREN RPAREN EQUAL {
 		function *fn;
 		parsing_off = 1;
 
 		fn = (function*) malloc(sizeof(function));
 		if (fn == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
 		if (fn->expression == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		fn->n_args = 0;
@@ -501,19 +480,16 @@ left_opside_funct_expression:
 		fn = (function*) malloc(sizeof(function) + sizeof(wchar_t*));
 		if (fn == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
 		if (fn->expression == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		fn->arguments[0] = malloc(sizeof(wchar_t)*(wcslen($3.sv)+1));
 		if (fn->arguments[0] == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		wcscpy(fn->arguments[0], $3.sv);
@@ -529,13 +505,11 @@ left_opside_funct_expression:
 		fn = (function*) malloc(sizeof(function) + sizeof(wchar_t*)*(*value_list)->size);
 		if (fn == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
 		if (fn->expression == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		fn->n_args = (*value_list)->size;
@@ -553,7 +527,6 @@ assignment_expression:
 		value *v = (value*) malloc(sizeof(value));
 		if (v == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		*v = $3;
@@ -572,7 +545,6 @@ identifier_list:
 		(*value_list) = malloc(sizeof(list) + sizeof(value)*2);
 		if ((*value_list)->elements == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 		(*value_list)->size = 2;
 
@@ -584,7 +556,6 @@ identifier_list:
 		(*value_list) = realloc(*value_list, sizeof(list) + sizeof(value)*(*value_list)->size);
 		if ((*value_list) == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
-			YYABORT;
 		}
 
 		wcscpy((*value_list)->elements[(*value_list)->size-1].sv, $3.sv);
@@ -594,7 +565,12 @@ identifier_list:
 %%
 
 int yyerror(yyscan_t scanner, int parsing_off, list **value_list, value* result, char response[], const char* msg) {
+	char* pos = yyget_text(scanner);
 	result->iv = FAILURE_SYNTAX_ERROR;
-	sprintf(response, "Error: %s at '%s'", msg, yyget_text(scanner));
+
+	if (strlen(pos) == 0)
+		sprintf(response, "Error: %s", msg);
+	else
+		sprintf(response, "Error: %s at '%s'", msg, pos);
 	return 1;
 }

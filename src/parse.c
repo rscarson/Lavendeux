@@ -203,7 +203,7 @@ int_value_t ifactorial(int_value_t in) {
 }
 
 int float_value(const value* v, float_value_t *out) {
-	value* resolved = NULL;
+	value resolved;
 	int result;
 
 	switch (v->type) {
@@ -218,8 +218,8 @@ int float_value(const value* v, float_value_t *out) {
 		break;
 
 		case VALUE_STRING:
-			if( (result = get_variable(v->sv, resolved)) == NO_FAILURE )
-				return float_value(resolved, out);
+			if( (result = get_variable(v->sv, &resolved)) == NO_FAILURE )
+				return float_value(&resolved, out);
 			else return result;
 		break;
 	}
@@ -228,7 +228,7 @@ int float_value(const value* v, float_value_t *out) {
 }
 
 int int_value(const value* v, int_value_t *out) {
-	value* resolved = NULL;
+	value resolved;
 	int result;
 	
 	switch (v->type) {
@@ -243,8 +243,8 @@ int int_value(const value* v, int_value_t *out) {
 		break;
 
 		case VALUE_STRING:
-			if( (result = get_variable(v->sv, resolved)) == NO_FAILURE )
-				return int_value(resolved, out);
+			if( (result = get_variable(v->sv, &resolved)) == NO_FAILURE )
+				return int_value(&resolved, out);
 			else return result;
 		break;
 	}
@@ -253,14 +253,14 @@ int int_value(const value* v, int_value_t *out) {
 }
 
 int value_type(const value* v, char* type) {
-	value* resolved = NULL;
+	value resolved;
 	int result;
 
 	if (v->type == VALUE_STRING) {
-		result = get_variable(v->sv, resolved);
+		result = get_variable(v->sv, &resolved);
 		if (result != NO_FAILURE)
 			return result;
-		return value_type(resolved, type);
+		return value_type(&resolved, type);
 	}
 		
 	*type = v->type;

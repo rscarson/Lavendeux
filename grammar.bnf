@@ -1,59 +1,22 @@
-<expression>:
-	<assignment_expression>
-	| <assignment_expression> <DECORATOR> <IDENTIFIER>
+<expression> ::= <assignment_expression> | <assignment_expression> <DECORATOR> <IDENTIFIER>
 	;
 
-<atomic_value>:
-	<IDENTIFIER>
-	| <HEX>
-	| <BIN>
-	| <OCT>
-	| <SCI>
-	| <FLOAT>
-	| <INT>
+<atomic_value> ::= <IDENTIFIER> | <HEX> | <BIN> | <OCT> | <SCI> | <FLOAT> | <INT>
 	;
 
-<constant_expression>:
-	<atomic_value>
-	| <LPAREN> <constant_expression> <RPAREN>
-	| <constant_expression> <OR> <constant_expression>
-	| <constant_expression> <XOR> <constant_expression>
-	| <constant_expression> <AND> <constant_expression>
-	| <constant_expression> <LSHIFT> <constant_expression>
-	| <constant_expression> <RSHIFT> <constant_expression>
-	| <constant_expression> <PLUS> <constant_expression>
-	| <constant_expression> <MINUS> <constant_expression>
-	| <constant_expression> <MUL> <constant_expression>
-	| <constant_expression> <DIV> <constant_expression>
-	| <constant_expression> <MOD> <constant_expression>
-	| <constant_expression> <POW> <constant_expression>
-	| <constant_expression> <FACTORIAL>
-	| <NOT> <constant_expression>
-	| <IDENTIFIER> <LPAREN> <RPAREN>
-	| <IDENTIFIER> <LPAREN> <constant_expression> <RPAREN>
-	| <IDENTIFIER> <LPAREN> <expression_list> <RPAREN>
+<constant_expression> ::= <atomic_value> | <LPAREN> <constant_expression> <RPAREN> | <constant_expression> <OR> <constant_expression> | <constant_expression> <XOR> <constant_expression> | <constant_expression> <AND> <constant_expression> | <constant_expression> <LSHIFT> <constant_expression> | <constant_expression> <RSHIFT> <constant_expression> | <constant_expression> <PLUS> <constant_expression> | <constant_expression> <MINUS> <constant_expression> | <constant_expression> <MUL> <constant_expression> | <constant_expression> <DIV> <constant_expression> | <constant_expression> <MOD> <constant_expression> | <constant_expression> <POW> <constant_expression> | <constant_expression> <FACTORIAL> | <NOT> <constant_expression> | <IDENTIFIER> <LPAREN> <RPAREN> | <IDENTIFIER> <LPAREN> <constant_expression> <RPAREN> | <IDENTIFIER> <LPAREN> <expression_list> <RPAREN>
 	;
 
-<expression_list>:
-	<constant_expression> <COMMA> <constant_expression>
-	| <expression_list> <COMMA> <constant_expression>
+<expression_list> ::= <constant_expression> <COMMA> <constant_expression> | <expression_list> <COMMA> <constant_expression>
 	;
 
-<left_opside_funct_expression>:
-	| <IDENTIFIER> <LPAREN> <RPAREN> <EQUAL>
-	| <IDENTIFIER> <LPAREN> <IDENTIFIER> <RPAREN> <EQUAL>
-	| <IDENTIFIER> <LPAREN> <identifier_list> <RPAREN> <EQUAL>
+<left_opside_funct_expression> ::= | <IDENTIFIER> <LPAREN> <RPAREN> <EQUAL> | <IDENTIFIER> <LPAREN> <IDENTIFIER> <RPAREN> <EQUAL> | <IDENTIFIER> <LPAREN> <identifier_list> <RPAREN> <EQUAL>
 	;
 
-<assignment_expression>:
-	<assignment_expression>
-	| <IDENTIFIER> <EQUAL> <constant_expression>
-	| <left_opside_funct_expression> <constant_expression>
+<assignment_expression> ::= <assignment_expression> | <IDENTIFIER> <EQUAL> <constant_expression> | <left_opside_funct_expression> <constant_expression>
 	;
 
-<identifier_list>:
-	<IDENTIFIER> <COMMA> <IDENTIFIER>
-	| <identifier_list> <COMMA> <IDENTIFIER>
+<identifier_list> ::= <IDENTIFIER> <COMMA> <IDENTIFIER> | <identifier_list> <COMMA> <IDENTIFIER>
 	;
 
 <IDENTIFIER> ::= <letter> | "_" | <IDENTIFIER> <letter> | <IDENTIFIER> <digit> | <IDENTIFIER> "_"

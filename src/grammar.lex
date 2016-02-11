@@ -30,42 +30,30 @@
 }
 
 0x[0-9a-fA-F]+ { 
-	char* end_ptr;
-
 	/* Store token value */
 	yylval->type = VALUE_INT;
-
-	end_ptr = &(yytext[yyget_leng(yyscanner)-1]);
-	yylval->iv = strtoll(&(yytext[2]), &end_ptr, 16);
+	yylval->iv = strtoll(&(yytext[2]), NULL, 16);
 
 	return HEX;
 }
 
 0b[0-1]+ { 
-	char* end_ptr;
-
 	/* Store token value */
 	yylval->type = VALUE_INT;
-
-	end_ptr = &(yytext[yyget_leng(yyscanner)-1]);
-	yylval->iv = strtoll(&(yytext[2]), &end_ptr, 2);
+	yylval->iv = strtoll(&(yytext[2]), NULL, 2);
 
 	return BIN;
 }
 
 0o[0-7]+ { 
-	char* end_ptr;
-
 	/* Store token value */
 	yylval->type = VALUE_INT;
-
-	end_ptr = &(yytext[yyget_leng(yyscanner)-1]);
-	yylval->iv = strtoll(&(yytext[2]), &end_ptr, 8);
+	yylval->iv = strtoll(&(yytext[2]), NULL, 8);
 
 	return OCT;
 }
 
--?[0-9]*(\\.[0-9]+)?(E|e)(\\+|-)?[0-9]+ { 
+-?[0-9]*(\.[0-9]+)?(E|e)(\+|-)?[0-9]+ {
 	float_value_t left;
 	int_value_t right;
 	scanf("%lfE%d", (double*) &left, (int*) &right);
@@ -77,25 +65,17 @@
 	return SCI;
 }
 
--?[0-9]*\\.[0-9]+ { 
-	char* end_ptr;
-
+-?[0-9]*\.[0-9]+ { 
 	/* Store token value */
 	yylval->type = VALUE_FLOAT;
-	
-	end_ptr = &(yytext[yyget_leng(yyscanner)-1]);
-	yylval->fv = strtold(yytext, &end_ptr);
+	yylval->fv = strtold(yytext, NULL);
 
 	return FLOAT;
 }
 -?[0-9]+ { 
-	char* end_ptr;
-
 	/* Store token value */
 	yylval->type = VALUE_INT;
-
-	end_ptr = &(yytext[yyget_leng(yyscanner)]);
-	yylval->iv = strtoll(yytext, &end_ptr, 10);
+	yylval->iv = strtoll(yytext, NULL, 10);
 
 	return INT;
 }

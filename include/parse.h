@@ -6,7 +6,7 @@
 	#define EXPRESSION_MAX_LEN 255
 
 	/* Helper macros */
-	#define TO_RADIANS(x) x * M_PI / 180.0
+	#define TO_RADIANS(x) x * PI / 180.0
 
 	#define FAILURE_UNKNOWN			0
 	#define NO_FAILURE				1

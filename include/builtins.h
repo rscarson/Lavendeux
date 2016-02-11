@@ -4,11 +4,8 @@
 	#include "hashing.h"
 	#include <math.h>
 
-	/* Builtin variabls */
-	#define BUILTIN_PI L"pi"
-		#define BUILTIN_PI_VALUE M_PI
-	#define BUILTIN_E L"e"
-		#define BUILTIN_E_VALUE M_E
+	#define PI 3.14159265358979323846264338327
+	#define E 2.71828182845905
 
 	/* A builtin function looks like this */
 	typedef int(*builtin)(value[], value*);

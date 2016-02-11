@@ -23,13 +23,14 @@ int init_builtins(hash_table *variables) {
 		return FAILURE_ALLOCATION;
 
 	builtin_pi->type = VALUE_FLOAT;
+	builtin_pi->fv = PI;
+
 	builtin_e->type = VALUE_FLOAT;
-	builtin_pi->fv = BUILTIN_PI_VALUE;
-	builtin_e->fv = BUILTIN_E_VALUE;
+	builtin_e->fv = E;
 
 	if (
-		!table_put(variables, BUILTIN_PI, builtin_pi) ||
-		!table_put(variables, BUILTIN_E, builtin_e)
+		!table_put(variables, L"pi", builtin_pi) ||
+		!table_put(variables, L"e", builtin_e)
 	) return FAILURE_ALLOCATION;
 
 	if (
@@ -52,8 +53,8 @@ int init_builtins(hash_table *variables) {
 		builtin_put(L"ln", builtin_ln, 1) != NO_FAILURE ||
 		builtin_put(L"log", builtin_log, 2) != NO_FAILURE ||
 
-		builtin_put(L"sqrt,", builtin_sqrt, 1) != NO_FAILURE ||
-		builtin_put(L"root,", builtin_root, 2) != NO_FAILURE
+		builtin_put(L"sqrt", builtin_sqrt, 1) != NO_FAILURE ||
+		builtin_put(L"root", builtin_root, 2) != NO_FAILURE
 	) return FAILURE_ALLOCATION;
 
 	return NO_FAILURE;
@@ -183,7 +184,7 @@ int builtin_tan(value args[], value* result) {
 	float_value_t in;
 	float_value(&args[0], &in);
 
-	if (fmodl(in, M_PI/2.0))
+	if (fmodl(in, PI/2.0))
 		return FAILURE_INVALID_ARGS;
 	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
