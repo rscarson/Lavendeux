@@ -1,115 +1,111 @@
-State 37 conflicts: 2 shift/reduce
+State 36 conflicts: 2 shift/reduce
 
 
 Grammar
 
-    0 $accept: output "end of expression"
+    0 $accept: expression "end of expression"
 
-    1 output: expression
+    1 expression: constant_expression
+    2           | assignment_expression
+    3           | expression DECORATOR IDENTIFIER
 
-    2 expression: constant_expression
-    3           | assignment_expression
-    4           | expression DECORATOR IDENTIFIER
+    4 atomic_value: IDENTIFIER
+    5             | HEX
+    6             | BIN
+    7             | OCT
+    8             | SCI
+    9             | FLOAT
+   10             | INT
 
-    5 atomic_value: IDENTIFIER
-    6             | HEX
-    7             | BIN
-    8             | OCT
-    9             | SCI
-   10             | FLOAT
-   11             | INT
+   11 constant_expression: atomic_value
+   12                    | LPAREN constant_expression RPAREN
+   13                    | constant_expression OR constant_expression
+   14                    | constant_expression XOR constant_expression
+   15                    | constant_expression AND constant_expression
+   16                    | constant_expression LSHIFT constant_expression
+   17                    | constant_expression RSHIFT constant_expression
+   18                    | constant_expression PLUS constant_expression
+   19                    | constant_expression MINUS constant_expression
+   20                    | constant_expression MUL constant_expression
+   21                    | constant_expression DIV constant_expression
+   22                    | constant_expression MOD constant_expression
+   23                    | constant_expression POW constant_expression
+   24                    | constant_expression FACTORIAL
+   25                    | NOT constant_expression
+   26                    | IDENTIFIER LPAREN RPAREN
+   27                    | IDENTIFIER LPAREN constant_expression RPAREN
+   28                    | IDENTIFIER LPAREN expression_list RPAREN
 
-   12 constant_expression: atomic_value
-   13                    | LPAREN constant_expression RPAREN
-   14                    | constant_expression OR constant_expression
-   15                    | constant_expression XOR constant_expression
-   16                    | constant_expression AND constant_expression
-   17                    | constant_expression LSHIFT constant_expression
-   18                    | constant_expression RSHIFT constant_expression
-   19                    | constant_expression PLUS constant_expression
-   20                    | constant_expression MINUS constant_expression
-   21                    | constant_expression MUL constant_expression
-   22                    | constant_expression DIV constant_expression
-   23                    | constant_expression MOD constant_expression
-   24                    | constant_expression POW constant_expression
-   25                    | constant_expression FACTORIAL
-   26                    | NOT constant_expression
-   27                    | IDENTIFIER LPAREN RPAREN
-   28                    | IDENTIFIER LPAREN constant_expression RPAREN
-   29                    | IDENTIFIER LPAREN expression_list RPAREN
+   29 expression_list: constant_expression COMMA constant_expression
+   30                | expression_list COMMA constant_expression
 
-   30 expression_list: constant_expression COMMA constant_expression
-   31                | expression_list COMMA constant_expression
+   31 left_opside_funct_expression: IDENTIFIER LPAREN RPAREN EQUAL
+   32                             | IDENTIFIER LPAREN IDENTIFIER RPAREN EQUAL
+   33                             | IDENTIFIER LPAREN identifier_list RPAREN EQUAL
 
-   32 left_opside_funct_expression: IDENTIFIER LPAREN RPAREN EQUAL
-   33                             | IDENTIFIER LPAREN IDENTIFIER RPAREN EQUAL
-   34                             | IDENTIFIER LPAREN identifier_list RPAREN EQUAL
+   34 assignment_expression: IDENTIFIER EQUAL constant_expression
+   35                      | left_opside_funct_expression constant_expression
 
-   35 assignment_expression: IDENTIFIER EQUAL constant_expression
-   36                      | left_opside_funct_expression constant_expression
-
-   37 identifier_list: IDENTIFIER COMMA IDENTIFIER
-   38                | identifier_list COMMA IDENTIFIER
+   36 identifier_list: IDENTIFIER COMMA IDENTIFIER
+   37                | identifier_list COMMA IDENTIFIER
 
 
 Terminals, with rules where they appear
 
 "end of expression" (0) 0
 error (256)
-IDENTIFIER (258) 4 5 27 28 29 32 33 34 35 37 38
-HEX (259) 6
-BIN (260) 7
-OCT (261) 8
-SCI (262) 9
-FLOAT (263) 10
-INT (264) 11
-COMMA (265) 30 31 37 38
-DECORATOR (266) 4
-EQUAL (267) 32 33 34 35
-LPAREN (268) 13 27 28 29 32 33 34
-RPAREN (269) 13 27 28 29 32 33 34
-OR (270) 14
-XOR (271) 15
-AND (272) 16
-RSHIFT (273) 18
-LSHIFT (274) 17
-MINUS (275) 20
-PLUS (276) 19
-MOD (277) 23
-DIV (278) 22
-MUL (279) 21
-POW (280) 24
-FACTORIAL (281) 25
-NOT (282) 26
+IDENTIFIER (258) 3 4 26 27 28 31 32 33 34 36 37
+HEX (259) 5
+BIN (260) 6
+OCT (261) 7
+SCI (262) 8
+FLOAT (263) 9
+INT (264) 10
+DECORATOR (265) 3
+EQUAL (266) 31 32 33 34
+LPAREN (267) 12 26 27 28 31 32 33
+RPAREN (268) 12 26 27 28 31 32 33
+COMMA (269) 29 30 36 37
+OR (270) 13
+XOR (271) 14
+AND (272) 15
+RSHIFT (273) 17
+LSHIFT (274) 16
+MINUS (275) 19
+PLUS (276) 18
+MOD (277) 22
+DIV (278) 21
+MUL (279) 20
+POW (280) 23
+FACTORIAL (281) 24
+NOT (282) 25
 
 
 Nonterminals, with rules where they appear
 
 $accept (28)
     on left: 0
-output (29)
-    on left: 1, on right: 0
-expression (30)
-    on left: 2 3 4, on right: 1 4
-atomic_value (31)
-    on left: 5 6 7 8 9 10 11, on right: 12
-constant_expression (32)
-    on left: 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29,
-    on right: 2 13 14 15 16 17 18 19 20 21 22 23 24 25 26 28 30 31
-    35 36
-expression_list (33)
-    on left: 30 31, on right: 29 31
-left_opside_funct_expression (34)
-    on left: 32 33 34, on right: 36
-assignment_expression (35)
-    on left: 35 36, on right: 3
-identifier_list (36)
-    on left: 37 38, on right: 34 38
+expression (29)
+    on left: 1 2 3, on right: 0 3
+atomic_value (30)
+    on left: 4 5 6 7 8 9 10, on right: 11
+constant_expression (31)
+    on left: 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28,
+    on right: 1 12 13 14 15 16 17 18 19 20 21 22 23 24 25 27 29 30
+    34 35
+expression_list (32)
+    on left: 29 30, on right: 28 30
+left_opside_funct_expression (33)
+    on left: 31 32 33, on right: 35
+assignment_expression (34)
+    on left: 34 35, on right: 2
+identifier_list (35)
+    on left: 36 37, on right: 33 37
 
 
 state 0
 
-    0 $accept: . output "end of expression"
+    0 $accept: . expression "end of expression"
 
     IDENTIFIER  shift, and go to state 1
     HEX         shift, and go to state 2
@@ -121,315 +117,77 @@ state 0
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    output                        go to state 10
-    expression                    go to state 11
-    atomic_value                  go to state 12
-    constant_expression           go to state 13
-    left_opside_funct_expression  go to state 14
-    assignment_expression         go to state 15
+    expression                    go to state 10
+    atomic_value                  go to state 11
+    constant_expression           go to state 12
+    left_opside_funct_expression  go to state 13
+    assignment_expression         go to state 14
 
 
 state 1
 
-    5 atomic_value: IDENTIFIER .
-   27 constant_expression: IDENTIFIER . LPAREN RPAREN
-   28                    | IDENTIFIER . LPAREN constant_expression RPAREN
-   29                    | IDENTIFIER . LPAREN expression_list RPAREN
-   32 left_opside_funct_expression: IDENTIFIER . LPAREN RPAREN EQUAL
-   33                             | IDENTIFIER . LPAREN IDENTIFIER RPAREN EQUAL
-   34                             | IDENTIFIER . LPAREN identifier_list RPAREN EQUAL
-   35 assignment_expression: IDENTIFIER . EQUAL constant_expression
+    4 atomic_value: IDENTIFIER .
+   26 constant_expression: IDENTIFIER . LPAREN RPAREN
+   27                    | IDENTIFIER . LPAREN constant_expression RPAREN
+   28                    | IDENTIFIER . LPAREN expression_list RPAREN
+   31 left_opside_funct_expression: IDENTIFIER . LPAREN RPAREN EQUAL
+   32                             | IDENTIFIER . LPAREN IDENTIFIER RPAREN EQUAL
+   33                             | IDENTIFIER . LPAREN identifier_list RPAREN EQUAL
+   34 assignment_expression: IDENTIFIER . EQUAL constant_expression
 
-    EQUAL   shift, and go to state 16
-    LPAREN  shift, and go to state 17
+    EQUAL   shift, and go to state 15
+    LPAREN  shift, and go to state 16
 
-    $default  reduce using rule 5 (atomic_value)
+    $default  reduce using rule 4 (atomic_value)
 
 
 state 2
 
-    6 atomic_value: HEX .
-
-    $default  reduce using rule 6 (atomic_value)
-
-
-state 3
-
-    7 atomic_value: BIN .
-
-    $default  reduce using rule 7 (atomic_value)
-
-
-state 4
-
-    8 atomic_value: OCT .
-
-    $default  reduce using rule 8 (atomic_value)
-
-
-state 5
-
-    9 atomic_value: SCI .
-
-    $default  reduce using rule 9 (atomic_value)
-
-
-state 6
-
-   10 atomic_value: FLOAT .
-
-    $default  reduce using rule 10 (atomic_value)
-
-
-state 7
-
-   11 atomic_value: INT .
-
-    $default  reduce using rule 11 (atomic_value)
-
-
-state 8
-
-   13 constant_expression: LPAREN . constant_expression RPAREN
-
-    IDENTIFIER  shift, and go to state 18
-    HEX         shift, and go to state 2
-    BIN         shift, and go to state 3
-    OCT         shift, and go to state 4
-    SCI         shift, and go to state 5
-    FLOAT       shift, and go to state 6
-    INT         shift, and go to state 7
-    LPAREN      shift, and go to state 8
-    NOT         shift, and go to state 9
-
-    atomic_value         go to state 12
-    constant_expression  go to state 19
-
-
-state 9
-
-   26 constant_expression: NOT . constant_expression
-
-    IDENTIFIER  shift, and go to state 18
-    HEX         shift, and go to state 2
-    BIN         shift, and go to state 3
-    OCT         shift, and go to state 4
-    SCI         shift, and go to state 5
-    FLOAT       shift, and go to state 6
-    INT         shift, and go to state 7
-    LPAREN      shift, and go to state 8
-    NOT         shift, and go to state 9
-
-    atomic_value         go to state 12
-    constant_expression  go to state 20
-
-
-state 10
-
-    0 $accept: output . "end of expression"
-
-    "end of expression"  shift, and go to state 21
-
-
-state 11
-
-    1 output: expression .
-    4 expression: expression . DECORATOR IDENTIFIER
-
-    DECORATOR  shift, and go to state 22
-
-    $default  reduce using rule 1 (output)
-
-
-state 12
-
-   12 constant_expression: atomic_value .
-
-    $default  reduce using rule 12 (constant_expression)
-
-
-state 13
-
-    2 expression: constant_expression .
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
-
-    OR         shift, and go to state 23
-    XOR        shift, and go to state 24
-    AND        shift, and go to state 25
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
-
-    $default  reduce using rule 2 (expression)
-
-
-state 14
-
-   36 assignment_expression: left_opside_funct_expression . constant_expression
-
-    IDENTIFIER  shift, and go to state 18
-    HEX         shift, and go to state 2
-    BIN         shift, and go to state 3
-    OCT         shift, and go to state 4
-    SCI         shift, and go to state 5
-    FLOAT       shift, and go to state 6
-    INT         shift, and go to state 7
-    LPAREN      shift, and go to state 8
-    NOT         shift, and go to state 9
-
-    atomic_value         go to state 12
-    constant_expression  go to state 35
-
-
-state 15
-
-    3 expression: assignment_expression .
-
-    $default  reduce using rule 3 (expression)
-
-
-state 16
-
-   35 assignment_expression: IDENTIFIER EQUAL . constant_expression
-
-    IDENTIFIER  shift, and go to state 18
-    HEX         shift, and go to state 2
-    BIN         shift, and go to state 3
-    OCT         shift, and go to state 4
-    SCI         shift, and go to state 5
-    FLOAT       shift, and go to state 6
-    INT         shift, and go to state 7
-    LPAREN      shift, and go to state 8
-    NOT         shift, and go to state 9
-
-    atomic_value         go to state 12
-    constant_expression  go to state 36
-
-
-state 17
-
-   27 constant_expression: IDENTIFIER LPAREN . RPAREN
-   28                    | IDENTIFIER LPAREN . constant_expression RPAREN
-   29                    | IDENTIFIER LPAREN . expression_list RPAREN
-   32 left_opside_funct_expression: IDENTIFIER LPAREN . RPAREN EQUAL
-   33                             | IDENTIFIER LPAREN . IDENTIFIER RPAREN EQUAL
-   34                             | IDENTIFIER LPAREN . identifier_list RPAREN EQUAL
-
-    IDENTIFIER  shift, and go to state 37
-    HEX         shift, and go to state 2
-    BIN         shift, and go to state 3
-    OCT         shift, and go to state 4
-    SCI         shift, and go to state 5
-    FLOAT       shift, and go to state 6
-    INT         shift, and go to state 7
-    LPAREN      shift, and go to state 8
-    RPAREN      shift, and go to state 38
-    NOT         shift, and go to state 9
-
-    atomic_value         go to state 12
-    constant_expression  go to state 39
-    expression_list      go to state 40
-    identifier_list      go to state 41
-
-
-state 18
-
-    5 atomic_value: IDENTIFIER .
-   27 constant_expression: IDENTIFIER . LPAREN RPAREN
-   28                    | IDENTIFIER . LPAREN constant_expression RPAREN
-   29                    | IDENTIFIER . LPAREN expression_list RPAREN
-
-    LPAREN  shift, and go to state 42
+    5 atomic_value: HEX .
 
     $default  reduce using rule 5 (atomic_value)
 
 
-state 19
+state 3
 
-   13 constant_expression: LPAREN constant_expression . RPAREN
-   14                    | constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
+    6 atomic_value: BIN .
 
-    RPAREN     shift, and go to state 43
-    OR         shift, and go to state 23
-    XOR        shift, and go to state 24
-    AND        shift, and go to state 25
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    $default  reduce using rule 6 (atomic_value)
 
 
-state 20
+state 4
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
-   26                    | NOT constant_expression .
+    7 atomic_value: OCT .
 
-    $default  reduce using rule 26 (constant_expression)
+    $default  reduce using rule 7 (atomic_value)
 
 
-state 21
+state 5
 
-    0 $accept: output "end of expression" .
+    8 atomic_value: SCI .
 
-    $default  accept
-
-
-state 22
-
-    4 expression: expression DECORATOR . IDENTIFIER
-
-    IDENTIFIER  shift, and go to state 44
+    $default  reduce using rule 8 (atomic_value)
 
 
-state 23
+state 6
 
-   14 constant_expression: constant_expression OR . constant_expression
+    9 atomic_value: FLOAT .
 
-    IDENTIFIER  shift, and go to state 18
+    $default  reduce using rule 9 (atomic_value)
+
+
+state 7
+
+   10 atomic_value: INT .
+
+    $default  reduce using rule 10 (atomic_value)
+
+
+state 8
+
+   12 constant_expression: LPAREN . constant_expression RPAREN
+
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -439,15 +197,262 @@ state 23
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
+    constant_expression  go to state 18
+
+
+state 9
+
+   25 constant_expression: NOT . constant_expression
+
+    IDENTIFIER  shift, and go to state 17
+    HEX         shift, and go to state 2
+    BIN         shift, and go to state 3
+    OCT         shift, and go to state 4
+    SCI         shift, and go to state 5
+    FLOAT       shift, and go to state 6
+    INT         shift, and go to state 7
+    LPAREN      shift, and go to state 8
+    NOT         shift, and go to state 9
+
+    atomic_value         go to state 11
+    constant_expression  go to state 19
+
+
+state 10
+
+    0 $accept: expression . "end of expression"
+    3 expression: expression . DECORATOR IDENTIFIER
+
+    "end of expression"  shift, and go to state 20
+    DECORATOR            shift, and go to state 21
+
+
+state 11
+
+   11 constant_expression: atomic_value .
+
+    $default  reduce using rule 11 (constant_expression)
+
+
+state 12
+
+    1 expression: constant_expression .
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
+
+    OR         shift, and go to state 22
+    XOR        shift, and go to state 23
+    AND        shift, and go to state 24
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
+
+    $default  reduce using rule 1 (expression)
+
+
+state 13
+
+   35 assignment_expression: left_opside_funct_expression . constant_expression
+
+    IDENTIFIER  shift, and go to state 17
+    HEX         shift, and go to state 2
+    BIN         shift, and go to state 3
+    OCT         shift, and go to state 4
+    SCI         shift, and go to state 5
+    FLOAT       shift, and go to state 6
+    INT         shift, and go to state 7
+    LPAREN      shift, and go to state 8
+    NOT         shift, and go to state 9
+
+    atomic_value         go to state 11
+    constant_expression  go to state 34
+
+
+state 14
+
+    2 expression: assignment_expression .
+
+    $default  reduce using rule 2 (expression)
+
+
+state 15
+
+   34 assignment_expression: IDENTIFIER EQUAL . constant_expression
+
+    IDENTIFIER  shift, and go to state 17
+    HEX         shift, and go to state 2
+    BIN         shift, and go to state 3
+    OCT         shift, and go to state 4
+    SCI         shift, and go to state 5
+    FLOAT       shift, and go to state 6
+    INT         shift, and go to state 7
+    LPAREN      shift, and go to state 8
+    NOT         shift, and go to state 9
+
+    atomic_value         go to state 11
+    constant_expression  go to state 35
+
+
+state 16
+
+   26 constant_expression: IDENTIFIER LPAREN . RPAREN
+   27                    | IDENTIFIER LPAREN . constant_expression RPAREN
+   28                    | IDENTIFIER LPAREN . expression_list RPAREN
+   31 left_opside_funct_expression: IDENTIFIER LPAREN . RPAREN EQUAL
+   32                             | IDENTIFIER LPAREN . IDENTIFIER RPAREN EQUAL
+   33                             | IDENTIFIER LPAREN . identifier_list RPAREN EQUAL
+
+    IDENTIFIER  shift, and go to state 36
+    HEX         shift, and go to state 2
+    BIN         shift, and go to state 3
+    OCT         shift, and go to state 4
+    SCI         shift, and go to state 5
+    FLOAT       shift, and go to state 6
+    INT         shift, and go to state 7
+    LPAREN      shift, and go to state 8
+    RPAREN      shift, and go to state 37
+    NOT         shift, and go to state 9
+
+    atomic_value         go to state 11
+    constant_expression  go to state 38
+    expression_list      go to state 39
+    identifier_list      go to state 40
+
+
+state 17
+
+    4 atomic_value: IDENTIFIER .
+   26 constant_expression: IDENTIFIER . LPAREN RPAREN
+   27                    | IDENTIFIER . LPAREN constant_expression RPAREN
+   28                    | IDENTIFIER . LPAREN expression_list RPAREN
+
+    LPAREN  shift, and go to state 41
+
+    $default  reduce using rule 4 (atomic_value)
+
+
+state 18
+
+   12 constant_expression: LPAREN constant_expression . RPAREN
+   13                    | constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
+
+    RPAREN     shift, and go to state 42
+    OR         shift, and go to state 22
+    XOR        shift, and go to state 23
+    AND        shift, and go to state 24
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
+
+
+state 19
+
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
+   25                    | NOT constant_expression .
+
+    $default  reduce using rule 25 (constant_expression)
+
+
+state 20
+
+    0 $accept: expression "end of expression" .
+
+    $default  accept
+
+
+state 21
+
+    3 expression: expression DECORATOR . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 43
+
+
+state 22
+
+   13 constant_expression: constant_expression OR . constant_expression
+
+    IDENTIFIER  shift, and go to state 17
+    HEX         shift, and go to state 2
+    BIN         shift, and go to state 3
+    OCT         shift, and go to state 4
+    SCI         shift, and go to state 5
+    FLOAT       shift, and go to state 6
+    INT         shift, and go to state 7
+    LPAREN      shift, and go to state 8
+    NOT         shift, and go to state 9
+
+    atomic_value         go to state 11
+    constant_expression  go to state 44
+
+
+state 23
+
+   14 constant_expression: constant_expression XOR . constant_expression
+
+    IDENTIFIER  shift, and go to state 17
+    HEX         shift, and go to state 2
+    BIN         shift, and go to state 3
+    OCT         shift, and go to state 4
+    SCI         shift, and go to state 5
+    FLOAT       shift, and go to state 6
+    INT         shift, and go to state 7
+    LPAREN      shift, and go to state 8
+    NOT         shift, and go to state 9
+
+    atomic_value         go to state 11
     constant_expression  go to state 45
 
 
 state 24
 
-   15 constant_expression: constant_expression XOR . constant_expression
+   15 constant_expression: constant_expression AND . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -457,15 +462,15 @@ state 24
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
     constant_expression  go to state 46
 
 
 state 25
 
-   16 constant_expression: constant_expression AND . constant_expression
+   17 constant_expression: constant_expression RSHIFT . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -475,15 +480,15 @@ state 25
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
     constant_expression  go to state 47
 
 
 state 26
 
-   18 constant_expression: constant_expression RSHIFT . constant_expression
+   16 constant_expression: constant_expression LSHIFT . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -493,15 +498,15 @@ state 26
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
     constant_expression  go to state 48
 
 
 state 27
 
-   17 constant_expression: constant_expression LSHIFT . constant_expression
+   19 constant_expression: constant_expression MINUS . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -511,15 +516,15 @@ state 27
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
     constant_expression  go to state 49
 
 
 state 28
 
-   20 constant_expression: constant_expression MINUS . constant_expression
+   18 constant_expression: constant_expression PLUS . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -529,15 +534,15 @@ state 28
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
     constant_expression  go to state 50
 
 
 state 29
 
-   19 constant_expression: constant_expression PLUS . constant_expression
+   22 constant_expression: constant_expression MOD . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -547,15 +552,15 @@ state 29
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
     constant_expression  go to state 51
 
 
 state 30
 
-   23 constant_expression: constant_expression MOD . constant_expression
+   21 constant_expression: constant_expression DIV . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -565,15 +570,15 @@ state 30
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
     constant_expression  go to state 52
 
 
 state 31
 
-   22 constant_expression: constant_expression DIV . constant_expression
+   20 constant_expression: constant_expression MUL . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -583,15 +588,15 @@ state 31
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
     constant_expression  go to state 53
 
 
 state 32
 
-   21 constant_expression: constant_expression MUL . constant_expression
+   23 constant_expression: constant_expression POW . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -601,185 +606,167 @@ state 32
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
+    atomic_value         go to state 11
     constant_expression  go to state 54
 
 
 state 33
 
-   24 constant_expression: constant_expression POW . constant_expression
+   24 constant_expression: constant_expression FACTORIAL .
 
-    IDENTIFIER  shift, and go to state 18
-    HEX         shift, and go to state 2
-    BIN         shift, and go to state 3
-    OCT         shift, and go to state 4
-    SCI         shift, and go to state 5
-    FLOAT       shift, and go to state 6
-    INT         shift, and go to state 7
-    LPAREN      shift, and go to state 8
-    NOT         shift, and go to state 9
-
-    atomic_value         go to state 12
-    constant_expression  go to state 55
+    $default  reduce using rule 24 (constant_expression)
 
 
 state 34
 
-   25 constant_expression: constant_expression FACTORIAL .
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
+   35 assignment_expression: left_opside_funct_expression constant_expression .
 
-    $default  reduce using rule 25 (constant_expression)
-
-
-state 35
-
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
-   36 assignment_expression: left_opside_funct_expression constant_expression .
-
-    OR         shift, and go to state 23
-    XOR        shift, and go to state 24
-    AND        shift, and go to state 25
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
-
-    $default  reduce using rule 36 (assignment_expression)
-
-
-state 36
-
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
-   35 assignment_expression: IDENTIFIER EQUAL constant_expression .
-
-    OR         shift, and go to state 23
-    XOR        shift, and go to state 24
-    AND        shift, and go to state 25
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    OR         shift, and go to state 22
+    XOR        shift, and go to state 23
+    AND        shift, and go to state 24
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
     $default  reduce using rule 35 (assignment_expression)
 
 
+state 35
+
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
+   34 assignment_expression: IDENTIFIER EQUAL constant_expression .
+
+    OR         shift, and go to state 22
+    XOR        shift, and go to state 23
+    AND        shift, and go to state 24
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
+
+    $default  reduce using rule 34 (assignment_expression)
+
+
+state 36
+
+    4 atomic_value: IDENTIFIER .
+   26 constant_expression: IDENTIFIER . LPAREN RPAREN
+   27                    | IDENTIFIER . LPAREN constant_expression RPAREN
+   28                    | IDENTIFIER . LPAREN expression_list RPAREN
+   32 left_opside_funct_expression: IDENTIFIER LPAREN IDENTIFIER . RPAREN EQUAL
+   36 identifier_list: IDENTIFIER . COMMA IDENTIFIER
+
+    LPAREN  shift, and go to state 41
+    RPAREN  shift, and go to state 55
+    COMMA   shift, and go to state 56
+
+    RPAREN    [reduce using rule 4 (atomic_value)]
+    COMMA     [reduce using rule 4 (atomic_value)]
+    $default  reduce using rule 4 (atomic_value)
+
+
 state 37
 
-    5 atomic_value: IDENTIFIER .
-   27 constant_expression: IDENTIFIER . LPAREN RPAREN
-   28                    | IDENTIFIER . LPAREN constant_expression RPAREN
-   29                    | IDENTIFIER . LPAREN expression_list RPAREN
-   33 left_opside_funct_expression: IDENTIFIER LPAREN IDENTIFIER . RPAREN EQUAL
-   37 identifier_list: IDENTIFIER . COMMA IDENTIFIER
+   26 constant_expression: IDENTIFIER LPAREN RPAREN .
+   31 left_opside_funct_expression: IDENTIFIER LPAREN RPAREN . EQUAL
 
-    COMMA   shift, and go to state 56
-    LPAREN  shift, and go to state 42
-    RPAREN  shift, and go to state 57
+    EQUAL  shift, and go to state 57
 
-    COMMA     [reduce using rule 5 (atomic_value)]
-    RPAREN    [reduce using rule 5 (atomic_value)]
-    $default  reduce using rule 5 (atomic_value)
+    $default  reduce using rule 26 (constant_expression)
 
 
 state 38
 
-   27 constant_expression: IDENTIFIER LPAREN RPAREN .
-   32 left_opside_funct_expression: IDENTIFIER LPAREN RPAREN . EQUAL
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
+   27                    | IDENTIFIER LPAREN constant_expression . RPAREN
+   29 expression_list: constant_expression . COMMA constant_expression
 
-    EQUAL  shift, and go to state 58
-
-    $default  reduce using rule 27 (constant_expression)
+    RPAREN     shift, and go to state 58
+    COMMA      shift, and go to state 59
+    OR         shift, and go to state 22
+    XOR        shift, and go to state 23
+    AND        shift, and go to state 24
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
 
 state 39
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
-   28                    | IDENTIFIER LPAREN constant_expression . RPAREN
-   30 expression_list: constant_expression . COMMA constant_expression
+   28 constant_expression: IDENTIFIER LPAREN expression_list . RPAREN
+   30 expression_list: expression_list . COMMA constant_expression
 
-    COMMA      shift, and go to state 59
-    RPAREN     shift, and go to state 60
-    OR         shift, and go to state 23
-    XOR        shift, and go to state 24
-    AND        shift, and go to state 25
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    RPAREN  shift, and go to state 60
+    COMMA   shift, and go to state 61
 
 
 state 40
 
-   29 constant_expression: IDENTIFIER LPAREN expression_list . RPAREN
-   31 expression_list: expression_list . COMMA constant_expression
+   33 left_opside_funct_expression: IDENTIFIER LPAREN identifier_list . RPAREN EQUAL
+   37 identifier_list: identifier_list . COMMA IDENTIFIER
 
-    COMMA   shift, and go to state 61
     RPAREN  shift, and go to state 62
+    COMMA   shift, and go to state 63
 
 
 state 41
 
-   34 left_opside_funct_expression: IDENTIFIER LPAREN identifier_list . RPAREN EQUAL
-   38 identifier_list: identifier_list . COMMA IDENTIFIER
+   26 constant_expression: IDENTIFIER LPAREN . RPAREN
+   27                    | IDENTIFIER LPAREN . constant_expression RPAREN
+   28                    | IDENTIFIER LPAREN . expression_list RPAREN
 
-    COMMA   shift, and go to state 63
-    RPAREN  shift, and go to state 64
-
-
-state 42
-
-   27 constant_expression: IDENTIFIER LPAREN . RPAREN
-   28                    | IDENTIFIER LPAREN . constant_expression RPAREN
-   29                    | IDENTIFIER LPAREN . expression_list RPAREN
-
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -787,335 +774,342 @@ state 42
     FLOAT       shift, and go to state 6
     INT         shift, and go to state 7
     LPAREN      shift, and go to state 8
-    RPAREN      shift, and go to state 65
+    RPAREN      shift, and go to state 64
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
-    constant_expression  go to state 39
-    expression_list      go to state 40
+    atomic_value         go to state 11
+    constant_expression  go to state 38
+    expression_list      go to state 39
+
+
+state 42
+
+   12 constant_expression: LPAREN constant_expression RPAREN .
+
+    $default  reduce using rule 12 (constant_expression)
 
 
 state 43
 
-   13 constant_expression: LPAREN constant_expression RPAREN .
+    3 expression: expression DECORATOR IDENTIFIER .
 
-    $default  reduce using rule 13 (constant_expression)
+    $default  reduce using rule 3 (expression)
 
 
 state 44
 
-    4 expression: expression DECORATOR IDENTIFIER .
+   13 constant_expression: constant_expression . OR constant_expression
+   13                    | constant_expression OR constant_expression .
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
 
-    $default  reduce using rule 4 (expression)
+    XOR        shift, and go to state 23
+    AND        shift, and go to state 24
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
+
+    $default  reduce using rule 13 (constant_expression)
 
 
 state 45
 
-   14 constant_expression: constant_expression . OR constant_expression
-   14                    | constant_expression OR constant_expression .
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   14                    | constant_expression XOR constant_expression .
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
 
-    XOR        shift, and go to state 24
-    AND        shift, and go to state 25
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    AND        shift, and go to state 24
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
     $default  reduce using rule 14 (constant_expression)
 
 
 state 46
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   15                    | constant_expression XOR constant_expression .
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   15                    | constant_expression AND constant_expression .
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
 
-    AND        shift, and go to state 25
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
     $default  reduce using rule 15 (constant_expression)
 
 
 state 47
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   16                    | constant_expression AND constant_expression .
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   17                    | constant_expression RSHIFT constant_expression .
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
 
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
-
-    $default  reduce using rule 16 (constant_expression)
-
-
-state 48
-
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   18                    | constant_expression RSHIFT constant_expression .
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
-
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
-
-    $default  reduce using rule 18 (constant_expression)
-
-
-state 49
-
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   17                    | constant_expression LSHIFT constant_expression .
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
-
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
     $default  reduce using rule 17 (constant_expression)
 
 
-state 50
+state 48
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   20                    | constant_expression MINUS constant_expression .
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   16                    | constant_expression LSHIFT constant_expression .
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
 
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
-    $default  reduce using rule 20 (constant_expression)
+    $default  reduce using rule 16 (constant_expression)
 
 
-state 51
+state 49
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   19                    | constant_expression PLUS constant_expression .
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   19                    | constant_expression MINUS constant_expression .
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
 
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
     $default  reduce using rule 19 (constant_expression)
 
 
-state 52
+state 50
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   23                    | constant_expression MOD constant_expression .
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   18                    | constant_expression PLUS constant_expression .
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
 
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
-    $default  reduce using rule 23 (constant_expression)
+    $default  reduce using rule 18 (constant_expression)
 
 
-state 53
+state 51
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   22                    | constant_expression DIV constant_expression .
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   22                    | constant_expression MOD constant_expression .
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
 
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
     $default  reduce using rule 22 (constant_expression)
 
 
-state 54
+state 52
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   21                    | constant_expression MUL constant_expression .
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   21                    | constant_expression DIV constant_expression .
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
 
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
     $default  reduce using rule 21 (constant_expression)
 
 
+state 53
+
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   20                    | constant_expression MUL constant_expression .
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
+
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
+
+    $default  reduce using rule 20 (constant_expression)
+
+
+state 54
+
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   23                    | constant_expression POW constant_expression .
+   24                    | constant_expression . FACTORIAL
+
+    FACTORIAL  shift, and go to state 33
+
+    $default  reduce using rule 23 (constant_expression)
+
+
 state 55
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   24                    | constant_expression POW constant_expression .
-   25                    | constant_expression . FACTORIAL
+   32 left_opside_funct_expression: IDENTIFIER LPAREN IDENTIFIER RPAREN . EQUAL
 
-    FACTORIAL  shift, and go to state 34
-
-    $default  reduce using rule 24 (constant_expression)
+    EQUAL  shift, and go to state 65
 
 
 state 56
 
-   37 identifier_list: IDENTIFIER COMMA . IDENTIFIER
+   36 identifier_list: IDENTIFIER COMMA . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 66
 
 
 state 57
 
-   33 left_opside_funct_expression: IDENTIFIER LPAREN IDENTIFIER RPAREN . EQUAL
+   31 left_opside_funct_expression: IDENTIFIER LPAREN RPAREN EQUAL .
 
-    EQUAL  shift, and go to state 67
+    $default  reduce using rule 31 (left_opside_funct_expression)
 
 
 state 58
 
-   32 left_opside_funct_expression: IDENTIFIER LPAREN RPAREN EQUAL .
+   27 constant_expression: IDENTIFIER LPAREN constant_expression RPAREN .
 
-    $default  reduce using rule 32 (left_opside_funct_expression)
+    $default  reduce using rule 27 (constant_expression)
 
 
 state 59
 
-   30 expression_list: constant_expression COMMA . constant_expression
+   29 expression_list: constant_expression COMMA . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -1125,22 +1119,22 @@ state 59
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
-    constant_expression  go to state 68
+    atomic_value         go to state 11
+    constant_expression  go to state 67
 
 
 state 60
 
-   28 constant_expression: IDENTIFIER LPAREN constant_expression RPAREN .
+   28 constant_expression: IDENTIFIER LPAREN expression_list RPAREN .
 
     $default  reduce using rule 28 (constant_expression)
 
 
 state 61
 
-   31 expression_list: expression_list COMMA . constant_expression
+   30 expression_list: expression_list COMMA . constant_expression
 
-    IDENTIFIER  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 17
     HEX         shift, and go to state 2
     BIN         shift, and go to state 3
     OCT         shift, and go to state 4
@@ -1150,125 +1144,118 @@ state 61
     LPAREN      shift, and go to state 8
     NOT         shift, and go to state 9
 
-    atomic_value         go to state 12
-    constant_expression  go to state 69
+    atomic_value         go to state 11
+    constant_expression  go to state 68
 
 
 state 62
 
-   29 constant_expression: IDENTIFIER LPAREN expression_list RPAREN .
+   33 left_opside_funct_expression: IDENTIFIER LPAREN identifier_list RPAREN . EQUAL
 
-    $default  reduce using rule 29 (constant_expression)
+    EQUAL  shift, and go to state 69
 
 
 state 63
 
-   38 identifier_list: identifier_list COMMA . IDENTIFIER
+   37 identifier_list: identifier_list COMMA . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 70
 
 
 state 64
 
-   34 left_opside_funct_expression: IDENTIFIER LPAREN identifier_list RPAREN . EQUAL
+   26 constant_expression: IDENTIFIER LPAREN RPAREN .
 
-    EQUAL  shift, and go to state 71
+    $default  reduce using rule 26 (constant_expression)
 
 
 state 65
 
-   27 constant_expression: IDENTIFIER LPAREN RPAREN .
+   32 left_opside_funct_expression: IDENTIFIER LPAREN IDENTIFIER RPAREN EQUAL .
 
-    $default  reduce using rule 27 (constant_expression)
+    $default  reduce using rule 32 (left_opside_funct_expression)
 
 
 state 66
 
-   37 identifier_list: IDENTIFIER COMMA IDENTIFIER .
+   36 identifier_list: IDENTIFIER COMMA IDENTIFIER .
 
-    $default  reduce using rule 37 (identifier_list)
+    $default  reduce using rule 36 (identifier_list)
 
 
 state 67
 
-   33 left_opside_funct_expression: IDENTIFIER LPAREN IDENTIFIER RPAREN EQUAL .
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
+   29 expression_list: constant_expression COMMA constant_expression .
 
-    $default  reduce using rule 33 (left_opside_funct_expression)
+    OR         shift, and go to state 22
+    XOR        shift, and go to state 23
+    AND        shift, and go to state 24
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
+
+    $default  reduce using rule 29 (expression_list)
 
 
 state 68
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
-   30 expression_list: constant_expression COMMA constant_expression .
+   13 constant_expression: constant_expression . OR constant_expression
+   14                    | constant_expression . XOR constant_expression
+   15                    | constant_expression . AND constant_expression
+   16                    | constant_expression . LSHIFT constant_expression
+   17                    | constant_expression . RSHIFT constant_expression
+   18                    | constant_expression . PLUS constant_expression
+   19                    | constant_expression . MINUS constant_expression
+   20                    | constant_expression . MUL constant_expression
+   21                    | constant_expression . DIV constant_expression
+   22                    | constant_expression . MOD constant_expression
+   23                    | constant_expression . POW constant_expression
+   24                    | constant_expression . FACTORIAL
+   30 expression_list: expression_list COMMA constant_expression .
 
-    OR         shift, and go to state 23
-    XOR        shift, and go to state 24
-    AND        shift, and go to state 25
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
+    OR         shift, and go to state 22
+    XOR        shift, and go to state 23
+    AND        shift, and go to state 24
+    RSHIFT     shift, and go to state 25
+    LSHIFT     shift, and go to state 26
+    MINUS      shift, and go to state 27
+    PLUS       shift, and go to state 28
+    MOD        shift, and go to state 29
+    DIV        shift, and go to state 30
+    MUL        shift, and go to state 31
+    POW        shift, and go to state 32
+    FACTORIAL  shift, and go to state 33
 
     $default  reduce using rule 30 (expression_list)
 
 
 state 69
 
-   14 constant_expression: constant_expression . OR constant_expression
-   15                    | constant_expression . XOR constant_expression
-   16                    | constant_expression . AND constant_expression
-   17                    | constant_expression . LSHIFT constant_expression
-   18                    | constant_expression . RSHIFT constant_expression
-   19                    | constant_expression . PLUS constant_expression
-   20                    | constant_expression . MINUS constant_expression
-   21                    | constant_expression . MUL constant_expression
-   22                    | constant_expression . DIV constant_expression
-   23                    | constant_expression . MOD constant_expression
-   24                    | constant_expression . POW constant_expression
-   25                    | constant_expression . FACTORIAL
-   31 expression_list: expression_list COMMA constant_expression .
+   33 left_opside_funct_expression: IDENTIFIER LPAREN identifier_list RPAREN EQUAL .
 
-    OR         shift, and go to state 23
-    XOR        shift, and go to state 24
-    AND        shift, and go to state 25
-    RSHIFT     shift, and go to state 26
-    LSHIFT     shift, and go to state 27
-    MINUS      shift, and go to state 28
-    PLUS       shift, and go to state 29
-    MOD        shift, and go to state 30
-    DIV        shift, and go to state 31
-    MUL        shift, and go to state 32
-    POW        shift, and go to state 33
-    FACTORIAL  shift, and go to state 34
-
-    $default  reduce using rule 31 (expression_list)
+    $default  reduce using rule 33 (left_opside_funct_expression)
 
 
 state 70
 
-   38 identifier_list: identifier_list COMMA IDENTIFIER .
+   37 identifier_list: identifier_list COMMA IDENTIFIER .
 
-    $default  reduce using rule 38 (identifier_list)
-
-
-state 71
-
-   34 left_opside_funct_expression: IDENTIFIER LPAREN identifier_list RPAREN EQUAL .
-
-    $default  reduce using rule 34 (left_opside_funct_expression)
+    $default  reduce using rule 37 (identifier_list)

@@ -2,12 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "tab.h"
-#include "lex.h"
-
 #include "parse.h"
+#include "list.h"
 #include "hashing.h"
 #include "builtins.h"
+
+#include "tab.h"
+#include "lex.h"
 
 /**
  * Start up the parsing stores
@@ -68,20 +69,22 @@ const char* code_to_msg(int code) {
 /**
  * Process an equation and format the response
  * @param equation The expression to solve
- * @param response String buffer pointer to put the result in
+ * @param response value to put the result in
  *
  * @return int 0 if failed, non 0 otherwise
  */
-extern int yyparse (yyscan_t, int, int*, value*, char[]);
+extern int yyparse (yyscan_t, function*, value*, char[]);
 int parse_equation(const wchar_t* equation, value* response){
 	char parse_error[255];
 	yyscan_t myscanner;
+
+	function fn;
+	fn.expression = NULL;
 
 	yylex_init(&myscanner);
 
 	char* equation_mbs = malloc(sizeof(char)*(wcslen(equation)+1));
 	if (equation_mbs == NULL) {
-		response->sv = malloc(sizeof(wchar_t)*(strlen(code_to_msg(FAILURE_ALLOCATION))+1));
 		mbstowcs(response->sv, code_to_msg(FAILURE_ALLOCATION), strlen(code_to_msg(FAILURE_ALLOCATION)));
 
     	yylex_destroy(myscanner);
@@ -91,16 +94,17 @@ int parse_equation(const wchar_t* equation, value* response){
 	wcstombs(equation_mbs, equation, wcslen(equation));
 	yy_scan_string(equation_mbs, myscanner);
 
-	if (yyparse(myscanner, 0, NULL, response, parse_error) == 1) {
-		response->sv = malloc(sizeof(wchar_t)*(strlen(parse_error)+1));
+	if (yyparse(myscanner, &fn, response, parse_error) == 1) {
 		mbstowcs(response->sv, parse_error, strlen(parse_error));
 
+		free(equation_mbs);
     	yylex_destroy(myscanner);
 		return response->iv;
 	}
 
+	free(equation_mbs);
     yylex_destroy(myscanner);
-	return 1;
+	return NO_FAILURE;
 }
 
 /**
@@ -115,9 +119,11 @@ int get_variable(const wchar_t* name, value* dst) {
 
 	if (v != NULL) {
 		*dst = *v;
+		printf("GET %S=%d", name, dst->iv);
 		return NO_FAILURE;
 	}
 
+	printf("%S not found!", name, dst->iv);
 	return FAILURE_INVALID_NAME;
 }
 
@@ -129,6 +135,7 @@ int get_variable(const wchar_t* name, value* dst) {
  * @return int The result of the operation
  */
 int put_variable(const wchar_t* name, value* src) {
+		printf("SET %S=%d", name, src->iv);
 	if (!table_put(&variables, name, src))
 		return FAILURE_ALLOCATION;
 	return NO_FAILURE;

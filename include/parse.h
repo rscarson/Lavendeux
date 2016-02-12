@@ -28,14 +28,14 @@
 
 		int_value_t iv;
 		float_value_t fv;
-		wchar_t* sv;
+		wchar_t sv[EXPRESSION_MAX_LEN];
 	} value;
 
 	typedef struct {
 		const wchar_t* expression;
 
 		int n_args;
-		wchar_t* arguments[];
+		wchar_t** arguments;
 	} function;
 
 	/* Defined variables. string->value */

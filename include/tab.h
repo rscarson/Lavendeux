@@ -46,11 +46,11 @@
      SCI = 262,
      FLOAT = 263,
      INT = 264,
-     COMMA = 265,
-     DECORATOR = 266,
-     EQUAL = 267,
-     LPAREN = 268,
-     RPAREN = 269,
+     DECORATOR = 265,
+     EQUAL = 266,
+     LPAREN = 267,
+     RPAREN = 268,
+     COMMA = 269,
      OR = 270,
      XOR = 271,
      AND = 272,
@@ -69,7 +69,20 @@
 
 
 #ifndef YYSTYPE
-typedef int YYSTYPE;
+typedef union YYSTYPE
+{
+
+/* Line 2638 of glr.c  */
+#line 27 "src\\grammar.y"
+
+	value val;
+	list lst;
+
+
+
+/* Line 2638 of glr.c  */
+#line 85 "include/tab.h"
+} YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
 

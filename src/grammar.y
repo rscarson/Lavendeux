@@ -3,67 +3,61 @@
 	#include <stdlib.h>
 	#include <math.h>
 
+	#include "decorators.h"
 	#include "parse.h"
+	#include "list.h"
 
-	#define YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, parsing_off, value_list, result, parse_error, s); YYABORT;
+	typedef union YYSTYPE YYSTYPE;
+	#include "lex.h"
+
+	#define YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, stored_function, result, parse_error, s); YYABORT;
 	#define YYERROR_CODE(c) YYERROR_MSG(c, code_to_msg(c));
 
-	#ifndef YYSTYPE
-		typedef value YYSTYPE;
-		#define YYSTYPE value
-	#endif
-
-	#include "lex.h"
-	#include "decorators.h"
-
-	typedef struct {
-		int size;
-		value elements[];
-	} list;
-
-	int yyerror (yyscan_t, int, list **value_list, value*, char[], const char*);
+	int yyerror (yyscan_t, function*, value*, char[], const char*);
 %}
 
 %glr-parser
 %define api.pure
 %lex-param {yyscan_t scanner}
 %parse-param {yyscan_t scanner}
-%parse-param {int parsing_off}
-%parse-param {list **value_list}
+%parse-param {function* stored_function}
 %parse-param {value *result}
 %parse-param {char parse_error[]}
 
+%union {
+	value val;
+	list lst;
+}
+
 /* Valid tokens */
-%token IDENTIFIER HEX BIN OCT SCI FLOAT INT
-%token COMMA DECORATOR EQUAL LPAREN RPAREN
+%token <val> IDENTIFIER HEX BIN OCT SCI FLOAT INT
+%token <val> DECORATOR EQUAL LPAREN RPAREN
+%token <list> COMMA
 %token END 0 "end of expression"
-%left OR
-%left XOR
-%left AND
-%left LSHIFT RSHIFT
-%left PLUS MINUS
-%left MUL DIV MOD
-%left POW
-%left FACTORIAL
-%left NOT
+%left <val> OR
+%left <val> XOR
+%left <val> AND
+%left <val> LSHIFT RSHIFT
+%left <val> PLUS MINUS
+%left <val> MUL DIV MOD
+%left <val> POW
+%left <val> FACTORIAL
+%left <val> NOT
+
+%type<val> expression atomic_value constant_expression assignment_expression left_opside_funct_expression
+%type<lst> expression_list identifier_list
 
 %%
-
-output:
-	expression {
-		*result = $1;
-	}
-	;
 
 expression:
 	constant_expression {
 		$$ = $1;
-		$$.sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
-		if ($$.sv == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
+		if ($$.type == VALUE_STRING)
+			if (get_variable($1.sv, &$$) != NO_FAILURE) {
+				YYERROR_CODE(FAILURE_INVALID_NAME);
+			}
 
-		switch ($1.type) {
+		switch ($$.type) {
 			case VALUE_FLOAT:
 				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%llf", $1.fv);
 				break;
@@ -71,15 +65,17 @@ expression:
 				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%lld", $1.iv);
 				break;
 		}
+
+		*result = $$;
 	}
 	| assignment_expression {
 		$$ = $1;
-		$$.sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
-		if ($$.sv == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
+		if ($$.type == VALUE_STRING)
+			if (get_variable($1.sv, &$$) != NO_FAILURE) {
+				YYERROR_CODE(FAILURE_INVALID_NAME);
+			}
 
-		switch ($1.type) {
+		switch ($$.type) {
 			case VALUE_FLOAT:
 				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%llf", $1.fv);
 				break;
@@ -87,14 +83,13 @@ expression:
 				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%lld", $1.iv);
 				break;
 		}
+
+		*result = $$;
 	}
 	| expression DECORATOR IDENTIFIER {
-		$$.sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
-		if ($$.sv == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-
 		decorate($1.sv, &$3, $$.sv);
+
+		*result = $$;
 	}
 	;
 
@@ -130,7 +125,7 @@ constant_expression:
 		$$ = $2;
 	}
 	| constant_expression OR constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -147,7 +142,7 @@ constant_expression:
 		}
 	}
 	| constant_expression XOR constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -164,7 +159,7 @@ constant_expression:
 		}
 	}
 	| constant_expression AND constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -181,7 +176,7 @@ constant_expression:
 		}
 	}
 	| constant_expression LSHIFT constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -198,7 +193,7 @@ constant_expression:
 		}
 	}
 	| constant_expression RSHIFT constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -215,7 +210,7 @@ constant_expression:
 		}
 	}
 	| constant_expression PLUS constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -240,7 +235,7 @@ constant_expression:
 		}
 	}
 	| constant_expression MINUS constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -265,7 +260,7 @@ constant_expression:
 		}
 	}
 	| constant_expression MUL constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -290,7 +285,7 @@ constant_expression:
 		}
 	}
 	| constant_expression DIV constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -321,31 +316,25 @@ constant_expression:
 		}
 	}
 	| constant_expression MOD constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
 			}
 
 			int_value_t left_op, right_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to modulus");
-				break;
+			int_value(&$1, &left_op);
+			int_value(&$3, &right_op);
 
-				case VALUE_INT:
-					int_value(&$1, &left_op);
-					int_value(&$3, &right_op);
-
-					if (right_op == 0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
-					}
-					$$.iv = left_op % right_op;
+			if (right_op == 0) {
+				YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
 			}
+
+			$$.iv = left_op % right_op;
 		}
 	}
 	| constant_expression POW constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, &$3);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -364,36 +353,29 @@ constant_expression:
 				case VALUE_INT:
 					int_value(&$1, &ileft_op);
 					int_value(&$3, &iright_op);
-					
+
 					$$.iv = (int_value_t) powl(ileft_op, iright_op);
 			}
 		}
 	}
 	| constant_expression FACTORIAL {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(&$1, NULL);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
 			}
 
 			int_value_t left_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to factorial");
-				break;
-
-				case VALUE_INT:
-					int_value(&$1, &left_op);
-
-					if (left_op < 0) {
-						YYERROR_CODE(FAILURE_INVALID_ARGS);
-					}
-					$$.iv = ifactorial(left_op);
+			int_value(&$1, &left_op);
+			if (left_op < 0) {
+				YYERROR_MSG(FAILURE_INVALID_ARGS, "Factorial is undefined for arguments < 0");
 			}
+
+			$$.iv = ifactorial(left_op);
 		}
 	}
 	| NOT constant_expression {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			$$ = verify_expression(NULL, &$2);
 			if ($$.type == VALUE_ERROR) {
 				YYERROR_CODE($$.iv);
@@ -410,114 +392,82 @@ constant_expression:
 		}
 	}
 	| IDENTIFIER LPAREN RPAREN {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			solve_function($1.sv, NULL, 0, &$$);
 		}
 	}
 	| IDENTIFIER LPAREN constant_expression RPAREN {
-		if (!parsing_off) {
+		if (stored_function->expression == NULL) {
 			value args[] = { $3 };
 			solve_function($1.sv, args, 1, &$$);
 		}
 	}
 	| IDENTIFIER LPAREN expression_list RPAREN {
-		if (!parsing_off) {
-			solve_function($1.sv, (*value_list)->elements, (*value_list)->size, &$$);
-			free((*value_list));
+		if (stored_function->expression == NULL) {
+			solve_function($1.sv, $3.elements, $3.size, &$$);
+			list_destroy(&$3);
 		}
 	}
 	;
 
 expression_list:
 	constant_expression COMMA constant_expression {
-		if (!parsing_off) {
-			*value_list = malloc(sizeof(list) + sizeof(value)*2);
-			if ((*value_list) == NULL) {
+		if (stored_function->expression == NULL) {
+			if (list_create(&$$, DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
 				YYERROR_CODE(FAILURE_ALLOCATION);
 			}
-			(*value_list)->size = 2;
 
-			(*value_list)->elements[0] = $1;
-			(*value_list)->elements[1] = $3;
+			list_add(&$$, $1);
+			list_add(&$$, $3);
 		}
 	}
 	| expression_list COMMA constant_expression {
-		if (!parsing_off) {
-			(*value_list)->size++;
-			(*value_list) = realloc(*value_list, sizeof(list) + sizeof(value)*((*value_list)->size));
-			if ((*value_list)->elements == NULL) {
+		if (stored_function->expression == NULL) {
+			if (list_add(&$$, $3) != NO_FAILURE) {
 				YYERROR_CODE(FAILURE_ALLOCATION);
 			}
-
-			(*value_list)->elements[(*value_list)->size-1] = $3;
 		}
 	}
 	;
 
 left_opside_funct_expression:
 	IDENTIFIER LPAREN RPAREN EQUAL {
-		function *fn;
-		parsing_off = 1;
-
-		fn = (function*) malloc(sizeof(function));
-		if (fn == NULL) {
+		stored_function->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
+		if (stored_function->expression == NULL)
 			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
 
-		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
-		if (fn->expression == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-
-		fn->n_args = 0;
-
-		put_function($1.sv, fn);
+		stored_function->n_args = 0;
+		put_function($1.sv, stored_function);
 	}
 	| IDENTIFIER LPAREN IDENTIFIER RPAREN EQUAL {
-		function *fn;
-		parsing_off = 1;
+		stored_function->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
+		if (stored_function->expression == NULL)
+			YYERROR_CODE(FAILURE_ALLOCATION);
 
-		fn = (function*) malloc(sizeof(function) + sizeof(wchar_t*));
-		if (fn == NULL) {
+		stored_function->arguments[0] = malloc(sizeof(wchar_t)*(wcslen($3.sv)+1));
+		if (stored_function->arguments[0] == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 
-		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
-		if (fn->expression == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
+		wcscpy(stored_function->arguments[0], $3.sv);
+		stored_function->n_args = 1;
 
-		fn->arguments[0] = malloc(sizeof(wchar_t)*(wcslen($3.sv)+1));
-		if (fn->arguments[0] == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-
-		wcscpy(fn->arguments[0], $3.sv);
-		fn->n_args = 1;
-
-		put_function($1.sv, fn);
+		put_function($1.sv, stored_function);
 	}
 	| IDENTIFIER LPAREN identifier_list RPAREN EQUAL {
-		function *fn;
 		int i;
-		parsing_off = 1;
 
-		fn = (function*) malloc(sizeof(function) + sizeof(wchar_t*)*(*value_list)->size);
-		if (fn == NULL) {
+		stored_function->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
+		if (stored_function->expression == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 
-		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen($4.sv)+1));
-		if (fn->expression == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
+		stored_function->n_args = $3.size;
+		for (i=0; i<$3.size; ++i)
+			stored_function->arguments[i] = $3.elements[i].sv;
 
-		fn->n_args = (*value_list)->size;
-		for (i=0; i<(*value_list)->size; ++i)
-			fn->arguments[i] = (*value_list)->elements[i].sv;
-		free((*value_list)->elements);
-
-		put_function($1.sv, fn);
+		list_destroy(&$3);
+		put_function($1.sv, stored_function);
 	}
 	;
 
@@ -535,36 +485,30 @@ assignment_expression:
 		$$ = $3;
 	}
 	| left_opside_funct_expression constant_expression {
-		parsing_off = 0;
+		stored_function->expression = NULL;
 		$$ = $2;
 	}
 	;
 
 identifier_list:
 	IDENTIFIER COMMA IDENTIFIER {
-		(*value_list) = malloc(sizeof(list) + sizeof(value)*2);
-		if ((*value_list)->elements == NULL) {
+		if (list_create(&$$, DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
-		(*value_list)->size = 2;
 
-		wcscpy((*value_list)->elements[0].sv, $1.sv);
-		wcscpy((*value_list)->elements[1].sv, $3.sv);
+		list_add(&$$, $1);
+		list_add(&$$, $3);
 	}
 	| identifier_list COMMA IDENTIFIER {
-		(*value_list)->size++;
-		(*value_list) = realloc(*value_list, sizeof(list) + sizeof(value)*(*value_list)->size);
-		if ((*value_list) == NULL) {
+		if (list_add(&$$, $3) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
-
-		wcscpy((*value_list)->elements[(*value_list)->size-1].sv, $3.sv);
 	}
 	;
 
 %%
 
-int yyerror(yyscan_t scanner, int parsing_off, list **value_list, value* result, char response[], const char* msg) {
+int yyerror(yyscan_t scanner, function* stored_function, value* result, char response[], const char* msg) {
 	char* pos = yyget_text(scanner);
 	result->iv = FAILURE_SYNTAX_ERROR;
 

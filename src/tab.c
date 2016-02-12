@@ -60,29 +60,21 @@
 	#include <stdlib.h>
 	#include <math.h>
 
+	#include "decorators.h"
 	#include "parse.h"
+	#include "list.h"
 
-	#define YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, parsing_off, value_list, result, parse_error, s); YYABORT;
+	typedef union YYSTYPE YYSTYPE;
+	#include "lex.h"
+
+	#define YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, stored_function, result, parse_error, s); YYABORT;
 	#define YYERROR_CODE(c) YYERROR_MSG(c, code_to_msg(c));
 
-	#ifndef YYSTYPE
-		typedef value YYSTYPE;
-		#define YYSTYPE value
-	#endif
-
-	#include "lex.h"
-	#include "decorators.h"
-
-	typedef struct {
-		int size;
-		value elements[];
-	} list;
-
-	int yyerror (yyscan_t, int, list **value_list, value*, char[], const char*);
+	int yyerror (yyscan_t, function*, value*, char[], const char*);
 
 
 /* Line 172 of glr.c  */
-#line 86 "src/tab.c"
+#line 78 "src/tab.c"
 
 
 
@@ -117,7 +109,7 @@ static YYSTYPE yyval_default;
 
 
 /* Line 243 of glr.c  */
-#line 121 "src/tab.c"
+#line 113 "src/tab.c"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -211,18 +203,18 @@ YYID (i)
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  21
+#define YYFINAL  20
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   165
+#define YYLAST   173
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  28
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  9
+#define YYNNTS  8
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  39
+#define YYNRULES  38
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  72
+#define YYNSTATES  71
 /* YYMAXRHS -- Maximum number of symbols on right-hand side of rule.  */
 #define YYMAXRHS 5
 /* YYMAXLEFT -- Maximum number of symbols to the left of a handle
@@ -275,38 +267,38 @@ static const unsigned char yytranslate[] =
    YYRHS.  */
 static const unsigned char yyprhs[] =
 {
-       0,     0,     3,     5,     7,     9,    13,    15,    17,    19,
-      21,    23,    25,    27,    29,    33,    37,    41,    45,    49,
-      53,    57,    61,    65,    69,    73,    77,    80,    83,    87,
-      92,    97,   101,   105,   110,   116,   122,   126,   129,   133
+       0,     0,     3,     5,     7,    11,    13,    15,    17,    19,
+      21,    23,    25,    27,    31,    35,    39,    43,    47,    51,
+      55,    59,    63,    67,    71,    75,    78,    81,    85,    90,
+      95,    99,   103,   108,   114,   120,   124,   127,   131
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const signed char yyrhs[] =
 {
-      29,     0,    -1,    30,    -1,    32,    -1,    35,    -1,    30,
-      11,     3,    -1,     3,    -1,     4,    -1,     5,    -1,     6,
-      -1,     7,    -1,     8,    -1,     9,    -1,    31,    -1,    13,
-      32,    14,    -1,    32,    15,    32,    -1,    32,    16,    32,
-      -1,    32,    17,    32,    -1,    32,    19,    32,    -1,    32,
-      18,    32,    -1,    32,    21,    32,    -1,    32,    20,    32,
-      -1,    32,    24,    32,    -1,    32,    23,    32,    -1,    32,
-      22,    32,    -1,    32,    25,    32,    -1,    32,    26,    -1,
-      27,    32,    -1,     3,    13,    14,    -1,     3,    13,    32,
-      14,    -1,     3,    13,    33,    14,    -1,    32,    10,    32,
-      -1,    33,    10,    32,    -1,     3,    13,    14,    12,    -1,
-       3,    13,     3,    14,    12,    -1,     3,    13,    36,    14,
-      12,    -1,     3,    12,    32,    -1,    34,    32,    -1,     3,
-      10,     3,    -1,    36,    10,     3,    -1
+      29,     0,    -1,    31,    -1,    34,    -1,    29,    10,     3,
+      -1,     3,    -1,     4,    -1,     5,    -1,     6,    -1,     7,
+      -1,     8,    -1,     9,    -1,    30,    -1,    12,    31,    13,
+      -1,    31,    15,    31,    -1,    31,    16,    31,    -1,    31,
+      17,    31,    -1,    31,    19,    31,    -1,    31,    18,    31,
+      -1,    31,    21,    31,    -1,    31,    20,    31,    -1,    31,
+      24,    31,    -1,    31,    23,    31,    -1,    31,    22,    31,
+      -1,    31,    25,    31,    -1,    31,    26,    -1,    27,    31,
+      -1,     3,    12,    13,    -1,     3,    12,    31,    13,    -1,
+       3,    12,    32,    13,    -1,    31,    14,    31,    -1,    32,
+      14,    31,    -1,     3,    12,    13,    11,    -1,     3,    12,
+       3,    13,    11,    -1,     3,    12,    35,    13,    11,    -1,
+       3,    11,    31,    -1,    33,    31,    -1,     3,    14,     3,
+      -1,    35,    14,     3,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,    53,    53,    59,    75,    91,   102,   105,   108,   111,
-     114,   117,   120,   126,   129,   132,   149,   166,   183,   200,
-     217,   242,   267,   292,   323,   347,   372,   395,   412,   417,
-     423,   432,   444,   458,   476,   500,   526,   537,   544,   554
+       0,    53,    53,    71,    89,    97,   100,   103,   106,   109,
+     112,   115,   121,   124,   127,   144,   161,   178,   195,   212,
+     237,   262,   287,   318,   336,   361,   377,   394,   399,   405,
+     414,   424,   434,   442,   457,   476,   487,   494,   502
 };
 #endif
 
@@ -316,31 +308,31 @@ static const unsigned short int yyrline[] =
 static const char *const yytname[] =
 {
   "\"end of expression\"", "error", "$undefined", "IDENTIFIER", "HEX",
-  "BIN", "OCT", "SCI", "FLOAT", "INT", "COMMA", "DECORATOR", "EQUAL",
-  "LPAREN", "RPAREN", "OR", "XOR", "AND", "RSHIFT", "LSHIFT", "MINUS",
+  "BIN", "OCT", "SCI", "FLOAT", "INT", "DECORATOR", "EQUAL", "LPAREN",
+  "RPAREN", "COMMA", "OR", "XOR", "AND", "RSHIFT", "LSHIFT", "MINUS",
   "PLUS", "MOD", "DIV", "MUL", "POW", "FACTORIAL", "NOT", "$accept",
-  "output", "expression", "atomic_value", "constant_expression",
-  "expression_list", "left_opside_funct_expression",
-  "assignment_expression", "identifier_list", 0
+  "expression", "atomic_value", "constant_expression", "expression_list",
+  "left_opside_funct_expression", "assignment_expression",
+  "identifier_list", 0
 };
 #endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const unsigned char yyr1[] =
 {
-       0,    28,    29,    30,    30,    30,    31,    31,    31,    31,
-      31,    31,    31,    32,    32,    32,    32,    32,    32,    32,
-      32,    32,    32,    32,    32,    32,    32,    32,    32,    32,
-      32,    33,    33,    34,    34,    34,    35,    35,    36,    36
+       0,    28,    29,    29,    29,    30,    30,    30,    30,    30,
+      30,    30,    31,    31,    31,    31,    31,    31,    31,    31,
+      31,    31,    31,    31,    31,    31,    31,    31,    31,    31,
+      32,    32,    33,    33,    33,    34,    34,    35,    35
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const unsigned char yyr2[] =
 {
-       0,     2,     1,     1,     1,     3,     1,     1,     1,     1,
-       1,     1,     1,     1,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     3,     2,     2,     3,     4,
-       4,     3,     3,     4,     5,     5,     3,     2,     3,     3
+       0,     2,     1,     1,     3,     1,     1,     1,     1,     1,
+       1,     1,     1,     3,     3,     3,     3,     3,     3,     3,
+       3,     3,     3,     3,     3,     2,     2,     3,     4,     4,
+       3,     3,     4,     5,     5,     3,     2,     3,     3
 };
 
 /* YYDPREC[RULE-NUM] -- Dynamic precedence of rule #RULE-NUM (0 if none).  */
@@ -349,7 +341,7 @@ static const unsigned char yydprec[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0
+       0,     0,     0,     0,     0,     0,     0,     0,     0
 };
 
 /* YYMERGER[RULE-NUM] -- Index of merging function for rule #RULE-NUM.  */
@@ -358,7 +350,7 @@ static const unsigned char yymerger[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0
+       0,     0,     0,     0,     0,     0,     0,     0,     0
 };
 
 /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
@@ -366,41 +358,41 @@ static const unsigned char yymerger[] =
    error.  */
 static const unsigned char yydefact[] =
 {
-       0,     6,     7,     8,     9,    10,    11,    12,     0,     0,
-       0,     2,    13,     3,     0,     4,     0,     0,     6,     0,
-      27,     1,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    26,    37,    36,     6,    28,     0,
-       0,     0,     0,    14,     5,    15,    16,    17,    19,    18,
-      21,    20,    24,    23,    22,    25,     0,     0,    33,     0,
-      29,     0,    30,     0,     0,    28,    38,    34,    31,    32,
-      39,    35
+       0,     5,     6,     7,     8,     9,    10,    11,     0,     0,
+       0,    12,     2,     0,     3,     0,     0,     5,     0,    26,
+       1,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    25,    36,    35,     5,    27,     0,     0,
+       0,     0,    13,     4,    14,    15,    16,    18,    17,    20,
+      19,    23,    22,    21,    24,     0,     0,    32,    28,     0,
+      29,     0,     0,     0,    27,    33,    37,    30,    31,    34,
+      38
 };
 
 /* YYPDEFGOTO[NTERM-NUM].  */
 static const signed char yydefgoto[] =
 {
-      -1,    10,    11,    12,    39,    40,    14,    15,    41
+      -1,    10,    11,    38,    39,    13,    14,    40
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -20
+#define YYPACT_NINF -21
 static const short int yypact[] =
 {
-      59,    29,   -20,   -20,   -20,   -20,   -20,   -20,    70,    70,
-      10,    11,   -20,   109,    70,   -20,    70,    31,    30,    97,
-     -20,   -20,    50,    70,    70,    70,    70,    70,    70,    70,
-      70,    70,    70,    70,   -20,   109,   109,    71,    42,    84,
-       1,    77,    43,   -20,   -20,   120,   130,   139,   -19,   -19,
-      -5,    -5,   -13,   -13,   -13,    34,    52,    57,   -20,    70,
-     -20,    70,   -20,    68,    76,   -20,   -20,   -20,   109,   109,
-     -20,   -20
+      66,     8,   -21,   -21,   -21,   -21,   -21,   -21,    76,    76,
+       1,   -21,   117,    76,   -21,    76,    30,    -5,   105,   -21,
+     -21,     7,    76,    76,    76,    76,    76,    76,    76,    76,
+      76,    76,    76,   -21,   117,   117,     4,     3,    91,    27,
+      38,    41,   -21,   -21,   128,   138,   147,    74,    74,   -20,
+     -20,    37,    37,    37,   -14,    10,    52,   -21,   -21,    76,
+     -21,    76,    45,    55,   -21,   -21,   -21,   117,   117,   -21,
+     -21
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const signed char yypgoto[] =
 {
-     -20,   -20,   -20,   -20,     0,   -20,   -20,   -20,   -20
+     -21,   -21,   -21,     0,   -21,   -21,   -21,   -21
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -410,23 +402,24 @@ static const signed char yypgoto[] =
 #define YYTABLE_NINF -1
 static const unsigned char yytable[] =
 {
-      13,    28,    29,    30,    31,    32,    33,    34,    19,    20,
-      21,    61,    33,    34,    35,    62,    36,    30,    31,    32,
-      33,    34,    22,    45,    46,    47,    48,    49,    50,    51,
-      52,    53,    54,    55,    37,     2,     3,     4,     5,     6,
-       7,    16,    17,    42,     8,    38,    18,     2,     3,     4,
-       5,     6,     7,    44,    58,    66,     8,    65,     9,    68,
-      34,    69,     1,     2,     3,     4,     5,     6,     7,    67,
-       9,    70,     8,    18,     2,     3,     4,     5,     6,     7,
-       0,    56,     0,     8,    42,    57,     9,    63,    71,     0,
-       0,    64,     0,     0,    59,     0,     0,     9,    60,    23,
-      24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-      34,    43,    23,    24,    25,    26,    27,    28,    29,    30,
-      31,    32,    33,    34,    23,    24,    25,    26,    27,    28,
-      29,    30,    31,    32,    33,    34,    24,    25,    26,    27,
-      28,    29,    30,    31,    32,    33,    34,    25,    26,    27,
-      28,    29,    30,    31,    32,    33,    34,    26,    27,    28,
-      29,    30,    31,    32,    33,    34
+      12,    20,    29,    30,    31,    32,    33,    41,    18,    19,
+      43,    21,    33,    34,    57,    35,    41,    55,    56,    15,
+      16,    65,    44,    45,    46,    47,    48,    49,    50,    51,
+      52,    53,    54,    36,     2,     3,     4,     5,     6,     7,
+      60,    61,     8,    37,    17,     2,     3,     4,     5,     6,
+       7,    62,    63,     8,    64,    66,    69,     9,    70,    67,
+       0,    68,    32,    33,     0,     0,     0,     0,     9,     1,
+       2,     3,     4,     5,     6,     7,     0,     0,     8,    17,
+       2,     3,     4,     5,     6,     7,     0,     0,     8,     0,
+       0,     0,     0,     9,    27,    28,    29,    30,    31,    32,
+      33,     0,     0,     9,    58,    59,    22,    23,    24,    25,
+      26,    27,    28,    29,    30,    31,    32,    33,    42,     0,
+      22,    23,    24,    25,    26,    27,    28,    29,    30,    31,
+      32,    33,    22,    23,    24,    25,    26,    27,    28,    29,
+      30,    31,    32,    33,    23,    24,    25,    26,    27,    28,
+      29,    30,    31,    32,    33,    24,    25,    26,    27,    28,
+      29,    30,    31,    32,    33,    25,    26,    27,    28,    29,
+      30,    31,    32,    33
 };
 
 /* YYCONFLP[YYPACT[STATE-NUM]] -- Pointer into YYCONFL of start of
@@ -436,6 +429,7 @@ static const unsigned char yytable[] =
 static const unsigned char yyconflp[] =
 {
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     1,     3,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
@@ -443,7 +437,6 @@ static const unsigned char yyconflp[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     1,     0,     0,     0,     3,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
@@ -451,54 +444,56 @@ static const unsigned char yyconflp[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0
 };
 
 /* YYCONFL[I] -- lists of conflicting rule numbers, each terminated by
    0, pointed into by YYCONFLP.  */
 static const short int yyconfl[] =
 {
-       0,     6,     0,     6,     0
+       0,     5,     0,     5,     0
 };
 
 static const signed char yycheck[] =
 {
-       0,    20,    21,    22,    23,    24,    25,    26,     8,     9,
-       0,    10,    25,    26,    14,    14,    16,    22,    23,    24,
-      25,    26,    11,    23,    24,    25,    26,    27,    28,    29,
-      30,    31,    32,    33,     3,     4,     5,     6,     7,     8,
-       9,    12,    13,    13,    13,    14,     3,     4,     5,     6,
-       7,     8,     9,     3,    12,     3,    13,    14,    27,    59,
-      26,    61,     3,     4,     5,     6,     7,     8,     9,    12,
-      27,     3,    13,     3,     4,     5,     6,     7,     8,     9,
-      -1,    10,    -1,    13,    13,    14,    27,    10,    12,    -1,
-      -1,    14,    -1,    -1,    10,    -1,    -1,    27,    14,    15,
-      16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-      26,    14,    15,    16,    17,    18,    19,    20,    21,    22,
-      23,    24,    25,    26,    15,    16,    17,    18,    19,    20,
-      21,    22,    23,    24,    25,    26,    16,    17,    18,    19,
-      20,    21,    22,    23,    24,    25,    26,    17,    18,    19,
-      20,    21,    22,    23,    24,    25,    26,    18,    19,    20,
-      21,    22,    23,    24,    25,    26
+       0,     0,    22,    23,    24,    25,    26,    12,     8,     9,
+       3,    10,    26,    13,    11,    15,    12,    13,    14,    11,
+      12,    11,    22,    23,    24,    25,    26,    27,    28,    29,
+      30,    31,    32,     3,     4,     5,     6,     7,     8,     9,
+      13,    14,    12,    13,     3,     4,     5,     6,     7,     8,
+       9,    13,    14,    12,    13,     3,    11,    27,     3,    59,
+      -1,    61,    25,    26,    -1,    -1,    -1,    -1,    27,     3,
+       4,     5,     6,     7,     8,     9,    -1,    -1,    12,     3,
+       4,     5,     6,     7,     8,     9,    -1,    -1,    12,    -1,
+      -1,    -1,    -1,    27,    20,    21,    22,    23,    24,    25,
+      26,    -1,    -1,    27,    13,    14,    15,    16,    17,    18,
+      19,    20,    21,    22,    23,    24,    25,    26,    13,    -1,
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25,    26,    15,    16,    17,    18,    19,    20,    21,    22,
+      23,    24,    25,    26,    16,    17,    18,    19,    20,    21,
+      22,    23,    24,    25,    26,    17,    18,    19,    20,    21,
+      22,    23,    24,    25,    26,    18,    19,    20,    21,    22,
+      23,    24,    25,    26
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const unsigned char yystos[] =
 {
-       0,     3,     4,     5,     6,     7,     8,     9,    13,    27,
-      29,    30,    31,    32,    34,    35,    12,    13,     3,    32,
-      32,     0,    11,    15,    16,    17,    18,    19,    20,    21,
-      22,    23,    24,    25,    26,    32,    32,     3,    14,    32,
-      33,    36,    13,    14,     3,    32,    32,    32,    32,    32,
-      32,    32,    32,    32,    32,    32,    10,    14,    12,    10,
-      14,    10,    14,    10,    14,    14,     3,    12,    32,    32,
-       3,    12
+       0,     3,     4,     5,     6,     7,     8,     9,    12,    27,
+      29,    30,    31,    33,    34,    11,    12,     3,    31,    31,
+       0,    10,    15,    16,    17,    18,    19,    20,    21,    22,
+      23,    24,    25,    26,    31,    31,     3,    13,    31,    32,
+      35,    12,    13,     3,    31,    31,    31,    31,    31,    31,
+      31,    31,    31,    31,    31,    13,    14,    11,    13,    14,
+      13,    14,    13,    14,    13,    11,     3,    31,    31,    11,
+       3
 };
 
 
 /* Prevent warning if -Wmissing-prototypes.  */
-int yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[]);
+int yyparse (yyscan_t scanner, function* stored_function, value *result, char parse_error[]);
 
 /* Error token number */
 #define YYTERROR 1
@@ -560,13 +555,12 @@ do {						\
 
 /*ARGSUSED*/
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   if (!yyvaluep)
     return;
   YYUSE (scanner);
-  YYUSE (parsing_off);
-  YYUSE (value_list);
+  YYUSE (stored_function);
   YYUSE (result);
   YYUSE (parse_error);
 # ifdef YYPRINT
@@ -588,14 +582,14 @@ yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvalue
 `--------------------------------*/
 
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   if (yytype < YYNTOKENS)
     YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, parsing_off, value_list, result, parse_error);
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, stored_function, result, parse_error);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -605,7 +599,7 @@ do {									    \
     {									    \
       YYFPRINTF (stderr, "%s ", Title);					    \
       yy_symbol_print (stderr, Type,					    \
-		       Value, scanner, parsing_off, value_list, result, parse_error);  \
+		       Value, scanner, stored_function, result, parse_error);  \
       YYFPRINTF (stderr, "\n");						    \
     }									    \
 } while (YYID (0))
@@ -837,13 +831,13 @@ struct yyGLRStack {
 static void yyexpandGLRStack (yyGLRStack* yystackp);
 #endif
 
-static void yyFail (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[], const char* yymsg)
+static void yyFail (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[], const char* yymsg)
   __attribute__ ((__noreturn__));
 static void
-yyFail (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[], const char* yymsg)
+yyFail (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[], const char* yymsg)
 {
   if (yymsg != NULL)
-    yyerror (scanner, parsing_off, value_list, result, parse_error, yymsg);
+    yyerror (scanner, stored_function, result, parse_error, yymsg);
   YYLONGJMP (yystackp->yyexception_buffer, 1);
 }
 
@@ -913,14 +907,13 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	      YYSTYPE* yyvalp,
 	      YYLTYPE* YYOPTIONAL_LOC (yylocp),
 	      yyGLRStack* yystackp
-	      , yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+	      , yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   yybool yynormal __attribute__ ((__unused__)) =
     (yystackp->yysplitPoint == NULL);
   int yylow;
   YYUSE (scanner);
-  YYUSE (parsing_off);
-  YYUSE (value_list);
+  YYUSE (stored_function);
   YYUSE (result);
   YYUSE (parse_error);
 # undef yyerrok
@@ -939,7 +932,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 # define YYFILL(N) yyfill (yyvsp, &yylow, N, yynormal)
 # undef YYBACKUP
 # define YYBACKUP(Token, Value)						     \
-  return yyerror (scanner, parsing_off, value_list, result, parse_error, YY_("syntax error: cannot back up")),     \
+  return yyerror (scanner, stored_function, result, parse_error, YY_("syntax error: cannot back up")),     \
 	 yyerrok, yyerr
 
   yylow = 1;
@@ -956,167 +949,182 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 53 "src\\grammar.y"
     {
-		*result = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
+		if (((*yyvalp).val).type == VALUE_STRING)
+			if (get_variable((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val).sv, &((*yyvalp).val)) != NO_FAILURE) {
+				YYERROR_CODE(FAILURE_INVALID_NAME);
+			}
+
+		switch (((*yyvalp).val).type) {
+			case VALUE_FLOAT:
+				swprintf(((*yyvalp).val).sv, EXPRESSION_MAX_LEN, L"%llf", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val).fv);
+				break;
+			case VALUE_INT:
+				swprintf(((*yyvalp).val).sv, EXPRESSION_MAX_LEN, L"%lld", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val).iv);
+				break;
+		}
+
+		*result = ((*yyvalp).val);
 	;}
     break;
 
   case 3:
 
 /* Line 936 of glr.c  */
-#line 59 "src\\grammar.y"
+#line 71 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
-		((*yyvalp)).sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
-		if (((*yyvalp)).sv == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
+		if (((*yyvalp).val).type == VALUE_STRING)
+			if (get_variable((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val).sv, &((*yyvalp).val)) != NO_FAILURE) {
+				YYERROR_CODE(FAILURE_INVALID_NAME);
+			}
 
-		switch ((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).type) {
+		switch (((*yyvalp).val).type) {
 			case VALUE_FLOAT:
-				swprintf(((*yyvalp)).sv, EXPRESSION_MAX_LEN, L"%llf", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).fv);
+				swprintf(((*yyvalp).val).sv, EXPRESSION_MAX_LEN, L"%llf", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val).fv);
 				break;
 			case VALUE_INT:
-				swprintf(((*yyvalp)).sv, EXPRESSION_MAX_LEN, L"%lld", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).iv);
+				swprintf(((*yyvalp).val).sv, EXPRESSION_MAX_LEN, L"%lld", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val).iv);
 				break;
 		}
+
+		*result = ((*yyvalp).val);
 	;}
     break;
 
   case 4:
 
 /* Line 936 of glr.c  */
-#line 75 "src\\grammar.y"
+#line 89 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
-		((*yyvalp)).sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
-		if (((*yyvalp)).sv == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
+		decorate((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).sv, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), ((*yyvalp).val).sv);
 
-		switch ((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).type) {
-			case VALUE_FLOAT:
-				swprintf(((*yyvalp)).sv, EXPRESSION_MAX_LEN, L"%llf", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).fv);
-				break;
-			case VALUE_INT:
-				swprintf(((*yyvalp)).sv, EXPRESSION_MAX_LEN, L"%lld", (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval).iv);
-				break;
-		}
+		*result = ((*yyvalp).val);
 	;}
     break;
 
   case 5:
 
 /* Line 936 of glr.c  */
-#line 91 "src\\grammar.y"
+#line 97 "src\\grammar.y"
     {
-		((*yyvalp)).sv = malloc(sizeof(wchar_t)*(EXPRESSION_MAX_LEN+1));
-		if (((*yyvalp)).sv == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-
-		decorate((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).sv, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), ((*yyvalp)).sv);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 6:
 
 /* Line 936 of glr.c  */
-#line 102 "src\\grammar.y"
+#line 100 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 7:
 
 /* Line 936 of glr.c  */
-#line 105 "src\\grammar.y"
+#line 103 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 8:
 
 /* Line 936 of glr.c  */
-#line 108 "src\\grammar.y"
+#line 106 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 9:
 
 /* Line 936 of glr.c  */
-#line 111 "src\\grammar.y"
+#line 109 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 10:
 
 /* Line 936 of glr.c  */
-#line 114 "src\\grammar.y"
+#line 112 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 11:
 
 /* Line 936 of glr.c  */
-#line 117 "src\\grammar.y"
+#line 115 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 12:
 
 /* Line 936 of glr.c  */
-#line 120 "src\\grammar.y"
+#line 121 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 13:
 
 /* Line 936 of glr.c  */
-#line 126 "src\\grammar.y"
+#line 124 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (3))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 14:
 
 /* Line 936 of glr.c  */
-#line 129 "src\\grammar.y"
+#line 127 "src\\grammar.y"
     {
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (3))].yystate.yysemantics.yysval);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
+			}
+
+			switch (((*yyvalp).val).type) {
+				case VALUE_FLOAT:
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
+				break;
+
+				case VALUE_INT:
+					((*yyvalp).val).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).iv | (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val).iv;
+			}
+		}
 	;}
     break;
 
   case 15:
 
 /* Line 936 of glr.c  */
-#line 132 "src\\grammar.y"
+#line 144 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
-			switch (((*yyvalp)).type) {
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
 					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
-					((*yyvalp)).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).iv | (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval).iv;
+					((*yyvalp).val).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).iv ^ (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val).iv;
 			}
 		}
 	;}
@@ -1125,21 +1133,21 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 16:
 
 /* Line 936 of glr.c  */
-#line 149 "src\\grammar.y"
+#line 161 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
-			switch (((*yyvalp)).type) {
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
 					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
-					((*yyvalp)).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).iv ^ (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval).iv;
+					((*yyvalp).val).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).iv & (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val).iv;
 			}
 		}
 	;}
@@ -1148,21 +1156,21 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 17:
 
 /* Line 936 of glr.c  */
-#line 166 "src\\grammar.y"
+#line 178 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
-			switch (((*yyvalp)).type) {
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
 					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
-					((*yyvalp)).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).iv & (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval).iv;
+					((*yyvalp).val).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).iv << (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val).iv;
 			}
 		}
 	;}
@@ -1171,21 +1179,21 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 18:
 
 /* Line 936 of glr.c  */
-#line 183 "src\\grammar.y"
+#line 195 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
-			switch (((*yyvalp)).type) {
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
 					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
-					((*yyvalp)).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).iv << (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval).iv;
+					((*yyvalp).val).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).iv >> (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val).iv;
 			}
 		}
 	;}
@@ -1194,21 +1202,29 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 19:
 
 /* Line 936 of glr.c  */
-#line 200 "src\\grammar.y"
+#line 212 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
-			switch (((*yyvalp)).type) {
+			float_value_t fleft_op, fright_op;
+			int_value_t ileft_op, iright_op;
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &fleft_op);
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &fright_op);
+
+					((*yyvalp).val).fv = fleft_op + fright_op;
 				break;
 
 				case VALUE_INT:
-					((*yyvalp)).iv = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).iv >> (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval).iv;
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &ileft_op);
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &iright_op);
+
+					((*yyvalp).val).iv = ileft_op + iright_op;
 			}
 		}
 	;}
@@ -1217,29 +1233,29 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 20:
 
 /* Line 936 of glr.c  */
-#line 217 "src\\grammar.y"
+#line 237 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
 			float_value_t fleft_op, fright_op;
 			int_value_t ileft_op, iright_op;
-			switch (((*yyvalp)).type) {
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &fleft_op);
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &fright_op);
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &fleft_op);
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &fright_op);
 
-					((*yyvalp)).fv = fleft_op + fright_op;
+					((*yyvalp).val).fv = fleft_op - fright_op;
 				break;
 
 				case VALUE_INT:
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &ileft_op);
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &iright_op);
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &ileft_op);
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &iright_op);
 
-					((*yyvalp)).iv = ileft_op + iright_op;
+					((*yyvalp).val).iv = ileft_op - iright_op;
 			}
 		}
 	;}
@@ -1248,29 +1264,29 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 21:
 
 /* Line 936 of glr.c  */
-#line 242 "src\\grammar.y"
+#line 262 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
 			float_value_t fleft_op, fright_op;
 			int_value_t ileft_op, iright_op;
-			switch (((*yyvalp)).type) {
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &fleft_op);
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &fright_op);
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &fleft_op);
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &fright_op);
 
-					((*yyvalp)).fv = fleft_op - fright_op;
+					((*yyvalp).val).fv = fleft_op * fright_op;
 				break;
 
 				case VALUE_INT:
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &ileft_op);
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &iright_op);
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &ileft_op);
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &iright_op);
 
-					((*yyvalp)).iv = ileft_op - iright_op;
+					((*yyvalp).val).iv = ileft_op * iright_op;
 			}
 		}
 	;}
@@ -1279,29 +1295,35 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 22:
 
 /* Line 936 of glr.c  */
-#line 267 "src\\grammar.y"
+#line 287 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
 			float_value_t fleft_op, fright_op;
 			int_value_t ileft_op, iright_op;
-			switch (((*yyvalp)).type) {
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &fleft_op);
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &fright_op);
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &fleft_op);
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &fright_op);
 
-					((*yyvalp)).fv = fleft_op * fright_op;
+					if (fright_op == 0.0) {
+						YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
+					}
+					((*yyvalp).val).fv = fleft_op / fright_op;
 				break;
 
 				case VALUE_INT:
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &ileft_op);
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &iright_op);
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &ileft_op);
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &iright_op);
 
-					((*yyvalp)).iv = ileft_op * iright_op;
+					if (iright_op == 0) {
+						YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
+					}
+					((*yyvalp).val).iv = ileft_op / iright_op;
 			}
 		}
 	;}
@@ -1310,36 +1332,23 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 23:
 
 /* Line 936 of glr.c  */
-#line 292 "src\\grammar.y"
+#line 318 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
-			float_value_t fleft_op, fright_op;
-			int_value_t ileft_op, iright_op;
-			switch (((*yyvalp)).type) {
-				case VALUE_FLOAT:
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &fleft_op);
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &fright_op);
+			int_value_t left_op, right_op;
+			int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &left_op);
+			int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &right_op);
 
-					if (fright_op == 0.0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
-					}
-					((*yyvalp)).fv = fleft_op / fright_op;
-				break;
-
-				case VALUE_INT:
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &ileft_op);
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &iright_op);
-
-					if (iright_op == 0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
-					}
-					((*yyvalp)).iv = ileft_op / iright_op;
+			if (right_op == 0) {
+				YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
 			}
+
+			((*yyvalp).val).iv = left_op % right_op;
 		}
 	;}
     break;
@@ -1347,28 +1356,29 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 24:
 
 /* Line 936 of glr.c  */
-#line 323 "src\\grammar.y"
+#line 336 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
-			int_value_t left_op, right_op;
-			switch (((*yyvalp)).type) {
+			float_value_t fleft_op, fright_op;
+			int_value_t ileft_op, iright_op;
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to modulus");
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &fleft_op);
+					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &fright_op);
+
+					((*yyvalp).val).fv = powl(fleft_op, fright_op);
 				break;
 
 				case VALUE_INT:
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &left_op);
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &right_op);
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &ileft_op);
+					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), &iright_op);
 
-					if (right_op == 0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, "Division by 0");
-					}
-					((*yyvalp)).iv = left_op % right_op;
+					((*yyvalp).val).iv = (int_value_t) powl(ileft_op, iright_op);
 			}
 		}
 	;}
@@ -1377,30 +1387,21 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 25:
 
 /* Line 936 of glr.c  */
-#line 347 "src\\grammar.y"
+#line 361 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.val), NULL);
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
-			float_value_t fleft_op, fright_op;
-			int_value_t ileft_op, iright_op;
-			switch (((*yyvalp)).type) {
-				case VALUE_FLOAT:
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &fleft_op);
-					float_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &fright_op);
-
-					((*yyvalp)).fv = powl(fleft_op, fright_op);
-				break;
-
-				case VALUE_INT:
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval), &ileft_op);
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval), &iright_op);
-					
-					((*yyvalp)).iv = (int_value_t) powl(ileft_op, iright_op);
+			int_value_t left_op;
+			int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.val), &left_op);
+			if (left_op < 0) {
+				YYERROR_MSG(FAILURE_INVALID_ARGS, "Factorial is undefined for arguments < 0");
 			}
+
+			((*yyvalp).val).iv = ifactorial(left_op);
 		}
 	;}
     break;
@@ -1408,27 +1409,21 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 26:
 
 /* Line 936 of glr.c  */
-#line 372 "src\\grammar.y"
+#line 377 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval), NULL);
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
+		if (stored_function->expression == NULL) {
+			((*yyvalp).val) = verify_expression(NULL, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.val));
+			if (((*yyvalp).val).type == VALUE_ERROR) {
+				YYERROR_CODE(((*yyvalp).val).iv);
 			}
 
-			int_value_t left_op;
-			switch (((*yyvalp)).type) {
+			switch (((*yyvalp).val).type) {
 				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to factorial");
+					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
 				break;
 
 				case VALUE_INT:
-					int_value(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval), &left_op);
-
-					if (left_op < 0) {
-						YYERROR_CODE(FAILURE_INVALID_ARGS);
-					}
-					((*yyvalp)).iv = ifactorial(left_op);
+					((*yyvalp).val).iv = !(((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.val).iv;
 			}
 		}
 	;}
@@ -1437,22 +1432,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 27:
 
 /* Line 936 of glr.c  */
-#line 395 "src\\grammar.y"
+#line 394 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			((*yyvalp)) = verify_expression(NULL, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval));
-			if (((*yyvalp)).type == VALUE_ERROR) {
-				YYERROR_CODE(((*yyvalp)).iv);
-			}
-
-			switch (((*yyvalp)).type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, "Floating point arguments not applicable to binary operators");
-				break;
-
-				case VALUE_INT:
-					((*yyvalp)).iv = !(((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval).iv;
-			}
+		if (stored_function->expression == NULL) {
+			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).sv, NULL, 0, &((*yyvalp).val));
 		}
 	;}
     break;
@@ -1460,10 +1443,11 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 28:
 
 /* Line 936 of glr.c  */
-#line 412 "src\\grammar.y"
+#line 399 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).sv, NULL, 0, &((*yyvalp)));
+		if (stored_function->expression == NULL) {
+			value args[] = { (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.val) };
+			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv, args, 1, &((*yyvalp).val));
 		}
 	;}
     break;
@@ -1471,11 +1455,11 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 29:
 
 /* Line 936 of glr.c  */
-#line 417 "src\\grammar.y"
+#line 405 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			value args[] = { (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval) };
-			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval).sv, args, 1, &((*yyvalp)));
+		if (stored_function->expression == NULL) {
+			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.lst).elements, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.lst).size, &((*yyvalp).val));
+			list_destroy(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.lst));
 		}
 	;}
     break;
@@ -1483,11 +1467,15 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 30:
 
 /* Line 936 of glr.c  */
-#line 423 "src\\grammar.y"
+#line 414 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval).sv, (*value_list)->elements, (*value_list)->size, &((*yyvalp)));
-			free((*value_list));
+		if (stored_function->expression == NULL) {
+			if (list_create(&((*yyvalp).lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
+				YYERROR_CODE(FAILURE_ALLOCATION);
+			}
+
+			list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val));
+			list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 		}
 	;}
     break;
@@ -1495,17 +1483,12 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 31:
 
 /* Line 936 of glr.c  */
-#line 432 "src\\grammar.y"
+#line 424 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			*value_list = malloc(sizeof(list) + sizeof(value)*2);
-			if ((*value_list) == NULL) {
+		if (stored_function->expression == NULL) {
+			if (list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val)) != NO_FAILURE) {
 				YYERROR_CODE(FAILURE_ALLOCATION);
 			}
-			(*value_list)->size = 2;
-
-			(*value_list)->elements[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval);
-			(*value_list)->elements[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval);
 		}
 	;}
     break;
@@ -1513,164 +1496,115 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 32:
 
 /* Line 936 of glr.c  */
-#line 444 "src\\grammar.y"
+#line 434 "src\\grammar.y"
     {
-		if (!parsing_off) {
-			(*value_list)->size++;
-			(*value_list) = realloc(*value_list, sizeof(list) + sizeof(value)*((*value_list)->size));
-			if ((*value_list)->elements == NULL) {
-				YYERROR_CODE(FAILURE_ALLOCATION);
-			}
+		stored_function->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (4))].yystate.yysemantics.yysval.val).sv)+1));
+		if (stored_function->expression == NULL)
+			YYERROR_CODE(FAILURE_ALLOCATION);
 
-			(*value_list)->elements[(*value_list)->size-1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval);
-		}
+		stored_function->n_args = 0;
+		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv, stored_function);
 	;}
     break;
 
   case 33:
 
 /* Line 936 of glr.c  */
-#line 458 "src\\grammar.y"
+#line 442 "src\\grammar.y"
     {
-		function *fn;
-		parsing_off = 1;
+		stored_function->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.val).sv)+1));
+		if (stored_function->expression == NULL)
+			YYERROR_CODE(FAILURE_ALLOCATION);
 
-		fn = (function*) malloc(sizeof(function));
-		if (fn == NULL) {
+		stored_function->arguments[0] = malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.val).sv)+1));
+		if (stored_function->arguments[0] == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 
-		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (4))].yystate.yysemantics.yysval).sv)+1));
-		if (fn->expression == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
+		wcscpy(stored_function->arguments[0], (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.val).sv);
+		stored_function->n_args = 1;
 
-		fn->n_args = 0;
-
-		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval).sv, fn);
+		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.val).sv, stored_function);
 	;}
     break;
 
   case 34:
 
 /* Line 936 of glr.c  */
-#line 476 "src\\grammar.y"
+#line 457 "src\\grammar.y"
     {
-		function *fn;
-		parsing_off = 1;
+		int i;
 
-		fn = (function*) malloc(sizeof(function) + sizeof(wchar_t*));
-		if (fn == NULL) {
+		stored_function->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.val).sv)+1));
+		if (stored_function->expression == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 
-		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval).sv)+1));
-		if (fn->expression == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
+		stored_function->n_args = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst).size;
+		for (i=0; i<(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst).size; ++i)
+			stored_function->arguments[i] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst).elements[i].sv;
 
-		fn->arguments[0] = malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval).sv)+1));
-		if (fn->arguments[0] == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-
-		wcscpy(fn->arguments[0], (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval).sv);
-		fn->n_args = 1;
-
-		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval).sv, fn);
+		list_destroy(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst));
+		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.val).sv, stored_function);
 	;}
     break;
 
   case 35:
 
 /* Line 936 of glr.c  */
-#line 500 "src\\grammar.y"
-    {
-		function *fn;
-		int i;
-		parsing_off = 1;
-
-		fn = (function*) malloc(sizeof(function) + sizeof(wchar_t*)*(*value_list)->size);
-		if (fn == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-
-		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval).sv)+1));
-		if (fn->expression == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-
-		fn->n_args = (*value_list)->size;
-		for (i=0; i<(*value_list)->size; ++i)
-			fn->arguments[i] = (*value_list)->elements[i].sv;
-		free((*value_list)->elements);
-
-		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval).sv, fn);
-	;}
-    break;
-
-  case 36:
-
-/* Line 936 of glr.c  */
-#line 526 "src\\grammar.y"
+#line 476 "src\\grammar.y"
     {
 		value *v = (value*) malloc(sizeof(value));
 		if (v == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 
-		*v = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval);
-		put_variable((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).sv, v);
+		*v = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val);
+		put_variable((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).sv, v);
 
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval);
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val);
+	;}
+    break;
+
+  case 36:
+
+/* Line 936 of glr.c  */
+#line 487 "src\\grammar.y"
+    {
+		stored_function->expression = NULL;
+		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.val);
 	;}
     break;
 
   case 37:
 
 /* Line 936 of glr.c  */
-#line 537 "src\\grammar.y"
+#line 494 "src\\grammar.y"
     {
-		parsing_off = 0;
-		((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval);
+		if (list_create(&((*yyvalp).lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
+		}
+
+		list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val));
+		list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 	;}
     break;
 
   case 38:
 
 /* Line 936 of glr.c  */
-#line 544 "src\\grammar.y"
+#line 502 "src\\grammar.y"
     {
-		(*value_list) = malloc(sizeof(list) + sizeof(value)*2);
-		if ((*value_list)->elements == NULL) {
+		if (list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val)) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
-		(*value_list)->size = 2;
-
-		wcscpy((*value_list)->elements[0].sv, (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval).sv);
-		wcscpy((*value_list)->elements[1].sv, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval).sv);
-	;}
-    break;
-
-  case 39:
-
-/* Line 936 of glr.c  */
-#line 554 "src\\grammar.y"
-    {
-		(*value_list)->size++;
-		(*value_list) = realloc(*value_list, sizeof(list) + sizeof(value)*(*value_list)->size);
-		if ((*value_list) == NULL) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-
-		wcscpy((*value_list)->elements[(*value_list)->size-1].sv, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval).sv);
 	;}
     break;
 
 
 
 /* Line 936 of glr.c  */
-#line 1674 "src/tab.c"
+#line 1608 "src/tab.c"
       default: break;
     }
 
@@ -1706,12 +1640,11 @@ yyuserMerge (int yyn, YYSTYPE* yy0, YYSTYPE* yy1)
 
 /*ARGSUSED*/
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   YYUSE (yyvaluep);
   YYUSE (scanner);
-  YYUSE (parsing_off);
-  YYUSE (value_list);
+  YYUSE (stored_function);
   YYUSE (result);
   YYUSE (parse_error);
 
@@ -1735,11 +1668,11 @@ yyrhsLength (yyRuleNum yyrule)
 }
 
 static void
-yydestroyGLRState (char const *yymsg, yyGLRState *yys, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+yydestroyGLRState (char const *yymsg, yyGLRState *yys, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   if (yys->yyresolved)
     yydestruct (yymsg, yystos[yys->yylrState],
-		&yys->yysemantics.yysval, scanner, parsing_off, value_list, result, parse_error);
+		&yys->yysemantics.yysval, scanner, stored_function, result, parse_error);
   else
     {
 #if YYDEBUG
@@ -1750,7 +1683,7 @@ yydestroyGLRState (char const *yymsg, yyGLRState *yys, yyscan_t scanner, int par
 	  else
 	    YYFPRINTF (stderr, "%s incomplete ", yymsg);
 	  yy_symbol_print (stderr, yystos[yys->yylrState],
-			   NULL, scanner, parsing_off, value_list, result, parse_error);
+			   NULL, scanner, stored_function, result, parse_error);
 	  YYFPRINTF (stderr, "\n");
 	}
 #endif
@@ -1763,7 +1696,7 @@ yydestroyGLRState (char const *yymsg, yyGLRState *yys, yyscan_t scanner, int par
 	  for (yyrh = yyoption->yystate, yyn = yyrhsLength (yyoption->yyrule);
 	       yyn > 0;
 	       yyrh = yyrh->yypred, yyn -= 1)
-	    yydestroyGLRState (yymsg, yyrh, scanner, parsing_off, value_list, result, parse_error);
+	    yydestroyGLRState (yymsg, yyrh, scanner, stored_function, result, parse_error);
 	}
     }
 }
@@ -2129,7 +2062,7 @@ yyglrShiftDefer (yyGLRStack* yystackp, size_t yyk, yyStateNum yylrState,
  *  for userAction.  */
 static inline YYRESULTTAG
 yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-	    YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+	    YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   int yynrhs = yyrhsLength (yyrule);
 
@@ -2142,7 +2075,7 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       yystackp->yyspaceLeft += yynrhs;
       yystackp->yytops.yystates[0] = & yystackp->yynextFree[-1].yystate;
       return yyuserAction (yyrule, yynrhs, rhs,
-			   yyvalp, yylocp, yystackp, scanner, parsing_off, value_list, result, parse_error);
+			   yyvalp, yylocp, yystackp, scanner, stored_function, result, parse_error);
     }
   else
     {
@@ -2163,7 +2096,7 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       yyupdateSplit (yystackp, yys);
       yystackp->yytops.yystates[yyk] = yys;
       return yyuserAction (yyrule, yynrhs, yyrhsVals + YYMAXRHS + YYMAXLEFT - 1,
-			   yyvalp, yylocp, yystackp, scanner, parsing_off, value_list, result, parse_error);
+			   yyvalp, yylocp, yystackp, scanner, stored_function, result, parse_error);
     }
 }
 
@@ -2182,7 +2115,7 @@ do {					\
 
 /*ARGSUSED*/ static inline void
 yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-		 YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+		 YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   int yynrhs = yyrhsLength (yyrule);
   yybool yynormal __attribute__ ((__unused__)) =
@@ -2193,8 +2126,7 @@ yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
   YYUSE (yyvalp);
   YYUSE (yylocp);
   YYUSE (scanner);
-  YYUSE (parsing_off);
-  YYUSE (value_list);
+  YYUSE (stored_function);
   YYUSE (result);
   YYUSE (parse_error);
   YYFPRINTF (stderr, "Reducing stack %lu by rule %d (line %lu):\n",
@@ -2206,7 +2138,7 @@ yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(((yyGLRStackItem const *)yyvsp)[YYFILL ((yyi + 1) - (yynrhs))].yystate.yysemantics.yysval)
-		       		       , scanner, parsing_off, value_list, result, parse_error);
+		       		       , scanner, stored_function, result, parse_error);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -2225,7 +2157,7 @@ yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
  */
 static inline YYRESULTTAG
 yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-	     yybool yyforceEval, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+	     yybool yyforceEval, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   size_t yyposn = yystackp->yytops.yystates[yyk]->yyposn;
 
@@ -2234,9 +2166,9 @@ yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       YYSTYPE yysval;
       YYLTYPE yyloc;
 
-      YY_REDUCE_PRINT ((yystackp, yyk, yyrule, &yysval, &yyloc, scanner, parsing_off, value_list, result, parse_error));
+      YY_REDUCE_PRINT ((yystackp, yyk, yyrule, &yysval, &yyloc, scanner, stored_function, result, parse_error));
       YYCHK (yydoAction (yystackp, yyk, yyrule, &yysval,
-			 &yyloc, scanner, parsing_off, value_list, result, parse_error));
+			 &yyloc, scanner, stored_function, result, parse_error));
       YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyrule], &yysval, &yyloc);
       yyglrShift (yystackp, yyk,
 		  yyLRgotoState (yystackp->yytops.yystates[yyk]->yylrState,
@@ -2431,7 +2363,7 @@ yypreference (yySemanticOption* y0, yySemanticOption* y1)
 }
 
 static YYRESULTTAG yyresolveValue (yyGLRState* yys,
-				   yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[]);
+				   yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[]);
 
 
 /** Resolve the previous N states starting at and including state S.  If result
@@ -2441,14 +2373,14 @@ static YYRESULTTAG yyresolveValue (yyGLRState* yys,
  *  if necessary.  */
 static YYRESULTTAG
 yyresolveStates (yyGLRState* yys, int yyn,
-		 yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+		 yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   if (0 < yyn)
     {
       YYASSERT (yys->yypred);
-      YYCHK (yyresolveStates (yys->yypred, yyn-1, yystackp, scanner, parsing_off, value_list, result, parse_error));
+      YYCHK (yyresolveStates (yys->yypred, yyn-1, yystackp, scanner, stored_function, result, parse_error));
       if (! yys->yyresolved)
-	YYCHK (yyresolveValue (yys, yystackp, scanner, parsing_off, value_list, result, parse_error));
+	YYCHK (yyresolveValue (yys, yystackp, scanner, stored_function, result, parse_error));
     }
   return yyok;
 }
@@ -2459,7 +2391,7 @@ yyresolveStates (yyGLRState* yys, int yyn,
  *  semantic values if invoked).  */
 static YYRESULTTAG
 yyresolveAction (yySemanticOption* yyopt, yyGLRStack* yystackp,
-		 YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+		 YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   yyGLRStackItem yyrhsVals[YYMAXRHS + YYMAXLEFT + 1];
   int yynrhs;
@@ -2469,12 +2401,12 @@ yyresolveAction (yySemanticOption* yyopt, yyGLRStack* yystackp,
   YYRESULTTAG yyflag;
 
   yynrhs = yyrhsLength (yyopt->yyrule);
-  yyflag = yyresolveStates (yyopt->yystate, yynrhs, yystackp, scanner, parsing_off, value_list, result, parse_error);
+  yyflag = yyresolveStates (yyopt->yystate, yynrhs, yystackp, scanner, stored_function, result, parse_error);
   if (yyflag != yyok)
     {
       yyGLRState *yys;
       for (yys = yyopt->yystate; yynrhs > 0; yys = yys->yypred, yynrhs -= 1)
-	yydestroyGLRState ("Cleanup: popping", yys, scanner, parsing_off, value_list, result, parse_error);
+	yydestroyGLRState ("Cleanup: popping", yys, scanner, stored_function, result, parse_error);
       return yyflag;
     }
 
@@ -2487,7 +2419,7 @@ yyresolveAction (yySemanticOption* yyopt, yyGLRStack* yystackp,
   yylloc = yyopt->yyloc;
   yyflag = yyuserAction (yyopt->yyrule, yynrhs,
 			   yyrhsVals + YYMAXRHS + YYMAXLEFT - 1,
-			   yyvalp, yylocp, yystackp, scanner, parsing_off, value_list, result, parse_error);
+			   yyvalp, yylocp, yystackp, scanner, stored_function, result, parse_error);
   yychar = yychar_current;
   yylval = yylval_current;
   yylloc = yylloc_current;
@@ -2544,7 +2476,7 @@ yyreportTree (yySemanticOption* yyx, int yyindent)
 
 /*ARGSUSED*/ static YYRESULTTAG
 yyreportAmbiguity (yySemanticOption* yyx0,
-		   yySemanticOption* yyx1, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+		   yySemanticOption* yyx1, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   YYUSE (yyx0);
   YYUSE (yyx1);
@@ -2558,7 +2490,7 @@ yyreportAmbiguity (yySemanticOption* yyx0,
   YYFPRINTF (stderr, "\n");
 #endif
 
-  yyerror (scanner, parsing_off, value_list, result, parse_error, YY_("syntax is ambiguous"));
+  yyerror (scanner, stored_function, result, parse_error, YY_("syntax is ambiguous"));
   return yyabort;
 }
 
@@ -2567,11 +2499,11 @@ yyreportAmbiguity (yySemanticOption* yyx0,
  *  is always chosen.  */
 static void
 yyresolveLocations (yyGLRState* yys1, int yyn1,
-		    yyGLRStack *yystackp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+		    yyGLRStack *yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   if (0 < yyn1)
     {
-      yyresolveLocations (yys1->yypred, yyn1 - 1, yystackp, scanner, parsing_off, value_list, result, parse_error);
+      yyresolveLocations (yys1->yypred, yyn1 - 1, yystackp, scanner, stored_function, result, parse_error);
       if (!yys1->yyresolved)
 	{
 	  yySemanticOption *yyoption;
@@ -2588,7 +2520,7 @@ yyresolveLocations (yyGLRState* yys1, int yyn1,
 	      yyGLRState *yys;
 	      int yyn;
 	      yyresolveLocations (yyoption->yystate, yynrhs,
-				  yystackp, scanner, parsing_off, value_list, result, parse_error);
+				  yystackp, scanner, stored_function, result, parse_error);
 	      for (yys = yyoption->yystate, yyn = yynrhs;
 		   yyn > 0;
 		   yys = yys->yypred, yyn -= 1)
@@ -2627,7 +2559,7 @@ yyresolveLocations (yyGLRState* yys1, int yyn1,
  *  of whether result = yyok, S has been left with consistent data so that
  *  yydestroyGLRState can be invoked if necessary.  */
 static YYRESULTTAG
-yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   yySemanticOption* yyoptionList = yys->yysemantics.yyfirstVal;
   yySemanticOption* yybest;
@@ -2653,8 +2585,8 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, int par
 	  switch (yypreference (yybest, yyp))
 	    {
 	    case 0:
-	      yyresolveLocations (yys, 1, yystackp, scanner, parsing_off, value_list, result, parse_error);
-	      return yyreportAmbiguity (yybest, yyp, scanner, parsing_off, value_list, result, parse_error);
+	      yyresolveLocations (yys, 1, yystackp, scanner, stored_function, result, parse_error);
+	      return yyreportAmbiguity (yybest, yyp, scanner, stored_function, result, parse_error);
 	      break;
 	    case 1:
 	      yymerge = yytrue;
@@ -2680,7 +2612,7 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, int par
       yySemanticOption* yyp;
       int yyprec = yydprec[yybest->yyrule];
       yyflag = yyresolveAction (yybest, yystackp, &yysval,
-				yylocp, scanner, parsing_off, value_list, result, parse_error);
+				yylocp, scanner, stored_function, result, parse_error);
       if (yyflag == yyok)
 	for (yyp = yybest->yynext; yyp != NULL; yyp = yyp->yynext)
 	  {
@@ -2689,12 +2621,12 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, int par
 		YYSTYPE yysval_other;
 		YYLTYPE yydummy;
 		yyflag = yyresolveAction (yyp, yystackp, &yysval_other,
-					  &yydummy, scanner, parsing_off, value_list, result, parse_error);
+					  &yydummy, scanner, stored_function, result, parse_error);
 		if (yyflag != yyok)
 		  {
 		    yydestruct ("Cleanup: discarding incompletely merged value for",
 				yystos[yys->yylrState],
-				&yysval, scanner, parsing_off, value_list, result, parse_error);
+				&yysval, scanner, stored_function, result, parse_error);
 		    break;
 		  }
 		yyuserMerge (yymerger[yyp->yyrule], &yysval, &yysval_other);
@@ -2702,7 +2634,7 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, int par
 	  }
     }
   else
-    yyflag = yyresolveAction (yybest, yystackp, &yysval, yylocp, scanner, parsing_off, value_list, result, parse_error);
+    yyflag = yyresolveAction (yybest, yystackp, &yysval, yylocp, scanner, stored_function, result, parse_error);
 
   if (yyflag == yyok)
     {
@@ -2715,7 +2647,7 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, int par
 }
 
 static YYRESULTTAG
-yyresolveStack (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+yyresolveStack (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   if (yystackp->yysplitPoint != NULL)
     {
@@ -2727,7 +2659,7 @@ yyresolveStack (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, list **
 	   yys = yys->yypred, yyn += 1)
 	continue;
       YYCHK (yyresolveStates (yystackp->yytops.yystates[0], yyn, yystackp
-			     , scanner, parsing_off, value_list, result, parse_error));
+			     , scanner, stored_function, result, parse_error));
     }
   return yyok;
 }
@@ -2764,7 +2696,7 @@ yycompressStack (yyGLRStack* yystackp)
 
 static YYRESULTTAG
 yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
-		   size_t yyposn, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+		   size_t yyposn, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   int yyaction;
   const short int* yyconflicts;
@@ -2788,7 +2720,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
 	      yymarkStackDeleted (yystackp, yyk);
 	      return yyok;
 	    }
-	  YYCHK (yyglrReduce (yystackp, yyk, yyrule, yyfalse, scanner, parsing_off, value_list, result, parse_error));
+	  YYCHK (yyglrReduce (yystackp, yyk, yyrule, yyfalse, scanner, stored_function, result, parse_error));
 	}
       else
 	{
@@ -2820,9 +2752,9 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
 			  (unsigned long int) yynewStack,
 			  (unsigned long int) yyk));
 	      YYCHK (yyglrReduce (yystackp, yynewStack,
-				  *yyconflicts, yyfalse, scanner, parsing_off, value_list, result, parse_error));
+				  *yyconflicts, yyfalse, scanner, stored_function, result, parse_error));
 	      YYCHK (yyprocessOneStack (yystackp, yynewStack,
-					yyposn, scanner, parsing_off, value_list, result, parse_error));
+					yyposn, scanner, stored_function, result, parse_error));
 	      yyconflicts += 1;
 	    }
 
@@ -2837,14 +2769,14 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
 	    }
 	  else
 	    YYCHK (yyglrReduce (yystackp, yyk, -yyaction,
-				yyfalse, scanner, parsing_off, value_list, result, parse_error));
+				yyfalse, scanner, stored_function, result, parse_error));
 	}
     }
   return yyok;
 }
 
 /*ARGSUSED*/ static void
-yyreportSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+yyreportSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   if (yystackp->yyerrState == 0)
     {
@@ -2928,18 +2860,18 @@ yyreportSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, li
 		      yyf++;
 		    }
 		}
-	      yyerror (scanner, parsing_off, value_list, result, parse_error, yymsg);
+	      yyerror (scanner, stored_function, result, parse_error, yymsg);
 	      YYFREE (yymsg);
 	    }
 	  else
 	    {
-	      yyerror (scanner, parsing_off, value_list, result, parse_error, YY_("syntax error"));
+	      yyerror (scanner, stored_function, result, parse_error, YY_("syntax error"));
 	      yyMemoryExhausted (yystackp);
 	    }
 	}
       else
 #endif /* YYERROR_VERBOSE */
-	yyerror (scanner, parsing_off, value_list, result, parse_error, YY_("syntax error"));
+	yyerror (scanner, stored_function, result, parse_error, YY_("syntax error"));
       yynerrs += 1;
     }
 }
@@ -2948,7 +2880,7 @@ yyreportSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, li
    yylval, and yylloc are the syntactic category, semantic value, and location
    of the lookahead.  */
 /*ARGSUSED*/ static void
-yyrecoverSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+yyrecoverSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   size_t yyk;
   int yyj;
@@ -2960,12 +2892,12 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, l
       {
 	yySymbol yytoken;
 	if (yychar == YYEOF)
-	  yyFail (yystackp, scanner, parsing_off, value_list, result, parse_error, NULL);
+	  yyFail (yystackp, scanner, stored_function, result, parse_error, NULL);
 	if (yychar != YYEMPTY)
 	  {
 	    yytoken = YYTRANSLATE (yychar);
 	    yydestruct ("Error: discarding",
-			yytoken, &yylval, scanner, parsing_off, value_list, result, parse_error);
+			yytoken, &yylval, scanner, stored_function, result, parse_error);
 	  }
 	YYDPRINTF ((stderr, "Reading a token: "));
 	yychar = YYLEX;
@@ -2997,7 +2929,7 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, l
     if (yystackp->yytops.yystates[yyk] != NULL)
       break;
   if (yyk >= yystackp->yytops.yysize)
-    yyFail (yystackp, scanner, parsing_off, value_list, result, parse_error, NULL);
+    yyFail (yystackp, scanner, stored_function, result, parse_error, NULL);
   for (yyk += 1; yyk < yystackp->yytops.yysize; yyk += 1)
     yymarkStackDeleted (yystackp, yyk);
   yyremoveDeletes (yystackp);
@@ -3027,13 +2959,13 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, l
 	}
 
       if (yys->yypred != NULL)
-	yydestroyGLRState ("Error: popping", yys, scanner, parsing_off, value_list, result, parse_error);
+	yydestroyGLRState ("Error: popping", yys, scanner, stored_function, result, parse_error);
       yystackp->yytops.yystates[0] = yys->yypred;
       yystackp->yynextFree -= 1;
       yystackp->yyspaceLeft += 1;
     }
   if (yystackp->yytops.yystates[0] == NULL)
-    yyFail (yystackp, scanner, parsing_off, value_list, result, parse_error, NULL);
+    yyFail (yystackp, scanner, stored_function, result, parse_error, NULL);
 }
 
 #define YYCHK1(YYE)							     \
@@ -3058,7 +2990,7 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, int parsing_off, l
 `----------*/
 
 int
-yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, char parse_error[])
+yyparse (yyscan_t scanner, function* stored_function, value *result, char parse_error[])
 {
   int yyresult;
   yyGLRStack yystack;
@@ -3105,10 +3037,10 @@ yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, ch
 	      if (yyrule == 0)
 		{
 
-		  yyreportSyntaxError (&yystack, scanner, parsing_off, value_list, result, parse_error);
+		  yyreportSyntaxError (&yystack, scanner, stored_function, result, parse_error);
 		  goto yyuser_error;
 		}
-	      YYCHK1 (yyglrReduce (&yystack, 0, yyrule, yytrue, scanner, parsing_off, value_list, result, parse_error));
+	      YYCHK1 (yyglrReduce (&yystack, 0, yyrule, yytrue, scanner, stored_function, result, parse_error));
 	    }
 	  else
 	    {
@@ -3145,11 +3077,11 @@ yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, ch
 	      else if (yyisErrorAction (yyaction))
 		{
 
-		  yyreportSyntaxError (&yystack, scanner, parsing_off, value_list, result, parse_error);
+		  yyreportSyntaxError (&yystack, scanner, stored_function, result, parse_error);
 		  goto yyuser_error;
 		}
 	      else
-		YYCHK1 (yyglrReduce (&yystack, 0, -yyaction, yytrue, scanner, parsing_off, value_list, result, parse_error));
+		YYCHK1 (yyglrReduce (&yystack, 0, -yyaction, yytrue, scanner, stored_function, result, parse_error));
 	    }
 	}
 
@@ -3181,17 +3113,17 @@ yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, ch
 	     on yylval in the event of memory exhaustion.  */
 
 	  for (yys = 0; yys < yystack.yytops.yysize; yys += 1)
-	    YYCHK1 (yyprocessOneStack (&yystack, yys, yyposn, scanner, parsing_off, value_list, result, parse_error));
+	    YYCHK1 (yyprocessOneStack (&yystack, yys, yyposn, scanner, stored_function, result, parse_error));
 	  yyremoveDeletes (&yystack);
 	  if (yystack.yytops.yysize == 0)
 	    {
 	      yyundeleteLastStack (&yystack);
 	      if (yystack.yytops.yysize == 0)
-		yyFail (&yystack, scanner, parsing_off, value_list, result, parse_error, YY_("syntax error"));
-	      YYCHK1 (yyresolveStack (&yystack, scanner, parsing_off, value_list, result, parse_error));
+		yyFail (&yystack, scanner, stored_function, result, parse_error, YY_("syntax error"));
+	      YYCHK1 (yyresolveStack (&yystack, scanner, stored_function, result, parse_error));
 	      YYDPRINTF ((stderr, "Returning to deterministic operation.\n"));
 
-	      yyreportSyntaxError (&yystack, scanner, parsing_off, value_list, result, parse_error);
+	      yyreportSyntaxError (&yystack, scanner, stored_function, result, parse_error);
 	      goto yyuser_error;
 	    }
 
@@ -3222,7 +3154,7 @@ yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, ch
 
 	  if (yystack.yytops.yysize == 1)
 	    {
-	      YYCHK1 (yyresolveStack (&yystack, scanner, parsing_off, value_list, result, parse_error));
+	      YYCHK1 (yyresolveStack (&yystack, scanner, stored_function, result, parse_error));
 	      YYDPRINTF ((stderr, "Returning to deterministic operation.\n"));
 	      yycompressStack (&yystack);
 	      break;
@@ -3230,7 +3162,7 @@ yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, ch
 	}
       continue;
     yyuser_error:
-      yyrecoverSyntaxError (&yystack, scanner, parsing_off, value_list, result, parse_error);
+      yyrecoverSyntaxError (&yystack, scanner, stored_function, result, parse_error);
       yyposn = yystack.yytops.yystates[0]->yyposn;
     }
 
@@ -3247,7 +3179,7 @@ yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, ch
   goto yyreturn;
 
  yyexhaustedlab:
-  yyerror (scanner, parsing_off, value_list, result, parse_error, YY_("memory exhausted"));
+  yyerror (scanner, stored_function, result, parse_error, YY_("memory exhausted"));
   yyresult = 2;
   goto yyreturn;
 
@@ -3255,7 +3187,7 @@ yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, ch
   if (yychar != YYEMPTY)
     yydestruct ("Cleanup: discarding lookahead",
 		YYTRANSLATE (yychar),
-		&yylval, scanner, parsing_off, value_list, result, parse_error);
+		&yylval, scanner, stored_function, result, parse_error);
 
   /* If the stack is well-formed, pop the stack until it is empty,
      destroying its entries as we go.  But free the stack regardless
@@ -3274,7 +3206,7 @@ yyparse (yyscan_t scanner, int parsing_off, list **value_list, value *result, ch
 		  {
 		    yyGLRState *yys = yystates[yyk];
 		    if (yys->yypred != NULL)
-		      yydestroyGLRState ("Cleanup: popping", yys, scanner, parsing_off, value_list, result, parse_error);
+		      yydestroyGLRState ("Cleanup: popping", yys, scanner, stored_function, result, parse_error);
 		    yystates[yyk] = yys->yypred;
 		    yystack.yynextFree -= 1;
 		    yystack.yyspaceLeft += 1;
@@ -3367,10 +3299,10 @@ yypdumpstack (yyGLRStack* yystackp)
 
 
 /* Line 2634 of glr.c  */
-#line 565 "src\\grammar.y"
+#line 509 "src\\grammar.y"
 
 
-int yyerror(yyscan_t scanner, int parsing_off, list **value_list, value* result, char response[], const char* msg) {
+int yyerror(yyscan_t scanner, function* stored_function, value* result, char response[], const char* msg) {
 	char* pos = yyget_text(scanner);
 	result->iv = FAILURE_SYNTAX_ERROR;
 
