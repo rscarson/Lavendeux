@@ -73,15 +73,14 @@ const char* code_to_msg(int code) {
  *
  * @return int 0 if failed, non 0 otherwise
  */
-extern int yyparse (yyscan_t, function*, value*, char[]);
+extern int yyparse (yyscan_t, wchar_t[], value*, char[]);
 int parse_equation(const wchar_t* equation, value* response){
-	char parse_error[255];
+	char parse_error[EXPRESSION_MAX_LEN];
+	wchar_t stored_function[EXPRESSION_MAX_LEN];
 	yyscan_t myscanner;
 
-	function fn;
-	fn.expression = NULL;
-
 	yylex_init(&myscanner);
+	wcscpy(stored_function, L"");
 
 	char* equation_mbs = malloc(sizeof(char)*(wcslen(equation)+1));
 	if (equation_mbs == NULL) {
@@ -94,7 +93,7 @@ int parse_equation(const wchar_t* equation, value* response){
 	wcstombs(equation_mbs, equation, wcslen(equation));
 	yy_scan_string(equation_mbs, myscanner);
 
-	if (yyparse(myscanner, &fn, response, parse_error) == 1) {
+	if (yyparse(myscanner, stored_function, response, parse_error) == 1) {
 		mbstowcs(response->sv, parse_error, strlen(parse_error));
 
 		free(equation_mbs);

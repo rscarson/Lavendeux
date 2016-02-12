@@ -70,7 +70,7 @@
 	#define YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, stored_function, result, parse_error, s); YYABORT;
 	#define YYERROR_CODE(c) YYERROR_MSG(c, code_to_msg(c));
 
-	int yyerror (yyscan_t, function*, value*, char[], const char*);
+	int yyerror (yyscan_t, wchar_t[], value*, char[], const char*);
 
 
 /* Line 172 of glr.c  */
@@ -297,8 +297,8 @@ static const unsigned short int yyrline[] =
 {
        0,    53,    53,    71,    89,    97,   100,   103,   106,   109,
      112,   115,   121,   124,   127,   144,   161,   178,   195,   212,
-     237,   262,   287,   318,   336,   361,   377,   394,   399,   405,
-     414,   424,   434,   442,   457,   476,   487,   494,   502
+     237,   262,   287,   318,   336,   361,   377,   394,   401,   409,
+     420,   430,   440,   455,   477,   501,   512,   519,   527
 };
 #endif
 
@@ -493,7 +493,7 @@ static const unsigned char yystos[] =
 
 
 /* Prevent warning if -Wmissing-prototypes.  */
-int yyparse (yyscan_t scanner, function* stored_function, value *result, char parse_error[]);
+int yyparse (yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[]);
 
 /* Error token number */
 #define YYTERROR 1
@@ -555,7 +555,7 @@ do {						\
 
 /*ARGSUSED*/
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   if (!yyvaluep)
     return;
@@ -582,7 +582,7 @@ yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvalue
 `--------------------------------*/
 
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   if (yytype < YYNTOKENS)
     YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
@@ -831,10 +831,10 @@ struct yyGLRStack {
 static void yyexpandGLRStack (yyGLRStack* yystackp);
 #endif
 
-static void yyFail (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[], const char* yymsg)
+static void yyFail (yyGLRStack* yystackp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[], const char* yymsg)
   __attribute__ ((__noreturn__));
 static void
-yyFail (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[], const char* yymsg)
+yyFail (yyGLRStack* yystackp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[], const char* yymsg)
 {
   if (yymsg != NULL)
     yyerror (scanner, stored_function, result, parse_error, yymsg);
@@ -907,7 +907,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 	      YYSTYPE* yyvalp,
 	      YYLTYPE* YYOPTIONAL_LOC (yylocp),
 	      yyGLRStack* yystackp
-	      , yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+	      , yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   yybool yynormal __attribute__ ((__unused__)) =
     (yystackp->yysplitPoint == NULL);
@@ -1089,7 +1089,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 127 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1112,7 +1112,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 144 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1135,7 +1135,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 161 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1158,7 +1158,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 178 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1181,7 +1181,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 195 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1204,7 +1204,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 212 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1235,7 +1235,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 237 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1266,7 +1266,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 262 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1297,7 +1297,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 287 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1334,7 +1334,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 318 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1358,7 +1358,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 336 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1389,7 +1389,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 361 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.val), NULL);
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1411,7 +1411,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 377 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(NULL, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.val));
 			if (((*yyvalp).val).type == VALUE_ERROR) {
 				YYERROR_CODE(((*yyvalp).val).iv);
@@ -1434,8 +1434,10 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 394 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).sv, NULL, 0, &((*yyvalp).val));
+		} else if (wcscmp(stored_function, (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).sv) == 0) {
+			YYERROR_MSG(FAILURE_INVALID_NAME, "A function cannot call itself!");
 		}
 	;}
     break;
@@ -1443,11 +1445,13 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 28:
 
 /* Line 936 of glr.c  */
-#line 399 "src\\grammar.y"
+#line 401 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			value args[] = { (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.val) };
 			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv, args, 1, &((*yyvalp).val));
+		} else if (wcscmp(stored_function, (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv) == 0) {
+			YYERROR_MSG(FAILURE_INVALID_NAME, "A function cannot call itself!");
 		}
 	;}
     break;
@@ -1455,11 +1459,13 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 29:
 
 /* Line 936 of glr.c  */
-#line 405 "src\\grammar.y"
+#line 409 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.lst).elements, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.lst).size, &((*yyvalp).val));
 			list_destroy(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.lst));
+		} else if (wcscmp(stored_function, (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv) == 0) {
+			YYERROR_MSG(FAILURE_INVALID_NAME, "A function cannot call itself!");
 		}
 	;}
     break;
@@ -1467,9 +1473,9 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 30:
 
 /* Line 936 of glr.c  */
-#line 414 "src\\grammar.y"
+#line 420 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			if (list_create(&((*yyvalp).lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
 				YYERROR_CODE(FAILURE_ALLOCATION);
 			}
@@ -1483,9 +1489,9 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 31:
 
 /* Line 936 of glr.c  */
-#line 424 "src\\grammar.y"
+#line 430 "src\\grammar.y"
     {
-		if (stored_function->expression == NULL) {
+		if (wcslen(stored_function) == 0) {
 			if (list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val)) != NO_FAILURE) {
 				YYERROR_CODE(FAILURE_ALLOCATION);
 			}
@@ -1496,63 +1502,82 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 32:
 
 /* Line 936 of glr.c  */
-#line 434 "src\\grammar.y"
+#line 440 "src\\grammar.y"
     {
-		stored_function->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (4))].yystate.yysemantics.yysval.val).sv)+1));
-		if (stored_function->expression == NULL)
+		function *fn = (function*) malloc(sizeof(function));
+		if (fn->expression == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
+		}
 
-		stored_function->n_args = 0;
-		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv, stored_function);
+		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (4))].yystate.yysemantics.yysval.val).sv)+1));
+		if (fn->expression == NULL) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
+		}
+
+		fn->n_args = 0;
+		wcscpy(stored_function, (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv);
+		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv, fn);
 	;}
     break;
 
   case 33:
 
 /* Line 936 of glr.c  */
-#line 442 "src\\grammar.y"
+#line 455 "src\\grammar.y"
     {
-		stored_function->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.val).sv)+1));
-		if (stored_function->expression == NULL)
-			YYERROR_CODE(FAILURE_ALLOCATION);
-
-		stored_function->arguments[0] = malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.val).sv)+1));
-		if (stored_function->arguments[0] == NULL) {
+		function *fn = (function*) malloc(sizeof(function));
+		if (fn->expression == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 
-		wcscpy(stored_function->arguments[0], (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.val).sv);
-		stored_function->n_args = 1;
+		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.val).sv)+1));
+		if (fn->expression == NULL) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
+		}
 
-		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.val).sv, stored_function);
+		fn->arguments[0] = malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.val).sv)+1));
+		if (fn->arguments[0] == NULL) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
+		}
+
+		wcscpy(fn->arguments[0], (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.val).sv);
+		fn->n_args = 1;
+
+		wcscpy(stored_function, (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.val).sv);
+		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.val).sv, fn);
 	;}
     break;
 
   case 34:
 
 /* Line 936 of glr.c  */
-#line 457 "src\\grammar.y"
+#line 477 "src\\grammar.y"
     {
 		int i;
-
-		stored_function->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.val).sv)+1));
-		if (stored_function->expression == NULL) {
+		function *fn = (function*) malloc(sizeof(function));
+		if (fn->expression == NULL) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 
-		stored_function->n_args = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst).size;
+		fn->expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.val).sv)+1));
+		if (fn->expression == NULL) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
+		}
+
+		fn->n_args = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst).size;
 		for (i=0; i<(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst).size; ++i)
-			stored_function->arguments[i] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst).elements[i].sv;
+			fn->arguments[i] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst).elements[i].sv;
 
 		list_destroy(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.lst));
-		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.val).sv, stored_function);
+		wcscpy(stored_function, (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.val).sv);
+		put_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.val).sv, fn);
 	;}
     break;
 
   case 35:
 
 /* Line 936 of glr.c  */
-#line 476 "src\\grammar.y"
+#line 501 "src\\grammar.y"
     {
 		value *v = (value*) malloc(sizeof(value));
 		if (v == NULL) {
@@ -1569,9 +1594,9 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 36:
 
 /* Line 936 of glr.c  */
-#line 487 "src\\grammar.y"
+#line 512 "src\\grammar.y"
     {
-		stored_function->expression = NULL;
+		wcscpy(stored_function, L"");
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.val);
 	;}
     break;
@@ -1579,7 +1604,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 37:
 
 /* Line 936 of glr.c  */
-#line 494 "src\\grammar.y"
+#line 519 "src\\grammar.y"
     {
 		if (list_create(&((*yyvalp).lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
@@ -1593,7 +1618,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 38:
 
 /* Line 936 of glr.c  */
-#line 502 "src\\grammar.y"
+#line 527 "src\\grammar.y"
     {
 		if (list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val)) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
@@ -1604,7 +1629,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
 
 /* Line 936 of glr.c  */
-#line 1608 "src/tab.c"
+#line 1633 "src/tab.c"
       default: break;
     }
 
@@ -1640,7 +1665,7 @@ yyuserMerge (int yyn, YYSTYPE* yy0, YYSTYPE* yy1)
 
 /*ARGSUSED*/
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   YYUSE (yyvaluep);
   YYUSE (scanner);
@@ -1668,7 +1693,7 @@ yyrhsLength (yyRuleNum yyrule)
 }
 
 static void
-yydestroyGLRState (char const *yymsg, yyGLRState *yys, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+yydestroyGLRState (char const *yymsg, yyGLRState *yys, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   if (yys->yyresolved)
     yydestruct (yymsg, yystos[yys->yylrState],
@@ -2062,7 +2087,7 @@ yyglrShiftDefer (yyGLRStack* yystackp, size_t yyk, yyStateNum yylrState,
  *  for userAction.  */
 static inline YYRESULTTAG
 yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-	    YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+	    YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   int yynrhs = yyrhsLength (yyrule);
 
@@ -2115,7 +2140,7 @@ do {					\
 
 /*ARGSUSED*/ static inline void
 yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-		 YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+		 YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   int yynrhs = yyrhsLength (yyrule);
   yybool yynormal __attribute__ ((__unused__)) =
@@ -2157,7 +2182,7 @@ yy_reduce_print (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
  */
 static inline YYRESULTTAG
 yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
-	     yybool yyforceEval, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+	     yybool yyforceEval, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   size_t yyposn = yystackp->yytops.yystates[yyk]->yyposn;
 
@@ -2363,7 +2388,7 @@ yypreference (yySemanticOption* y0, yySemanticOption* y1)
 }
 
 static YYRESULTTAG yyresolveValue (yyGLRState* yys,
-				   yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[]);
+				   yyGLRStack* yystackp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[]);
 
 
 /** Resolve the previous N states starting at and including state S.  If result
@@ -2373,7 +2398,7 @@ static YYRESULTTAG yyresolveValue (yyGLRState* yys,
  *  if necessary.  */
 static YYRESULTTAG
 yyresolveStates (yyGLRState* yys, int yyn,
-		 yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+		 yyGLRStack* yystackp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   if (0 < yyn)
     {
@@ -2391,7 +2416,7 @@ yyresolveStates (yyGLRState* yys, int yyn,
  *  semantic values if invoked).  */
 static YYRESULTTAG
 yyresolveAction (yySemanticOption* yyopt, yyGLRStack* yystackp,
-		 YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+		 YYSTYPE* yyvalp, YYLTYPE* yylocp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   yyGLRStackItem yyrhsVals[YYMAXRHS + YYMAXLEFT + 1];
   int yynrhs;
@@ -2476,7 +2501,7 @@ yyreportTree (yySemanticOption* yyx, int yyindent)
 
 /*ARGSUSED*/ static YYRESULTTAG
 yyreportAmbiguity (yySemanticOption* yyx0,
-		   yySemanticOption* yyx1, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+		   yySemanticOption* yyx1, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   YYUSE (yyx0);
   YYUSE (yyx1);
@@ -2499,7 +2524,7 @@ yyreportAmbiguity (yySemanticOption* yyx0,
  *  is always chosen.  */
 static void
 yyresolveLocations (yyGLRState* yys1, int yyn1,
-		    yyGLRStack *yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+		    yyGLRStack *yystackp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   if (0 < yyn1)
     {
@@ -2559,7 +2584,7 @@ yyresolveLocations (yyGLRState* yys1, int yyn1,
  *  of whether result = yyok, S has been left with consistent data so that
  *  yydestroyGLRState can be invoked if necessary.  */
 static YYRESULTTAG
-yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   yySemanticOption* yyoptionList = yys->yysemantics.yyfirstVal;
   yySemanticOption* yybest;
@@ -2647,7 +2672,7 @@ yyresolveValue (yyGLRState* yys, yyGLRStack* yystackp, yyscan_t scanner, functio
 }
 
 static YYRESULTTAG
-yyresolveStack (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+yyresolveStack (yyGLRStack* yystackp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   if (yystackp->yysplitPoint != NULL)
     {
@@ -2696,7 +2721,7 @@ yycompressStack (yyGLRStack* yystackp)
 
 static YYRESULTTAG
 yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
-		   size_t yyposn, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+		   size_t yyposn, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   int yyaction;
   const short int* yyconflicts;
@@ -2776,7 +2801,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
 }
 
 /*ARGSUSED*/ static void
-yyreportSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+yyreportSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   if (yystackp->yyerrState == 0)
     {
@@ -2880,7 +2905,7 @@ yyreportSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, function* stored_fu
    yylval, and yylloc are the syntactic category, semantic value, and location
    of the lookahead.  */
 /*ARGSUSED*/ static void
-yyrecoverSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+yyrecoverSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   size_t yyk;
   int yyj;
@@ -2990,7 +3015,7 @@ yyrecoverSyntaxError (yyGLRStack* yystackp, yyscan_t scanner, function* stored_f
 `----------*/
 
 int
-yyparse (yyscan_t scanner, function* stored_function, value *result, char parse_error[])
+yyparse (yyscan_t scanner, wchar_t stored_function[], value *result, char parse_error[])
 {
   int yyresult;
   yyGLRStack yystack;
@@ -3299,10 +3324,10 @@ yypdumpstack (yyGLRStack* yystackp)
 
 
 /* Line 2634 of glr.c  */
-#line 509 "src\\grammar.y"
+#line 534 "src\\grammar.y"
 
 
-int yyerror(yyscan_t scanner, function* stored_function, value* result, char response[], const char* msg) {
+int yyerror(yyscan_t scanner, wchar_t stored_function[], value* result, char response[], const char* msg) {
 	char* pos = yyget_text(scanner);
 	result->iv = FAILURE_SYNTAX_ERROR;
 
