@@ -6,13 +6,14 @@
 #include "language.h"
 #include "parse.h"
 #include "interface.h"
+#include "constructs.h"
 
 int main() {
 	FILE *config = fopen(config_path(), "r");
 	int setting, value;
 
 	init_interface(exit_callback, parse_callback);
-	parse_init();
+	constructs_init();
 
 	/* Read in settings */
 	if (config != NULL) {
@@ -37,7 +38,7 @@ void parse_callback(const wchar_t *target) {
 	/* Prepare output buffer */
 	output = (wchar_t*) malloc(sizeof(wchar_t)*2);
 	if (output == NULL)
-		error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+		error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 	wcscpy(output, L"");
 
 	/* Scan line by line */
@@ -55,7 +56,7 @@ void parse_callback(const wchar_t *target) {
 				/* Expand output buffer */
 				output = (wchar_t*) realloc(output, sizeof(wchar_t)*( wcslen(output_tmp) + wcslen(output) + 3) /* Space for carriage return and line break */);
 				if (output == NULL)
-					error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+					error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 
 				/* Might need a carriage return here */
 				if (winline_mode)
@@ -86,7 +87,7 @@ void parse_callback(const wchar_t *target) {
 		/* Expand output buffer */
 		output = (wchar_t*) realloc(output, sizeof(wchar_t)*( wcslen(output_tmp) + wcslen(output) + 3) /* Space for carriage return and line break */);
 		if (output == NULL)
-			error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+			error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 
 		/* Might need a carriage return here */
 		if (winline_mode)
@@ -125,7 +126,7 @@ wchar_t* parse_expression(const wchar_t* expression) {
 	if (i == len) {
 		response = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(expression)+1));
 		if (response == NULL)
-			error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+			error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 		wcscpy(response, expression);
 		return response;
 	}
@@ -133,7 +134,7 @@ wchar_t* parse_expression(const wchar_t* expression) {
 	/* Allocate new string */
 	line = (wchar_t*) malloc(sizeof(wchar_t)*(len-i+1));
 	if (line == NULL)
-		error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+		error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 
 	/* Copy string portion, and solve it */
 	wcscpy(line, &expression[i]);
@@ -148,39 +149,39 @@ wchar_t* parse_expression(const wchar_t* expression) {
 		break;
 		
 		case FAILURE_UNKNOWN:
-			error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Something has gone horribly wrong!", 1);
+			error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Something has gone horribly wrong!", 1);
 		break;
 
 		case FAILURE_ALLOCATION:
-			error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+			error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 		break;
 		
 		case FAILURE_INVALID_ARGS:
-			error_msg(lang_lookup[LANG_STR_SYNTAX_ERR][get_setting(SETTING_LANG)], L"Invalid arguments supplied to function", 0);
+			error_msg(language_str(LANG_STR_SYNTAX_ERR), L"Invalid arguments supplied to function", 0);
 		
 			response = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(expression)+1));
 			if (response == NULL)
-				error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+				error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 			wcscpy(response, expression);
 			return response;
 		break;
 		
 		case FAILURE_INVALID_NAME:
-			error_msg(lang_lookup[LANG_STR_SYNTAX_ERR][get_setting(SETTING_LANG)], L"Referenced function or variable does not exist", 0);
+			error_msg(language_str(LANG_STR_SYNTAX_ERR), L"Referenced function or variable does not exist", 0);
 		
 			response = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(expression)+1));
 			if (response == NULL)
-				error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+				error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 			wcscpy(response, expression);
 			return response;
 		break;
 		
 		case FAILURE_SYNTAX_ERROR:
-			error_msg(lang_lookup[LANG_STR_SYNTAX_ERR][get_setting(SETTING_LANG)], v.sv, 0);
+			error_msg(language_str(LANG_STR_SYNTAX_ERR), v.sv, 0);
 		
 			response = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(expression)+1));
 			if (response == NULL)
-				error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+				error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 			wcscpy(response, expression);
 			return response;
 		break;
@@ -190,7 +191,7 @@ wchar_t* parse_expression(const wchar_t* expression) {
 	free(line);
 	line = (wchar_t*) malloc(sizeof(wchar_t)*(i+wcslen(v.sv)+1));
 	if (line == NULL)
-		error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][get_setting(SETTING_LANG)], L"Failed to allocate memory!", 1);
+		error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 
 	/* Copy response over */
 	wcsncpy(line, expression, i);
@@ -201,6 +202,9 @@ wchar_t* parse_expression(const wchar_t* expression) {
 }
 
 void exit_callback( void ) {
+	/* Free up memory */
+	constructs_destroy();
+
 	/* Open config */
 	FILE *config = fopen(config_path(), "w");
 

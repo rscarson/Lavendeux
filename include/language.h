@@ -1,26 +1,46 @@
 #ifndef LANGUAGE_H
 	#define LANGUAGE_H
-	
-	/* Language types */
-	#define NUM_LANGS 2
-	#define LANG_EN 0 /* 0 will be default language */
-	#define LANG_FR 1
+
+	void language_set_current(int l);
+	const wchar_t* language_str(int s);
+	char* language_char_str(int s);
+
+	/* Supported Languages */
+	enum language_t {
+		LANG_EN,
+		LANG_FR,
+
+		NUM_LANGS
+	};
 
 	/* Language strings */
-	#define LANG_STR_EXIT 				0x00
-	#define LANG_STR_ABOUT 				0x01
-	#define LANG_STR_LANGUAGE		 	0x02
-	#define LANG_STR_ERR_STARTING 		0x03
-	#define LANG_STR_NO_EQUATIONS	 	0x04
-	#define LANG_STR_SILENT_ERRS	 	0x05
-	#define LANG_STR_ANGLE_UNITS	 	0x06
-	#define LANG_STR_DEGREES	 		0x07
-	#define LANG_STR_RADIANS		 	0x08
-	#define LANG_STR_RUNTIME_ERR	 	0x09
-	#define LANG_STR_SYNTAX_ERR			0x0A
+	enum language_string_t {
+		LANG_STR_EXIT,
+		LANG_STR_ABOUT,
+		LANG_STR_LANGUAGE,
+		LANG_STR_ERR_STARTING,
+		LANG_STR_NO_EQUATIONS,
+		LANG_STR_SILENT_ERRS,
+		LANG_STR_ANGLE_UNITS,
+		LANG_STR_DEGREES,
+		LANG_STR_RADIANS,
+		LANG_STR_RUNTIME_ERR,
+		LANG_STR_SYNTAX_ERR,
+		LANG_STR_ERR_UNKNOWN,
+		LANG_STR_ERR_INVALID_ARGS,
+		LANG_STR_ERR_INVALID_NAME,
+		LANG_STR_ERR_SYNTAX_ERROR,
+		LANG_STR_ERR_ALLOCATION,
+		LANG_STR_ERR_TYPE,
+		LANG_STR_BOOLEAN_FLOAT,
+		LANG_STR_FACTORIAL_LT_ZERO,
+		LANG_STR_FN_CALL_SELF,
+		LANG_STR_DIV_BY_ZERO,
 
-	/* Language table */
-	static const wchar_t* lang_lookup[][NUM_LANGS] = {
+		NUM_LANG_STR
+	};
+
+	static const wchar_t* language_lookup[][NUM_LANGS] = {
 		[LANG_STR_EXIT] = {
 			[LANG_EN] = L"Exit",
 			[LANG_FR] = L"Sortie"
@@ -75,5 +95,56 @@
 			[LANG_EN] = L"Syntax error",
 			[LANG_FR] = L"Erreur de syntaxe"
 		},
+
+		[LANG_STR_ERR_UNKNOWN] = {
+			[LANG_EN] = L"Unknown error",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_ERR_INVALID_ARGS] = {
+			[LANG_EN] = L"Invalid arguments supplied to function",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_ERR_INVALID_NAME] = {
+			[LANG_EN] = L"Unrecognized or invalid function or variable name",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_ERR_SYNTAX_ERROR] = {
+			[LANG_EN] = L"Syntax error",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_ERR_ALLOCATION] = {
+			[LANG_EN] = L"Failed to allocate memory",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_ERR_TYPE] = {
+			[LANG_EN] = L"Operation not valid for given type",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_BOOLEAN_FLOAT] = {
+			[LANG_EN] =L"Floating point arguments not applicable to binary operators",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_FACTORIAL_LT_ZERO] = {
+			[LANG_EN] =L"Factorial is undefined for arguments < 0",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_FN_CALL_SELF] = {
+			[LANG_EN] =L"A function cannot call itself",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_DIV_BY_ZERO] = {
+			[LANG_EN] = L"Division by 0",
+			[LANG_FR] = L""
+		}
 	};
+
 #endif

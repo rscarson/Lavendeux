@@ -4,16 +4,16 @@ OBJ_DIR = obj
 BIN_DIR = bin
 INC_DIR = include
 
-LEX_SOURCE = $(SRC_DIR)/lex.c
-LEX_HEADER = $(INC_DIR)/lex.h
-TAB_SOURCE = $(SRC_DIR)/tab.c
-TAB_HEADER = $(INC_DIR)/tab.h
+LEX_SOURCE = $(SRC_DIR)/generated/lex.c
+LEX_HEADER = $(INC_DIR)/generated/lex.h
+TAB_SOURCE = $(SRC_DIR)/generated/tab.c
+TAB_HEADER = $(INC_DIR)/generated/tab.h
 
-_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o
+_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o
 PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
 
 CC = gcc
-COMPILE_FLAGS = -std=c99 -I./$(INC_DIR) -L./$(LIB_DIR) -Wall -g -Wno-unused
+COMPILE_FLAGS = -std=c99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -Wall -g -Wno-unused
 WIN32_FLAGS =  -Wl,-subsystem,windows
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
@@ -24,7 +24,8 @@ $(OBJ_DIR)/ub3rparse.res: $(SRC_DIR)/ub3rparse.rc
 
 $(LIB_DIR)/libinterface.a: $(SRC_DIR)/interface_win32.c
 	gcc -c $(SRC_DIR)/interface_win32.c -o $(OBJ_DIR)/interface.o  $(COMPILE_FLAGS)
-	ar rcs $(LIB_DIR)/libinterface.a $(OBJ_DIR)/interface.o
+	gcc -c $(SRC_DIR)/language.c -o $(OBJ_DIR)/language.o  $(COMPILE_FLAGS)
+	ar rcs $(LIB_DIR)/libinterface.a $(OBJ_DIR)/interface.o $(OBJ_DIR)/language.o
 
 $(LIB_DIR)/libparse.a: grammar $(PARSE_DEPS)
 	gcc -c $(LEX_SOURCE) -o $(OBJ_DIR)/lex.o $(COMPILE_FLAGS)

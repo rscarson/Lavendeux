@@ -6,9 +6,9 @@
     #include <conio.h>
     #include <Shlobj.h>
 
+    #include "language.h"
     #include "interface_win32.h"
     #include "interface.h"
-    #include "language.h"
 
     /* Event globals */
     HWND hWnd;
@@ -118,6 +118,7 @@
     LRESULT CALLBACK wnd_callback(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
         static UINT wndMsg = 0;
 
+        int i;
         char about_title[0xFF];
         char about_msg[0xFF];
 
@@ -136,6 +137,12 @@
             /* Time to exit */
             case WM_DESTROY:
                 Shell_NotifyIcon(NIM_DELETE, &nid);
+
+                /* Delete stored entries */
+                for (i=0; i<MAX_EQUATIONS; i++)
+                    if (stored_entries[i] != NULL)
+                        free(stored_entries[i]);
+
                 PostQuitMessage(0);
                 _exit_callback();
             break;
@@ -149,6 +156,12 @@
                     /* Exit through menu */
                     case CMD_EXIT:
                         Shell_NotifyIcon(NIM_DELETE, &nid);
+
+                    /* Delete stored entries */
+                    for (i=0; i<MAX_EQUATIONS; i++)
+                        if (stored_entries[i] != NULL)
+                            free(stored_entries[i]);
+
                         PostQuitMessage(0);
                         _exit_callback();
                     break;
@@ -182,11 +195,13 @@
                     /* English language */
                     case CMD_LANG_EN:
                         settings[SETTING_LANG] = LANG_EN;
+                        language_set_current(LANG_EN);
                     break;
 
                     /* French language */
                     case CMD_LANG_FR:
                         settings[SETTING_LANG] = LANG_FR;
+                        language_set_current(LANG_FR);
                     break;
 
                     /* One of the equations was clicked. Put in it the clipboard */
@@ -235,25 +250,25 @@
                 has_equation = 1;
             }
         if (!has_equation) {
-            AppendMenuW(hMenu, MF_STRING, 0, lang_lookup[LANG_STR_NO_EQUATIONS][settings[SETTING_LANG]]);
+            AppendMenuW(hMenu, MF_STRING, 0, language_str(LANG_STR_NO_EQUATIONS));
         }
 
         /* Settings */
         AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
         AppendMenuW(hLangMenu, (settings[SETTING_LANG]==LANG_EN)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_EN, L"English");
         AppendMenuW(hLangMenu, (settings[SETTING_LANG]==LANG_FR)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_FR, L"Français");
-        AppendMenuW(hMenu, MF_POPUP, (UINT) hLangMenu, lang_lookup[LANG_STR_LANGUAGE][settings[SETTING_LANG]]);
+        AppendMenuW(hMenu, MF_POPUP, (UINT) hLangMenu, language_str(LANG_STR_LANGUAGE));
 
-        AppendMenuW(hMenu, (settings[SETTING_SILENT]==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, lang_lookup[LANG_STR_SILENT_ERRS][settings[SETTING_LANG]]);
+        AppendMenuW(hMenu, (settings[SETTING_SILENT]==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, language_str(LANG_STR_SILENT_ERRS));
 
-        AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, lang_lookup[LANG_STR_DEGREES][settings[SETTING_LANG]]);
-        AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, lang_lookup[LANG_STR_RADIANS][settings[SETTING_LANG]]);
-        AppendMenuW(hMenu, MF_POPUP, (UINT) hAnglesMenu, lang_lookup[LANG_STR_ANGLE_UNITS][settings[SETTING_LANG]]);
+        AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, language_str(LANG_STR_DEGREES));
+        AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, language_str(LANG_STR_RADIANS));
+        AppendMenuW(hMenu, MF_POPUP, (UINT) hAnglesMenu, language_str(LANG_STR_ANGLE_UNITS));
 
         /* System menu */
         AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
-        AppendMenuW(hMenu, MF_STRING, CMD_ABOUT, lang_lookup[LANG_STR_ABOUT][settings[SETTING_LANG]]);
-        AppendMenuW(hMenu, MF_STRING, CMD_EXIT, lang_lookup[LANG_STR_EXIT][settings[SETTING_LANG]]);
+        AppendMenuW(hMenu, MF_STRING, CMD_ABOUT, language_str(LANG_STR_ABOUT));
+        AppendMenuW(hMenu, MF_STRING, CMD_EXIT, language_str(LANG_STR_EXIT));
 
         SetForegroundWindow(hWnd); // Win32 bug work-around
         TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hWnd, NULL);
@@ -278,7 +293,7 @@
         /* Allocate new entry */
         stored_entries[0] = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(entry)+1));
         if (stored_entries[0] == NULL)
-            error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][settings[SETTING_LANG]], L"Failed to allocate memory!", 1);
+            error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
         wcscpy( stored_entries[0], entry);
     }
 
@@ -326,7 +341,7 @@
     const char* config_path( void ) {
         char *path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
         if (path == NULL)
-            error_msg(lang_lookup[LANG_STR_RUNTIME_ERR][settings[SETTING_LANG]], L"Failed to allocate memory!", 1);
+            error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
 
         if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
             strcat(path, CONFIG_FILENAME);

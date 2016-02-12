@@ -3,68 +3,12 @@
 #include <stdlib.h>
 
 #include "parse.h"
+#include "language.h"
+#include "constructs.h"
 #include "list.h"
-#include "hashing.h"
-#include "builtins.h"
 
 #include "tab.h"
 #include "lex.h"
-
-/**
- * Start up the parsing stores
- *
- * @return int The result of the operation
- */
-int parse_init() {
-	if (!table_create(&variables, HASH_DEFAULT_SIZE))
-		return FAILURE_ALLOCATION;
-	if (!table_create(&functions, HASH_DEFAULT_SIZE))
-		return FAILURE_ALLOCATION;
-	if (!init_builtins(&variables))
-		return FAILURE_ALLOCATION;
-
-	return NO_FAILURE;
-}
-
-/**
- * Get a text representation of an error code
- * @param code The error code
- *
- * @return Error message string
- */
-const char* code_to_msg(int code) {
-	switch (code) {
-		case FAILURE_UNKNOWN:
-			return "Unknown error";
-		break;
-
-		case NO_FAILURE:
-			return "No error";
-		break;
-
-		case FAILURE_INVALID_ARGS:
-			return "Invalid arguments supplied to function";
-		break;
-
-		case FAILURE_INVALID_NAME:
-			return "Unrecognized or invalid function or variable name";
-		break;
-
-		case FAILURE_SYNTAX_ERROR:
-			return "Syntax error";
-		break;
-
-		case FAILURE_ALLOCATION:
-			return "Failed to allocate memory";
-		break;
-
-		case FAILURE_TYPE:
-			return "Operation not valid for given type";
-		break;
-	}
-
-	return "";
-}
 
 /**
  * Process an equation and format the response
@@ -84,7 +28,7 @@ int parse_equation(const wchar_t* equation, value* response){
 
 	char* equation_mbs = malloc(sizeof(char)*(wcslen(equation)+1));
 	if (equation_mbs == NULL) {
-		mbstowcs(response->sv, code_to_msg(FAILURE_ALLOCATION), strlen(code_to_msg(FAILURE_ALLOCATION)));
+		wcscpy(response->sv, language_str(LANG_STR_ERR_ALLOCATION));
 
     	yylex_destroy(myscanner);
 		return FAILURE_ALLOCATION;
@@ -104,108 +48,6 @@ int parse_equation(const wchar_t* equation, value* response){
 	free(equation_mbs);
     yylex_destroy(myscanner);
 	return NO_FAILURE;
-}
-
-/**
- * Get a variable's value
- * @param name The name of the variable
- * @param dst A pointer to a value to store the result in
- *
- * @return int The result of the operation
- */
-int get_variable(const wchar_t* name, value* dst) {
-	value *v = table_get(&variables, name);
-
-	if (v != NULL) {
-		*dst = *v;
-		printf("GET %S=%d", name, dst->iv);
-		return NO_FAILURE;
-	}
-
-	printf("%S not found!", name, dst->iv);
-	return FAILURE_INVALID_NAME;
-}
-
-/**
- * Store a value in a variable
- * @param name The name of the variable
- * @param src A pointer to the value to store
- *
- * @return int The result of the operation
- */
-int put_variable(const wchar_t* name, value* src) {
-		printf("SET %S=%d", name, src->iv);
-	if (!table_put(&variables, name, src))
-		return FAILURE_ALLOCATION;
-	return NO_FAILURE;
-}
-
-/**
- * Solve a function
- * @param name The callable name of the function
- * @param args A list of the resolved arguments to pass in
- * @param n_args The length of the args array
- * @param value A pointer to a value that will hold the return value
- *
- * @return int The result of the operation
- */
-int solve_function(const wchar_t* name, value args[], int n_args, value* v) {
-	int i;
-	int parse_result = NO_FAILURE;
-	value *argument_backups[n_args];
-	function *definition;
-
-	/* Builtin? */
-	if (is_builtin(name))
-		 return call_builtin(name, args, n_args, v);
-
-	/* Get the definition */
-	definition = table_get(&functions, name);
-	if (definition == NULL)
-		return FAILURE_INVALID_NAME;
-
-	/* Wrong number of arguments> */
-	if (n_args != definition->n_args)
-		return FAILURE_INVALID_ARGS;
-
-	/* Backup existing values, replace with argument values */
-	for (i=0; i<n_args; ++i) {
-		get_variable(definition->arguments[i], argument_backups[i]);
-		put_variable(definition->arguments[i], &args[i]);
-	}
-
-	/* Do the thing */
-	if (parse_result == NO_FAILURE)
-		parse_result = parse_equation(definition->expression, v);
-
-	/* Clean up values */
-	for (i=0; i<n_args; ++i) {
-		if (argument_backups[i] == NULL)
-			table_remove(&variables, definition->arguments[i], NULL);
-		else
-			if (put_variable(definition->arguments[i], argument_backups[i]) != NO_FAILURE)
-				parse_result = FAILURE_ALLOCATION;
-	}
-
-	return parse_result;
-}
-
-/**
- * Add a new function
- * @param name The callable name of the function
- * @param definition The function's details
- *
- * @return int The result of the operation
- */
-int put_function(const wchar_t* name, function *definition) {
-	return table_put(&functions, name, definition);
-}
-
-int_value_t ifactorial(int_value_t in) {
-	if (in <= 0)
-		return 1;
-
-	return ifactorial(in-1) * in;
 }
 
 int float_value(const value* v, float_value_t *out) {

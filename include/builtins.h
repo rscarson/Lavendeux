@@ -17,7 +17,8 @@
 	/* Store builtin functions */
 	hash_table builtins;
 
-	int init_builtins(hash_table*);
+	int builtins_init(hash_table*);
+	void builtins_destroy( void );
 	int builtin_put(const wchar_t*, builtin, int);
 	int is_builtin(const wchar_t*);
 	int call_builtin(const wchar_t*, value[], int, value*);

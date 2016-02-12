@@ -11,7 +11,7 @@
  *
  * @return Result of the operation
  */
-int init_builtins(hash_table *variables) {
+int builtins_init(hash_table *variables) {
 	value* builtin_pi;
 	value* builtin_e;
 	
@@ -58,6 +58,10 @@ int init_builtins(hash_table *variables) {
 	) return FAILURE_ALLOCATION;
 
 	return NO_FAILURE;
+}
+
+void builtins_destroy( void ) {
+	table_destroy(&builtins, NULL);
 }
 
 int builtin_put(const wchar_t* name, builtin fn, int args) {

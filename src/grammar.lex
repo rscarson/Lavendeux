@@ -7,6 +7,7 @@
 	#include <stdlib.h>
 	#include <math.h>
 	#include <wchar.h>
+	#include <stdio.h>
 
 	int yyerror(char *s);
 	int linenumber = 1;

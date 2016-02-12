@@ -2,9 +2,9 @@
 #define yyHEADER_H 1
 #define yyIN_HEADER 1
 
-#line 6 "include/lex.h"
+#line 6 "include/generated/lex.h"
 
-#line 8 "include/lex.h"
+#line 8 "include/generated/lex.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -347,9 +347,9 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 159 "src\\grammar.lex"
+#line 160 "src\\grammar.lex"
 
 
-#line 354 "include/lex.h"
+#line 354 "include/generated/lex.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */
