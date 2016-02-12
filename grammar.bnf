@@ -1,23 +1,46 @@
-<expression> ::= <assignment_expression> | <assignment_expression> <DECORATOR> <IDENTIFIER>
-	;
+<expression> ::= 
+	<constant_expression> |  
+	<assignment_expression> | 
+	<expression> <DECORATOR> <IDENTIFIER>
 
 <atomic_value> ::= <IDENTIFIER> | <HEX> | <BIN> | <OCT> | <SCI> | <FLOAT> | <INT>
-	;
 
-<constant_expression> ::= <atomic_value> | <LPAREN> <constant_expression> <RPAREN> | <constant_expression> <OR> <constant_expression> | <constant_expression> <XOR> <constant_expression> | <constant_expression> <AND> <constant_expression> | <constant_expression> <LSHIFT> <constant_expression> | <constant_expression> <RSHIFT> <constant_expression> | <constant_expression> <PLUS> <constant_expression> | <constant_expression> <MINUS> <constant_expression> | <constant_expression> <MUL> <constant_expression> | <constant_expression> <DIV> <constant_expression> | <constant_expression> <MOD> <constant_expression> | <constant_expression> <POW> <constant_expression> | <constant_expression> <FACTORIAL> | <NOT> <constant_expression> | <IDENTIFIER> <LPAREN> <RPAREN> | <IDENTIFIER> <LPAREN> <constant_expression> <RPAREN> | <IDENTIFIER> <LPAREN> <expression_list> <RPAREN>
-	;
+<constant_expression> ::= 
+	<atomic_value> | 
+	<LPAREN> <constant_expression> <RPAREN> | 
+	<constant_expression> <OR> <constant_expression> | 
+	<constant_expression> <XOR> <constant_expression> | 
+	<constant_expression> <AND> <constant_expression> | 
+	<constant_expression> <LSHIFT> <constant_expression> | 
+	<constant_expression> <RSHIFT> <constant_expression> | 
+	<constant_expression> <PLUS> <constant_expression> | 
+	<constant_expression> <MINUS> <constant_expression> | 
+	<constant_expression> <MUL> <constant_expression> | 
+	<constant_expression> <DIV> <constant_expression> | 
+	<constant_expression> <MOD> <constant_expression> | 
+	<constant_expression> <POW> <constant_expression> | 
+	<constant_expression> <FACTORIAL> |
+	<NOT> <constant_expression> | 
+	<IDENTIFIER> <LPAREN> <RPAREN> | 
+	<IDENTIFIER> <LPAREN> <constant_expression> <RPAREN> | 
+	<IDENTIFIER> <LPAREN> <expression_list> <RPAREN>
 
-<expression_list> ::= <constant_expression> <COMMA> <constant_expression> | <expression_list> <COMMA> <constant_expression>
-	;
+<expression_list> ::= 
+	<constant_expression> <COMMA> <constant_expression> | 
+	<expression_list> <COMMA> <constant_expression>
 
-<left_opside_funct_expression> ::= | <IDENTIFIER> <LPAREN> <RPAREN> <EQUAL> | <IDENTIFIER> <LPAREN> <IDENTIFIER> <RPAREN> <EQUAL> | <IDENTIFIER> <LPAREN> <identifier_list> <RPAREN> <EQUAL>
-	;
+<left_opside_funct_expression> ::= 
+	<IDENTIFIER> <LPAREN> <RPAREN> <EQUAL> | 
+	<IDENTIFIER> <LPAREN> <IDENTIFIER> <RPAREN> <EQUAL> | 
+	<IDENTIFIER> <LPAREN> <identifier_list> <RPAREN> <EQUAL>
 
-<assignment_expression> ::= <assignment_expression> | <IDENTIFIER> <EQUAL> <constant_expression> | <left_opside_funct_expression> <constant_expression>
-	;
+<assignment_expression> ::= 
+	<IDENTIFIER> <EQUAL> <constant_expression> | 
+	<left_opside_funct_expression> <constant_expression>
 
-<identifier_list> ::= <IDENTIFIER> <COMMA> <IDENTIFIER> | <identifier_list> <COMMA> <IDENTIFIER>
-	;
+<identifier_list> ::= 
+	<IDENTIFIER> <COMMA> <IDENTIFIER> |
+	<identifier_list> <COMMA> <IDENTIFIER>
 
 <IDENTIFIER> ::= <letter> | "_" | <IDENTIFIER> <letter> | <IDENTIFIER> <digit> | <IDENTIFIER> "_"
 
@@ -27,13 +50,9 @@
 
 <BIN> ::= "0b" <bindigit> | <BIN> <bindigit>
 
-<bindigit> ::= 0 | 1
-<octdigit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-<hexdigit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | A | b | B | c | D | e | E | f | F
+<SCI> ::= <FLOAT> e <INT> | <FLOAT> E <INT>
 
-<SCI> ::= <FLOAT> e INT | <FLOAT> E <INT>
-
-<FLOAT> ::= <MINUS> "." <digit> | "." <digit> | INT "." <digit> | <FLOAT> <digit>
+<FLOAT> ::= <MINUS> "." <digit> | "." <digit> | <INT> "." <digit> | <FLOAT> <digit>
 
 <INT> ::= <digit> | <MINUS> <digit> | <INT> <digit>
 
@@ -73,5 +92,9 @@
 
 <RPAREN> ::= ")"
 
-<digit>        ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-<letter>       ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+<digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+<letter> ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+
+<bindigit> ::= 0 | 1
+<octdigit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+<hexdigit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | A | b | B | c | D | e | E | f | F
