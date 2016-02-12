@@ -51,11 +51,14 @@
 
 expression:
 	constant_expression {
+		value *v;
 		$$ = $1;
-		if ($$.type == VALUE_STRING)
-			if (get_variable($1.sv, &$$) != NO_FAILURE) {
+		if ($$.type == VALUE_STRING) {
+			if (get_variable($1.sv, &v) != NO_FAILURE) {
 				YYERROR_CODE(FAILURE_INVALID_NAME);
 			}
+			$$ = *v;
+		}
 
 		switch ($$.type) {
 			case VALUE_FLOAT:

@@ -295,10 +295,10 @@ static const signed char yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,    53,    53,    71,    89,    97,   100,   103,   106,   109,
-     112,   115,   121,   124,   127,   144,   161,   178,   195,   212,
-     237,   262,   287,   318,   336,   361,   377,   394,   401,   409,
-     420,   430,   440,   455,   477,   501,   512,   519,   527
+       0,    53,    53,    74,    92,   100,   103,   106,   109,   112,
+     115,   118,   124,   127,   130,   147,   164,   181,   198,   215,
+     240,   265,   290,   321,   339,   364,   380,   397,   404,   412,
+     423,   433,   443,   458,   480,   504,   515,   522,   530
 };
 #endif
 
@@ -949,11 +949,14 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 /* Line 936 of glr.c  */
 #line 53 "src\\grammar.y"
     {
+		value *v;
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
-		if (((*yyvalp).val).type == VALUE_STRING)
-			if (get_variable((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val).sv, &((*yyvalp).val)) != NO_FAILURE) {
+		if (((*yyvalp).val).type == VALUE_STRING) {
+			if (get_variable((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val).sv, &v) != NO_FAILURE) {
 				YYERROR_CODE(FAILURE_INVALID_NAME);
 			}
+			((*yyvalp).val) = *v;
+		}
 
 		switch (((*yyvalp).val).type) {
 			case VALUE_FLOAT:
@@ -971,7 +974,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 3:
 
 /* Line 936 of glr.c  */
-#line 71 "src\\grammar.y"
+#line 74 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 		if (((*yyvalp).val).type == VALUE_STRING)
@@ -995,7 +998,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 4:
 
 /* Line 936 of glr.c  */
-#line 89 "src\\grammar.y"
+#line 92 "src\\grammar.y"
     {
 		decorate((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).sv, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val), ((*yyvalp).val).sv);
 
@@ -1006,7 +1009,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 5:
 
 /* Line 936 of glr.c  */
-#line 97 "src\\grammar.y"
+#line 100 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
@@ -1015,7 +1018,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 6:
 
 /* Line 936 of glr.c  */
-#line 100 "src\\grammar.y"
+#line 103 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
@@ -1024,7 +1027,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 7:
 
 /* Line 936 of glr.c  */
-#line 103 "src\\grammar.y"
+#line 106 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
@@ -1033,7 +1036,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 8:
 
 /* Line 936 of glr.c  */
-#line 106 "src\\grammar.y"
+#line 109 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
@@ -1042,7 +1045,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 9:
 
 /* Line 936 of glr.c  */
-#line 109 "src\\grammar.y"
+#line 112 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
@@ -1051,7 +1054,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 10:
 
 /* Line 936 of glr.c  */
-#line 112 "src\\grammar.y"
+#line 115 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
@@ -1060,7 +1063,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 11:
 
 /* Line 936 of glr.c  */
-#line 115 "src\\grammar.y"
+#line 118 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
@@ -1069,7 +1072,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 12:
 
 /* Line 936 of glr.c  */
-#line 121 "src\\grammar.y"
+#line 124 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.val);
 	;}
@@ -1078,7 +1081,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 13:
 
 /* Line 936 of glr.c  */
-#line 124 "src\\grammar.y"
+#line 127 "src\\grammar.y"
     {
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (3))].yystate.yysemantics.yysval.val);
 	;}
@@ -1087,7 +1090,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 14:
 
 /* Line 936 of glr.c  */
-#line 127 "src\\grammar.y"
+#line 130 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1110,7 +1113,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 15:
 
 /* Line 936 of glr.c  */
-#line 144 "src\\grammar.y"
+#line 147 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1133,7 +1136,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 16:
 
 /* Line 936 of glr.c  */
-#line 161 "src\\grammar.y"
+#line 164 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1156,7 +1159,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 17:
 
 /* Line 936 of glr.c  */
-#line 178 "src\\grammar.y"
+#line 181 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1179,7 +1182,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 18:
 
 /* Line 936 of glr.c  */
-#line 195 "src\\grammar.y"
+#line 198 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1202,7 +1205,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 19:
 
 /* Line 936 of glr.c  */
-#line 212 "src\\grammar.y"
+#line 215 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1233,7 +1236,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 20:
 
 /* Line 936 of glr.c  */
-#line 237 "src\\grammar.y"
+#line 240 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1264,7 +1267,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 21:
 
 /* Line 936 of glr.c  */
-#line 262 "src\\grammar.y"
+#line 265 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1295,7 +1298,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 22:
 
 /* Line 936 of glr.c  */
-#line 287 "src\\grammar.y"
+#line 290 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1332,7 +1335,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 23:
 
 /* Line 936 of glr.c  */
-#line 318 "src\\grammar.y"
+#line 321 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1356,7 +1359,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 24:
 
 /* Line 936 of glr.c  */
-#line 336 "src\\grammar.y"
+#line 339 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val), &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val));
@@ -1387,7 +1390,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 25:
 
 /* Line 936 of glr.c  */
-#line 361 "src\\grammar.y"
+#line 364 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(&(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.val), NULL);
@@ -1409,7 +1412,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 26:
 
 /* Line 936 of glr.c  */
-#line 377 "src\\grammar.y"
+#line 380 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			((*yyvalp).val) = verify_expression(NULL, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.val));
@@ -1432,7 +1435,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 27:
 
 /* Line 936 of glr.c  */
-#line 394 "src\\grammar.y"
+#line 397 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.val).sv, NULL, 0, &((*yyvalp).val));
@@ -1445,7 +1448,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 28:
 
 /* Line 936 of glr.c  */
-#line 401 "src\\grammar.y"
+#line 404 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			value args[] = { (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.val) };
@@ -1459,7 +1462,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 29:
 
 /* Line 936 of glr.c  */
-#line 409 "src\\grammar.y"
+#line 412 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			solve_function((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.val).sv, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.lst).elements, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.lst).size, &((*yyvalp).val));
@@ -1473,7 +1476,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 30:
 
 /* Line 936 of glr.c  */
-#line 420 "src\\grammar.y"
+#line 423 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			if (list_create(&((*yyvalp).lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
@@ -1489,7 +1492,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 31:
 
 /* Line 936 of glr.c  */
-#line 430 "src\\grammar.y"
+#line 433 "src\\grammar.y"
     {
 		if (wcslen(stored_function) == 0) {
 			if (list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val)) != NO_FAILURE) {
@@ -1502,7 +1505,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 32:
 
 /* Line 936 of glr.c  */
-#line 440 "src\\grammar.y"
+#line 443 "src\\grammar.y"
     {
 		function *fn = (function*) malloc(sizeof(function));
 		if (fn->expression == NULL) {
@@ -1523,7 +1526,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 33:
 
 /* Line 936 of glr.c  */
-#line 455 "src\\grammar.y"
+#line 458 "src\\grammar.y"
     {
 		function *fn = (function*) malloc(sizeof(function));
 		if (fn->expression == NULL) {
@@ -1551,7 +1554,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 34:
 
 /* Line 936 of glr.c  */
-#line 477 "src\\grammar.y"
+#line 480 "src\\grammar.y"
     {
 		int i;
 		function *fn = (function*) malloc(sizeof(function));
@@ -1577,7 +1580,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 35:
 
 /* Line 936 of glr.c  */
-#line 501 "src\\grammar.y"
+#line 504 "src\\grammar.y"
     {
 		value *v = (value*) malloc(sizeof(value));
 		if (v == NULL) {
@@ -1594,7 +1597,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 36:
 
 /* Line 936 of glr.c  */
-#line 512 "src\\grammar.y"
+#line 515 "src\\grammar.y"
     {
 		wcscpy(stored_function, L"");
 		((*yyvalp).val) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.val);
@@ -1604,7 +1607,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 37:
 
 /* Line 936 of glr.c  */
-#line 519 "src\\grammar.y"
+#line 522 "src\\grammar.y"
     {
 		if (list_create(&((*yyvalp).lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
@@ -1618,7 +1621,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 38:
 
 /* Line 936 of glr.c  */
-#line 527 "src\\grammar.y"
+#line 530 "src\\grammar.y"
     {
 		if (list_add(&((*yyvalp).lst), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.val)) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
@@ -1629,7 +1632,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
 
 /* Line 936 of glr.c  */
-#line 1633 "src/tab.c"
+#line 1636 "src/tab.c"
       default: break;
     }
 
@@ -3324,7 +3327,7 @@ yypdumpstack (yyGLRStack* yystackp)
 
 
 /* Line 2634 of glr.c  */
-#line 534 "src\\grammar.y"
+#line 537 "src\\grammar.y"
 
 
 int yyerror(yyscan_t scanner, wchar_t stored_function[], value* result, char response[], const char* msg) {
