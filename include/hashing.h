@@ -24,7 +24,7 @@
 	int table_create(hash_table*, unsigned int);
 	void table_destroy(hash_table*, value_destructor);
 
-	int table_put(hash_table*, const wchar_t*, void*);
+	int table_put(hash_table*, const wchar_t*, void*, value_destructor);
 	void* table_get(hash_table*, const wchar_t*);
 
 	void table_remove(hash_table*, const wchar_t*, value_destructor);

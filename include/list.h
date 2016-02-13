@@ -12,5 +12,5 @@
 
 	int list_create(list* lst, unsigned int size);
 	int list_add(list* lst, value e);
-	void list_destroy(list* lst);
+	void list_destroy(const list* lst);
 #endif

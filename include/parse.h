@@ -24,7 +24,14 @@
 		VALUE_STRING
 	};
 	typedef long long int int_value_t;
-	typedef long double float_value_t;
+
+	/* In microsoft land these are the same */
+	#ifdef _WIN32
+		typedef double float_value_t;
+	#else
+		typedef long double float_value_t;
+	#endif
+		
 	typedef struct {
 		char type;
 

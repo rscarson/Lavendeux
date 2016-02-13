@@ -26,7 +26,7 @@ int parse_equation(const wchar_t* equation, value* response){
 	yylex_init(&myscanner);
 	wcscpy(stored_function, L"");
 
-	char* equation_mbs = malloc(sizeof(char)*(wcslen(equation)+1));
+	char* equation_mbs = (char*) malloc(sizeof(char)*(wcslen(equation)+1));
 	if (equation_mbs == NULL) {
 		wcscpy(response->sv, language_str(LANG_STR_ERR_ALLOCATION));
 

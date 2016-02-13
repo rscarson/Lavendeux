@@ -5,6 +5,7 @@
 #include "parse.h"
 #include "constructs.h"
 #include "hashing.h"
+#include "decorators.h"
 #include "builtins.h"
 
 /**
@@ -19,6 +20,7 @@ int constructs_init( void ) {
 		return FAILURE_ALLOCATION;
 	if (!builtins_init(&variables))
 		return FAILURE_ALLOCATION;
+	init_decorators();
 
 	return NO_FAILURE;
 }
@@ -35,7 +37,7 @@ void variable_destroy(void* v) {
 
 void function_destroy(void* v) {
 	int i;
-	function* fn = v;
+	function* fn = (function*) v;
 
 	free(fn->expression);
 	for (i=0; i<fn->n_args; i++)
@@ -53,15 +55,13 @@ void function_destroy(void* v) {
  * @return int The result of the operation
  */
 int get_variable(const wchar_t* name, value* dst) {
-	value *v = table_get(&variables, name);
+	value *v = (value*) table_get(&variables, name);
 
 	if (v != NULL) {
 		*dst = *v;
-		printf("GET %S=%d", name, dst->iv);
 		return NO_FAILURE;
 	}
 
-	printf("%S not found!", name, dst->iv);
 	return FAILURE_INVALID_NAME;
 }
 
@@ -73,8 +73,7 @@ int get_variable(const wchar_t* name, value* dst) {
  * @return int The result of the operation
  */
 int put_variable(const wchar_t* name, value* src) {
-		printf("SET %S=%d", name, src->iv);
-	if (!table_put(&variables, name, src))
+	if (!table_put(&variables, name, src, variable_destroy))
 		return FAILURE_ALLOCATION;
 	return NO_FAILURE;
 }
@@ -99,7 +98,7 @@ int solve_function(const wchar_t* name, value args[], int n_args, value* v) {
 		 return call_builtin(name, args, n_args, v);
 
 	/* Get the definition */
-	definition = table_get(&functions, name);
+	definition = (function*) table_get(&functions, name);
 	if (definition == NULL)
 		return FAILURE_INVALID_NAME;
 
@@ -137,7 +136,7 @@ int solve_function(const wchar_t* name, value args[], int n_args, value* v) {
  * @return int The result of the operation
  */
 int put_function(const wchar_t* name, function *definition) {
-	return table_put(&functions, name, definition);
+	return table_put(&functions, name, definition, function_destroy);
 }
 
 /**

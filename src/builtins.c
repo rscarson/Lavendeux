@@ -1,6 +1,7 @@
 #include <math.h>
 
 #include "hashing.h"
+#include "constructs.h"
 #include "parse.h"
 #include "interface.h"
 #include "builtins.h"
@@ -17,8 +18,8 @@ int builtins_init(hash_table *variables) {
 	
 	table_create(&builtins, HASH_DEFAULT_SIZE);
 
-	builtin_pi = malloc(sizeof(value));
-	builtin_e = malloc(sizeof(value));
+	builtin_pi = (value*) malloc(sizeof(value));
+	builtin_e = (value*) malloc(sizeof(value));
 	if (builtin_pi == NULL || builtin_e == NULL)
 		return FAILURE_ALLOCATION;
 
@@ -29,8 +30,8 @@ int builtins_init(hash_table *variables) {
 	builtin_e->fv = E;
 
 	if (
-		!table_put(variables, L"pi", builtin_pi) ||
-		!table_put(variables, L"e", builtin_e)
+		!table_put(variables, L"pi", builtin_pi, NULL) ||
+		!table_put(variables, L"e", builtin_e, NULL)
 	) return FAILURE_ALLOCATION;
 
 	if (
@@ -60,19 +61,23 @@ int builtins_init(hash_table *variables) {
 	return NO_FAILURE;
 }
 
+void builtin_destroy(void* ptr) {
+	free(ptr);
+}
+
 void builtins_destroy( void ) {
-	table_destroy(&builtins, NULL);
+	table_destroy(&builtins, builtin_destroy);
 }
 
 int builtin_put(const wchar_t* name, builtin fn, int args) {
-	builtin_function* entry = malloc(sizeof(builtin_function));
+	builtin_function* entry = (builtin_function*) malloc(sizeof(builtin_function));
 	if (entry == NULL)
 		return FAILURE_ALLOCATION;
 
 	entry->fn = fn;
 	entry->n_args = args;
 
-	if (!table_put(&builtins, name, entry))
+	if (!table_put(&builtins, name, entry, NULL))
 		return FAILURE_ALLOCATION;
 	return NO_FAILURE;
 }
@@ -99,7 +104,7 @@ int is_builtin(const wchar_t* name) {
 int call_builtin(const wchar_t* name, value args[], int n_args, value* v) {
 	int result;
 
-	builtin_function *fn = table_get(&builtins, name);
+	builtin_function *fn = (builtin_function*) table_get(&builtins, name);
 	if (fn == NULL)
 		return FAILURE_INVALID_NAME;
 
@@ -169,11 +174,30 @@ int builtin_round(value args[], value* result) {
  * Return: float
  */
 int builtin_abs(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+	int err;
+	char type;
+	float_value_t fin;
+	int_value_t iin;
 
-	result->type = VALUE_FLOAT;
-	result->fv = fabsl(in);
+	err = value_type(&args[0], &type);
+	if (err != NO_FAILURE)
+		return err;
+
+	switch (type) {
+		case VALUE_FLOAT:
+			float_value(&args[0], &fin);
+
+			result->type = VALUE_FLOAT;
+			result->fv = fabsl(fin);
+		break;
+
+		case VALUE_INT:
+			int_value(&args[0], &iin);
+
+			result->type = VALUE_INT;
+			result->iv = llabs(iin);
+		break;
+	}
 
 	return NO_FAILURE;
 }

@@ -13,8 +13,9 @@ const wchar_t* language_str(int s) {
 }
 
 char* language_char_str(int s) {
-	char* str = (char*) malloc(sizeof(char) * (wcslen(language_str(s))+1));
-	wcstombs(str, language_str(s), wcslen(language_str(s)));
+	const wchar_t* wstr = language_str(s);
+	char* str = (char*) malloc(sizeof(char) * (wcslen(wstr)+1));
+	wcstombs(str, wstr, wcslen(wstr));
 
 	return str;
 }

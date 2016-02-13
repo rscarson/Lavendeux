@@ -14,13 +14,14 @@
 	typedef union YYSTYPE YYSTYPE;
 	#include "lex.h"
 
-	#define YYERROR_MSG(c,s) _YYERROR_MSG(c,s) YYABORT;
+	#define YYERROR_MSG(c,s) yyerror_msg(scanner, stored_function, result, parse_error, c, s); YYABORT;
 	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, stored_function, result, parse_error, s);
 	#define YYERROR_CODE(c) yyerror_code(scanner, stored_function, result, parse_error, c); YYABORT;
 
 	int yyerror (yyscan_t, wchar_t[], value*, char[], const char*);
 	int_value_t ifactorial(int_value_t in);
 	void yyerror_code(yyscan_t scanner, wchar_t stored_function[], value* result, char parse_error[], int err);
+	void yyerror_msg(yyscan_t scanner, wchar_t stored_function[], value* result, char parse_error[], int err, int lang_str);
 
 %}
 
@@ -59,50 +60,53 @@
 
 expression:
 	constant_expression {
-		value *v = NULL;
-		$$ = $1;
-		if ($$.type == VALUE_STRING) {
-			if (get_variable($1.sv, v) != NO_FAILURE) {
-				YYERROR_CODE(FAILURE_INVALID_NAME);
-			}
-			$$ = *v;
+		
+		char type;
+		int err;
+		if (( err = value_type(&$1, &type) ) != NO_FAILURE) {
+			YYERROR_CODE(err);
 		}
 
-		switch ($$.type) {
+		$$ = $1;
+		switch (type) {
 			case VALUE_FLOAT:
-				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%llf", $1.fv);
+				decorator_float(&$1, $$.sv);
 				break;
 			case VALUE_INT:
-				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%lld", $1.iv);
+				decorator_int(&$1, $$.sv);
 				break;
 		}
 
 		*result = $$;
 	}
 	| assignment_expression {
-		value *v = NULL;
-		$$ = $1;
-		if ($$.type == VALUE_STRING) {
-			if (get_variable($1.sv, v) != NO_FAILURE) {
-				YYERROR_CODE(FAILURE_INVALID_NAME);
-			}
-			$$ = *v;
+		int_value_t iv;
+		float_value_t fv;
+		
+		char type;
+		int err;
+		if (( err = value_type(&$1, &type) ) != NO_FAILURE) {
+			YYERROR_CODE(err);
 		}
 
-		switch ($$.type) {
+		$$ = $1;
+		switch (type) {
 			case VALUE_FLOAT:
-				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%llf", $1.fv);
+				fv = float_value(&$1, &fv);
+				swprintf($$.sv, L"%Lf", fv);
 				break;
 			case VALUE_INT:
-				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%lld", $1.iv);
+				iv = int_value(&$1, &iv);
+				swprintf($$.sv, L"%lld", iv);
 				break;
 		}
 
 		*result = $$;
 	}
 	| expression DECORATOR IDENTIFIER {
-		decorate($1.sv, &$3, $$.sv);
-
+		if (!decorate($3.sv, &$1, $$.sv)) {
+			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_INVALID_DECORATOR);
+		}
 		*result = $$;
 	}
 	;
@@ -147,7 +151,7 @@ constant_expression:
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, language_char_str(LANG_STR_BOOLEAN_FLOAT));
+					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
 				break;
 
 				case VALUE_INT:
@@ -164,7 +168,7 @@ constant_expression:
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, language_char_str(LANG_STR_BOOLEAN_FLOAT));
+					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
 				break;
 
 				case VALUE_INT:
@@ -181,7 +185,7 @@ constant_expression:
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, language_char_str(LANG_STR_BOOLEAN_FLOAT));
+					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
 				break;
 
 				case VALUE_INT:
@@ -198,7 +202,7 @@ constant_expression:
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, language_char_str(LANG_STR_BOOLEAN_FLOAT));
+					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
 				break;
 
 				case VALUE_INT:
@@ -215,7 +219,7 @@ constant_expression:
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, language_char_str(LANG_STR_BOOLEAN_FLOAT));
+					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
 				break;
 
 				case VALUE_INT:
@@ -313,7 +317,7 @@ constant_expression:
 					float_value(&$3, &fright_op);
 
 					if (fright_op == 0.0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, language_char_str(LANG_STR_DIV_BY_ZERO));
+						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
 					}
 					$$.fv = fleft_op / fright_op;
 				break;
@@ -323,7 +327,7 @@ constant_expression:
 					int_value(&$3, &iright_op);
 
 					if (iright_op == 0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, language_char_str(LANG_STR_DIV_BY_ZERO));
+						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
 					}
 					$$.iv = ileft_op / iright_op;
 			}
@@ -341,7 +345,7 @@ constant_expression:
 			int_value(&$3, &right_op);
 
 			if (right_op == 0) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, language_char_str(LANG_STR_DIV_BY_ZERO));
+				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
 			}
 
 			$$.iv = left_op % right_op;
@@ -382,7 +386,7 @@ constant_expression:
 			int_value_t left_op;
 			int_value(&$1, &left_op);
 			if (left_op < 0) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, language_char_str(LANG_STR_FACTORIAL_LT_ZERO));
+				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_FACTORIAL_LT_ZERO);
 			}
 
 			$$.iv = ifactorial(left_op);
@@ -397,7 +401,7 @@ constant_expression:
 
 			switch ($$.type) {
 				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, language_char_str(LANG_STR_BOOLEAN_FLOAT));
+					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
 				break;
 
 				case VALUE_INT:
@@ -410,7 +414,7 @@ constant_expression:
 			solve_function($1.sv, NULL, 0, &$$);
 		} else if (wcscmp(stored_function, $1.sv) == 0) {
 			function_remove(stored_function);
-			YYERROR_MSG(FAILURE_INVALID_NAME, language_char_str(LANG_STR_FN_CALL_SELF));
+			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_FN_CALL_SELF);
 		}
 	}
 	| IDENTIFIER LPAREN constant_expression RPAREN {
@@ -419,7 +423,7 @@ constant_expression:
 			solve_function($1.sv, args, 1, &$$);
 		} else if (wcscmp(stored_function, $1.sv) == 0) {
 			function_remove(stored_function);
-			YYERROR_MSG(FAILURE_INVALID_NAME, language_char_str(LANG_STR_FN_CALL_SELF));
+			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_FN_CALL_SELF);
 		}
 	}
 	| IDENTIFIER LPAREN expression_list RPAREN {
@@ -428,7 +432,7 @@ constant_expression:
 			list_destroy(&$3);
 		} else if (wcscmp(stored_function, $1.sv) == 0) {
 			function_remove(stored_function);
-			YYERROR_MSG(FAILURE_INVALID_NAME, language_char_str(LANG_STR_FN_CALL_SELF));
+			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_FN_CALL_SELF);
 		}
 	}
 	;
@@ -569,33 +573,35 @@ int_value_t ifactorial(int_value_t in) {
 }
 
 void yyerror_code(yyscan_t scanner, wchar_t stored_function[], value* result, char parse_error[], int err) {
-	char* err_str = NULL;
-
 	switch (err) {
 		case FAILURE_UNKNOWN:
-			err_str = language_char_str(LANG_STR_ERR_UNKNOWN);
+			yyerror_msg(scanner, stored_function, result, parse_error, err, LANG_STR_ERR_UNKNOWN);
 		break;
 
 		case FAILURE_INVALID_ARGS:
-			err_str = language_char_str(LANG_STR_ERR_INVALID_ARGS);
+			yyerror_msg(scanner, stored_function, result, parse_error, err, LANG_STR_ERR_INVALID_ARGS);
 		break;
 
 		case FAILURE_INVALID_NAME:
-			err_str = language_char_str(LANG_STR_ERR_INVALID_NAME);
+			yyerror_msg(scanner, stored_function, result, parse_error, err, LANG_STR_ERR_INVALID_NAME);
 		break;
 
 		case FAILURE_SYNTAX_ERROR:
-			err_str = language_char_str(LANG_STR_ERR_SYNTAX_ERROR);
+			yyerror_msg(scanner, stored_function, result, parse_error, err, LANG_STR_ERR_SYNTAX_ERROR);
 		break;
 
 		case FAILURE_ALLOCATION:
-			err_str = language_char_str(LANG_STR_ERR_ALLOCATION);
+			yyerror_msg(scanner, stored_function, result, parse_error, err, LANG_STR_ERR_ALLOCATION);
 		break;
 
 		case FAILURE_TYPE:
-			err_str = language_char_str(LANG_STR_ERR_TYPE);	
+			yyerror_msg(scanner, stored_function, result, parse_error, err, LANG_STR_ERR_TYPE);	
 		break;
 	}
+}
+
+void yyerror_msg(yyscan_t scanner, wchar_t stored_function[], value* result, char parse_error[], int err, int lang_str) {
+	char* err_str = language_char_str(lang_str);
 
 	if (err_str != NULL) {
 		_YYERROR_MSG(err, err_str);

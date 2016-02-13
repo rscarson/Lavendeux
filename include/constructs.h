@@ -1,10 +1,11 @@
 #ifndef CONSTRUCTS_H
 	#define CONSTRUCTS_H
 
+	#include "parse.h"
 	#include "hashing.h"
 
 	typedef struct {
-		const wchar_t* expression;
+		wchar_t* expression;
 
 		int n_args;
 		wchar_t** arguments;

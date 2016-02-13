@@ -32,7 +32,7 @@ void parse_callback(const wchar_t *target) {
 	wchar_t* output;
 	wchar_t* output_tmp;
 	wchar_t line[wcslen(target)+1];
-	int i, pos;
+	unsigned int i, pos;
 	int winline_mode = 0;
 
 	/* Prepare output buffer */

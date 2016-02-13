@@ -18,6 +18,7 @@
 	hash_table builtins;
 
 	int builtins_init(hash_table*);
+	void builtin_destroy(void*);
 	void builtins_destroy( void );
 	int builtin_put(const wchar_t*, builtin, int);
 	int is_builtin(const wchar_t*);

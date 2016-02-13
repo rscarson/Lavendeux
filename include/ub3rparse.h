@@ -4,8 +4,4 @@
 	void exit_callback(void);
 	void parse_callback(const wchar_t*);
 	wchar_t* parse_expression(const wchar_t*);
-
-	/* Parsing stuff */
-	//int yyparse();
-	//extern FILE *yyin;
 #endif

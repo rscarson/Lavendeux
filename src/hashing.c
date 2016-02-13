@@ -25,7 +25,7 @@ unsigned long get_hash(const wchar_t *str) {
  * @return 1 on success, 0 otherwise
  */
 int table_create(hash_table *table, unsigned int size) {
-	int i;
+	unsigned int i;
 	table->size = size;
 	
 	table->entries = (hash_node**) malloc(sizeof(hash_node*)*size);
@@ -43,7 +43,7 @@ int table_create(hash_table *table, unsigned int size) {
  * @param destructor Function able to free whatever it is the table contains, or NULL
  */
 void table_destroy(hash_table *table, value_destructor destructor) {
-	int i;
+	unsigned int i;
 	hash_node *entry;
 
 	for (i=0; i<table->size; ++i) {
@@ -67,7 +67,7 @@ void table_destroy(hash_table *table, value_destructor destructor) {
  *
  * @return 1 on success, 0 otherwise
  */
-int table_put(hash_table *table, const wchar_t *key, void *value) {
+int table_put(hash_table *table, const wchar_t *key, void *value, value_destructor destructor) {
 	hash_node *entry;
 	hash_node *new_entry;
 	unsigned int hash;
@@ -77,6 +77,7 @@ int table_put(hash_table *table, const wchar_t *key, void *value) {
 
 	while (entry != NULL) {
 		if (wcscmp(entry->key, key) == 0) {
+			destructor(entry->value);
 			entry->value = value;
 			return 1;
 		}

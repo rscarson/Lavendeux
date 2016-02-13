@@ -7,9 +7,11 @@
 	typedef void (*decorator_fn)(const value*, wchar_t*);
 
 	/* Decorator functions */
-	void decorate(const wchar_t*, const value*, wchar_t*);
+	int decorate(const wchar_t*, const value*, wchar_t*);
 	void decorator_int(const value*, wchar_t*);
 	void decorator_float(const value*, wchar_t*);
+	void decorator_sci(const value*, wchar_t*);
+	void decorator_bin(const value*, wchar_t*);
 	void decorator_oct(const value*, wchar_t*);
 	void decorator_hex(const value*, wchar_t*);
 

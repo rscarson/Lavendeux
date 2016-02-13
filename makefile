@@ -13,7 +13,7 @@ _PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o lang
 PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
 
 CC = gcc
-COMPILE_FLAGS = -std=c99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -Wall -g -Wno-unused
+COMPILE_FLAGS = -std=gnu99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -lm -Wall -g -Wno-unused
 WIN32_FLAGS =  -Wl,-subsystem,windows
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
@@ -41,3 +41,9 @@ win32: $(OBJ_DIR)/ub3rparse.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/lib
 #$(WIN32_FLAGS)
 
 all: win32
+
+clean:
+	rm -f $(LIB_DIR)/*.a
+	rm -f $(OBJ_DIR)/*.o
+	rm -f $(OBJ_DIR)/*.res
+	rm -f $(BIN_DIR)/*.exe

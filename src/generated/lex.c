@@ -869,9 +869,9 @@ case 5:
 YY_RULE_SETUP
 #line 52 "src\\grammar.lex"
 {
-	float_value_t left;
+	double left;
 	int_value_t right;
-	scanf("%lfE%d", (double*) &left, (int*) &right);
+	sscanf(yytext, "%lf%*c%d", &left, (int*) &right);
 
 	/* Store token value */
 	yylval->val.type = VALUE_FLOAT;

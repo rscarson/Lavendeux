@@ -36,6 +36,7 @@
 		LANG_STR_FACTORIAL_LT_ZERO,
 		LANG_STR_FN_CALL_SELF,
 		LANG_STR_DIV_BY_ZERO,
+		LANG_STR_INVALID_DECORATOR,
 
 		NUM_LANG_STR
 	};
@@ -143,6 +144,11 @@
 
 		[LANG_STR_DIV_BY_ZERO] = {
 			[LANG_EN] = L"Division by 0",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_INVALID_DECORATOR] = {
+			[LANG_EN] = L"Unrecognized decorator",
 			[LANG_FR] = L""
 		}
 	};
