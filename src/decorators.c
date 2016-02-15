@@ -10,6 +10,9 @@
 void init_decorators( void ) {
 	table_create(&decorators, HASH_DEFAULT_SIZE);
 
+	table_put(&decorators, L"u", (void*)decorator_unsigned, NULL);
+	table_put(&decorators, L"unsigned", (void*)decorator_unsigned, NULL);
+
 	table_put(&decorators, L"i", (void*)decorator_int, NULL);
 	table_put(&decorators, L"int", (void*)decorator_int, NULL);
 	table_put(&decorators, L"integer", (void*)decorator_int, NULL);
@@ -42,6 +45,13 @@ int decorate(const wchar_t* name, const value* v, wchar_t* decorated) {
 	return 1;
 }
 
+void decorator_unsigned(const value* v, wchar_t* decorated) {
+	int_value_t iv;
+
+	int_value(v, &iv);
+	swprintf(decorated, L"%Lu", iv);
+}
+
 void decorator_int(const value* v, wchar_t* decorated) {
 	int_value_t iv;
 
@@ -51,16 +61,21 @@ void decorator_int(const value* v, wchar_t* decorated) {
 
 void decorator_float(const value* v, wchar_t* decorated) {
 	float_value_t fv;
-	
+	int i;
+
 	float_value(v, &fv);
 	swprintf(decorated, L"%Lf", fv);
+
+	for (i=wcslen(decorated)-1; i>=1; i--)
+		if (decorated[i] == L'0' && decorated[i-1] != L'.')
+			decorated[i] = L'\0';
+		else break;
 }
 
 void decorator_sci(const value* v, wchar_t* decorated) {
 	float_value_t fv;
 	
 	float_value(v, &fv);
-	printf("%d\n", (int)fv);
 	swprintf(decorated, L"%LE", fv);
 }
 

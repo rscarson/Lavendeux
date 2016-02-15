@@ -37,6 +37,9 @@
 		LANG_STR_FN_CALL_SELF,
 		LANG_STR_DIV_BY_ZERO,
 		LANG_STR_INVALID_DECORATOR,
+		LANG_STR_OVERFLOW,
+		LANG_STR_UNDERFLOW,
+		LANG_STR_TOO_LONG,
 
 		NUM_LANG_STR
 	};
@@ -150,7 +153,22 @@
 		[LANG_STR_INVALID_DECORATOR] = {
 			[LANG_EN] = L"Unrecognized decorator",
 			[LANG_FR] = L""
-		}
+		},
+
+		[LANG_STR_OVERFLOW] = {
+			[LANG_EN] = L"Overflow during operation",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_UNDERFLOW] = {
+			[LANG_EN] = L"Underflow during operation",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_TOO_LONG] = {
+			[LANG_EN] = L"Input is too long",
+			[LANG_FR] = L""
+		},
 	};
 
 #endif

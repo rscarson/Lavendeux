@@ -4,8 +4,8 @@
 	#include "hashing.h"
 	#include <math.h>
 
-	#define PI 3.14159265358979323846264338327
-	#define E 2.71828182845905
+	#define PI 	3.14159265358979
+	#define E 	2.71828182845905
 
 	/* A builtin function looks like this */
 	typedef int(*builtin)(value[], value*);

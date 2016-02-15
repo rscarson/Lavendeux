@@ -17,7 +17,7 @@
  *
  * @return int 0 if failed, non 0 otherwise
  */
-extern int yyparse (yyscan_t, wchar_t[], value*, char[]);
+extern int yyparse (yyscan_t, wchar_t[], value*);
 int parse_equation(const wchar_t* equation, value* response){
 	char parse_error[EXPRESSION_MAX_LEN];
 	wchar_t stored_function[EXPRESSION_MAX_LEN];
@@ -35,11 +35,10 @@ int parse_equation(const wchar_t* equation, value* response){
 	}
 
 	wcstombs(equation_mbs, equation, wcslen(equation));
+	equation_mbs[wcslen(equation)] = L'\0';
 	yy_scan_string(equation_mbs, myscanner);
 
-	if (yyparse(myscanner, stored_function, response, parse_error) == 1) {
-		mbstowcs(response->sv, parse_error, strlen(parse_error));
-
+	if (yyparse(myscanner, stored_function, response) == 1) {
 		free(equation_mbs);
     	yylex_destroy(myscanner);
 		return response->iv;
@@ -78,7 +77,7 @@ int float_value(const value* v, float_value_t *out) {
 int int_value(const value* v, int_value_t *out) {
 	value resolved;
 	int result;
-	
+
 	switch (v->type) {
 		case VALUE_INT:
 			*out = v->iv;

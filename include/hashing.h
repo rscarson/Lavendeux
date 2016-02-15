@@ -6,7 +6,7 @@
 	#define HASH_DEFAULT_SIZE 100
 
 	typedef struct node {
-		const wchar_t* key;
+		wchar_t* key;
 		void* value;
 
 		struct node *next;

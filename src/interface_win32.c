@@ -362,7 +362,7 @@
             MessageBoxW(hWnd, 
                 msg,
                 title,
-            MB_OK);
+            MB_OK | MB_ICONWARNING | MB_DEFBUTTON1);
         }
 
         if (fatal)

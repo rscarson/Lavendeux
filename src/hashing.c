@@ -8,6 +8,7 @@
 unsigned long get_hash(const wchar_t *str) {
 	char mb_str[wcslen(str)];
 	wcstombs(mb_str, str, wcslen(str));
+	mb_str[wcslen(str)] = L'\0';
 
 	unsigned long hash = 5381;
 	int c;
@@ -91,7 +92,11 @@ int table_put(hash_table *table, const wchar_t *key, void *value, value_destruct
 	if (new_entry == NULL)
 		return 0; /* Failed to allocate node */
 
-	new_entry->key = key;
+	new_entry->key = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(key)+1));
+	if (new_entry->key == NULL)
+		return 0; /* Failed to allocate key */
+
+	wcscpy(new_entry->key, key);
 	new_entry->value = value;
 	new_entry->next = NULL;
 

@@ -1,8 +1,9 @@
 /* A Bison parser, made by GNU Bison 2.4.2.  */
 
-/* Skeleton interface for Bison GLR parsers in C
+/* Skeleton interface for Bison's Yacc-like parsers in C
    
-      Copyright (C) 2002-2006, 2009-2010 Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
+   Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -49,29 +50,31 @@
      EQUAL = 266,
      LPAREN = 267,
      RPAREN = 268,
-     COMMA = 269,
-     OR = 270,
-     XOR = 271,
-     AND = 272,
-     RSHIFT = 273,
-     LSHIFT = 274,
-     MINUS = 275,
-     PLUS = 276,
-     MOD = 277,
-     DIV = 278,
-     MUL = 279,
-     POW = 280,
-     FACTORIAL = 281,
-     NOT = 282
+     ERROR = 269,
+     COMMA = 270,
+     OR = 271,
+     XOR = 272,
+     AND = 273,
+     RSHIFT = 274,
+     LSHIFT = 275,
+     MINUS = 276,
+     PLUS = 277,
+     MOD = 278,
+     DIV = 279,
+     MUL = 280,
+     POW = 281,
+     FACTORIAL = 282,
+     NOT = 283
    };
 #endif
 
 
-#ifndef YYSTYPE
+
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
 
-/* Line 2638 of glr.c  */
+/* Line 1685 of yacc.c  */
 #line 36 "src\\grammar.y"
 
 	value val;
@@ -79,25 +82,13 @@ typedef union YYSTYPE
 
 
 
-/* Line 2638 of glr.c  */
-#line 84 "include/generated/tab.h"
+/* Line 1685 of yacc.c  */
+#line 87 "include/generated/tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
+# define yystype YYSTYPE /* obsolescent; will be withdrawn */
+# define YYSTYPE_IS_DECLARED 1
 #endif
-
-#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
-typedef struct YYLTYPE
-{
-
-  char yydummy;
-
-} YYLTYPE;
-# define YYLTYPE_IS_DECLARED 1
-# define YYLTYPE_IS_TRIVIAL 1
-#endif
-
-
-
 
 
 

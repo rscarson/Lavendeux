@@ -5,7 +5,7 @@
 	#include "hashing.h"
 
 	typedef struct {
-		wchar_t* expression;
+		wchar_t expression[EXPRESSION_MAX_LEN];
 
 		int n_args;
 		wchar_t** arguments;

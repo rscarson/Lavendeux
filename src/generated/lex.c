@@ -489,17 +489,21 @@ static yyconst flex_int16_t yy_chk[153] =
 #line 2 "src\\grammar.lex"
 	#include "parse.h"
 	#include "list.h"
+	#include "language.h"
 
 	#include "tab.h"
 
 	#include <stdlib.h>
 	#include <math.h>
+	#include <fenv.h>
 	#include <wchar.h>
 	#include <stdio.h>
+	#include <errno.h>
+	#include <limits.h>
 
-	int yyerror(char *s);
+	int yyerror (yyscan_t, wchar_t[], value*, char[], const char*);
 	int linenumber = 1;
-#line 503 "src/generated/lex.c"
+#line 507 "src/generated/lex.c"
 
 #define INITIAL 0
 
@@ -737,10 +741,10 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 18 "src\\grammar.lex"
+#line 23 "src\\grammar.lex"
 
 
-#line 744 "src/generated/lex.c"
+#line 748 "src/generated/lex.c"
 
     yylval = yylval_param;
 
@@ -823,243 +827,295 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 20 "src\\grammar.lex"
+#line 25 "src\\grammar.lex"
 {
+	unsigned int id_len = yyget_leng(yyscanner);
+	if (id_len >= EXPRESSION_MAX_LEN-1)
+		id_len = EXPRESSION_MAX_LEN-2;
+
 	/* Store token value */
 	yylval->val.type = VALUE_STRING;
-	mbstowcs(yylval->val.sv, yytext, yyget_leng(yyscanner));
+	mbstowcs(yylval->val.sv, yyget_text(yyscanner), id_len);
+	yylval->val.sv[id_len] = L'\0';
 
 	return IDENTIFIER; 
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 28 "src\\grammar.lex"
+#line 38 "src\\grammar.lex"
 { 
 	/* Store token value */
 	yylval->val.type = VALUE_INT;
-	yylval->val.iv = strtoll(&(yytext[2]), NULL, 16);
+	
+	errno = 0;
+	yylval->val.iv = strtoll(&(yyget_text(yyscanner)[2]), NULL, 16);
+	if (errno == ERANGE && yylval->val.iv == LLONG_MAX) {
+		yylval->val.iv = LANG_STR_OVERFLOW;
+		return ERROR;
+	} else if (errno == ERANGE && yylval->val.iv == LLONG_MAX) {
+		yylval->val.iv = LANG_STR_UNDERFLOW;
+		return ERROR;
+	}
 
 	return HEX;
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 36 "src\\grammar.lex"
+#line 55 "src\\grammar.lex"
 { 
 	/* Store token value */
 	yylval->val.type = VALUE_INT;
-	yylval->val.iv = strtoll(&(yytext[2]), NULL, 2);
+	
+	errno = 0;
+	yylval->val.iv = strtoll(&(yyget_text(yyscanner)[2]), NULL, 2);
+	if (errno == ERANGE && yylval->val.iv == LLONG_MAX) {
+		yylval->val.iv = LANG_STR_OVERFLOW;
+		return ERROR;
+	} else if (errno == ERANGE && yylval->val.iv == LLONG_MAX) {
+		yylval->val.iv = LANG_STR_UNDERFLOW;
+		return ERROR;
+	}
 
 	return BIN;
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 44 "src\\grammar.lex"
+#line 72 "src\\grammar.lex"
 { 
 	/* Store token value */
 	yylval->val.type = VALUE_INT;
-	yylval->val.iv = strtoll(&(yytext[2]), NULL, 8);
+	
+	errno = 0;
+	yylval->val.iv = strtoll(&(yyget_text(yyscanner)[2]), NULL, 8);
+	if (errno == ERANGE && yylval->val.iv == LLONG_MAX) {
+		yylval->val.iv = LANG_STR_OVERFLOW;
+		return ERROR;
+	} else if (errno == ERANGE && yylval->val.iv == LLONG_MAX) {
+		yylval->val.iv = LANG_STR_UNDERFLOW;
+		return ERROR;
+	}
 
 	return OCT;
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 52 "src\\grammar.lex"
+#line 89 "src\\grammar.lex"
 {
-	double left;
-	int_value_t right;
-	sscanf(yytext, "%lf%*c%d", &left, (int*) &right);
-
 	/* Store token value */
 	yylval->val.type = VALUE_FLOAT;
-	yylval->val.fv = frexpl(left, (int*) &right);
+
+	feclearexcept (FE_ALL_EXCEPT);
+	yylval->val.fv = strtold(yyget_text(yyscanner), NULL);
+	if (fetestexcept (FE_OVERFLOW)) {
+		yylval->val.iv = LANG_STR_OVERFLOW;
+		return ERROR;
+	} else if (fetestexcept (FE_UNDERFLOW)) {
+		yylval->val.iv = LANG_STR_UNDERFLOW;
+		return ERROR;
+	}
 
 	return SCI;
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 64 "src\\grammar.lex"
+#line 106 "src\\grammar.lex"
 { 
 	/* Store token value */
 	yylval->val.type = VALUE_FLOAT;
-	yylval->val.fv = strtold(yytext, NULL);
+
+	feclearexcept (FE_ALL_EXCEPT);
+	yylval->val.fv = strtold(yyget_text(yyscanner), NULL);
+	if (fetestexcept (FE_OVERFLOW)) {
+		yylval->val.iv = LANG_STR_OVERFLOW;
+		return ERROR;
+	} else if (fetestexcept (FE_UNDERFLOW)) {
+		yylval->val.iv = LANG_STR_UNDERFLOW;
+		return ERROR;
+	}
+
 
 	return FLOAT;
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 71 "src\\grammar.lex"
+#line 123 "src\\grammar.lex"
 { 
 	/* Store token value */
 	yylval->val.type = VALUE_INT;
-	yylval->val.iv = strtoll(yytext, NULL, 10);
+
+	errno = 0;
+	yylval->val.iv = strtoll(yyget_text(yyscanner), NULL, 10);
+	if (errno == ERANGE && yylval->val.iv == LLONG_MAX) {
+		yylval->val.iv = LANG_STR_OVERFLOW;
+		return ERROR;
+	} else if (errno == ERANGE && yylval->val.iv == LLONG_MIN) {
+		yylval->val.iv = LANG_STR_UNDERFLOW;
+		return ERROR;
+	}
 
 	return INT;
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 79 "src\\grammar.lex"
+#line 140 "src\\grammar.lex"
 { 
 	return PLUS;
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 83 "src\\grammar.lex"
+#line 144 "src\\grammar.lex"
 { 
 	return MINUS;
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 87 "src\\grammar.lex"
+#line 148 "src\\grammar.lex"
 { 
 	return FACTORIAL;
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 91 "src\\grammar.lex"
+#line 152 "src\\grammar.lex"
 { 
 	return MUL;
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 95 "src\\grammar.lex"
+#line 156 "src\\grammar.lex"
 { 
 	return DIV;
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 99 "src\\grammar.lex"
+#line 160 "src\\grammar.lex"
 { 
 	return MOD;
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 103 "src\\grammar.lex"
+#line 164 "src\\grammar.lex"
 { 
 	return POW;
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 107 "src\\grammar.lex"
+#line 168 "src\\grammar.lex"
 { 
 	return NOT;
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 111 "src\\grammar.lex"
+#line 172 "src\\grammar.lex"
 { 
 	return AND;
 }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 115 "src\\grammar.lex"
+#line 176 "src\\grammar.lex"
 { 
 	return OR;
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 119 "src\\grammar.lex"
+#line 180 "src\\grammar.lex"
 { 
 	return XOR;
 }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 123 "src\\grammar.lex"
+#line 184 "src\\grammar.lex"
 { 
 	return LSHIFT; 
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 127 "src\\grammar.lex"
+#line 188 "src\\grammar.lex"
 { 
 	return RSHIFT; 
 }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 131 "src\\grammar.lex"
+#line 192 "src\\grammar.lex"
 { 
 	return COMMA; 
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 135 "src\\grammar.lex"
+#line 196 "src\\grammar.lex"
 { 
 	return DECORATOR; 
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 139 "src\\grammar.lex"
-{ 
-	/* Store remaining text */
-	yylval->val.type = VALUE_STRING;
-	mbstowcs(yylval->val.sv, &yytext[1], strlen(yytext)-yyget_leng(yyscanner));
-
+#line 200 "src\\grammar.lex"
+{
 	return EQUAL; 
 }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 147 "src\\grammar.lex"
+#line 204 "src\\grammar.lex"
 { 
 	return LPAREN; 
 }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 151 "src\\grammar.lex"
+#line 208 "src\\grammar.lex"
 { 
 	return RPAREN; 
 }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 155 "src\\grammar.lex"
+#line 212 "src\\grammar.lex"
 ;
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 156 "src\\grammar.lex"
+#line 213 "src\\grammar.lex"
 { ++linenumber; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 157 "src\\grammar.lex"
+#line 214 "src\\grammar.lex"
 ;
 	YY_BREAK
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 158 "src\\grammar.lex"
+#line 215 "src\\grammar.lex"
 ;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 160 "src\\grammar.lex"
+#line 217 "src\\grammar.lex"
 ECHO;
 	YY_BREAK
-#line 1063 "src/generated/lex.c"
+#line 1119 "src/generated/lex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2227,6 +2283,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 160 "src\\grammar.lex"
+#line 217 "src\\grammar.lex"
 
 

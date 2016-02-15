@@ -9,6 +9,7 @@
 	/* Decorator functions */
 	int decorate(const wchar_t*, const value*, wchar_t*);
 	void decorator_int(const value*, wchar_t*);
+	void decorator_unsigned(const value*, wchar_t*);
 	void decorator_float(const value*, wchar_t*);
 	void decorator_sci(const value*, wchar_t*);
 	void decorator_bin(const value*, wchar_t*);

@@ -1,7 +1,7 @@
 #ifndef PARSE_H
 	#define PARSE_H
 
-	#define EXPRESSION_MAX_LEN 255
+	#define EXPRESSION_MAX_LEN 4096
 
 	/* Helper macros */
 	#define TO_RADIANS(x) x * PI / 180.0

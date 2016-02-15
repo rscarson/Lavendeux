@@ -2,8 +2,8 @@
 	#define INTERFACE_H
 
     /* Window settings */
-    #define WINDOW_TITLE "Ub3rParse"
-	#define CONFIG_FILENAME "/.ub3rsettings"
+    #define WINDOW_TITLE "Lavendeux"
+	#define CONFIG_FILENAME "/.lavendeuxsettings"
     #define MAX_EQUATIONS 5
 	#define MAX_LEN 255
 

@@ -39,7 +39,6 @@ void function_destroy(void* v) {
 	int i;
 	function* fn = (function*) v;
 
-	free(fn->expression);
 	for (i=0; i<fn->n_args; i++)
 		free(fn->arguments[i]);
 	free(fn->arguments);
