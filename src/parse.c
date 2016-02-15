@@ -38,7 +38,7 @@ int parse_equation(const wchar_t* equation, value* response){
 	equation_mbs[wcslen(equation)] = L'\0';
 	yy_scan_string(equation_mbs, myscanner);
 
-	if (yyparse(myscanner, stored_function, response) == 1) {
+	if (yyparse(myscanner, response) == 1) {
 		free(equation_mbs);
     	yylex_destroy(myscanner);
 		return response->iv;

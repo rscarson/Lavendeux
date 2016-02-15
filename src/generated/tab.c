@@ -85,14 +85,14 @@
 	typedef union YYSTYPE YYSTYPE;
 	#include "lex.h"
 
-	#define YYERROR_MSG(c,s) yyerror_msg(scanner, stored_function, result, c, s); YYABORT;
-	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, stored_function, result, s);
-	#define YYERROR_CODE(c) yyerror_code(scanner, stored_function, result, c); YYABORT;
+	#define YYERROR_MSG(c,s) yyerror_msg(scanner, result, c, s); YYABORT;
+	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, result, s);
+	#define YYERROR_CODE(c) yyerror_code(scanner, result, c); YYABORT;
 
-	int yyerror (yyscan_t, wchar_t[], value*, const char*);
+	int yyerror (yyscan_t, value*, const char*);
 	int_value_t ifactorial(int_value_t in);
-	void yyerror_code(yyscan_t scanner, wchar_t stored_function[], value* result, int err);
-	void yyerror_msg(yyscan_t scanner, wchar_t stored_function[], value* result, int err, int lang_str);
+	void yyerror_code(yyscan_t scanner, value* result, int err);
+	void yyerror_msg(yyscan_t scanner, value* result, int err, int lang_str);
 
 
 
@@ -161,7 +161,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 36 "src\\grammar.y"
+#line 35 "src\\grammar.y"
 
 	value val;
 	list lst;
@@ -478,10 +478,10 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    63,    63,    82,   106,   115,   118,   121,   124,   127,
-     130,   133,   136,   142,   145,   148,   178,   208,   238,   268,
-     297,   338,   379,   420,   469,   495,   535,   558,   594,   610,
-     628,   649,   659,   669
+       0,    62,    62,    81,   105,   114,   117,   120,   123,   126,
+     129,   132,   135,   141,   144,   147,   175,   203,   231,   259,
+     286,   325,   364,   403,   450,   474,   512,   533,   567,   577,
+     589,   604,   612,   620
 };
 #endif
 
@@ -662,7 +662,7 @@ do								\
     }								\
   else								\
     {								\
-      yyerror (scanner, stored_function, result, YY_("syntax error: cannot back up")); \
+      yyerror (scanner, result, YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
 while (YYID (0))
@@ -742,7 +742,7 @@ do {									  \
     {									  \
       YYFPRINTF (stderr, "%s ", Title);					  \
       yy_symbol_print (stderr,						  \
-		  Type, Value, scanner, stored_function, result); \
+		  Type, Value, scanner, result); \
       YYFPRINTF (stderr, "\n");						  \
     }									  \
 } while (YYID (0))
@@ -756,22 +756,20 @@ do {									  \
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, wchar_t stored_function[], value *result)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, value *result)
 #else
 static void
-yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, stored_function, result)
+yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, result)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
     yyscan_t scanner;
-    wchar_t stored_function[];
     value *result;
 #endif
 {
   if (!yyvaluep)
     return;
   YYUSE (scanner);
-  YYUSE (stored_function);
   YYUSE (result);
 # ifdef YYPRINT
   if (yytype < YYNTOKENS)
@@ -794,15 +792,14 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, stored_function, res
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, wchar_t stored_function[], value *result)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, value *result)
 #else
 static void
-yy_symbol_print (yyoutput, yytype, yyvaluep, scanner, stored_function, result)
+yy_symbol_print (yyoutput, yytype, yyvaluep, scanner, result)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
     yyscan_t scanner;
-    wchar_t stored_function[];
     value *result;
 #endif
 {
@@ -811,7 +808,7 @@ yy_symbol_print (yyoutput, yytype, yyvaluep, scanner, stored_function, result)
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, stored_function, result);
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, result);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -854,14 +851,13 @@ do {								\
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_reduce_print (YYSTYPE *yyvsp, int yyrule, yyscan_t scanner, wchar_t stored_function[], value *result)
+yy_reduce_print (YYSTYPE *yyvsp, int yyrule, yyscan_t scanner, value *result)
 #else
 static void
-yy_reduce_print (yyvsp, yyrule, scanner, stored_function, result)
+yy_reduce_print (yyvsp, yyrule, scanner, result)
     YYSTYPE *yyvsp;
     int yyrule;
     yyscan_t scanner;
-    wchar_t stored_function[];
     value *result;
 #endif
 {
@@ -876,7 +872,7 @@ yy_reduce_print (yyvsp, yyrule, scanner, stored_function, result)
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
-		       		       , scanner, stored_function, result);
+		       		       , scanner, result);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -884,7 +880,7 @@ yy_reduce_print (yyvsp, yyrule, scanner, stored_function, result)
 # define YY_REDUCE_PRINT(Rule)		\
 do {					\
   if (yydebug)				\
-    yy_reduce_print (yyvsp, Rule, scanner, stored_function, result); \
+    yy_reduce_print (yyvsp, Rule, scanner, result); \
 } while (YYID (0))
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1135,21 +1131,19 @@ yysyntax_error (char *yyresult, int yystate, int yychar)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, yyscan_t scanner, wchar_t stored_function[], value *result)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, yyscan_t scanner, value *result)
 #else
 static void
-yydestruct (yymsg, yytype, yyvaluep, scanner, stored_function, result)
+yydestruct (yymsg, yytype, yyvaluep, scanner, result)
     const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
     yyscan_t scanner;
-    wchar_t stored_function[];
     value *result;
 #endif
 {
   YYUSE (yyvaluep);
   YYUSE (scanner);
-  YYUSE (stored_function);
   YYUSE (result);
 
   if (!yymsg)
@@ -1173,7 +1167,7 @@ int yyparse ();
 #endif
 #else /* ! YYPARSE_PARAM */
 #if defined __STDC__ || defined __cplusplus
-int yyparse (yyscan_t scanner, wchar_t stored_function[], value *result);
+int yyparse (yyscan_t scanner, value *result);
 #else
 int yyparse ();
 #endif
@@ -1201,12 +1195,11 @@ yyparse (YYPARSE_PARAM)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 int
-yyparse (yyscan_t scanner, wchar_t stored_function[], value *result)
+yyparse (yyscan_t scanner, value *result)
 #else
 int
-yyparse (scanner, stored_function, result)
+yyparse (scanner, result)
     yyscan_t scanner;
-    wchar_t stored_function[];
     value *result;
 #endif
 #endif
@@ -1462,7 +1455,7 @@ yyreduce:
         case 2:
 
 /* Line 1464 of yacc.c  */
-#line 63 "src\\grammar.y"
+#line 62 "src\\grammar.y"
     {
 		char type;
 		int err;
@@ -1487,7 +1480,7 @@ yyreduce:
   case 3:
 
 /* Line 1464 of yacc.c  */
-#line 82 "src\\grammar.y"
+#line 81 "src\\grammar.y"
     {
 		int_value_t iv;
 		float_value_t fv;
@@ -1517,7 +1510,7 @@ yyreduce:
   case 4:
 
 /* Line 1464 of yacc.c  */
-#line 106 "src\\grammar.y"
+#line 105 "src\\grammar.y"
     {
 		if (!decorate((yyvsp[(3) - (3)].val).sv, &(yyvsp[(1) - (3)].val), (yyval.val).sv)) {
 			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_INVALID_DECORATOR);
@@ -1529,7 +1522,7 @@ yyreduce:
   case 5:
 
 /* Line 1464 of yacc.c  */
-#line 115 "src\\grammar.y"
+#line 114 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1538,7 +1531,7 @@ yyreduce:
   case 6:
 
 /* Line 1464 of yacc.c  */
-#line 118 "src\\grammar.y"
+#line 117 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1547,7 +1540,7 @@ yyreduce:
   case 7:
 
 /* Line 1464 of yacc.c  */
-#line 121 "src\\grammar.y"
+#line 120 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1556,7 +1549,7 @@ yyreduce:
   case 8:
 
 /* Line 1464 of yacc.c  */
-#line 124 "src\\grammar.y"
+#line 123 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1565,7 +1558,7 @@ yyreduce:
   case 9:
 
 /* Line 1464 of yacc.c  */
-#line 127 "src\\grammar.y"
+#line 126 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1574,7 +1567,7 @@ yyreduce:
   case 10:
 
 /* Line 1464 of yacc.c  */
-#line 130 "src\\grammar.y"
+#line 129 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1583,7 +1576,7 @@ yyreduce:
   case 11:
 
 /* Line 1464 of yacc.c  */
-#line 133 "src\\grammar.y"
+#line 132 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1592,7 +1585,7 @@ yyreduce:
   case 12:
 
 /* Line 1464 of yacc.c  */
-#line 136 "src\\grammar.y"
+#line 135 "src\\grammar.y"
     {
 		YYERROR_MSG(FAILURE_INVALID_ARGS, (yyvsp[(1) - (1)].val).iv);
 	;}
@@ -1601,7 +1594,7 @@ yyreduce:
   case 13:
 
 /* Line 1464 of yacc.c  */
-#line 142 "src\\grammar.y"
+#line 141 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1610,7 +1603,7 @@ yyreduce:
   case 14:
 
 /* Line 1464 of yacc.c  */
-#line 145 "src\\grammar.y"
+#line 144 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(2) - (3)].val);
 	;}
@@ -1619,35 +1612,33 @@ yyreduce:
   case 15:
 
 /* Line 1464 of yacc.c  */
-#line 148 "src\\grammar.y"
+#line 147 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &left_op);
-					int_value(&(yyvsp[(3) - (3)].val), &right_op);
-					
-					
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = left_op | right_op;
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &left_op);
+				int_value(&(yyvsp[(3) - (3)].val), &right_op);
+				
+				
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = left_op | right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -1655,35 +1646,33 @@ yyreduce:
   case 16:
 
 /* Line 1464 of yacc.c  */
-#line 178 "src\\grammar.y"
+#line 175 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &left_op);
-					int_value(&(yyvsp[(3) - (3)].val), &right_op);
-					
-					
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = left_op ^ right_op;
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &left_op);
+				int_value(&(yyvsp[(3) - (3)].val), &right_op);
+				
+				
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = left_op ^ right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -1691,35 +1680,33 @@ yyreduce:
   case 17:
 
 /* Line 1464 of yacc.c  */
-#line 208 "src\\grammar.y"
+#line 203 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &left_op);
-					int_value(&(yyvsp[(3) - (3)].val), &right_op);
-					
-					
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = left_op & right_op;
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &left_op);
+				int_value(&(yyvsp[(3) - (3)].val), &right_op);
+				
+				
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = left_op & right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -1727,35 +1714,33 @@ yyreduce:
   case 18:
 
 /* Line 1464 of yacc.c  */
-#line 238 "src\\grammar.y"
+#line 231 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &left_op);
-					int_value(&(yyvsp[(3) - (3)].val), &right_op);
-					
-					
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = left_op << right_op;
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &left_op);
+				int_value(&(yyvsp[(3) - (3)].val), &right_op);
+				
+				
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = left_op << right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -1763,34 +1748,32 @@ yyreduce:
   case 19:
 
 /* Line 1464 of yacc.c  */
-#line 268 "src\\grammar.y"
+#line 259 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &left_op);
-					int_value(&(yyvsp[(3) - (3)].val), &right_op);
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &left_op);
+				int_value(&(yyvsp[(3) - (3)].val), &right_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = left_op >> right_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = left_op >> right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -1798,46 +1781,44 @@ yyreduce:
   case 20:
 
 /* Line 1464 of yacc.c  */
-#line 297 "src\\grammar.y"
+#line 286 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
-					float_value(&(yyvsp[(3) - (3)].val), &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
+				float_value(&(yyvsp[(3) - (3)].val), &fright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).fv = fleft_op + fright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).fv = fleft_op + fright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
-					int_value(&(yyvsp[(3) - (3)].val), &iright_op);
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
+				int_value(&(yyvsp[(3) - (3)].val), &iright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = ileft_op + iright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = ileft_op + iright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -1845,46 +1826,44 @@ yyreduce:
   case 21:
 
 /* Line 1464 of yacc.c  */
-#line 338 "src\\grammar.y"
+#line 325 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
-					float_value(&(yyvsp[(3) - (3)].val), &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
+				float_value(&(yyvsp[(3) - (3)].val), &fright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).fv = fleft_op - fright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).fv = fleft_op - fright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
-					int_value(&(yyvsp[(3) - (3)].val), &iright_op);
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
+				int_value(&(yyvsp[(3) - (3)].val), &iright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = ileft_op - iright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = ileft_op - iright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -1892,46 +1871,44 @@ yyreduce:
   case 22:
 
 /* Line 1464 of yacc.c  */
-#line 379 "src\\grammar.y"
+#line 364 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
-					float_value(&(yyvsp[(3) - (3)].val), &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
+				float_value(&(yyvsp[(3) - (3)].val), &fright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).fv = fleft_op * fright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).fv = fleft_op * fright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
-					int_value(&(yyvsp[(3) - (3)].val), &iright_op);
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
+				int_value(&(yyvsp[(3) - (3)].val), &iright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = ileft_op * iright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = ileft_op * iright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -1939,54 +1916,52 @@ yyreduce:
   case 23:
 
 /* Line 1464 of yacc.c  */
-#line 420 "src\\grammar.y"
+#line 403 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
-					float_value(&(yyvsp[(3) - (3)].val), &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
+				float_value(&(yyvsp[(3) - (3)].val), &fright_op);
 
-					if (fright_op == 0.0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
-					}
+				if (fright_op == 0.0) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
+				}
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).fv = fleft_op / fright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).fv = fleft_op / fright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
-					int_value(&(yyvsp[(3) - (3)].val), &iright_op);
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
+				int_value(&(yyvsp[(3) - (3)].val), &iright_op);
 
-					if (iright_op == 0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
-					}
+				if (iright_op == 0) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
+				}
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = ileft_op / iright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = ileft_op / iright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -1994,31 +1969,29 @@ yyreduce:
   case 24:
 
 /* Line 1464 of yacc.c  */
-#line 469 "src\\grammar.y"
+#line 450 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			int_value(&(yyvsp[(1) - (3)].val), &left_op);
-			int_value(&(yyvsp[(3) - (3)].val), &right_op);
+		int_value_t left_op;
+		int_value_t right_op;
+		int_value(&(yyvsp[(1) - (3)].val), &left_op);
+		int_value(&(yyvsp[(3) - (3)].val), &right_op);
 
-			if (right_op == 0) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
-			}
+		if (right_op == 0) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
+		}
 
-			feclearexcept (FE_ALL_EXCEPT);
-			(yyval.val).iv = left_op % right_op;
+		feclearexcept (FE_ALL_EXCEPT);
+		(yyval.val).iv = left_op % right_op;
 
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
 	;}
     break;
@@ -2026,45 +1999,43 @@ yyreduce:
   case 25:
 
 /* Line 1464 of yacc.c  */
-#line 495 "src\\grammar.y"
+#line 474 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
-					float_value(&(yyvsp[(3) - (3)].val), &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				float_value(&(yyvsp[(1) - (3)].val), &fleft_op);
+				float_value(&(yyvsp[(3) - (3)].val), &fright_op);
 
-					(yyval.val).fv = powl(fleft_op, fright_op);	
+				(yyval.val).fv = powl(fleft_op, fright_op);	
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
-					int_value(&(yyvsp[(3) - (3)].val), &iright_op);
+			case VALUE_INT:
+				int_value(&(yyvsp[(1) - (3)].val), &ileft_op);
+				int_value(&(yyvsp[(3) - (3)].val), &iright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = (int_value_t) powl(ileft_op, iright_op);
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = (int_value_t) powl(ileft_op, iright_op);
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -2072,28 +2043,26 @@ yyreduce:
   case 26:
 
 /* Line 1464 of yacc.c  */
-#line 535 "src\\grammar.y"
+#line 512 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(&(yyvsp[(1) - (2)].val), NULL);
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(&(yyvsp[(1) - (2)].val), NULL);
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			int_value_t left_op;
-			int_value(&(yyvsp[(1) - (2)].val), &left_op);
-			if (left_op < 0) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_FACTORIAL_LT_ZERO);
-			}
+		int_value_t left_op;
+		int_value(&(yyvsp[(1) - (2)].val), &left_op);
+		if (left_op < 0) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_FACTORIAL_LT_ZERO);
+		}
 
-			feclearexcept (FE_ALL_EXCEPT);
-			(yyval.val).iv = ifactorial(left_op);
+		feclearexcept (FE_ALL_EXCEPT);
+		(yyval.val).iv = ifactorial(left_op);
 
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
 	;}
     break;
@@ -2101,41 +2070,39 @@ yyreduce:
   case 27:
 
 /* Line 1464 of yacc.c  */
-#line 558 "src\\grammar.y"
+#line 533 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			(yyval.val) = verify_expression(NULL, &(yyvsp[(2) - (2)].val));
-			if ((yyval.val).type == VALUE_ERROR) {
-				YYERROR_CODE((yyval.val).iv);
-			}
+		(yyval.val) = verify_expression(NULL, &(yyvsp[(2) - (2)].val));
+		if ((yyval.val).type == VALUE_ERROR) {
+			YYERROR_CODE((yyval.val).iv);
+		}
 
-			int_value_t right_op;
-			int i;
-			int_value_t mask;
-			switch ((yyval.val).type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t right_op;
+		int i;
+		int_value_t mask;
+		switch ((yyval.val).type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&(yyvsp[(2) - (2)].val), &right_op);
+			case VALUE_INT:
+				int_value(&(yyvsp[(2) - (2)].val), &right_op);
 
-					/* Determine highest order bit to build mask*/
-					i = 0;
-					mask = 0;
-					do {
-						mask += 1 << i++;
-					} while (pow(2, i) <= right_op);
+				/* Determine highest order bit to build mask*/
+				i = 0;
+				mask = 0;
+				do {
+					mask += 1 << i++;
+				} while (pow(2, i) <= right_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					(yyval.val).iv = (~(right_op)) & mask;
+				feclearexcept (FE_ALL_EXCEPT);
+				(yyval.val).iv = (~(right_op)) & mask;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	;}
     break;
@@ -2143,21 +2110,15 @@ yyreduce:
   case 28:
 
 /* Line 1464 of yacc.c  */
-#line 594 "src\\grammar.y"
+#line 567 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			feclearexcept (FE_ALL_EXCEPT);
-			solve_function((yyvsp[(1) - (3)].val).sv, NULL, 0, &(yyval.val));
+		feclearexcept (FE_ALL_EXCEPT);
+		solve_function((yyvsp[(1) - (3)].val).sv, NULL, 0, &(yyval.val));
 
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
-
-		} else if (wcscmp(stored_function, (yyvsp[(1) - (3)].val).sv) == 0) {
-			function_remove(stored_function);
-			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_FN_CALL_SELF);
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
 	;}
     break;
@@ -2165,23 +2126,17 @@ yyreduce:
   case 29:
 
 /* Line 1464 of yacc.c  */
-#line 610 "src\\grammar.y"
+#line 577 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			value args[] = { (yyvsp[(3) - (4)].val) };
+		value args[] = { (yyvsp[(3) - (4)].val) };
 
-			feclearexcept (FE_ALL_EXCEPT);
-			solve_function((yyvsp[(1) - (4)].val).sv, args, 1, &(yyval.val));
+		feclearexcept (FE_ALL_EXCEPT);
+		solve_function((yyvsp[(1) - (4)].val).sv, args, 1, &(yyval.val));
 
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
-
-		} else if (wcscmp(stored_function, (yyvsp[(1) - (4)].val).sv) == 0) {
-			function_remove(stored_function);
-			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_FN_CALL_SELF);
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
 	;}
     break;
@@ -2189,52 +2144,42 @@ yyreduce:
   case 30:
 
 /* Line 1464 of yacc.c  */
-#line 628 "src\\grammar.y"
+#line 589 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
+		feclearexcept (FE_ALL_EXCEPT);
+		solve_function((yyvsp[(1) - (4)].val).sv, (yyvsp[(3) - (4)].lst).elements, (yyvsp[(3) - (4)].lst).size, &(yyval.val));
 
-			feclearexcept (FE_ALL_EXCEPT);
-			solve_function((yyvsp[(1) - (4)].val).sv, (yyvsp[(3) - (4)].lst).elements, (yyvsp[(3) - (4)].lst).size, &(yyval.val));
-
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
-
-			list_destroy(&(yyvsp[(3) - (4)].lst));
-		} else if (wcscmp(stored_function, (yyvsp[(1) - (4)].val).sv) == 0) {
-			function_remove(stored_function);
-			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_FN_CALL_SELF);
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
+
+		list_destroy(&(yyvsp[(3) - (4)].lst));
 	;}
     break;
 
   case 31:
 
 /* Line 1464 of yacc.c  */
-#line 649 "src\\grammar.y"
+#line 604 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			if (list_create(&(yyval.lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
-				YYERROR_CODE(FAILURE_ALLOCATION);
-			}
-
-			list_add(&(yyval.lst), (yyvsp[(1) - (3)].val));
-			list_add(&(yyval.lst), (yyvsp[(3) - (3)].val));
+		if (list_create(&(yyval.lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
+
+		list_add(&(yyval.lst), (yyvsp[(1) - (3)].val));
+		list_add(&(yyval.lst), (yyvsp[(3) - (3)].val));
 	;}
     break;
 
   case 32:
 
 /* Line 1464 of yacc.c  */
-#line 659 "src\\grammar.y"
+#line 612 "src\\grammar.y"
     {
-		if (wcslen(stored_function) == 0) {
-			if (list_add(&(yyval.lst), (yyvsp[(3) - (3)].val)) != NO_FAILURE) {
-				YYERROR_CODE(FAILURE_ALLOCATION);
-			}
+		if (list_add(&(yyval.lst), (yyvsp[(3) - (3)].val)) != NO_FAILURE) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 	;}
     break;
@@ -2242,7 +2187,7 @@ yyreduce:
   case 33:
 
 /* Line 1464 of yacc.c  */
-#line 669 "src\\grammar.y"
+#line 620 "src\\grammar.y"
     {
 		value *v = (value*) malloc(sizeof(value));
 		if (v == NULL) {
@@ -2261,7 +2206,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 2265 "src/generated/tab.c"
+#line 2210 "src/generated/tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2296,7 +2241,7 @@ yyerrlab:
     {
       ++yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (scanner, stored_function, result, YY_("syntax error"));
+      yyerror (scanner, result, YY_("syntax error"));
 #else
       {
 	YYSIZE_T yysize = yysyntax_error (0, yystate, yychar);
@@ -2320,11 +2265,11 @@ yyerrlab:
 	if (0 < yysize && yysize <= yymsg_alloc)
 	  {
 	    (void) yysyntax_error (yymsg, yystate, yychar);
-	    yyerror (scanner, stored_function, result, yymsg);
+	    yyerror (scanner, result, yymsg);
 	  }
 	else
 	  {
-	    yyerror (scanner, stored_function, result, YY_("syntax error"));
+	    yyerror (scanner, result, YY_("syntax error"));
 	    if (yysize != 0)
 	      goto yyexhaustedlab;
 	  }
@@ -2348,7 +2293,7 @@ yyerrlab:
       else
 	{
 	  yydestruct ("Error: discarding",
-		      yytoken, &yylval, scanner, stored_function, result);
+		      yytoken, &yylval, scanner, result);
 	  yychar = YYEMPTY;
 	}
     }
@@ -2404,7 +2349,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-		  yystos[yystate], yyvsp, scanner, stored_function, result);
+		  yystos[yystate], yyvsp, scanner, result);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -2439,7 +2384,7 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (scanner, stored_function, result, YY_("memory exhausted"));
+  yyerror (scanner, result, YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
@@ -2447,7 +2392,7 @@ yyexhaustedlab:
 yyreturn:
   if (yychar != YYEMPTY)
      yydestruct ("Cleanup: discarding lookahead",
-		 yytoken, &yylval, scanner, stored_function, result);
+		 yytoken, &yylval, scanner, result);
   /* Do not reclaim the symbols of the rule which action triggered
      this YYABORT or YYACCEPT.  */
   YYPOPSTACK (yylen);
@@ -2455,7 +2400,7 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-		  yystos[*yyssp], yyvsp, scanner, stored_function, result);
+		  yystos[*yyssp], yyvsp, scanner, result);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -2473,10 +2418,10 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 699 "src\\grammar.y"
+#line 634 "src\\grammar.y"
 
 
-int yyerror(yyscan_t scanner, wchar_t stored_function[], value* result, const char* msg) {
+int yyerror(yyscan_t scanner, value* result, const char* msg) {
 	char* pos = yyget_text(scanner);
 	wchar_t buffer[EXPRESSION_MAX_LEN];
 	result->iv = FAILURE_SYNTAX_ERROR;
@@ -2498,35 +2443,35 @@ int_value_t ifactorial(int_value_t in) {
 	return ifactorial(in-1) * in;
 }
 
-void yyerror_code(yyscan_t scanner, wchar_t stored_function[], value* result, int err) {
+void yyerror_code(yyscan_t scanner, value* result, int err) {
 	switch (err) {
 		case FAILURE_UNKNOWN:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_UNKNOWN);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_UNKNOWN);
 		break;
 
 		case FAILURE_INVALID_ARGS:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_INVALID_ARGS);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_INVALID_ARGS);
 		break;
 
 		case FAILURE_INVALID_NAME:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_INVALID_NAME);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_INVALID_NAME);
 		break;
 
 		case FAILURE_SYNTAX_ERROR:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_SYNTAX_ERROR);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_SYNTAX_ERROR);
 		break;
 
 		case FAILURE_ALLOCATION:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_ALLOCATION);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_ALLOCATION);
 		break;
 
 		case FAILURE_TYPE:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_TYPE);	
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_TYPE);	
 		break;
 	}
 }
 
-void yyerror_msg(yyscan_t scanner, wchar_t stored_function[], value* result, int err, int lang_str) {
+void yyerror_msg(yyscan_t scanner, value* result, int err, int lang_str) {
 	char* err_str = language_char_str(lang_str);
 
 	if (err_str != NULL) {

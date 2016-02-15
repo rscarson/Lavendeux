@@ -19,7 +19,7 @@
 	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, result, s);
 	#define YYERROR_CODE(c) yyerror_code(scanner, result, c); YYABORT;
 
-	int yyerror (yyscan_t, wchar_t[], value*, const char*);
+	int yyerror (yyscan_t, value*, const char*);
 	int_value_t ifactorial(int_value_t in);
 	void yyerror_code(yyscan_t scanner, value* result, int err);
 	void yyerror_msg(yyscan_t scanner, value* result, int err, int lang_str);
@@ -30,7 +30,6 @@
 
 %lex-param {yyscan_t scanner}
 %parse-param {yyscan_t scanner}
-%parse-param {wchar_t stored_function[]}
 %parse-param {value *result}
 
 %union {
@@ -55,7 +54,7 @@
 %left <val> NOT
 
 %type<val> expression atomic_value constant_expression assignment_expression
-%type<lst> expression_list identifier_list
+%type<lst> expression_list
 
 %%
 
@@ -146,521 +145,473 @@ constant_expression:
 		$$ = $2;
 	}
 	| constant_expression OR constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &left_op);
-					int_value(&$3, &right_op);
-					
-					
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = left_op | right_op;
+			case VALUE_INT:
+				int_value(&$1, &left_op);
+				int_value(&$3, &right_op);
+				
+				
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = left_op | right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression XOR constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &left_op);
-					int_value(&$3, &right_op);
-					
-					
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = left_op ^ right_op;
+			case VALUE_INT:
+				int_value(&$1, &left_op);
+				int_value(&$3, &right_op);
+				
+				
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = left_op ^ right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression AND constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &left_op);
-					int_value(&$3, &right_op);
-					
-					
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = left_op & right_op;
+			case VALUE_INT:
+				int_value(&$1, &left_op);
+				int_value(&$3, &right_op);
+				
+				
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = left_op & right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression LSHIFT constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &left_op);
-					int_value(&$3, &right_op);
-					
-					
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = left_op << right_op;
+			case VALUE_INT:
+				int_value(&$1, &left_op);
+				int_value(&$3, &right_op);
+				
+				
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = left_op << right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression RSHIFT constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t left_op;
+		int_value_t right_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &left_op);
-					int_value(&$3, &right_op);
+			case VALUE_INT:
+				int_value(&$1, &left_op);
+				int_value(&$3, &right_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = left_op >> right_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = left_op >> right_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression PLUS constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					float_value(&$1, &fleft_op);
-					float_value(&$3, &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				float_value(&$1, &fleft_op);
+				float_value(&$3, &fright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.fv = fleft_op + fright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.fv = fleft_op + fright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &ileft_op);
-					int_value(&$3, &iright_op);
+			case VALUE_INT:
+				int_value(&$1, &ileft_op);
+				int_value(&$3, &iright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = ileft_op + iright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = ileft_op + iright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression MINUS constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					float_value(&$1, &fleft_op);
-					float_value(&$3, &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				float_value(&$1, &fleft_op);
+				float_value(&$3, &fright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.fv = fleft_op - fright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.fv = fleft_op - fright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &ileft_op);
-					int_value(&$3, &iright_op);
+			case VALUE_INT:
+				int_value(&$1, &ileft_op);
+				int_value(&$3, &iright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = ileft_op - iright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = ileft_op - iright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression MUL constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					float_value(&$1, &fleft_op);
-					float_value(&$3, &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				float_value(&$1, &fleft_op);
+				float_value(&$3, &fright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.fv = fleft_op * fright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.fv = fleft_op * fright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &ileft_op);
-					int_value(&$3, &iright_op);
+			case VALUE_INT:
+				int_value(&$1, &ileft_op);
+				int_value(&$3, &iright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = ileft_op * iright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = ileft_op * iright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression DIV constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					float_value(&$1, &fleft_op);
-					float_value(&$3, &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				float_value(&$1, &fleft_op);
+				float_value(&$3, &fright_op);
 
-					if (fright_op == 0.0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
-					}
+				if (fright_op == 0.0) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
+				}
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.fv = fleft_op / fright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.fv = fleft_op / fright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &ileft_op);
-					int_value(&$3, &iright_op);
+			case VALUE_INT:
+				int_value(&$1, &ileft_op);
+				int_value(&$3, &iright_op);
 
-					if (iright_op == 0) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
-					}
+				if (iright_op == 0) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
+				}
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = ileft_op / iright_op;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = ileft_op / iright_op;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression MOD constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			int_value_t left_op;
-			int_value_t right_op;
-			int_value(&$1, &left_op);
-			int_value(&$3, &right_op);
+		int_value_t left_op;
+		int_value_t right_op;
+		int_value(&$1, &left_op);
+		int_value(&$3, &right_op);
 
-			if (right_op == 0) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
-			}
+		if (right_op == 0) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_DIV_BY_ZERO);
+		}
 
-			feclearexcept (FE_ALL_EXCEPT);
-			$$.iv = left_op % right_op;
+		feclearexcept (FE_ALL_EXCEPT);
+		$$.iv = left_op % right_op;
 
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
 	}
 	| constant_expression POW constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, &$3);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, &$3);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			float_value_t fleft_op;
-			float_value_t fright_op;
-			int_value_t ileft_op;
-			int_value_t iright_op;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					float_value(&$1, &fleft_op);
-					float_value(&$3, &fright_op);
+		float_value_t fleft_op;
+		float_value_t fright_op;
+		int_value_t ileft_op;
+		int_value_t iright_op;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				float_value(&$1, &fleft_op);
+				float_value(&$3, &fright_op);
 
-					$$.fv = powl(fleft_op, fright_op);	
+				$$.fv = powl(fleft_op, fright_op);	
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-				break;
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
 
-				case VALUE_INT:
-					int_value(&$1, &ileft_op);
-					int_value(&$3, &iright_op);
+			case VALUE_INT:
+				int_value(&$1, &ileft_op);
+				int_value(&$3, &iright_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = (int_value_t) powl(ileft_op, iright_op);
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = (int_value_t) powl(ileft_op, iright_op);
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| constant_expression FACTORIAL {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(&$1, NULL);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(&$1, NULL);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			int_value_t left_op;
-			int_value(&$1, &left_op);
-			if (left_op < 0) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_FACTORIAL_LT_ZERO);
-			}
+		int_value_t left_op;
+		int_value(&$1, &left_op);
+		if (left_op < 0) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_FACTORIAL_LT_ZERO);
+		}
 
-			feclearexcept (FE_ALL_EXCEPT);
-			$$.iv = ifactorial(left_op);
+		feclearexcept (FE_ALL_EXCEPT);
+		$$.iv = ifactorial(left_op);
 
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
 	}
 	| NOT constant_expression {
-		if (wcslen(stored_function) == 0) {
-			$$ = verify_expression(NULL, &$2);
-			if ($$.type == VALUE_ERROR) {
-				YYERROR_CODE($$.iv);
-			}
+		$$ = verify_expression(NULL, &$2);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
 
-			int_value_t right_op;
-			int i;
-			int_value_t mask;
-			switch ($$.type) {
-				case VALUE_FLOAT:
-					YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
-				break;
+		int_value_t right_op;
+		int i;
+		int_value_t mask;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_BOOLEAN_FLOAT);
+			break;
 
-				case VALUE_INT:
-					int_value(&$2, &right_op);
+			case VALUE_INT:
+				int_value(&$2, &right_op);
 
-					/* Determine highest order bit to build mask*/
-					i = 0;
-					mask = 0;
-					do {
-						mask += 1 << i++;
-					} while (pow(2, i) <= right_op);
+				/* Determine highest order bit to build mask*/
+				i = 0;
+				mask = 0;
+				do {
+					mask += 1 << i++;
+				} while (pow(2, i) <= right_op);
 
-					feclearexcept (FE_ALL_EXCEPT);
-					$$.iv = (~(right_op)) & mask;
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = (~(right_op)) & mask;
 
-					if (fetestexcept (FE_OVERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-					} else if (fetestexcept (FE_UNDERFLOW)) {
-						YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-					}
-			}
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
 		}
 	}
 	| IDENTIFIER LPAREN RPAREN {
-		if (wcslen(stored_function) == 0) {
-			feclearexcept (FE_ALL_EXCEPT);
-			solve_function($1.sv, NULL, 0, &$$);
+		feclearexcept (FE_ALL_EXCEPT);
+		solve_function($1.sv, NULL, 0, &$$);
 
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
-
-		} else if (wcscmp(stored_function, $1.sv) == 0) {
-			function_remove(stored_function);
-			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_FN_CALL_SELF);
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
 	}
 	| IDENTIFIER LPAREN constant_expression RPAREN {
-		if (wcslen(stored_function) == 0) {
-			value args[] = { $3 };
+		value args[] = { $3 };
 
-			feclearexcept (FE_ALL_EXCEPT);
-			solve_function($1.sv, args, 1, &$$);
+		feclearexcept (FE_ALL_EXCEPT);
+		solve_function($1.sv, args, 1, &$$);
 
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
-
-		} else if (wcscmp(stored_function, $1.sv) == 0) {
-			function_remove(stored_function);
-			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_FN_CALL_SELF);
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
 	}
 	| IDENTIFIER LPAREN expression_list RPAREN {
-		if (wcslen(stored_function) == 0) {
+		feclearexcept (FE_ALL_EXCEPT);
+		solve_function($1.sv, $3.elements, $3.size, &$$);
 
-			feclearexcept (FE_ALL_EXCEPT);
-			solve_function($1.sv, $3.elements, $3.size, &$$);
-
-			if (fetestexcept (FE_OVERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
-			} else if (fetestexcept (FE_UNDERFLOW)) {
-				YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
-			}
-
-			list_destroy(&$3);
-		} else if (wcscmp(stored_function, $1.sv) == 0) {
-			function_remove(stored_function);
-			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_FN_CALL_SELF);
+		if (fetestexcept (FE_OVERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+		} else if (fetestexcept (FE_UNDERFLOW)) {
+			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 		}
+
+		list_destroy(&$3);
 	}
 	;
 
 expression_list:
 	constant_expression COMMA constant_expression {
-		if (wcslen(stored_function) == 0) {
-			if (list_create(&$$, DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
-				YYERROR_CODE(FAILURE_ALLOCATION);
-			}
-
-			list_add(&$$, $1);
-			list_add(&$$, $3);
+		if (list_create(&$$, DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
+
+		list_add(&$$, $1);
+		list_add(&$$, $3);
 	}
 	| expression_list COMMA constant_expression {
-		if (wcslen(stored_function) == 0) {
-			if (list_add(&$$, $3) != NO_FAILURE) {
-				YYERROR_CODE(FAILURE_ALLOCATION);
-			}
+		if (list_add(&$$, $3) != NO_FAILURE) {
+			YYERROR_CODE(FAILURE_ALLOCATION);
 		}
 	}
 	;
@@ -679,22 +630,6 @@ assignment_expression:
 
 		$$ = $3;
 	}
-
-identifier_list:
-	IDENTIFIER COMMA IDENTIFIER {
-		if (list_create(&$$, DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-
-		list_add(&$$, $1);
-		list_add(&$$, $3);
-	}
-	| identifier_list COMMA IDENTIFIER {
-		if (list_add(&$$, $3) != NO_FAILURE) {
-			YYERROR_CODE(FAILURE_ALLOCATION);
-		}
-	}
-	;
 
 %%
 
