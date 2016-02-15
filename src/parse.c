@@ -17,7 +17,7 @@
  *
  * @return int 0 if failed, non 0 otherwise
  */
-extern int yyparse (yyscan_t, wchar_t[], value*);
+extern int yyparse (yyscan_t, value*);
 int parse_equation(const wchar_t* equation, value* response){
 	char parse_error[EXPRESSION_MAX_LEN];
 	wchar_t stored_function[EXPRESSION_MAX_LEN];

@@ -13,7 +13,7 @@
 	#include <errno.h>
 	#include <limits.h>
 
-	int yyerror (yyscan_t, wchar_t[], value*, char[], const char*);
+	int yyerror (yyscan_t, value*, char[], const char*);
 	int linenumber = 1;
 %}
 

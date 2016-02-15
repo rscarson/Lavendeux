@@ -15,14 +15,14 @@
 	typedef union YYSTYPE YYSTYPE;
 	#include "lex.h"
 
-	#define YYERROR_MSG(c,s) yyerror_msg(scanner, stored_function, result, c, s); YYABORT;
-	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, stored_function, result, s);
-	#define YYERROR_CODE(c) yyerror_code(scanner, stored_function, result, c); YYABORT;
+	#define YYERROR_MSG(c,s) yyerror_msg(scanner, result, c, s); YYABORT;
+	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, result, s);
+	#define YYERROR_CODE(c) yyerror_code(scanner, result, c); YYABORT;
 
 	int yyerror (yyscan_t, wchar_t[], value*, const char*);
 	int_value_t ifactorial(int_value_t in);
-	void yyerror_code(yyscan_t scanner, wchar_t stored_function[], value* result, int err);
-	void yyerror_msg(yyscan_t scanner, wchar_t stored_function[], value* result, int err, int lang_str);
+	void yyerror_code(yyscan_t scanner, value* result, int err);
+	void yyerror_msg(yyscan_t scanner, value* result, int err, int lang_str);
 
 %}
 
@@ -698,7 +698,7 @@ identifier_list:
 
 %%
 
-int yyerror(yyscan_t scanner, wchar_t stored_function[], value* result, const char* msg) {
+int yyerror(yyscan_t scanner, value* result, const char* msg) {
 	char* pos = yyget_text(scanner);
 	wchar_t buffer[EXPRESSION_MAX_LEN];
 	result->iv = FAILURE_SYNTAX_ERROR;
@@ -720,35 +720,35 @@ int_value_t ifactorial(int_value_t in) {
 	return ifactorial(in-1) * in;
 }
 
-void yyerror_code(yyscan_t scanner, wchar_t stored_function[], value* result, int err) {
+void yyerror_code(yyscan_t scanner, value* result, int err) {
 	switch (err) {
 		case FAILURE_UNKNOWN:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_UNKNOWN);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_UNKNOWN);
 		break;
 
 		case FAILURE_INVALID_ARGS:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_INVALID_ARGS);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_INVALID_ARGS);
 		break;
 
 		case FAILURE_INVALID_NAME:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_INVALID_NAME);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_INVALID_NAME);
 		break;
 
 		case FAILURE_SYNTAX_ERROR:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_SYNTAX_ERROR);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_SYNTAX_ERROR);
 		break;
 
 		case FAILURE_ALLOCATION:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_ALLOCATION);
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_ALLOCATION);
 		break;
 
 		case FAILURE_TYPE:
-			yyerror_msg(scanner, stored_function, result, err, LANG_STR_ERR_TYPE);	
+			yyerror_msg(scanner, result, err, LANG_STR_ERR_TYPE);	
 		break;
 	}
 }
 
-void yyerror_msg(yyscan_t scanner, wchar_t stored_function[], value* result, int err, int lang_str) {
+void yyerror_msg(yyscan_t scanner, value* result, int err, int lang_str) {
 	char* err_str = language_char_str(lang_str);
 
 	if (err_str != NULL) {
