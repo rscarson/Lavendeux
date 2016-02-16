@@ -306,7 +306,7 @@
         /* Allocate new entry */
         stored_entries[0] = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(entry)+1));
         if (stored_entries[0] == NULL)
-            error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
+            error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_ALLOCATION), 1);
         wcscpy( stored_entries[0], entry);
     }
 
@@ -352,14 +352,27 @@
      * Search in current directory, then relevant home dir
      */
     const char* config_path( void ) {
-        char *path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
-        if (path == NULL)
-            error_msg(language_str(LANG_STR_RUNTIME_ERR), L"Failed to allocate memory!", 1);
+        char *path;
+        FILE* test;
 
+        /* Test current directory */
+        test = fopen(CONFIG_FILENAME, "r");
+        if (test != NULL) {
+            fclose(test);
+            return CONFIG_FILENAME;
+        }
+
+        /* Prepare to hold path */
+        path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
+        if (path == NULL)
+            error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_ALLOCATION), 1);
+
+        /* Get home dir path */
         if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
             strcat(path, CONFIG_FILENAME);
             return path;
         }
+
         return NULL;
      }
 
