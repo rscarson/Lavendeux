@@ -3,3 +3,7 @@
 *.exe
 *.o
 *.a
+include/generated/lex.h
+include/generated/tab.h
+src/generated/lex.c
+src/generated/tab.c
