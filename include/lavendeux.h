@@ -49,7 +49,7 @@
 		"--language=<en/fr> : Start in a given language\n" \
 		"-l=<en/fr> : Short form of --language\n"
 
-	void parse_argument(const char*);
+	int parse_argument(const char*);
 	void exit_callback(void);
 	void parse_callback(const wchar_t*);
 	wchar_t* parse_expression(const wchar_t*);

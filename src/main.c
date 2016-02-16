@@ -11,12 +11,12 @@
 #include "interface.h"
 #include "constructs.h"
 
-int args_set[N_SETTINGS];
-
+/* Configuration file settings */
 int config_off = 0;
 FILE* config = NULL;
 
 int main(int argc, char* argv[]) {
+	int args_set[N_SETTINGS+1];
 	int setting, value;
 
 	/* Nothing set yet */
@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
 
 	/* Commandline arguments */
 	for (; argc>1; argc--) {
-		parse_argument(argv[argc-1]);
+		args_set [parse_argument(argv[argc-1]) ] = 1;
 	}
 
 	/* Config */
@@ -45,6 +45,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	/* Main update loop */
 	while (1) {
 		update_interface();
 	}
@@ -52,17 +53,23 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
-void parse_argument(const char* arg) {
+/**
+ * Process a commandline argument
+ * @param arg The argument string
+ *
+ * @return The setting changed, or N_SETTINGS
+ */
+int parse_argument(const char* arg) {
 	/* Help */
 	if (strcmp(arg, ARG_HELP_LONG) == 0 || strcmp(arg, ARG_HELP_SHORT) == 0) {
 		print_help();
-		return;
+		return N_SETTINGS;
 	}
 
 	/* No config */
 	if (strncmp(arg, ARG_NO_CONFIG_LONG, strlen(ARG_NO_CONFIG_LONG)) == 0) {
 		config_off = 1;
-		return;
+		return N_SETTINGS;
 	}
 
 	/* Config path */
@@ -76,7 +83,7 @@ void parse_argument(const char* arg) {
 		config = fopen(arg, "w+");
 		if (config == NULL)
 			error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_CONFIG), 1);
-		return;
+		return N_SETTINGS;
 	}
 
 	/* Angle mode */
@@ -95,8 +102,7 @@ void parse_argument(const char* arg) {
 				set_setting(SETTING_ANGLE, SETTING_ANGLE_RAD);
 			}
 
-		args_set[SETTING_ANGLE] = 1;
-		return;
+		return SETTING_ANGLE;
 	}
 
 	/* Silent mode */
@@ -115,8 +121,7 @@ void parse_argument(const char* arg) {
 				set_setting(SETTING_SILENT, SETTING_SILENT_OFF);
 			}
 
-		args_set[SETTING_SILENT] = 1;
-		return;
+		return SETTING_SILENT;
 	}
 
 	/* Language mode */
@@ -135,13 +140,17 @@ void parse_argument(const char* arg) {
 				set_setting(SETTING_LANG, LANG_FR);
 			}
 
-		args_set[SETTING_LANG] = 1;
-		return;
+		return SETTING_LANG;
 	}
 	
 	error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_UNRECOGNIZED_COMMAND), 1);
+	return -1;
 }
 
+/**
+ * Process a callback from the interface
+ * @param target The input string
+ */
 void parse_callback(const wchar_t *target) {
 	wchar_t* output;
 	wchar_t* output_tmp;
@@ -222,6 +231,12 @@ void parse_callback(const wchar_t *target) {
 	free(output);
 }
 
+/**
+ * Process a callback from the interface
+ * @param expression The input formula
+ *
+ * @return The result
+ */
 wchar_t* parse_expression(const wchar_t* expression) {
 	wchar_t* line;
 	wchar_t* response;
@@ -280,12 +295,15 @@ wchar_t* parse_expression(const wchar_t* expression) {
 	return line;
 }
 
+/**
+ * Callback to exit
+ */
 void exit_callback( void ) {
 	/* Free up memory */
 	constructs_destroy();
 
 	/* Open config */
-	if (config == NULL) return;
+	if (config == NULL) exit(0);
 
 	/* Write all settings out */
 	fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));

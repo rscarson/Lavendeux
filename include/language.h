@@ -104,82 +104,82 @@
 
 		[LANG_STR_ERR_UNKNOWN] = {
 			[LANG_EN] = L"Unknown error",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Erreur inconnu"
 		},
 
 		[LANG_STR_ERR_INVALID_ARGS] = {
 			[LANG_EN] = L"Invalid arguments supplied to function",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Arguments invalides fournis à une fonction"
 		},
 
 		[LANG_STR_ERR_INVALID_NAME] = {
 			[LANG_EN] = L"Unrecognized or invalid function or variable name",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Nom de fonction ou variable inconnu ou invalide"
 		},
 
 		[LANG_STR_ERR_SYNTAX_ERROR] = {
 			[LANG_EN] = L"Syntax error",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Erreur de syntaxe"
 		},
 
 		[LANG_STR_ERR_ALLOCATION] = {
 			[LANG_EN] = L"Failed to allocate memory",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Erreur en allouent la mémoire"
 		},
 
 		[LANG_STR_ERR_TYPE] = {
 			[LANG_EN] = L"Operation not valid for given type",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Opération invalide pour type donné"
 		},
 
 		[LANG_STR_BOOLEAN_FLOAT] = {
 			[LANG_EN] =L"Floating point arguments not applicable to binary operators",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Arguments point flottants inapplicables aux opérateurs binaires"
 		},
 
 		[LANG_STR_FACTORIAL_LT_ZERO] = {
 			[LANG_EN] =L"Factorial is undefined for arguments < 0",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Factoriel indéterminé pour les arguments < 0"
 		},
 
 		[LANG_STR_FN_CALL_SELF] = {
 			[LANG_EN] =L"A function cannot call itself",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Une fonction ne peut pas appeler lui même"
 		},
 
 		[LANG_STR_DIV_BY_ZERO] = {
 			[LANG_EN] = L"Division by 0",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Division par 0"
 		},
 
 		[LANG_STR_INVALID_DECORATOR] = {
 			[LANG_EN] = L"Unrecognized decorator",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Décorateur inconnu"
 		},
 
 		[LANG_STR_OVERFLOW] = {
 			[LANG_EN] = L"Overflow during operation",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Débordement pendant une opération"
 		},
 
 		[LANG_STR_UNDERFLOW] = {
 			[LANG_EN] = L"Underflow during operation",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Débordement bas pendant une opération"
 		},
 
 		[LANG_STR_TOO_LONG] = {
 			[LANG_EN] = L"Input is too long",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Entré trop long"
 		},
 
 		[LANG_STR_ERR_CONFIG] = {
 			[LANG_EN] = L"Error reading from or writing to config file",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Erreur dans la lecture ou l'écriture du fichier config"
 		},
 
 		[LANG_STR_UNRECOGNIZED_COMMAND] = {
 			[LANG_EN] = L"Argument not recognized",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Argument inconnu"
 		},
 	};
 
