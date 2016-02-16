@@ -2,7 +2,6 @@
 	#define INTERFACE_H
 
     /* Window settings */
-    #define WINDOW_TITLE "Lavendeux"
 	#define CONFIG_FILENAME "/.lavendeuxsettings"
     #define MAX_EQUATIONS 5
 	#define MAX_LEN 255
@@ -10,15 +9,6 @@
 	/* History settings */
 	#define HISTORY_SUFFIX L"[...]"
 	#define MAX_HISTORY_LEN 25
-
-	/* Application settings */
-	#define MAJOR_VERSION 2
-	#define MINOR_VERSION 0
-	#define RELEASE_NUMBER 0
-
-	/* About settings */
-	#define ABOUT_TITLE "About %s"
-	#define ABOUT_MSG "%s Version %d.%d.%d \nCtrl-Space to solve equation(s) in clipboard.\n\nCopyright Richard Carson, 2016."
 	
 	/* Pointer types */
 	typedef void (*exitCallback)();
@@ -26,14 +16,19 @@
 
 	/* Settings available */
 	/* 0 Value should be default */
-	#define N_SETTINGS 3
-	#define SETTING_ANGLE 	0
-		#define SETTING_ANGLE_DEG 	0
-		#define SETTING_ANGLE_RAD 	1
-	#define SETTING_SILENT 	1
-		#define SETTING_SILENT_ON  	0
-		#define SETTING_SILENT_OFF 	1  
-	#define SETTING_LANG	2 /*Values are language definitions in language.h */
+	enum SETTINGS {
+		SETTING_ANGLE,
+		SETTING_SILENT,
+		SETTING_LANG,
+
+		N_SETTINGS
+	};
+	
+	#define SETTING_ANGLE_DEG 	0
+	#define SETTING_ANGLE_RAD 	1
+		
+	#define SETTING_SILENT_ON  	0
+	#define SETTING_SILENT_OFF 	1 
 
 	/** 
      * Prepare and draw the interface 
@@ -46,6 +41,11 @@
 	 * Check window messages, process events
 	 */
 	void update_interface( void );
+	
+	/** 
+	 * Print help message to stdout
+	 */
+	void print_help( void );
 	
 	/** 
 	 * Add an entry to the menu history

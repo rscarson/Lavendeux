@@ -9,6 +9,7 @@
 	#include "decorators.h"
 	#include "constructs.h"
 	#include "parse.h"
+	#include "builtins.h"
 	#include "list.h"
 	#include "language.h"
 
@@ -565,8 +566,13 @@ constant_expression:
 		}
 	}
 	| IDENTIFIER LPAREN RPAREN {
+		int err;
+
 		feclearexcept (FE_ALL_EXCEPT);
-		solve_function($1.sv, NULL, 0, &$$);
+		err = call_builtin($1.sv, NULL, 0, &$$);
+		if (err != NO_FAILURE) {
+			YYERROR_CODE(err);
+		}
 
 		if (fetestexcept (FE_OVERFLOW)) {
 			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
@@ -575,10 +581,14 @@ constant_expression:
 		}
 	}
 	| IDENTIFIER LPAREN constant_expression RPAREN {
+		int err;
 		value args[] = { $3 };
 
 		feclearexcept (FE_ALL_EXCEPT);
-		solve_function($1.sv, args, 1, &$$);
+		err = call_builtin($1.sv, args, 1, &$$);
+		if (err != NO_FAILURE) {
+			YYERROR_CODE(err);
+		}
 
 		if (fetestexcept (FE_OVERFLOW)) {
 			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
@@ -587,8 +597,13 @@ constant_expression:
 		}
 	}
 	| IDENTIFIER LPAREN expression_list RPAREN {
+		int err;
+
 		feclearexcept (FE_ALL_EXCEPT);
-		solve_function($1.sv, $3.elements, $3.size, &$$);
+		err = call_builtin($1.sv, $3.elements, $3.size, &$$);
+		if (err != NO_FAILURE) {
+			YYERROR_CODE(err);
+		}
 
 		if (fetestexcept (FE_OVERFLOW)) {
 			YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);

@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <wchar.h>
+
+#include <windows.h>
 
 #include "lavendeux.h"
 #include "language.h"
@@ -8,17 +11,38 @@
 #include "interface.h"
 #include "constructs.h"
 
-int main() {
-	FILE *config = fopen(config_path(), "r");
+int args_set[N_SETTINGS];
+
+int config_off = 0;
+FILE* config = NULL;
+
+int main(int argc, char* argv[]) {
 	int setting, value;
 
+	/* Nothing set yet */
+	memset(args_set, 0, N_SETTINGS);
+
+	/* Start UI */
 	init_interface(exit_callback, parse_callback);
 	constructs_init();
 
+	/* Commandline arguments */
+	for (; argc>1; argc--) {
+		parse_argument(argv[argc-1]);
+	}
+
+	/* Config */
+	if (config == NULL && !config_off)
+		config = fopen(config_path(), "w+");
+	if (config == NULL)
+		error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_CONFIG), 1);
+
 	/* Read in settings */
 	if (config != NULL) {
-		while (fscanf(config, "%d=%d\n", &setting, &value) == 2)
-			set_setting(setting, value);
+		while (fscanf(config, "%d=%d\n", &setting, &value) == 2) {
+			if (!args_set[setting])
+				set_setting(setting, value);
+		}
 	}
 
 	while (1) {
@@ -26,6 +50,96 @@ int main() {
 	}
 
 	return 0;
+}
+
+void parse_argument(const char* arg) {
+	/* Help */
+	if (strcmp(arg, ARG_HELP_LONG) == 0 || strcmp(arg, ARG_HELP_SHORT) == 0) {
+		print_help();
+		return;
+	}
+
+	/* No config */
+	if (strncmp(arg, ARG_NO_CONFIG_LONG, strlen(ARG_NO_CONFIG_LONG)) == 0) {
+		config_off = 1;
+		return;
+	}
+
+	/* Config path */
+	if (strncmp(arg, ARG_CONFIG_PATH_LONG, strlen(ARG_CONFIG_PATH_LONG)) == 0 || strncmp(arg, ARG_CONFIG_PATH_SHORT, strlen(ARG_CONFIG_PATH_SHORT)) == 0) {
+		while (*arg != '\0')
+			if (*arg == '=') {
+				arg++;
+				break;
+			} else arg++;
+
+		config = fopen(arg, "w+");
+		if (config == NULL)
+			error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_CONFIG), 1);
+		return;
+	}
+
+	/* Angle mode */
+	if (strncmp(arg, ARG_ANGLE_MODE_LONG, strlen(ARG_ANGLE_MODE_LONG)) == 0 || strncmp(arg, ARG_ANGLE_MODE_SHORT, strlen(ARG_ANGLE_MODE_SHORT)) == 0) {
+		while (*arg != '\0')
+			if (*arg == '=') {
+				arg++;
+				break;
+			} else arg++;
+
+			if (strcmp(arg, ARG_OPTION_ANGLE_MODE_DEG) == 0) {
+				set_setting(SETTING_ANGLE, SETTING_ANGLE_DEG);
+			}
+
+			if (strcmp(arg, ARG_OPTION_ANGLE_MODE_RAD) == 0) {
+				set_setting(SETTING_ANGLE, SETTING_ANGLE_RAD);
+			}
+
+		args_set[SETTING_ANGLE] = 1;
+		return;
+	}
+
+	/* Silent mode */
+	if (strncmp(arg, ARG_SILENT_MODE_LONG, strlen(ARG_SILENT_MODE_LONG)) == 0 || strncmp(arg, ARG_SILENT_MODE_SHORT, strlen(ARG_SILENT_MODE_SHORT)) == 0) {
+		while (*arg != '\0')
+			if (*arg == '=') {
+				arg++;
+				break;
+			} else arg++;
+
+			if (strcmp(arg, ARG_OPTION_SILENT_MODE_ON) == 0) {
+				set_setting(SETTING_SILENT, SETTING_SILENT_ON);
+			}
+
+			if (strcmp(arg, ARG_OPTION_SILENT_MODE_OFF) == 0) {
+				set_setting(SETTING_SILENT, SETTING_SILENT_OFF);
+			}
+
+		args_set[SETTING_SILENT] = 1;
+		return;
+	}
+
+	/* Language mode */
+	if (strncmp(arg, ARG_LANGUAGE_LONG, strlen(ARG_LANGUAGE_LONG)) == 0 || strncmp(arg, ARG_LANGUAGE_SHORT, strlen(ARG_LANGUAGE_SHORT)) == 0) {
+		while (*arg != '\0')
+			if (*arg == '=') {
+				arg++;
+				break;
+			} else arg++;
+
+			if (strcmp(arg, ARG_OPTION_LANGUAGE_EN) == 0) {
+				set_setting(SETTING_LANG, LANG_EN);
+			}
+
+			if (strcmp(arg, ARG_OPTION_LANGUAGE_FR) == 0) {
+				set_setting(SETTING_LANG, LANG_FR);
+			}
+
+		args_set[SETTING_LANG] = 1;
+		return;
+	}
+	
+	error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_UNRECOGNIZED_COMMAND), 1);
 }
 
 void parse_callback(const wchar_t *target) {
@@ -171,7 +285,7 @@ void exit_callback( void ) {
 	constructs_destroy();
 
 	/* Open config */
-	FILE *config = fopen(config_path(), "w");
+	if (config == NULL) return;
 
 	/* Write all settings out */
 	fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));

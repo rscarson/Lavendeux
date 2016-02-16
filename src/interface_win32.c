@@ -7,6 +7,7 @@
     #include <Shlobj.h>
 
     #include "language.h"
+    #include "lavendeux.h"
     #include "interface_win32.h"
     #include "interface.h"
 
@@ -74,7 +75,7 @@
         RegisterClassEx(&hClass);
 
         /* Create the window */
-        hWnd = CreateWindowEx(0, WINDOW_CALLBACK, WINDOW_TITLE, 0, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+        hWnd = CreateWindowEx(0, WINDOW_CALLBACK, APPLICATION_NAME, 0, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
         if (GetLastError() != 0)
             error_msg(L"Error while starting", L"Cannot get handle to window", 1);
 
@@ -93,10 +94,17 @@
         nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
         nid.uCallbackMessage = RegisterWindowMessage(WINDOW_CALLBACK);
         nid.hIcon = hIcon;
-        strcpy(nid.szTip, WINDOW_TITLE);
+        strcpy(nid.szTip, APPLICATION_NAME);
 
         /* Add notification icon to tray */
         Shell_NotifyIcon(NIM_ADD, &nid);
+    }
+    
+    /** 
+     * Print help message to stdout
+     */
+    void print_help( void ) {
+        PostMessage(hWnd, WM_COMMAND, CMD_ABOUT, 0);
     }
 
     /** 
@@ -117,10 +125,7 @@
      */
     LRESULT CALLBACK wnd_callback(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
         static UINT wndMsg = 0;
-
         int i;
-        char about_title[0xFF];
-        char about_msg[0xFF];
 
         /* Register for callbacks, but only once */
         if (wndMsg == 0)
@@ -147,6 +152,17 @@
                 _exit_callback();
             break;
 
+            case WM_HELP:
+                ShellExecuteA(
+                    hWnd, 
+                    "open", 
+                    HELP_URL, 
+                    NULL, 
+                    NULL, 
+                    SW_SHOWDEFAULT
+                );
+            break;
+
             /* Some other command type */
             case WM_COMMAND:
 
@@ -168,13 +184,10 @@
                     
                     /* Show about box */
                     case CMD_ABOUT:
-                        sprintf(about_title, ABOUT_TITLE, WINDOW_TITLE);
-                        sprintf(about_msg, ABOUT_MSG, WINDOW_TITLE, MAJOR_VERSION, MINOR_VERSION, RELEASE_NUMBER);
-
+                        SetForegroundWindow(hWnd);
                         MessageBox(hWnd, 
-                            about_msg, 
-                            about_title,
-                        MB_OK);
+                            HELP_MSG, HELP_TITLE,
+                            MB_OK | MB_HELP | MB_DEFBUTTON1);
                     break;
 
                     /* Change to degrees mode */
@@ -270,7 +283,7 @@
         AppendMenuW(hMenu, MF_STRING, CMD_ABOUT, language_str(LANG_STR_ABOUT));
         AppendMenuW(hMenu, MF_STRING, CMD_EXIT, language_str(LANG_STR_EXIT));
 
-        SetForegroundWindow(hWnd); // Win32 bug work-around
+        SetForegroundWindow(hWnd);
         TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hWnd, NULL);
 
     }

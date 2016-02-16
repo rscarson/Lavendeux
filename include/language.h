@@ -40,6 +40,8 @@
 		LANG_STR_OVERFLOW,
 		LANG_STR_UNDERFLOW,
 		LANG_STR_TOO_LONG,
+		LANG_STR_ERR_CONFIG,
+		LANG_STR_UNRECOGNIZED_COMMAND,
 
 		NUM_LANG_STR
 	};
@@ -167,6 +169,16 @@
 
 		[LANG_STR_TOO_LONG] = {
 			[LANG_EN] = L"Input is too long",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_ERR_CONFIG] = {
+			[LANG_EN] = L"Error reading from or writing to config file",
+			[LANG_FR] = L""
+		},
+
+		[LANG_STR_UNRECOGNIZED_COMMAND] = {
+			[LANG_EN] = L"Argument not recognized",
 			[LANG_FR] = L""
 		},
 	};
