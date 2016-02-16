@@ -28,8 +28,8 @@
 
     #define APPLICATION_NAME "Lavendeux"
 	#define COPYRIGHT_MSG "Copyright Richard Carson, 2016."
-	#define MAJOR_VERSION "2"
-	#define MINOR_VERSION "0"
+	#define MAJOR_VERSION "0"
+	#define MINOR_VERSION "1"
 	#define RELEASE_NUMBER "0"
 	
 	#define HELP_TITLE "About " APPLICATION_NAME
