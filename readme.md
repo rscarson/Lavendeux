@@ -1,7 +1,7 @@
 #Lavendeux
 [Installer and binaries](http://rscarson.github.io/Lavendeux/)
 
-Ctrl-Space to solves equation(s) in the clipboard
+A small calculator for programmers. Allows you to perform calculations from within any text editor using one keyboard shortcut - CRTL-Space
 
 One equation per line, start of line whitespace is preserved
 
