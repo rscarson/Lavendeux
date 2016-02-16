@@ -1,6 +1,8 @@
 #Lavendeux
 Copyright Richard Carson, 2016.
 
+[Installer and binaries](http://rscarson.github.io/Lavendeux/)
+
 Ctrl-Space to solves equation(s) in the clipboard
 
 One equation per line, start of line whitespace is preserved
