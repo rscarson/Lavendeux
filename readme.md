@@ -1,6 +1,4 @@
 #Lavendeux
-Copyright Richard Carson, 2016.
-
 [Installer and binaries](http://rscarson.github.io/Lavendeux/)
 
 Ctrl-Space to solves equation(s) in the clipboard
@@ -93,3 +91,9 @@ Add these to the end of an expression to modify the output format:
 **--language=\<en/fr\>** : Start in a given language
 
 **-l=\<en/fr\>** : Short form of --language
+
+## To do
+
+- Linux and OSX versions
+- Anti-trig functions (cotan, cosec, sec)
+- Generating test sentences to automate parser tests
