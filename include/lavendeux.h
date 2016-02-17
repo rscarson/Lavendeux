@@ -33,7 +33,7 @@
 	#define RELEASE_NUMBER "0"
 	
 	#define HELP_TITLE "About " APPLICATION_NAME
-	#define HELP_URL "http://www.richardcarson.ca/"
+	#define HELP_URL "http://rscarson.github.io/Lavendeux/"
 	#define HELP_MSG APPLICATION_NAME " version " MAJOR_VERSION "." MINOR_VERSION "." RELEASE_NUMBER "\n" \
 		COPYRIGHT_MSG "\n" \
 		"Ctrl-Space to solves equation(s) in the clipboard\n\n" \
