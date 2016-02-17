@@ -38,9 +38,6 @@ int test_unsigned( void ) {
 	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", &value_255, result));
 	ASSERT_WSTR_EQUAL(L"255", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", &value_neg, result));
-	ASSERT_WSTR_EQUAL(L"4294967041", result);
-
 	return 0;
 }
 
@@ -100,9 +97,6 @@ int test_bin( void ) {
 
 	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", &value_255, result));
 	ASSERT_WSTR_EQUAL(L"0b11111111", result);
-
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", &value_neg, result));
-	ASSERT_WSTR_EQUAL(L"0b1111111111111111111111111111111111111111111111111111111100000001", result);
 	
 	return 0;
 }
@@ -121,9 +115,6 @@ int test_oct( void ) {
 
 	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", &value_255, result));
 	ASSERT_WSTR_EQUAL(L"0o377", result);
-
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", &value_neg, result));
-	ASSERT_WSTR_EQUAL(L"0o37777777401", result);
 	
 	return 0;
 }
@@ -142,9 +133,6 @@ int test_hex( void ) {
 
 	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", &value_255, result));
 	ASSERT_WSTR_EQUAL(L"0xff", result);
-
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", &value_neg, result));
-	ASSERT_WSTR_EQUAL(L"0xffffff01", result);
 	
 	return 0;
 }
