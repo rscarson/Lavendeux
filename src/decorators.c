@@ -5,38 +5,36 @@
 #include <stdlib.h>
 #include <math.h>
 #include <wchar.h>
+#include <string.h>
 #include <stdio.h>
+
+/* Blech */
+#ifdef _WIN32
+	#define swprintf _snwprintf
+#endif 
 
 /**
  * Build the decorator table
  */
-void init_decorators( void ) {
+int init_decorators( void ) {
+	int i, len;
 	table_create(&decorators, HASH_DEFAULT_SIZE);
 
-	table_put(&decorators, L"u", (void*)decorator_unsigned, NULL);
-	table_put(&decorators, L"unsigned", (void*)decorator_unsigned, NULL);
+	len = sizeof(decorator_function_declarations) / sizeof(decorator_function_declarations[0]);
+	for (i=0; i<len; i++) {
+		if (table_put(&decorators, 
+			decorator_function_declarations[i].name, 
+			(void*) (decorator_function_declarations[i].fn),
+			NULL
+		) != NO_FAILURE)
+			return FAILURE_ALLOCATION;
+	}
 
-	table_put(&decorators, L"i", (void*)decorator_int, NULL);
-	table_put(&decorators, L"int", (void*)decorator_int, NULL);
-	table_put(&decorators, L"integer", (void*)decorator_int, NULL);
+	return NO_FAILURE;
+}
 
-	table_put(&decorators, L"f", (void*)decorator_float, NULL);
-	table_put(&decorators, L"float", (void*)decorator_float, NULL);
-
-	table_put(&decorators, L"sci", (void*)decorator_sci, NULL);
-	table_put(&decorators, L"scientific", (void*)decorator_sci, NULL);
-
-	table_put(&decorators, L"b", (void*)decorator_bin, NULL);
-	table_put(&decorators, L"bin", (void*)decorator_bin, NULL);
-	table_put(&decorators, L"binary", (void*)decorator_bin, NULL);
-
-	table_put(&decorators, L"o", (void*)decorator_oct, NULL);
-	table_put(&decorators, L"oct", (void*)decorator_oct, NULL);
-	table_put(&decorators, L"octal", (void*)decorator_oct, NULL);
-
-	table_put(&decorators, L"h", (void*)decorator_hex, NULL);
-	table_put(&decorators, L"hex", (void*)decorator_hex, NULL);
-	table_put(&decorators, L"hexadecimal", (void*)decorator_hex, NULL);
+void decorators_destroy( void ) {
+	table_destroy(&decorators, NULL);
 }
 
 /**
@@ -65,7 +63,7 @@ void decorator_unsigned(const value* v, wchar_t* decorated) {
 	int_value_t iv;
 
 	int_value(v, &iv);
-	swprintf(decorated, L"%Lu", iv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"%Lu", iv);
 }
 
 /**
@@ -77,7 +75,7 @@ void decorator_int(const value* v, wchar_t* decorated) {
 	int_value_t iv;
 
 	int_value(v, &iv);
-	swprintf(decorated, L"%Ld", iv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"%Ld", iv);
 }
 
 /**
@@ -90,7 +88,7 @@ void decorator_float(const value* v, wchar_t* decorated) {
 	int i;
 
 	float_value(v, &fv);
-	swprintf(decorated, L"%Lf", fv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"%Lf", fv);
 
 	for (i=wcslen(decorated)-1; i>=1; i--)
 		if (decorated[i] == L'0' && decorated[i-1] != L'.')
@@ -107,7 +105,7 @@ void decorator_sci(const value* v, wchar_t* decorated) {
 	float_value_t fv;
 	
 	float_value(v, &fv);
-	swprintf(decorated, L"%LE", fv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"%LE", fv);
 }
 
 /**
@@ -116,33 +114,46 @@ void decorator_sci(const value* v, wchar_t* decorated) {
  * @param decorated Returned string
  */
 void decorator_bin(const value* v, wchar_t* decorated) {
-	int bit_value = 1;
-	int i = 2;
-	int_value_t iv;
+	wchar_t buffer[EXPRESSION_MAX_LEN];
+	int_value_t mask = 1;
+	int len;
+	int i = 0;
 
+	/* Value */
+	int_value_t iv;
 	int_value(v, &iv);
 
 	/* Prefix */
 	decorated[0] = L'0';
 	decorated[1] = L'b';
 
-	/* Find starting bit */
-	while (iv - bit_value > 0)
-		bit_value *= 2;
-	if (bit_value > iv)
-		bit_value /= 2;
-	
-	while (bit_value >= 1) {
-		if (iv - bit_value >= 0) {
-			decorated[i++] = L'1';
-			iv -= bit_value;
-		} else 
-			decorated[i++] = L'0';
-
-		bit_value /= 2;
+	/* Masking */
+	while (mask != 0) {
+		buffer[i++] = (iv & mask) ? L'1' : L'0';
+		mask <<= 1;
 	}
 
-	decorated[i] = L'\0';
+	/* Terminator */
+	if (i == 0)
+		buffer[i++] = L'0';
+	buffer[i] = L'\0';
+
+	/* Trim it */
+	for (i=wcslen(buffer)-1; i>0; i--)
+		if (buffer[i] == L'1') break;
+		else buffer[i] = L'\0';
+
+	/* Reverse it */
+	len = wcslen(buffer);
+	if (len > 1)
+		for (i=0; i<len; i++) {
+			if (i >= len/2) break;
+			buffer[i] ^= buffer[len-1 - i];
+			buffer[len-1 - i] ^= buffer[i];
+			buffer[i] ^= buffer[len-1 - i];
+		}
+
+	wcscpy(&decorated[2], buffer);
 }
 
 /**
@@ -154,7 +165,7 @@ void decorator_oct(const value* v, wchar_t* decorated) {
 	int_value_t iv;
 	
 	int_value(v, &iv);
-	swprintf(decorated, L"0o%Lo", iv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"0o%Lo", iv);
 }
 
 /**
@@ -166,5 +177,5 @@ void decorator_hex(const value* v, wchar_t* decorated) {
 	int_value_t iv;
 	
 	int_value(v, &iv);
-	swprintf(decorated, L"0x%Lx", iv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"0x%Lx", iv);
 }

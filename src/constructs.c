@@ -5,8 +5,6 @@
 #include "parse.h"
 #include "constructs.h"
 #include "hashing.h"
-#include "decorators.h"
-#include "builtins.h"
 
 /**
  * Start up the parsing stores
@@ -16,10 +14,6 @@
 int constructs_init( void ) {
 	if (!table_create(&variables, HASH_DEFAULT_SIZE))
 		return FAILURE_ALLOCATION;
-	if (!builtins_init(&variables))
-		return FAILURE_ALLOCATION;
-	init_decorators();
-
 	return NO_FAILURE;
 }
 
@@ -28,7 +22,6 @@ int constructs_init( void ) {
  */
 void constructs_destroy( void ) {
 	table_destroy(&variables, variable_destroy);
-	builtins_destroy();
 }
 
 /**

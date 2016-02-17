@@ -2,8 +2,8 @@
 
 #include "hashing.h"
 #include "constructs.h"
-#include "parse.h"
 #include "interface.h"
+#include "parse.h"
 #include "builtins.h"
 
 /**
@@ -12,51 +12,33 @@
  *
  * @return Result of the operation
  */
-int builtins_init(hash_table *variables) {
-	value* builtin_pi;
-	value* builtin_e;
+int builtins_init( void ) {
+	value* val;
+	int i;
+	int len;
 	
 	table_create(&builtins, HASH_DEFAULT_SIZE);
 
-	builtin_pi = (value*) malloc(sizeof(value));
-	builtin_e = (value*) malloc(sizeof(value));
-	if (builtin_pi == NULL || builtin_e == NULL)
-		return FAILURE_ALLOCATION;
+	/* Start with values */
+	len = sizeof(builtin_variable_declarations) / sizeof(builtin_variable_declarations[0]);
+	for (i=0; i<len ; i++) {
+		/* Allocate the new value */
+		val = (value*) malloc(sizeof(value));
+		if (val == NULL)
+			return FAILURE_ALLOCATION;
 
-	builtin_pi->type = VALUE_FLOAT;
-	builtin_pi->fv = PI;
+		/* Add it to the table */
+		*val = builtin_variable_declarations[i].v;
+		if (put_variable(builtin_variable_declarations[i].name, val) != NO_FAILURE)
+			return FAILURE_ALLOCATION;
+	}
 
-	builtin_e->type = VALUE_FLOAT;
-	builtin_e->fv = E;
-
-	if (
-		!table_put(variables, L"pi", builtin_pi, NULL) ||
-		!table_put(variables, L"e", builtin_e, NULL)
-	) return FAILURE_ALLOCATION;
-
-	if (
-		builtin_put(L"ceil", builtin_ceil, 1) != NO_FAILURE ||
-		builtin_put(L"floor", builtin_floor, 1) != NO_FAILURE ||
-		builtin_put(L"round", builtin_round, 2) != NO_FAILURE ||
-		builtin_put(L"abs", builtin_abs, 1) != NO_FAILURE ||
-
-		builtin_put(L"tan", builtin_tan, 1) != NO_FAILURE ||
-		builtin_put(L"cos", builtin_cos, 1) != NO_FAILURE ||
-		builtin_put(L"sin", builtin_sin, 1) != NO_FAILURE ||
-		builtin_put(L"atan", builtin_atan, 1) != NO_FAILURE ||
-		builtin_put(L"acos", builtin_acos, 1) != NO_FAILURE ||
-		builtin_put(L"asin", builtin_asin, 1) != NO_FAILURE ||
-		builtin_put(L"tanh", builtin_tanh, 1) != NO_FAILURE ||
-		builtin_put(L"cosh", builtin_cosh, 1) != NO_FAILURE ||
-		builtin_put(L"sinh", builtin_sinh, 1) != NO_FAILURE ||
-
-		builtin_put(L"log10", builtin_log10, 1) != NO_FAILURE ||
-		builtin_put(L"ln", builtin_ln, 1) != NO_FAILURE ||
-		builtin_put(L"log", builtin_log, 2) != NO_FAILURE ||
-
-		builtin_put(L"sqrt", builtin_sqrt, 1) != NO_FAILURE ||
-		builtin_put(L"root", builtin_root, 2) != NO_FAILURE
-	) return FAILURE_ALLOCATION;
+	/* Now functions */
+	len = sizeof(builtin_function_declarations) / sizeof(builtin_function_declarations[0]);
+	for (i=0; i<len; i++) {
+		if (builtin_put(builtin_function_declarations[i].name, builtin_function_declarations[i].fn, builtin_function_declarations[i].args) != NO_FAILURE)
+			return FAILURE_ALLOCATION;
+	}
 
 	return NO_FAILURE;
 }
@@ -108,23 +90,26 @@ int is_builtin(const wchar_t* name) {
 /**
  * Call a builtin function
  * @param name The name of the function to call
- * @param args Arguments to pass in
+ * @param args Arguments to pass in. Must be pre-resolved
  * @param n_args The number of arguments passed
  * @param v Pointer to a value structure we store the result in
  *
  * @return Result of the operation
  */
-int call_builtin(const wchar_t* name, value args[], int n_args, value* v) {
+int call_builtin(const wchar_t* name, value args[], int n_args, value* v, int angle_mode) {
 	int result;
 
+	/* Fetch function pointer */
 	builtin_function *fn = (builtin_function*) table_get(&builtins, name);
 	if (fn == NULL)
 		return FAILURE_INVALID_NAME;
 
+	/* Check arguments */
 	if (n_args != fn->n_args)
 		return FAILURE_INVALID_ARGS;
 
-	result = fn->fn(args, v);
+	/* Call it */
+	result = fn->fn(args, v, angle_mode);
 	return result;
 }
 
@@ -134,9 +119,8 @@ int call_builtin(const wchar_t* name, value args[], int n_args, value* v) {
  *
  * Return: int
  */
-int builtin_floor(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_floor(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
 	result->type = VALUE_INT;
 	result->iv = floor(in);
@@ -150,9 +134,8 @@ int builtin_floor(value args[], value* result) {
  *
  * Return: int
  */
-int builtin_ceil(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_ceil(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
 	result->type = VALUE_INT;
 	result->iv = ceil(in);
@@ -167,12 +150,9 @@ int builtin_ceil(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_round(value args[], value* result) {
-	float_value_t base;
-	float_value(&args[0], &base);
-
-	int_value_t precision;
-	int_value(&args[1], &precision);
+int builtin_round(value args[], value* result, int angle_mode) {
+	float_value_t base = args[0].fv;
+	int_value_t precision = args[1].iv;
 
 	result->type = VALUE_FLOAT;
 	result->fv = round(base * powl(10, precision)) / powl(10, precision);
@@ -186,29 +166,17 @@ int builtin_round(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_abs(value args[], value* result) {
-	int err;
-	char type;
-	float_value_t fin;
-	int_value_t iin;
-
-	err = value_type(&args[0], &type);
-	if (err != NO_FAILURE)
-		return err;
-
-	switch (type) {
+int builtin_abs(value args[], value* result, int angle_mode) {
+	value in = args[0];
+	switch (in.type) {
 		case VALUE_FLOAT:
-			float_value(&args[0], &fin);
-
 			result->type = VALUE_FLOAT;
-			result->fv = fabsl(fin);
+			result->fv = fabsl(in.fv);
 		break;
 
 		case VALUE_INT:
-			int_value(&args[0], &iin);
-
 			result->type = VALUE_INT;
-			result->iv = llabs(iin);
+			result->iv = llabs(in.iv);
 		break;
 	}
 
@@ -221,13 +189,12 @@ int builtin_abs(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_tan(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_tan(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
 	if (fmodl(in, PI/2.0))
 		return FAILURE_INVALID_ARGS;
-	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
+	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -242,11 +209,10 @@ int builtin_tan(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_cos(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_cos(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
-	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
+	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -261,11 +227,10 @@ int builtin_cos(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_sin(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_sin(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
-	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
+	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -280,11 +245,10 @@ int builtin_sin(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_atan(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_atan(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
-	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
+	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -299,11 +263,10 @@ int builtin_atan(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_acos(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_acos(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
-	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
+	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -318,11 +281,10 @@ int builtin_acos(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_asin(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_asin(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
-	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
+	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -337,11 +299,10 @@ int builtin_asin(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_tanh(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_tanh(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
-	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
+	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -356,11 +317,10 @@ int builtin_tanh(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_cosh(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_cosh(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
-	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
+	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -375,11 +335,10 @@ int builtin_cosh(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_sinh(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_sinh(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
-	if (get_setting(SETTING_ANGLE) == SETTING_ANGLE_DEG)
+	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
@@ -394,9 +353,8 @@ int builtin_sinh(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_log10(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_log10(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
 	if (in == 0)
 		return FAILURE_INVALID_ARGS;
@@ -413,9 +371,8 @@ int builtin_log10(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_ln(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_ln(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
 	if (in == 0)
 		return FAILURE_INVALID_ARGS;
@@ -433,12 +390,9 @@ int builtin_ln(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_log(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
-
-	float_value_t base;
-	float_value(&args[1], &base);
+int builtin_log(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
+	float_value_t base = args[1].fv;
 
 	if (in == 0 || base <= 1)
 		return FAILURE_INVALID_ARGS;
@@ -455,9 +409,8 @@ int builtin_log(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_sqrt(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
+int builtin_sqrt(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
 
 	if (in < 0)
 		return FAILURE_INVALID_ARGS;
@@ -475,12 +428,9 @@ int builtin_sqrt(value args[], value* result) {
  *
  * Return: float
  */
-int builtin_root(value args[], value* result) {
-	float_value_t in;
-	float_value(&args[0], &in);
-
-	float_value_t base;
-	float_value(&args[1], &base);
+int builtin_root(value args[], value* result, int angle_mode) {
+	float_value_t in = args[0].fv;
+	float_value_t base = args[1].fv;
 
 	if (in < 0 || base == 0)
 		return FAILURE_INVALID_ARGS;

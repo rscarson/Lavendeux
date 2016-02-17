@@ -9,7 +9,6 @@
 #include "language.h"
 #include "parse.h"
 #include "interface.h"
-#include "constructs.h"
 
 /* Configuration file settings */
 int config_off = 0;
@@ -24,7 +23,7 @@ int main(int argc, char* argv[]) {
 
 	/* Start UI */
 	init_interface(exit_callback, parse_callback);
-	constructs_init();
+	parser_init();
 
 	/* Commandline arguments */
 	for (; argc>1; argc--) {
@@ -267,7 +266,7 @@ wchar_t* parse_expression(const wchar_t* expression) {
 
 	/* Copy string portion, and solve it */
 	wcscpy(line, &expression[i]);
-	result = parse_equation(line, &v);
+	result = parse_equation(line, &v, get_setting(SETTING_ANGLE));
 
 	/* Add to expression history */
 	add_history(line);
@@ -300,7 +299,7 @@ wchar_t* parse_expression(const wchar_t* expression) {
  */
 void exit_callback( void ) {
 	/* Free up memory */
-	constructs_destroy();
+	parser_destroy();
 
 	/* Open config */
 	if (config == NULL) exit(0);

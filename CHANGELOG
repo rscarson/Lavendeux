@@ -1,0 +1,9 @@
+0.1.0
+-----
+Initial public release
+
+0.1.1
+-----
+Added unit tests
+Rebuilt binary decorator
+Prepare for multiplatform compatibility
