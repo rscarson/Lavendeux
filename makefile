@@ -3,6 +3,7 @@ LIB_DIR = lib
 OBJ_DIR = obj
 BIN_DIR = bin
 INC_DIR = include
+TEST_DIR = tests
 
 LEX_SOURCE = $(SRC_DIR)/generated/lex.c
 LEX_HEADER = $(INC_DIR)/generated/lex.h
@@ -11,6 +12,18 @@ TAB_HEADER = $(INC_DIR)/generated/tab.h
 
 _PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o values.o
 PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
+
+_TEST_HASHING_DEPS = test.o hashing.o
+TEST_HASHING_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_HASHING_DEPS))
+
+_TEST_BUILTINS_DEPS = test.o hashing.o constructs.o builtins.o
+TEST_BUILTINS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_BUILTINS_DEPS))
+
+_TEST_CONSTRUCTS_DEPS = test.o constructs.o hashing.o
+TEST_CONSTRUCTS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_CONSTRUCTS_DEPS))
+
+_TEST_DECORATORS_DEPS = test.o decorators.o constructs.o hashing.o builtins.o values.o
+TEST_DECORATORS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_DECORATORS_DEPS))
 
 CC = gcc
 COMPILE_FLAGS = -std=c99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -lm -Wall -g -Wno-unused
@@ -39,21 +52,21 @@ grammar: $(SRC_DIR)\grammar.y $(SRC_DIR)\grammar.lex
 win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a $(SRC_DIR)/main.c
 	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS)
 
-test_hashing: $(OBJ_DIR)/test.o $(OBJ_DIR)/hashing.o
-	$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/hashing.o tests/hashing.c -o $(BIN_DIR)/test_hashing $(COMPILE_FLAGS)
-	bin/test_hashing
+test_hashing: $(TEST_HASHING_DEPS)
+	@$(CC) $(TEST_DIR)/hashing.c $(TEST_HASHING_DEPS) -o $(BIN_DIR)/$@ $(COMPILE_FLAGS)
+	@bin/$@
 
-test_builtins: $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/hashing.o
-	$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o $(OBJ_DIR)/builtins.o tests/builtins.c -o $(BIN_DIR)/test_builtins $(COMPILE_FLAGS)
-	bin/test_builtins
+test_builtins: $(TEST_BUILTINS_DEPS)
+	@$(CC) $(TEST_DIR)/builtins.c $(TEST_BUILTINS_DEPS) -o $(BIN_DIR)/$@ $(COMPILE_FLAGS)
+	@bin/$@
 
-test_constructs: $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o
-	$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o tests/constructs.c -o $(BIN_DIR)/test_constructs $(COMPILE_FLAGS)
-	bin/test_constructs
+test_constructs: $(TEST_CONSTRUCTS_DEPS)
+	@$(CC) $(TEST_DIR)/constructs.c $(TEST_CONSTRUCTS_DEPS) -o $(BIN_DIR)/$@ $(COMPILE_FLAGS)
+	@bin/$@
 
-test_decorators: $(OBJ_DIR)/test.o $(OBJ_DIR)/decorators.o $(OBJ_DIR)/hashing.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/values.o
-	$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/decorators.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/values.o $(OBJ_DIR)/hashing.o tests/decorators.c -o $(BIN_DIR)/test_decorators $(COMPILE_FLAGS)
-	bin/test_decorators
+test_decorators: $(TEST_DECORATORS_DEPS)
+	@$(CC) $(TEST_DIR)/decorators.c $(TEST_DECORATORS_DEPS) -o $(BIN_DIR)/$@ $(COMPILE_FLAGS)
+	@bin/$@
 
 test: test_hashing test_builtins test_constructs test_decorators
 
