@@ -18,5 +18,6 @@
 
 	/* Decorator table */
 	void init_decorators( void );
+	void decorators_destroy( void );
 	hash_table decorators;
 #endif

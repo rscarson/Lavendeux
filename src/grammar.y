@@ -16,14 +16,14 @@
 	typedef union YYSTYPE YYSTYPE;
 	#include "lex.h"
 
-	#define YYERROR_MSG(c,s) yyerror_msg(scanner, result, c, s); YYABORT;
-	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, result, s);
-	#define YYERROR_CODE(c) yyerror_code(scanner, result, c); YYABORT;
+	#define YYERROR_MSG(c,s) yyerror_msg(scanner, result, int, c, s); YYABORT;
+	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, result, int, s);
+	#define YYERROR_CODE(c) yyerror_code(scanner, result, int, c); YYABORT;
 
-	int yyerror (yyscan_t, value*, const char*);
+	int yyerror (yyscan_t, value*, int, const char*);
 	int_value_t ifactorial(int_value_t in);
-	void yyerror_code(yyscan_t scanner, value* result, int err);
-	void yyerror_msg(yyscan_t scanner, value* result, int err, int lang_str);
+	void yyerror_code(yyscan_t scanner, value* result, int, int err);
+	void yyerror_msg(yyscan_t scanner, value* result, int, int err, int lang_str);
 
 %}
 
@@ -32,6 +32,7 @@
 %lex-param {yyscan_t scanner}
 %parse-param {yyscan_t scanner}
 %parse-param {value *result}
+%parse-param {int angle_mode}
 
 %union {
 	value val;
@@ -569,7 +570,7 @@ constant_expression:
 		int err;
 
 		feclearexcept (FE_ALL_EXCEPT);
-		err = call_builtin($1.sv, NULL, 0, &$$);
+		err = call_function($1.sv, NULL, 0, &$$, angle_mode);
 		if (err != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}
@@ -585,7 +586,7 @@ constant_expression:
 		value args[] = { $3 };
 
 		feclearexcept (FE_ALL_EXCEPT);
-		err = call_builtin($1.sv, args, 1, &$$);
+		err = call_function($1.sv, args, 1, &$$, angle_mode);
 		if (err != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}
@@ -600,7 +601,7 @@ constant_expression:
 		int err;
 
 		feclearexcept (FE_ALL_EXCEPT);
-		err = call_builtin($1.sv, $3.elements, $3.size, &$$);
+		err = call_function($1.sv, $3.elements, $3.size, &$$, angle_mode);
 		if (err != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}
@@ -648,7 +649,7 @@ assignment_expression:
 
 %%
 
-int yyerror(yyscan_t scanner, value* result, const char* msg) {
+int yyerror(yyscan_t scanner, value* result, int angle_mode, const char* msg) {
 	char* pos = yyget_text(scanner);
 	wchar_t buffer[EXPRESSION_MAX_LEN];
 	result->iv = FAILURE_SYNTAX_ERROR;
@@ -670,35 +671,35 @@ int_value_t ifactorial(int_value_t in) {
 	return ifactorial(in-1) * in;
 }
 
-void yyerror_code(yyscan_t scanner, value* result, int err) {
+void yyerror_code(yyscan_t scanner, value* result, int angle_mode, int err) {
 	switch (err) {
 		case FAILURE_UNKNOWN:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_UNKNOWN);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_UNKNOWN);
 		break;
 
 		case FAILURE_INVALID_ARGS:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_INVALID_ARGS);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_INVALID_ARGS);
 		break;
 
 		case FAILURE_INVALID_NAME:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_INVALID_NAME);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_INVALID_NAME);
 		break;
 
 		case FAILURE_SYNTAX_ERROR:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_SYNTAX_ERROR);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_SYNTAX_ERROR);
 		break;
 
 		case FAILURE_ALLOCATION:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_ALLOCATION);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_ALLOCATION);
 		break;
 
 		case FAILURE_TYPE:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_TYPE);	
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_TYPE);	
 		break;
 	}
 }
 
-void yyerror_msg(yyscan_t scanner, value* result, int err, int lang_str) {
+void yyerror_msg(yyscan_t scanner, value* result, int angle_mode, int err, int lang_str) {
 	char* err_str = language_char_str(lang_str);
 
 	if (err_str != NULL) {

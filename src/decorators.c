@@ -39,6 +39,10 @@ void init_decorators( void ) {
 	table_put(&decorators, L"hexadecimal", (void*)decorator_hex, NULL);
 }
 
+void decorators_destroy( void ) {
+	table_destroy(&decorators, NULL);
+}
+
 /**
  * Apply a decorator
  * @param name Callable name of the decorator
