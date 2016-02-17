@@ -8,6 +8,11 @@
 #include <string.h>
 #include <stdio.h>
 
+/* Blech */
+#ifdef WIN32
+	#define swprintf _snwprintf
+#endif 
+
 /**
  * Build the decorator table
  */
@@ -58,7 +63,7 @@ void decorator_unsigned(const value* v, wchar_t* decorated) {
 	int_value_t iv;
 
 	int_value(v, &iv);
-	swprintf(decorated, L"%Lu", iv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"%Lu", iv);
 }
 
 /**
@@ -70,7 +75,7 @@ void decorator_int(const value* v, wchar_t* decorated) {
 	int_value_t iv;
 
 	int_value(v, &iv);
-	swprintf(decorated, L"%Ld", iv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"%Ld", iv);
 }
 
 /**
@@ -83,7 +88,7 @@ void decorator_float(const value* v, wchar_t* decorated) {
 	int i;
 
 	float_value(v, &fv);
-	swprintf(decorated, L"%Lf", fv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"%Lf", fv);
 
 	for (i=wcslen(decorated)-1; i>=1; i--)
 		if (decorated[i] == L'0' && decorated[i-1] != L'.')
@@ -100,7 +105,7 @@ void decorator_sci(const value* v, wchar_t* decorated) {
 	float_value_t fv;
 	
 	float_value(v, &fv);
-	swprintf(decorated, L"%LE", fv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"%LE", fv);
 }
 
 /**
@@ -150,7 +155,7 @@ void decorator_oct(const value* v, wchar_t* decorated) {
 	int_value_t iv;
 	
 	int_value(v, &iv);
-	swprintf(decorated, L"0o%Lo", iv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"0o%Lo", iv);
 }
 
 /**
@@ -162,5 +167,5 @@ void decorator_hex(const value* v, wchar_t* decorated) {
 	int_value_t iv;
 	
 	int_value(v, &iv);
-	swprintf(decorated, L"0x%Lx", iv);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"0x%Lx", iv);
 }
