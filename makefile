@@ -48,7 +48,7 @@ $(LIB_DIR)/libparse.a: grammar $(PARSE_DEPS)
 	$(CC) -c $(TAB_SOURCE) -o $(OBJ_DIR)/tab.o $(COMPILE_FLAGS)
 	ar rcs $(LIB_DIR)/libparse.a $(PARSE_DEPS) $(OBJ_DIR)/lex.o $(OBJ_DIR)/tab.o
 
-grammar: $(SRC_DIR)\grammar.y $(SRC_DIR)\grammar.lex
+grammar:
 	bison $(SRC_DIR)\grammar.y --output=$(TAB_SOURCE) --defines=$(TAB_HEADER) --report-file=report.txt
 	flex --outfile=$(LEX_SOURCE) --header-file=$(LEX_HEADER) -B $(SRC_DIR)\grammar.lex
 
