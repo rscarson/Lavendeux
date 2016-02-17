@@ -23,11 +23,18 @@ int constructs_init( void ) {
 	return NO_FAILURE;
 }
 
+/**
+ * Destroy the construct tables
+ */
 void constructs_destroy( void ) {
 	table_destroy(&variables, variable_destroy);
 	builtins_destroy();
 }
 
+/**
+ * Destroy a variable pointer
+ * @param v Pointer to the variable
+ */
 void variable_destroy(void* v) {
 	free(v);
 }
