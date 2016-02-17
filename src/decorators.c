@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 /* Blech */
-#ifdef WIN32
+#ifdef _WIN32
 	#define swprintf _snwprintf
 #endif 
 
@@ -136,7 +136,7 @@ void decorator_bin(const value* v, wchar_t* decorated) {
 	buffer[i] = L'\0';
 
 	/* Readout */
-	wcsrev(buffer);
+	_wcsrev(buffer);
 	i = 0;
 	while (buffer[i] != L'\0') {
 		if (buffer[i] == L'1') break;
