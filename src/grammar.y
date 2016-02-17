@@ -25,6 +25,11 @@
 	void yyerror_code(yyscan_t scanner, value* result, int, int err);
 	void yyerror_msg(yyscan_t scanner, value* result, int, int err, int lang_str);
 
+	/* Blech */
+	#ifdef _WIN32
+		#define swprintf _snwprintf
+	#endif 
+
 %}
 
 %define api.pure
@@ -94,11 +99,11 @@ expression:
 		switch (type) {
 			case VALUE_FLOAT:
 				float_value(&$1, &fv);
-				swprintf($$.sv, L"%Lf", fv);
+				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%Lf", fv);
 				break;
 			case VALUE_INT:
 				int_value(&$1, &iv);
-				swprintf($$.sv, L"%lld", iv);
+				swprintf($$.sv, EXPRESSION_MAX_LEN, L"%lld", iv);
 				break;
 		}
 
@@ -657,7 +662,7 @@ int yyerror(yyscan_t scanner, value* result, int angle_mode, const char* msg) {
 	mbstowcs(result->sv, msg, EXPRESSION_MAX_LEN-1);
 	result->sv[strlen(msg)] = L'\0';
 	if (strlen(pos) != 0) {
-		swprintf(buffer, L" at '%C'", pos[0]);
+		swprintf(buffer, EXPRESSION_MAX_LEN, L" at '%C'", pos[0]);
 		wcscat(result->sv, buffer);
 	}
 
