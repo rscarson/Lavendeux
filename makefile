@@ -9,7 +9,7 @@ LEX_HEADER = $(INC_DIR)/generated/lex.h
 TAB_SOURCE = $(SRC_DIR)/generated/tab.c
 TAB_HEADER = $(INC_DIR)/generated/tab.h
 
-_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o
+_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o values.o
 PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
 
 CC = gcc
@@ -23,13 +23,13 @@ $(OBJ_DIR)/lavendeux.res: $(SRC_DIR)/lavendeux.rc
 	windres $(SRC_DIR)/lavendeux.rc -O coff -o $(OBJ_DIR)/lavendeux.res
 
 $(LIB_DIR)/libinterface.a: $(SRC_DIR)/interface_win32.c
-	gcc -c $(SRC_DIR)/interface_win32.c -o $(OBJ_DIR)/interface.o  $(COMPILE_FLAGS)
-	gcc -c $(SRC_DIR)/language.c -o $(OBJ_DIR)/language.o  $(COMPILE_FLAGS)
+	$(CC) -c $(SRC_DIR)/interface_win32.c -o $(OBJ_DIR)/interface.o  $(COMPILE_FLAGS)
+	$(CC) -c $(SRC_DIR)/language.c -o $(OBJ_DIR)/language.o  $(COMPILE_FLAGS)
 	ar rcs $(LIB_DIR)/libinterface.a $(OBJ_DIR)/interface.o $(OBJ_DIR)/language.o
 
 $(LIB_DIR)/libparse.a: grammar $(PARSE_DEPS)
-	gcc -c $(LEX_SOURCE) -o $(OBJ_DIR)/lex.o $(COMPILE_FLAGS)
-	gcc -c $(TAB_SOURCE) -o $(OBJ_DIR)/tab.o $(COMPILE_FLAGS)
+	$(CC) -c $(LEX_SOURCE) -o $(OBJ_DIR)/lex.o $(COMPILE_FLAGS)
+	$(CC) -c $(TAB_SOURCE) -o $(OBJ_DIR)/tab.o $(COMPILE_FLAGS)
 	ar rcs $(LIB_DIR)/libparse.a $(PARSE_DEPS) $(OBJ_DIR)/lex.o $(OBJ_DIR)/tab.o
 
 grammar: $(SRC_DIR)\grammar.y $(SRC_DIR)\grammar.lex
@@ -39,7 +39,23 @@ grammar: $(SRC_DIR)\grammar.y $(SRC_DIR)\grammar.lex
 win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a $(SRC_DIR)/main.c
 	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS)
 
-all: win32
+test_hashing: $(OBJ_DIR)/test.o $(OBJ_DIR)/hashing.o
+	@$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/hashing.o tests/hashing.c -o $(BIN_DIR)/test_hashing $(COMPILE_FLAGS)
+	@bin/test_hashing
+
+test_builtins: $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/hashing.o
+	@$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o $(OBJ_DIR)/builtins.o tests/builtins.c -o $(BIN_DIR)/test_builtins $(COMPILE_FLAGS)
+	@bin/test_builtins
+
+test_constructs: $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o
+	@$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o tests/constructs.c -o $(BIN_DIR)/test_constructs $(COMPILE_FLAGS)
+	@bin/test_constructs
+
+test_decorators: $(OBJ_DIR)/test.o $(OBJ_DIR)/decorators.o $(OBJ_DIR)/hashing.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/values.o
+	@$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/decorators.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/values.o $(OBJ_DIR)/hashing.o tests/decorators.c -o $(BIN_DIR)/test_decorators $(COMPILE_FLAGS)
+	@bin/test_decorators
+
+test: test_hashing test_builtins test_constructs test_decorators
 
 clean:
 	rm -f $(LIB_DIR)/*.a
