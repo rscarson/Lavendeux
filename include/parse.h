@@ -48,7 +48,7 @@
 
 	int float_value(const value*, float_value_t*);
 	int int_value(const value*, int_value_t*);
-	int value_type(const value*, char*);
+	int value_type(value*, char*);
 	char expression_type(const value*, const value*, int*);
 	value verify_expression(const value*, const value*);
 #endif
