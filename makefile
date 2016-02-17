@@ -40,20 +40,20 @@ win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/lib
 	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS)
 
 test_hashing: $(OBJ_DIR)/test.o $(OBJ_DIR)/hashing.o
-	@$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/hashing.o tests/hashing.c -o $(BIN_DIR)/test_hashing $(COMPILE_FLAGS)
-	@bin/test_hashing
+	$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/hashing.o tests/hashing.c -o $(BIN_DIR)/test_hashing $(COMPILE_FLAGS)
+	bin/test_hashing
 
 test_builtins: $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/hashing.o
-	@$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o $(OBJ_DIR)/builtins.o tests/builtins.c -o $(BIN_DIR)/test_builtins $(COMPILE_FLAGS)
-	@bin/test_builtins
+	$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o $(OBJ_DIR)/builtins.o tests/builtins.c -o $(BIN_DIR)/test_builtins $(COMPILE_FLAGS)
+	bin/test_builtins
 
 test_constructs: $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o
-	@$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o tests/constructs.c -o $(BIN_DIR)/test_constructs $(COMPILE_FLAGS)
-	@bin/test_constructs
+	$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/hashing.o tests/constructs.c -o $(BIN_DIR)/test_constructs $(COMPILE_FLAGS)
+	bin/test_constructs
 
 test_decorators: $(OBJ_DIR)/test.o $(OBJ_DIR)/decorators.o $(OBJ_DIR)/hashing.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/values.o
-	@$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/decorators.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/values.o $(OBJ_DIR)/hashing.o tests/decorators.c -o $(BIN_DIR)/test_decorators $(COMPILE_FLAGS)
-	@bin/test_decorators
+	$(CC) $(OBJ_DIR)/test.o $(OBJ_DIR)/decorators.o $(OBJ_DIR)/constructs.o $(OBJ_DIR)/builtins.o $(OBJ_DIR)/values.o $(OBJ_DIR)/hashing.o tests/decorators.c -o $(BIN_DIR)/test_decorators $(COMPILE_FLAGS)
+	bin/test_decorators
 
 test: test_hashing test_builtins test_constructs test_decorators
 

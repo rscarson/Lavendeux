@@ -86,14 +86,14 @@
 	typedef union YYSTYPE YYSTYPE;
 	#include "lex.h"
 
-	#define YYERROR_MSG(c,s) yyerror_msg(scanner, result, c, s); YYABORT;
-	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, result, s);
-	#define YYERROR_CODE(c) yyerror_code(scanner, result, c); YYABORT;
+	#define YYERROR_MSG(c,s) yyerror_msg(scanner, result, angle_mode, c, s); YYABORT;
+	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, result, angle_mode, s);
+	#define YYERROR_CODE(c) yyerror_code(scanner, result, angle_mode, c); YYABORT;
 
-	int yyerror (yyscan_t, value*, const char*);
+	int yyerror (yyscan_t, value*, int, const char*);
 	int_value_t ifactorial(int_value_t in);
-	void yyerror_code(yyscan_t scanner, value* result, int err);
-	void yyerror_msg(yyscan_t scanner, value* result, int err, int lang_str);
+	void yyerror_code(yyscan_t scanner, value* result, int, int err);
+	void yyerror_msg(yyscan_t scanner, value* result, int, int err, int lang_str);
 
 
 
@@ -162,7 +162,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 36 "src\\grammar.y"
+#line 37 "src\\grammar.y"
 
 	value val;
 	list lst;
@@ -479,10 +479,10 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    63,    63,    82,   106,   115,   118,   121,   124,   127,
-     130,   133,   136,   142,   145,   148,   176,   204,   232,   260,
-     287,   326,   365,   404,   451,   475,   513,   534,   568,   583,
-     599,   619,   627,   635
+       0,    64,    64,    83,   107,   116,   119,   122,   125,   128,
+     131,   134,   137,   143,   146,   149,   177,   205,   233,   261,
+     288,   327,   366,   405,   452,   476,   514,   535,   569,   584,
+     600,   620,   628,   636
 };
 #endif
 
@@ -663,7 +663,7 @@ do								\
     }								\
   else								\
     {								\
-      yyerror (scanner, result, YY_("syntax error: cannot back up")); \
+      yyerror (scanner, result, angle_mode, YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
 while (YYID (0))
@@ -743,7 +743,7 @@ do {									  \
     {									  \
       YYFPRINTF (stderr, "%s ", Title);					  \
       yy_symbol_print (stderr,						  \
-		  Type, Value, scanner, result); \
+		  Type, Value, scanner, result, angle_mode); \
       YYFPRINTF (stderr, "\n");						  \
     }									  \
 } while (YYID (0))
@@ -757,21 +757,23 @@ do {									  \
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, value *result)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, value *result, int angle_mode)
 #else
 static void
-yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, result)
+yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, result, angle_mode)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
     yyscan_t scanner;
     value *result;
+    int angle_mode;
 #endif
 {
   if (!yyvaluep)
     return;
   YYUSE (scanner);
   YYUSE (result);
+  YYUSE (angle_mode);
 # ifdef YYPRINT
   if (yytype < YYNTOKENS)
     YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
@@ -793,15 +795,16 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, result)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, value *result)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, yyscan_t scanner, value *result, int angle_mode)
 #else
 static void
-yy_symbol_print (yyoutput, yytype, yyvaluep, scanner, result)
+yy_symbol_print (yyoutput, yytype, yyvaluep, scanner, result, angle_mode)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
     yyscan_t scanner;
     value *result;
+    int angle_mode;
 #endif
 {
   if (yytype < YYNTOKENS)
@@ -809,7 +812,7 @@ yy_symbol_print (yyoutput, yytype, yyvaluep, scanner, result)
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, result);
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, scanner, result, angle_mode);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -852,14 +855,15 @@ do {								\
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_reduce_print (YYSTYPE *yyvsp, int yyrule, yyscan_t scanner, value *result)
+yy_reduce_print (YYSTYPE *yyvsp, int yyrule, yyscan_t scanner, value *result, int angle_mode)
 #else
 static void
-yy_reduce_print (yyvsp, yyrule, scanner, result)
+yy_reduce_print (yyvsp, yyrule, scanner, result, angle_mode)
     YYSTYPE *yyvsp;
     int yyrule;
     yyscan_t scanner;
     value *result;
+    int angle_mode;
 #endif
 {
   int yynrhs = yyr2[yyrule];
@@ -873,7 +877,7 @@ yy_reduce_print (yyvsp, yyrule, scanner, result)
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
-		       		       , scanner, result);
+		       		       , scanner, result, angle_mode);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -881,7 +885,7 @@ yy_reduce_print (yyvsp, yyrule, scanner, result)
 # define YY_REDUCE_PRINT(Rule)		\
 do {					\
   if (yydebug)				\
-    yy_reduce_print (yyvsp, Rule, scanner, result); \
+    yy_reduce_print (yyvsp, Rule, scanner, result, angle_mode); \
 } while (YYID (0))
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1132,20 +1136,22 @@ yysyntax_error (char *yyresult, int yystate, int yychar)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, yyscan_t scanner, value *result)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, yyscan_t scanner, value *result, int angle_mode)
 #else
 static void
-yydestruct (yymsg, yytype, yyvaluep, scanner, result)
+yydestruct (yymsg, yytype, yyvaluep, scanner, result, angle_mode)
     const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
     yyscan_t scanner;
     value *result;
+    int angle_mode;
 #endif
 {
   YYUSE (yyvaluep);
   YYUSE (scanner);
   YYUSE (result);
+  YYUSE (angle_mode);
 
   if (!yymsg)
     yymsg = "Deleting";
@@ -1168,7 +1174,7 @@ int yyparse ();
 #endif
 #else /* ! YYPARSE_PARAM */
 #if defined __STDC__ || defined __cplusplus
-int yyparse (yyscan_t scanner, value *result);
+int yyparse (yyscan_t scanner, value *result, int angle_mode);
 #else
 int yyparse ();
 #endif
@@ -1196,12 +1202,13 @@ yyparse (YYPARSE_PARAM)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 int
-yyparse (yyscan_t scanner, value *result)
+yyparse (yyscan_t scanner, value *result, int angle_mode)
 #else
 int
-yyparse (scanner, result)
+yyparse (scanner, result, angle_mode)
     yyscan_t scanner;
     value *result;
+    int angle_mode;
 #endif
 #endif
 {
@@ -1456,7 +1463,7 @@ yyreduce:
         case 2:
 
 /* Line 1464 of yacc.c  */
-#line 63 "src\\grammar.y"
+#line 64 "src\\grammar.y"
     {
 		char type;
 		int err;
@@ -1481,7 +1488,7 @@ yyreduce:
   case 3:
 
 /* Line 1464 of yacc.c  */
-#line 82 "src\\grammar.y"
+#line 83 "src\\grammar.y"
     {
 		int_value_t iv;
 		float_value_t fv;
@@ -1511,7 +1518,7 @@ yyreduce:
   case 4:
 
 /* Line 1464 of yacc.c  */
-#line 106 "src\\grammar.y"
+#line 107 "src\\grammar.y"
     {
 		if (!decorate((yyvsp[(3) - (3)].val).sv, &(yyvsp[(1) - (3)].val), (yyval.val).sv)) {
 			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_INVALID_DECORATOR);
@@ -1523,7 +1530,7 @@ yyreduce:
   case 5:
 
 /* Line 1464 of yacc.c  */
-#line 115 "src\\grammar.y"
+#line 116 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1532,7 +1539,7 @@ yyreduce:
   case 6:
 
 /* Line 1464 of yacc.c  */
-#line 118 "src\\grammar.y"
+#line 119 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1541,7 +1548,7 @@ yyreduce:
   case 7:
 
 /* Line 1464 of yacc.c  */
-#line 121 "src\\grammar.y"
+#line 122 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1550,7 +1557,7 @@ yyreduce:
   case 8:
 
 /* Line 1464 of yacc.c  */
-#line 124 "src\\grammar.y"
+#line 125 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1559,7 +1566,7 @@ yyreduce:
   case 9:
 
 /* Line 1464 of yacc.c  */
-#line 127 "src\\grammar.y"
+#line 128 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1568,7 +1575,7 @@ yyreduce:
   case 10:
 
 /* Line 1464 of yacc.c  */
-#line 130 "src\\grammar.y"
+#line 131 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1577,7 +1584,7 @@ yyreduce:
   case 11:
 
 /* Line 1464 of yacc.c  */
-#line 133 "src\\grammar.y"
+#line 134 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1586,7 +1593,7 @@ yyreduce:
   case 12:
 
 /* Line 1464 of yacc.c  */
-#line 136 "src\\grammar.y"
+#line 137 "src\\grammar.y"
     {
 		YYERROR_MSG(FAILURE_INVALID_ARGS, (yyvsp[(1) - (1)].val).iv);
 	;}
@@ -1595,7 +1602,7 @@ yyreduce:
   case 13:
 
 /* Line 1464 of yacc.c  */
-#line 142 "src\\grammar.y"
+#line 143 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1604,7 +1611,7 @@ yyreduce:
   case 14:
 
 /* Line 1464 of yacc.c  */
-#line 145 "src\\grammar.y"
+#line 146 "src\\grammar.y"
     {
 		(yyval.val) = (yyvsp[(2) - (3)].val);
 	;}
@@ -1613,7 +1620,7 @@ yyreduce:
   case 15:
 
 /* Line 1464 of yacc.c  */
-#line 148 "src\\grammar.y"
+#line 149 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1647,7 +1654,7 @@ yyreduce:
   case 16:
 
 /* Line 1464 of yacc.c  */
-#line 176 "src\\grammar.y"
+#line 177 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1681,7 +1688,7 @@ yyreduce:
   case 17:
 
 /* Line 1464 of yacc.c  */
-#line 204 "src\\grammar.y"
+#line 205 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1715,7 +1722,7 @@ yyreduce:
   case 18:
 
 /* Line 1464 of yacc.c  */
-#line 232 "src\\grammar.y"
+#line 233 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1749,7 +1756,7 @@ yyreduce:
   case 19:
 
 /* Line 1464 of yacc.c  */
-#line 260 "src\\grammar.y"
+#line 261 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1782,7 +1789,7 @@ yyreduce:
   case 20:
 
 /* Line 1464 of yacc.c  */
-#line 287 "src\\grammar.y"
+#line 288 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1827,7 +1834,7 @@ yyreduce:
   case 21:
 
 /* Line 1464 of yacc.c  */
-#line 326 "src\\grammar.y"
+#line 327 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1872,7 +1879,7 @@ yyreduce:
   case 22:
 
 /* Line 1464 of yacc.c  */
-#line 365 "src\\grammar.y"
+#line 366 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1917,7 +1924,7 @@ yyreduce:
   case 23:
 
 /* Line 1464 of yacc.c  */
-#line 404 "src\\grammar.y"
+#line 405 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1970,7 +1977,7 @@ yyreduce:
   case 24:
 
 /* Line 1464 of yacc.c  */
-#line 451 "src\\grammar.y"
+#line 452 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -2000,7 +2007,7 @@ yyreduce:
   case 25:
 
 /* Line 1464 of yacc.c  */
-#line 475 "src\\grammar.y"
+#line 476 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -2044,7 +2051,7 @@ yyreduce:
   case 26:
 
 /* Line 1464 of yacc.c  */
-#line 513 "src\\grammar.y"
+#line 514 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (2)].val), NULL);
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -2071,7 +2078,7 @@ yyreduce:
   case 27:
 
 /* Line 1464 of yacc.c  */
-#line 534 "src\\grammar.y"
+#line 535 "src\\grammar.y"
     {
 		(yyval.val) = verify_expression(NULL, &(yyvsp[(2) - (2)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -2111,12 +2118,12 @@ yyreduce:
   case 28:
 
 /* Line 1464 of yacc.c  */
-#line 568 "src\\grammar.y"
+#line 569 "src\\grammar.y"
     {
 		int err;
 
 		feclearexcept (FE_ALL_EXCEPT);
-		err = call_builtin((yyvsp[(1) - (3)].val).sv, NULL, 0, &(yyval.val));
+		err = call_function((yyvsp[(1) - (3)].val).sv, NULL, 0, &(yyval.val), angle_mode);
 		if (err != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}
@@ -2132,13 +2139,13 @@ yyreduce:
   case 29:
 
 /* Line 1464 of yacc.c  */
-#line 583 "src\\grammar.y"
+#line 584 "src\\grammar.y"
     {
 		int err;
 		value args[] = { (yyvsp[(3) - (4)].val) };
 
 		feclearexcept (FE_ALL_EXCEPT);
-		err = call_builtin((yyvsp[(1) - (4)].val).sv, args, 1, &(yyval.val));
+		err = call_function((yyvsp[(1) - (4)].val).sv, args, 1, &(yyval.val), angle_mode);
 		if (err != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}
@@ -2154,12 +2161,12 @@ yyreduce:
   case 30:
 
 /* Line 1464 of yacc.c  */
-#line 599 "src\\grammar.y"
+#line 600 "src\\grammar.y"
     {
 		int err;
 
 		feclearexcept (FE_ALL_EXCEPT);
-		err = call_builtin((yyvsp[(1) - (4)].val).sv, (yyvsp[(3) - (4)].lst).elements, (yyvsp[(3) - (4)].lst).size, &(yyval.val));
+		err = call_function((yyvsp[(1) - (4)].val).sv, (yyvsp[(3) - (4)].lst).elements, (yyvsp[(3) - (4)].lst).size, &(yyval.val), angle_mode);
 		if (err != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}
@@ -2177,7 +2184,7 @@ yyreduce:
   case 31:
 
 /* Line 1464 of yacc.c  */
-#line 619 "src\\grammar.y"
+#line 620 "src\\grammar.y"
     {
 		if (list_create(&(yyval.lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
@@ -2191,7 +2198,7 @@ yyreduce:
   case 32:
 
 /* Line 1464 of yacc.c  */
-#line 627 "src\\grammar.y"
+#line 628 "src\\grammar.y"
     {
 		if (list_add(&(yyval.lst), (yyvsp[(3) - (3)].val)) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
@@ -2202,7 +2209,7 @@ yyreduce:
   case 33:
 
 /* Line 1464 of yacc.c  */
-#line 635 "src\\grammar.y"
+#line 636 "src\\grammar.y"
     {
 		value *v = (value*) malloc(sizeof(value));
 		if (v == NULL) {
@@ -2221,7 +2228,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 2225 "src/generated/tab.c"
+#line 2232 "src/generated/tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2256,7 +2263,7 @@ yyerrlab:
     {
       ++yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (scanner, result, YY_("syntax error"));
+      yyerror (scanner, result, angle_mode, YY_("syntax error"));
 #else
       {
 	YYSIZE_T yysize = yysyntax_error (0, yystate, yychar);
@@ -2280,11 +2287,11 @@ yyerrlab:
 	if (0 < yysize && yysize <= yymsg_alloc)
 	  {
 	    (void) yysyntax_error (yymsg, yystate, yychar);
-	    yyerror (scanner, result, yymsg);
+	    yyerror (scanner, result, angle_mode, yymsg);
 	  }
 	else
 	  {
-	    yyerror (scanner, result, YY_("syntax error"));
+	    yyerror (scanner, result, angle_mode, YY_("syntax error"));
 	    if (yysize != 0)
 	      goto yyexhaustedlab;
 	  }
@@ -2308,7 +2315,7 @@ yyerrlab:
       else
 	{
 	  yydestruct ("Error: discarding",
-		      yytoken, &yylval, scanner, result);
+		      yytoken, &yylval, scanner, result, angle_mode);
 	  yychar = YYEMPTY;
 	}
     }
@@ -2364,7 +2371,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-		  yystos[yystate], yyvsp, scanner, result);
+		  yystos[yystate], yyvsp, scanner, result, angle_mode);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -2399,7 +2406,7 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (scanner, result, YY_("memory exhausted"));
+  yyerror (scanner, result, angle_mode, YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
@@ -2407,7 +2414,7 @@ yyexhaustedlab:
 yyreturn:
   if (yychar != YYEMPTY)
      yydestruct ("Cleanup: discarding lookahead",
-		 yytoken, &yylval, scanner, result);
+		 yytoken, &yylval, scanner, result, angle_mode);
   /* Do not reclaim the symbols of the rule which action triggered
      this YYABORT or YYACCEPT.  */
   YYPOPSTACK (yylen);
@@ -2415,7 +2422,7 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-		  yystos[*yyssp], yyvsp, scanner, result);
+		  yystos[*yyssp], yyvsp, scanner, result, angle_mode);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -2433,10 +2440,10 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 649 "src\\grammar.y"
+#line 650 "src\\grammar.y"
 
 
-int yyerror(yyscan_t scanner, value* result, const char* msg) {
+int yyerror(yyscan_t scanner, value* result, int angle_mode, const char* msg) {
 	char* pos = yyget_text(scanner);
 	wchar_t buffer[EXPRESSION_MAX_LEN];
 	result->iv = FAILURE_SYNTAX_ERROR;
@@ -2458,35 +2465,35 @@ int_value_t ifactorial(int_value_t in) {
 	return ifactorial(in-1) * in;
 }
 
-void yyerror_code(yyscan_t scanner, value* result, int err) {
+void yyerror_code(yyscan_t scanner, value* result, int angle_mode, int err) {
 	switch (err) {
 		case FAILURE_UNKNOWN:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_UNKNOWN);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_UNKNOWN);
 		break;
 
 		case FAILURE_INVALID_ARGS:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_INVALID_ARGS);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_INVALID_ARGS);
 		break;
 
 		case FAILURE_INVALID_NAME:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_INVALID_NAME);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_INVALID_NAME);
 		break;
 
 		case FAILURE_SYNTAX_ERROR:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_SYNTAX_ERROR);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_SYNTAX_ERROR);
 		break;
 
 		case FAILURE_ALLOCATION:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_ALLOCATION);
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_ALLOCATION);
 		break;
 
 		case FAILURE_TYPE:
-			yyerror_msg(scanner, result, err, LANG_STR_ERR_TYPE);	
+			yyerror_msg(scanner, result, angle_mode, err, LANG_STR_ERR_TYPE);	
 		break;
 	}
 }
 
-void yyerror_msg(yyscan_t scanner, value* result, int err, int lang_str) {
+void yyerror_msg(yyscan_t scanner, value* result, int angle_mode, int err, int lang_str) {
 	char* err_str = language_char_str(lang_str);
 
 	if (err_str != NULL) {

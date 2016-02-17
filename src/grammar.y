@@ -16,9 +16,9 @@
 	typedef union YYSTYPE YYSTYPE;
 	#include "lex.h"
 
-	#define YYERROR_MSG(c,s) yyerror_msg(scanner, result, int, c, s); YYABORT;
-	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, result, int, s);
-	#define YYERROR_CODE(c) yyerror_code(scanner, result, int, c); YYABORT;
+	#define YYERROR_MSG(c,s) yyerror_msg(scanner, result, angle_mode, c, s); YYABORT;
+	#define _YYERROR_MSG(c,s) result->iv=c; yyerror(scanner, result, angle_mode, s);
+	#define YYERROR_CODE(c) yyerror_code(scanner, result, angle_mode, c); YYABORT;
 
 	int yyerror (yyscan_t, value*, int, const char*);
 	int_value_t ifactorial(int_value_t in);
