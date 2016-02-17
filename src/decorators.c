@@ -116,6 +116,7 @@ void decorator_sci(const value* v, wchar_t* decorated) {
 void decorator_bin(const value* v, wchar_t* decorated) {
 	wchar_t buffer[EXPRESSION_MAX_LEN];
 	int_value_t mask = 1;
+	int len;
 	int i = 0;
 
 	/* Value */
@@ -133,17 +134,26 @@ void decorator_bin(const value* v, wchar_t* decorated) {
 	}
 
 	/* Terminator */
+	if (i == 0)
+		buffer[i++] = L'0';
 	buffer[i] = L'\0';
 
-	/* Readout */
-	_wcsrev(buffer);
-	i = 0;
-	while (buffer[i] != L'\0') {
+	/* Trim it */
+	for (i=wcslen(buffer)-1; i>0; i--)
 		if (buffer[i] == L'1') break;
-		i++;
-	} if (buffer[i] == L'\0') i--;
+		else buffer[i] = L'\0';
 
-	wcscpy(&decorated[2], &buffer[i]);
+	/* Reverse it */
+	len = wcslen(buffer);
+	if (len > 1)
+		for (i=0; i<len; i++) {
+			if (i >= len/2) break;
+			buffer[i] ^= buffer[len-1 - i];
+			buffer[len-1 - i] ^= buffer[i];
+			buffer[i] ^= buffer[len-1 - i];
+		}
+
+	wcscpy(&decorated[2], buffer);
 }
 
 /**
