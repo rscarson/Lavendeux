@@ -61,14 +61,27 @@ int builtins_init(hash_table *variables) {
 	return NO_FAILURE;
 }
 
+/**
+ * Destroy a builtin function entry
+ * @param ptr Pointer to the entry
+ */
 void builtin_destroy(void* ptr) {
 	free(ptr);
 }
 
+/**
+ * Destroy the builtins table
+ */
 void builtins_destroy( void ) {
 	table_destroy(&builtins, builtin_destroy);
 }
 
+/**
+ * Add a builtin function to the table
+ * @param name The callable name of the function
+ * @param fn The function pointer
+ * @param args The number of arguments expected
+ */
 int builtin_put(const wchar_t* name, builtin fn, int args) {
 	builtin_function* entry = (builtin_function*) malloc(sizeof(builtin_function));
 	if (entry == NULL)

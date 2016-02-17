@@ -49,6 +49,13 @@ int parse_equation(const wchar_t* equation, value* response){
 	return NO_FAILURE;
 }
 
+/**
+ * Get floating point value
+ * @param v Value
+ * @param out Pointer to a float_value_t to hold the value
+ *
+ * @return Result
+ */
 int float_value(const value* v, float_value_t *out) {
 	value resolved;
 	int result;
@@ -74,6 +81,13 @@ int float_value(const value* v, float_value_t *out) {
 	return FAILURE_ALLOCATION;
 }
 
+/**
+ * Get integer value
+ * @param v Value
+ * @param out Pointer to a float_value_t to hold the value
+ *
+ * @return Result
+ */
 int int_value(const value* v, int_value_t *out) {
 	value resolved;
 	int result;
@@ -99,6 +113,13 @@ int int_value(const value* v, int_value_t *out) {
 	return FAILURE_ALLOCATION;
 }
 
+/**
+ * Get the type of a value
+ * @param v Value
+ * @param type Pointer to a char to hold the type
+ *
+ * @return Result
+ */
 int value_type(const value* v, char* type) {
 	value resolved;
 	int result;
