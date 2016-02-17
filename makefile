@@ -25,6 +25,9 @@ TEST_CONSTRUCTS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_CONSTRUCTS_DEPS))
 _TEST_DECORATORS_DEPS = test.o decorators.o constructs.o hashing.o builtins.o values.o
 TEST_DECORATORS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_DECORATORS_DEPS))
 
+_TEST_PARSE_DEPS = test.o
+TEST_PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_PARSE_DEPS))
+
 CC = gcc
 COMPILE_FLAGS = -std=c99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -lm -Wall -g -Wno-unused
 WIN32_FLAGS =  -Wl,-subsystem,windows
@@ -49,7 +52,7 @@ grammar: $(SRC_DIR)\grammar.y $(SRC_DIR)\grammar.lex
 	bison $(SRC_DIR)\grammar.y --output=$(TAB_SOURCE) --defines=$(TAB_HEADER) --report-file=report.txt
 	flex --outfile=$(LEX_SOURCE) --header-file=$(LEX_HEADER) -B $(SRC_DIR)\grammar.lex
 
-win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a $(SRC_DIR)/main.c
+win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a
 	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS)
 
 test_hashing: $(TEST_HASHING_DEPS)
@@ -68,7 +71,11 @@ test_decorators: $(TEST_DECORATORS_DEPS)
 	@$(CC) $(TEST_DIR)/decorators.c $(TEST_DECORATORS_DEPS) -o $(BIN_DIR)/$@ $(COMPILE_FLAGS)
 	@bin/$@
 
-test: test_hashing test_builtins test_constructs test_decorators
+test_parse: $(LIB_DIR)/libparse.a grammar
+	@$(CC) $(TEST_DIR)/parse.c $(TEST_PARSE_DEPS) -o $(BIN_DIR)/$@ -lparse $(COMPILE_FLAGS)
+	@bin/$@
+
+test: test_hashing test_builtins test_constructs test_decorators test_parse
 
 clean:
 	rm -f $(LIB_DIR)/*.a

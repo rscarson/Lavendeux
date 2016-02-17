@@ -11,3 +11,4 @@ One equation per line, start of line whitespace is preserved
 - Linux and OSX versions
 - Anti-trig functions (cotan, cosec, sec)
 - Generating test sentences to automate parser tests
+- Unit tests
