@@ -15,11 +15,7 @@ int config_off = 0;
 FILE* config = NULL;
 
 int main(int argc, char* argv[]) {
-	int args_set[N_SETTINGS+1];
 	int setting, value;
-
-	/* Nothing set yet */
-	memset(args_set, 0, N_SETTINGS);
 
 	/* Start UI */
 	init_interface(exit_callback, parse_callback);
@@ -27,22 +23,24 @@ int main(int argc, char* argv[]) {
 
 	/* Commandline arguments */
 	for (; argc>1; argc--) {
-		args_set [parse_argument(argv[argc-1]) ] = 1;
+		parse_argument(argv[argc-1]);
 	}
 
 	/* Config */
 	if (config == NULL && !config_off)
-		config = fopen(config_path(), "w+");
+		config = fopen(config_path(), "r");
 	if (config == NULL)
 		error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_CONFIG), 1);
 
 	/* Read in settings */
 	if (config != NULL) {
-		while (fscanf(config, "%d=%d\n", &setting, &value) == 2) {
-			if (!args_set[setting])
+		while (fscanf(config, " %d = %d \n", &setting, &value) == 2) {
+			if (setting < N_SETTINGS)
 				set_setting(setting, value);
 		}
 	}
+
+	fclose(config);
 
 	/* Main update loop */
 	while (1) {
@@ -55,20 +53,18 @@ int main(int argc, char* argv[]) {
 /**
  * Process a commandline argument
  * @param arg The argument string
- *
- * @return The setting changed, or N_SETTINGS
  */
-int parse_argument(const char* arg) {
+void parse_argument(const char* arg) {
 	/* Help */
 	if (strcmp(arg, ARG_HELP_LONG) == 0 || strcmp(arg, ARG_HELP_SHORT) == 0) {
 		print_help();
-		return N_SETTINGS;
+		return;
 	}
 
 	/* No config */
 	if (strncmp(arg, ARG_NO_CONFIG_LONG, strlen(ARG_NO_CONFIG_LONG)) == 0) {
 		config_off = 1;
-		return N_SETTINGS;
+		return;
 	}
 
 	/* Config path */
@@ -82,68 +78,10 @@ int parse_argument(const char* arg) {
 		config = fopen(arg, "w+");
 		if (config == NULL)
 			error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_CONFIG), 1);
-		return N_SETTINGS;
-	}
-
-	/* Angle mode */
-	if (strncmp(arg, ARG_ANGLE_MODE_LONG, strlen(ARG_ANGLE_MODE_LONG)) == 0 || strncmp(arg, ARG_ANGLE_MODE_SHORT, strlen(ARG_ANGLE_MODE_SHORT)) == 0) {
-		while (*arg != '\0')
-			if (*arg == '=') {
-				arg++;
-				break;
-			} else arg++;
-
-			if (strcmp(arg, ARG_OPTION_ANGLE_MODE_DEG) == 0) {
-				set_setting(SETTING_ANGLE, SETTING_ANGLE_DEG);
-			}
-
-			if (strcmp(arg, ARG_OPTION_ANGLE_MODE_RAD) == 0) {
-				set_setting(SETTING_ANGLE, SETTING_ANGLE_RAD);
-			}
-
-		return SETTING_ANGLE;
-	}
-
-	/* Silent mode */
-	if (strncmp(arg, ARG_SILENT_MODE_LONG, strlen(ARG_SILENT_MODE_LONG)) == 0 || strncmp(arg, ARG_SILENT_MODE_SHORT, strlen(ARG_SILENT_MODE_SHORT)) == 0) {
-		while (*arg != '\0')
-			if (*arg == '=') {
-				arg++;
-				break;
-			} else arg++;
-
-			if (strcmp(arg, ARG_OPTION_SILENT_MODE_ON) == 0) {
-				set_setting(SETTING_SILENT, SETTING_SILENT_ON);
-			}
-
-			if (strcmp(arg, ARG_OPTION_SILENT_MODE_OFF) == 0) {
-				set_setting(SETTING_SILENT, SETTING_SILENT_OFF);
-			}
-
-		return SETTING_SILENT;
-	}
-
-	/* Language mode */
-	if (strncmp(arg, ARG_LANGUAGE_LONG, strlen(ARG_LANGUAGE_LONG)) == 0 || strncmp(arg, ARG_LANGUAGE_SHORT, strlen(ARG_LANGUAGE_SHORT)) == 0) {
-		while (*arg != '\0')
-			if (*arg == '=') {
-				arg++;
-				break;
-			} else arg++;
-
-			if (strcmp(arg, ARG_OPTION_LANGUAGE_EN) == 0) {
-				set_setting(SETTING_LANG, LANG_EN);
-			}
-
-			if (strcmp(arg, ARG_OPTION_LANGUAGE_FR) == 0) {
-				set_setting(SETTING_LANG, LANG_FR);
-			}
-
-		return SETTING_LANG;
+		return;
 	}
 	
 	error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_UNRECOGNIZED_COMMAND), 1);
-	return -1;
 }
 
 /**
@@ -302,15 +240,19 @@ void exit_callback( void ) {
 	parser_destroy();
 
 	/* Open config */
-	if (config == NULL) exit(0);
+	if (!config_off) {
+		config = fopen(config_path(), "w+");
 
-	/* Write all settings out */
-	fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));
-	fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
-	fprintf(config, "%d=%d\n", SETTING_LANG, get_setting(SETTING_LANG));
+		/* Write all settings out */
+		fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));
+		fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
+		fprintf(config, "%d=%d\n", SETTING_LANG, get_setting(SETTING_LANG));
+		fprintf(config, "%d=%d\n", SETTING_AUTOCOPY, get_setting(SETTING_AUTOCOPY));
 
-	/* Close up and leave */
-	fclose(config);
+		/* Close up and leave */
+		fclose(config);
+	}
+
 	exit(0);
 }
 

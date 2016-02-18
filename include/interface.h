@@ -10,6 +10,7 @@
 	 * ----------------
 	 *  languages -> Submenu with checkbox entry for each language
 	 *  checkbox entry for silent errors
+	 *  enable auto-copy/paste
 	 *  angle mode -> Submenu with checkbox entry for each mode
 	 * ----------------
 	 * about -> show dialog with content defined in laveneux.h
@@ -19,6 +20,7 @@
 	 */
 
     /* Window settings */
+    #define RUNNING_MSG "Lavendeux is running..."
 	#define CONFIG_FILENAME "/.lavendeuxsettings"
     #define MAX_EQUATIONS 5
 	#define MAX_LEN 255
@@ -37,6 +39,7 @@
 		SETTING_ANGLE,
 		SETTING_SILENT,
 		SETTING_LANG,
+		SETTING_AUTOCOPY,
 
 		N_SETTINGS
 	};
@@ -46,6 +49,9 @@
 		
 	#define SETTING_SILENT_ON  	0
 	#define SETTING_SILENT_OFF 	1 
+
+	#define SETTING_AUTOCOPY_ON 0
+	#define SETTING_AUTOCOPY_OFF 1
 
 	/** 
      * Prepare and draw the interface 

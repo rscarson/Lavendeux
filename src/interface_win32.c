@@ -1,7 +1,9 @@
 #ifdef _WIN32
+    #define _WIN32_IE 0x0500
 
     #include <stdio.h>
     #include <windows.h>
+    #include <winable.h>
     #include <shellapi.h>
     #include <conio.h>
     #include <Shlobj.h>
@@ -81,7 +83,7 @@
 
         /* Register hotkey */
         if (!RegisterHotKey(hWnd, HOTKEY_ID, MOD_CONTROL, VK_SPACE))
-            error_msg(L"Error while starting", L"Cannot register hotkey!", 1);
+            error_msg(L"Error while starting", L"Cannot register hotkey. Is Lavendeux already running?", 1);
 
         /* Start window */
         ShowWindow(hWnd, 0);
@@ -91,10 +93,11 @@
         nid.cbSize = sizeof(nid);
         nid.hWnd = hWnd;
         nid.uID = 100;
-        nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+        nid.uFlags = NIF_INFO | NIF_MESSAGE | NIF_ICON | NIF_TIP;
         nid.uCallbackMessage = RegisterWindowMessage(WINDOW_CALLBACK);
         nid.hIcon = hIcon;
         strcpy(nid.szTip, APPLICATION_NAME);
+        strcpy(nid.szInfo, RUNNING_MSG);
 
         /* Add notification icon to tray */
         Shell_NotifyIcon(NIM_ADD, &nid);
@@ -125,6 +128,18 @@
      */
     LRESULT CALLBACK wnd_callback(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
         static UINT wndMsg = 0;
+        static INPUT control_c[] = {
+            {INPUT_KEYBOARD, .ki={VK_CONTROL,0,0,0,0}},
+            {INPUT_KEYBOARD, .ki={0x43,0,0,0,0}},
+            {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
+            {INPUT_KEYBOARD, .ki={0x43,0,KEYEVENTF_KEYUP,0,0}},
+        };
+        static INPUT control_v[] = {
+            {INPUT_KEYBOARD, .ki={VK_CONTROL,0,0,0,0}},
+            {INPUT_KEYBOARD, .ki={0x56,0,0,0,0}},
+            {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
+            {INPUT_KEYBOARD, .ki={0x56,0,KEYEVENTF_KEYUP,0,0}},
+        };
         int i;
 
         /* Register for callbacks, but only once */
@@ -136,7 +151,18 @@
 
             /* New thing to process */
             case WM_HOTKEY:
+                if (settings[SETTING_AUTOCOPY]==SETTING_AUTOCOPY_ON) {
+                    /* Control C */
+                    SendInput(sizeof(control_c)/sizeof(INPUT), control_c, sizeof(INPUT));
+                    Sleep(50);
+                }
+
                 _parse_callback(from_clipboard());
+
+                if (settings[SETTING_AUTOCOPY]==SETTING_AUTOCOPY_ON) {
+                    /* Control V */
+                    SendInput(sizeof(control_v)/sizeof(INPUT), control_v, sizeof(INPUT));
+                }
             break;
 
             /* Time to exit */
@@ -203,6 +229,11 @@
                     /* Turn silent errors on and off mode */
                     case CMD_TOGGLE_SILENT_MODE:
                         settings[SETTING_SILENT] = (settings[SETTING_SILENT]==SETTING_SILENT_ON) ? SETTING_SILENT_OFF : SETTING_SILENT_ON;
+                    break;
+
+                    /* Turn autocopy on and off */
+                    case CMD_TOGGLE_AUTOCOPY:
+                        settings[SETTING_AUTOCOPY] = (settings[SETTING_AUTOCOPY]==SETTING_AUTOCOPY_ON) ? SETTING_AUTOCOPY_OFF : SETTING_AUTOCOPY_ON;
                     break;
 
                     /* English language */
@@ -273,10 +304,12 @@
         AppendMenuW(hMenu, MF_POPUP, (UINT) hLangMenu, language_str(LANG_STR_LANGUAGE));
 
         AppendMenuW(hMenu, (settings[SETTING_SILENT]==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, language_str(LANG_STR_SILENT_ERRS));
+        AppendMenuW(hMenu, (settings[SETTING_AUTOCOPY]==SETTING_AUTOCOPY_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_AUTOCOPY, language_str(LANG_STR_ENABLEAUTOCOPY));
 
         AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, language_str(LANG_STR_DEGREES));
         AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, language_str(LANG_STR_RADIANS));
         AppendMenuW(hMenu, MF_POPUP, (UINT) hAnglesMenu, language_str(LANG_STR_ANGLE_UNITS));
+        
 
         /* System menu */
         AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
