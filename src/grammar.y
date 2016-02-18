@@ -78,10 +78,10 @@ expression:
 		$$ = $1;
 		switch (type) {
 			case VALUE_FLOAT:
-				decorator_float(&$1, $$.sv);
+				decorator_float($1, $$.sv);
 				break;
 			case VALUE_INT:
-				decorator_int(&$1, $$.sv);
+				decorator_int($1, $$.sv);
 				break;
 		}
 
@@ -114,7 +114,7 @@ expression:
 		*result = $$;
 	}
 	| expression DECORATOR IDENTIFIER {
-		if (!decorate($3.sv, &$1, $$.sv)) {
+		if (!decorate($3.sv, $1, $$.sv)) {
 			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_INVALID_DECORATOR);
 		}
 		*result = $$;

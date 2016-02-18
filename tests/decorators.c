@@ -26,16 +26,16 @@ int destroy_tests( void ) {
 int test_unsigned( void ) {
 	wchar_t result[EXPRESSION_MAX_LEN];
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", &value_zero, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", value_zero, result));
 	ASSERT_WSTR_EQUAL(L"0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", &value_small, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", value_small, result));
 	ASSERT_WSTR_EQUAL(L"0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", &value_big, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", value_big, result));
 	ASSERT_WSTR_EQUAL(L"12345", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", &value_255, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"u", value_255, result));
 	ASSERT_WSTR_EQUAL(L"255", result);
 
 	return 0;
@@ -44,19 +44,19 @@ int test_unsigned( void ) {
 int test_int( void ) {
 	wchar_t result[EXPRESSION_MAX_LEN];
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", &value_zero, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", value_zero, result));
 	ASSERT_WSTR_EQUAL(L"0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", &value_small, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", value_small, result));
 	ASSERT_WSTR_EQUAL(L"0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", &value_big, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", value_big, result));
 	ASSERT_WSTR_EQUAL(L"12345", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", &value_255, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", value_255, result));
 	ASSERT_WSTR_EQUAL(L"255", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", &value_neg, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"i", value_neg, result));
 	ASSERT_WSTR_EQUAL(L"-255", result);
 	
 	return 0;
@@ -65,19 +65,19 @@ int test_int( void ) {
 int test_float( void ) {
 	wchar_t result[EXPRESSION_MAX_LEN];
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", &value_zero, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", value_zero, result));
 	ASSERT_WSTR_EQUAL(L"0.0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", &value_small, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", value_small, result));
 	ASSERT_WSTR_EQUAL(L"0.12345", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", &value_big, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", value_big, result));
 	ASSERT_WSTR_EQUAL(L"12345.12345", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", &value_255, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", value_255, result));
 	ASSERT_WSTR_EQUAL(L"255.0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", &value_neg, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"f", value_neg, result));
 	ASSERT_WSTR_EQUAL(L"-255.0", result);
 	
 	return 0;
@@ -86,16 +86,16 @@ int test_float( void ) {
 int test_bin( void ) {
 	wchar_t result[EXPRESSION_MAX_LEN];
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", &value_zero, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", value_zero, result));
 	ASSERT_WSTR_EQUAL(L"0b0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", &value_small, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", value_small, result));
 	ASSERT_WSTR_EQUAL(L"0b0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", &value_big, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", value_big, result));
 	ASSERT_WSTR_EQUAL(L"0b11000000111001", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", &value_255, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"b", value_255, result));
 	ASSERT_WSTR_EQUAL(L"0b11111111", result);
 	
 	return 0;
@@ -104,16 +104,16 @@ int test_bin( void ) {
 int test_oct( void ) {
 	wchar_t result[EXPRESSION_MAX_LEN];
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", &value_zero, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", value_zero, result));
 	ASSERT_WSTR_EQUAL(L"0o0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", &value_small, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", value_small, result));
 	ASSERT_WSTR_EQUAL(L"0o0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", &value_big, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", value_big, result));
 	ASSERT_WSTR_EQUAL(L"0o30071", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", &value_255, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"o", value_255, result));
 	ASSERT_WSTR_EQUAL(L"0o377", result);
 	
 	return 0;
@@ -122,16 +122,16 @@ int test_oct( void ) {
 int test_hex( void ) {
 	wchar_t result[EXPRESSION_MAX_LEN];
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", &value_zero, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", value_zero, result));
 	ASSERT_WSTR_EQUAL(L"0x0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", &value_small, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", value_small, result));
 	ASSERT_WSTR_EQUAL(L"0x0", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", &value_big, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", value_big, result));
 	ASSERT_WSTR_EQUAL(L"0x3039", result);
 
-	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", &value_255, result));
+	ASSERT_EQUAL(NO_FAILURE, decorate(L"h", value_255, result));
 	ASSERT_WSTR_EQUAL(L"0xff", result);
 	
 	return 0;

@@ -1481,10 +1481,10 @@ yyreduce:
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 		switch (type) {
 			case VALUE_FLOAT:
-				decorator_float(&(yyvsp[(1) - (1)].val), (yyval.val).sv);
+				decorator_float((yyvsp[(1) - (1)].val), (yyval.val).sv);
 				break;
 			case VALUE_INT:
-				decorator_int(&(yyvsp[(1) - (1)].val), (yyval.val).sv);
+				decorator_int((yyvsp[(1) - (1)].val), (yyval.val).sv);
 				break;
 		}
 
@@ -1529,7 +1529,7 @@ yyreduce:
 /* Line 1464 of yacc.c  */
 #line 116 "src/grammar.y"
     {
-		if (!decorate((yyvsp[(3) - (3)].val).sv, &(yyvsp[(1) - (3)].val), (yyval.val).sv)) {
+		if (!decorate((yyvsp[(3) - (3)].val).sv, (yyvsp[(1) - (3)].val), (yyval.val).sv)) {
 			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_INVALID_DECORATOR);
 		}
 		*result = (yyval.val);

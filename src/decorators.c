@@ -45,7 +45,7 @@ void decorators_destroy( void ) {
  *
  * @return 0 if the operation fails
  */
-int decorate(const wchar_t* name, const value* v, wchar_t* decorated) {
+int decorate(const wchar_t* name, value v, wchar_t* decorated) {
 	decorator_fn decorator = (decorator_fn) table_get(&decorators, name);
 	if (decorator == NULL)
 		return 0;
@@ -59,8 +59,8 @@ int decorate(const wchar_t* name, const value* v, wchar_t* decorated) {
  * @param v Value to apply the decorator to
  * @param decorated Returned string
  */
-void decorator_unsigned(const value* v, wchar_t* decorated) {
-	int_value_t iv = RESOLVED_VALUE((*v));
+void decorator_unsigned(value v, wchar_t* decorated) {
+	int_value_t iv = RESOLVED_VALUE(v);
 	swprintf(decorated, EXPRESSION_MAX_LEN, L"%Lu", iv);
 }
 
@@ -69,8 +69,8 @@ void decorator_unsigned(const value* v, wchar_t* decorated) {
  * @param v Value to apply the decorator to
  * @param decorated Returned string
  */
-void decorator_int(const value* v, wchar_t* decorated) {
-	int_value_t iv = RESOLVED_VALUE((*v));
+void decorator_int(value v, wchar_t* decorated) {
+	int_value_t iv = RESOLVED_VALUE(v);
 	swprintf(decorated, EXPRESSION_MAX_LEN, L"%Ld", iv);
 }
 
@@ -79,8 +79,8 @@ void decorator_int(const value* v, wchar_t* decorated) {
  * @param v Value to apply the decorator to
  * @param decorated Returned string
  */
-void decorator_float(const value* v, wchar_t* decorated) {
-	float_value_t fv = RESOLVED_VALUE((*v));
+void decorator_float(value v, wchar_t* decorated) {
+	float_value_t fv = RESOLVED_VALUE(v);
 	int i;
 
 	swprintf(decorated, EXPRESSION_MAX_LEN, L"%Lf", fv);
@@ -95,8 +95,8 @@ void decorator_float(const value* v, wchar_t* decorated) {
  * @param v Value to apply the decorator to
  * @param decorated Returned string
  */
-void decorator_sci(const value* v, wchar_t* decorated) {
-	float_value_t fv = RESOLVED_VALUE((*v));
+void decorator_sci(value v, wchar_t* decorated) {
+	float_value_t fv = RESOLVED_VALUE(v);
 	swprintf(decorated, EXPRESSION_MAX_LEN, L"%LE", fv);
 }
 
@@ -105,14 +105,14 @@ void decorator_sci(const value* v, wchar_t* decorated) {
  * @param v Value to apply the decorator to
  * @param decorated Returned string
  */
-void decorator_bin(const value* v, wchar_t* decorated) {
+void decorator_bin(value v, wchar_t* decorated) {
 	wchar_t buffer[EXPRESSION_MAX_LEN];
 	int_value_t mask = 1;
 	int len;
 	int i = 0;
 
 	/* Value */
-	int_value_t iv = RESOLVED_VALUE((*v));
+	int_value_t iv = RESOLVED_VALUE(v);
 
 	/* Prefix */
 	decorated[0] = L'0';
@@ -152,8 +152,8 @@ void decorator_bin(const value* v, wchar_t* decorated) {
  * @param v Value to apply the decorator to
  * @param decorated Returned string
  */
-void decorator_oct(const value* v, wchar_t* decorated) {
-	int_value_t iv = RESOLVED_VALUE((*v));
+void decorator_oct(value v, wchar_t* decorated) {
+	int_value_t iv = RESOLVED_VALUE(v);
 	swprintf(decorated, EXPRESSION_MAX_LEN, L"0o%Lo", iv);
 }
 
@@ -162,7 +162,7 @@ void decorator_oct(const value* v, wchar_t* decorated) {
  * @param v Value to apply the decorator to
  * @param decorated Returned string
  */
-void decorator_hex(const value* v, wchar_t* decorated) {
-	int_value_t iv = RESOLVED_VALUE((*v));
+void decorator_hex(value v, wchar_t* decorated) {
+	int_value_t iv = RESOLVED_VALUE(v);
 	swprintf(decorated, EXPRESSION_MAX_LEN, L"0x%Lx", iv);
 }
