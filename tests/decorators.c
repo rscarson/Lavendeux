@@ -7,11 +7,11 @@
 #include "decorators.h"
 #include "parse.h"
 
-value value_zero = {VALUE_INT, 0};
-value value_small = {VALUE_FLOAT, 0, 0.12345};
-value value_big = {VALUE_FLOAT, 0, 12345.12345};
-value value_255 = {VALUE_INT, 255};
-value value_neg = {VALUE_INT, -255};
+static const value value_zero = {VALUE_INT, 0};
+static const value value_small = {VALUE_FLOAT, 0, 0.12345};
+static const value value_big = {VALUE_FLOAT, 0, 12345.12345};
+static const value value_255 = {VALUE_INT, 255};
+static const value value_neg = {VALUE_INT, -255};
 
 int init_tests( void ) {
 	ASSERT_EQUAL(NO_FAILURE, init_decorators());

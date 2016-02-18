@@ -31,12 +31,11 @@
 	int builtin_tan(value[], value*, int);
 	int builtin_cos(value[], value*, int);
 	int builtin_sin(value[], value*, int);
+
 	int builtin_atan(value[], value*, int);
 	int builtin_acos(value[], value*, int);
 	int builtin_asin(value[], value*, int);
-	int builtin_rtan(value[], value*, int);
-	int builtin_rcos(value[], value*, int);
-	int builtin_rsin(value[], value*, int);
+
 	int builtin_tanh(value[], value*, int);
 	int builtin_cosh(value[], value*, int);
 	int builtin_sinh(value[], value*, int);
@@ -61,9 +60,11 @@
 		{ L"tan", builtin_tan, 1 },
 		{ L"cos", builtin_cos, 1 },
 		{ L"sin", builtin_sin, 1 },
+
 		{ L"atan", builtin_atan, 1 },
 		{ L"acos", builtin_acos, 1 },
 		{ L"asin", builtin_asin, 1 },
+		
 		{ L"tanh", builtin_tanh, 1 },
 		{ L"cosh", builtin_cosh, 1 },
 		{ L"sinh", builtin_sinh, 1 },
