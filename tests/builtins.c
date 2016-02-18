@@ -7,7 +7,6 @@
 #include "parse.h"
 
 int init_tests( void ) {
-	ASSERT_EQUAL(NO_FAILURE, constructs_init());
 	ASSERT_EQUAL(NO_FAILURE, builtins_init());
 
 	return 0;
@@ -15,7 +14,6 @@ int init_tests( void ) {
 
 int destroy_tests( void ) {
 	builtins_destroy();
-	constructs_destroy();
 
 	return 0;
 }

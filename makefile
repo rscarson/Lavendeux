@@ -16,13 +16,13 @@ PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
 _TEST_HASHING_DEPS = test.o hashing.o
 TEST_HASHING_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_HASHING_DEPS))
 
-_TEST_BUILTINS_DEPS = test.o hashing.o constructs.o builtins.o
+_TEST_BUILTINS_DEPS = test.o hashing.o builtins.o
 TEST_BUILTINS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_BUILTINS_DEPS))
 
 _TEST_CONSTRUCTS_DEPS = test.o constructs.o hashing.o
 TEST_CONSTRUCTS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_CONSTRUCTS_DEPS))
 
-_TEST_DECORATORS_DEPS = test.o decorators.o constructs.o hashing.o builtins.o values.o
+_TEST_DECORATORS_DEPS = test.o decorators.o hashing.o
 TEST_DECORATORS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_DECORATORS_DEPS))
 
 _TEST_PARSE_DEPS = test.o

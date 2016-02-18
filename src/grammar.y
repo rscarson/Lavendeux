@@ -69,6 +69,8 @@ expression:
 	constant_expression {
 		char type;
 		int err;
+
+		/* Resolve value */
 		if (( err = value_type(&$1, &type) ) != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}
@@ -88,9 +90,11 @@ expression:
 	| assignment_expression {
 		int_value_t iv;
 		float_value_t fv;
-		
+	
 		char type;
 		int err;
+		
+		/* Resolve value */
 		if (( err = value_type(&$1, &type) ) != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}

@@ -5,9 +5,6 @@
 	#include "hashing.h"
 	#include <math.h>
 
-	#define PI 	3.14159265358979
-	#define E 	2.71828182845905
-
 	/* A builtin function looks like this */
 	typedef int(*builtin)(value[], value*, int);
 	typedef struct {
@@ -17,10 +14,6 @@
 
 	/* Store builtin functions */
 	hash_table builtins;
-
-	/* For static table entries */
-	typedef struct { const wchar_t* name; builtin fn; unsigned int args; } static_builtin_fn;
-	typedef struct { const wchar_t* name; value v; } static_builtin_var;
 
 	int builtins_init( void );
 	void builtin_destroy(void*);
@@ -55,6 +48,9 @@
 	int builtin_sqrt(value[], value*, int);
 	int builtin_root(value[], value*, int);
 
+	/* For static table entries */
+	typedef struct { const wchar_t* name; builtin fn; unsigned int args; } static_builtin_fn;
+
 	/* Builtin function definitions */
 	static const static_builtin_fn builtin_function_declarations[] = {
 		{ L"ceil", builtin_ceil, 1 },
@@ -78,11 +74,5 @@
 
 		{ L"sqrt", builtin_sqrt, 1 },
 		{ L"root", builtin_root, 2 },
-	};
-
-	/* Builtin function definitions */
-	static const static_builtin_var builtin_variable_declarations[] = {
-		{ L"pi", { VALUE_FLOAT, 0, PI } },
-		{ L"e", { VALUE_FLOAT, 0, E } },
 	};
 #endif

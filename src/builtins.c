@@ -1,7 +1,6 @@
 #include <math.h>
 
 #include "hashing.h"
-#include "constructs.h"
 #include "interface.h"
 #include "parse.h"
 #include "builtins.h"
@@ -13,25 +12,10 @@
  * @return Result of the operation
  */
 int builtins_init( void ) {
-	value* val;
 	int i;
 	int len;
 	
 	table_create(&builtins, HASH_DEFAULT_SIZE);
-
-	/* Start with values */
-	len = sizeof(builtin_variable_declarations) / sizeof(builtin_variable_declarations[0]);
-	for (i=0; i<len ; i++) {
-		/* Allocate the new value */
-		val = (value*) malloc(sizeof(value));
-		if (val == NULL)
-			return FAILURE_ALLOCATION;
-
-		/* Add it to the table */
-		*val = builtin_variable_declarations[i].v;
-		if (put_variable(builtin_variable_declarations[i].name, val) != NO_FAILURE)
-			return FAILURE_ALLOCATION;
-	}
 
 	/* Now functions */
 	len = sizeof(builtin_function_declarations) / sizeof(builtin_function_declarations[0]);
