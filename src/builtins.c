@@ -2,6 +2,7 @@
 
 #include "hashing.h"
 #include "interface.h"
+#include "constructs.h"
 #include "parse.h"
 #include "builtins.h"
 
