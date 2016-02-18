@@ -75,7 +75,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1685 of yacc.c  */
-#line 42 "src\\grammar.y"
+#line 42 "src/grammar.y"
 
 	value val;
 	list lst;
