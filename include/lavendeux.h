@@ -26,7 +26,7 @@
 		"-h : Short form of --help\n" \
 		"--config-path=<path> : Use <path> as the configuration file\n" \
 		"-c=<path> : Short form of --config-path\n" \
-		"--no-config : Do not use a configuration file\n" \
+		"--no-config : Do not use a configuration file\n"
 
 	void parse_argument(const char*);
 	void exit_callback(void);
