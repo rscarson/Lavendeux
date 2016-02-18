@@ -65,7 +65,7 @@
 
 		[LANG_STR_ENABLEAUTOCOPY] = {
 			[LANG_EN] = L"Enable auto copy/paste",
-			[LANG_FR] = L""
+			[LANG_FR] = L"Copier/coller automatiquement"
 		},
 
 		[LANG_STR_ERR_STARTING] = {
