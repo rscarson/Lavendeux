@@ -56,17 +56,54 @@ int test_ceil( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+
+	ASSERT_EQUAL(NO_FAILURE, builtin_ceil(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(0, RESOLVED_VALUE(v));
+
+	args[0] = value_small;
+	ASSERT_EQUAL(NO_FAILURE, builtin_ceil(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(1, RESOLVED_VALUE(v));
+
+	args[0] = value_big;
+	ASSERT_EQUAL(NO_FAILURE, builtin_ceil(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(12346, RESOLVED_VALUE(v));
+
 	return 0;
 }
 
 int test_round( void ) {
 	value args[] = {
 		value_zero,
+		{VALUE_INT, 0},
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_round(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(0, RESOLVED_VALUE(v));
+
+	args[0] = value_small;
+	ASSERT_EQUAL(NO_FAILURE, builtin_round(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(0, RESOLVED_VALUE(v));
+
+	args[0] = value_big;
+	ASSERT_EQUAL(NO_FAILURE, builtin_round(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_FLOAT_APROX(12345.0, RESOLVED_VALUE(v));
+
+	args[0] = value_big;
+	args[1].iv = 1;
+	ASSERT_EQUAL(NO_FAILURE, builtin_round(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_FLOAT_APROX(12345.1, RESOLVED_VALUE(v));
+
+	args[0] = value_big;
+	args[1].iv = 2;
+	ASSERT_EQUAL(NO_FAILURE, builtin_round(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_FLOAT_APROX(12345.12, RESOLVED_VALUE(v));
+
+	args[0] = value_big;
+	args[1].iv = 3;
+	ASSERT_EQUAL(NO_FAILURE, builtin_round(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_FLOAT_APROX(12345.123, RESOLVED_VALUE(v));
+
 	return 0;
 }
 
@@ -76,7 +113,21 @@ int test_abs( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_abs(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(0, RESOLVED_VALUE(v));
+
+	args[0] = value_big;
+	ASSERT_EQUAL(NO_FAILURE, builtin_abs(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(RESOLVED_VALUE(value_big), RESOLVED_VALUE(v));
+
+	args[0] = value_neg;
+	ASSERT_EQUAL(NO_FAILURE, builtin_abs(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(255, RESOLVED_VALUE(v));
+
+	args[0] = value_255;
+	ASSERT_EQUAL(NO_FAILURE, builtin_abs(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(255, RESOLVED_VALUE(v));
+
 	return 0;
 }
 
@@ -87,7 +138,17 @@ int test_tan( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_tan(args, &v, SETTING_ANGLE_DEG));
+
+	args[0].iv = 90;
+	ASSERT_EQUAL(FAILURE_INVALID_ARGS, builtin_tan(args, &v, SETTING_ANGLE_DEG));
+
+	args[0].iv = 45;
+	ASSERT_EQUAL(NO_FAILURE, builtin_tan(args, &v, SETTING_ANGLE_DEG));
+
+	/* OK so.. 1.0000 != 1.0000, floor(1.0000) = 0. floor(1.0000 + 1.0000) = 0 */
+	ASSERT_EQUAL(0, floor(RESOLVED_VALUE(v)));
+
 	return 0;
 }
 
@@ -97,7 +158,7 @@ int test_cos( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_cos(args, &v, SETTING_ANGLE_DEG));
 	return 0;
 }
 
@@ -107,7 +168,7 @@ int test_sin( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_sin(args, &v, SETTING_ANGLE_DEG));
 	return 0;
 }
 
@@ -117,7 +178,7 @@ int test_atan( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_atan(args, &v, SETTING_ANGLE_DEG));
 	return 0;
 }
 
@@ -127,7 +188,7 @@ int test_acos( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_acos(args, &v, SETTING_ANGLE_DEG));
 	return 0;
 }
 
@@ -137,7 +198,7 @@ int test_asin( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_asin(args, &v, SETTING_ANGLE_DEG));
 	return 0;
 }
 
@@ -147,7 +208,7 @@ int test_tanh( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_tanh(args, &v, SETTING_ANGLE_DEG));
 	return 0;
 }
 
@@ -157,7 +218,7 @@ int test_cosh( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_cosh(args, &v, SETTING_ANGLE_DEG));
 	return 0;
 }
 
@@ -167,7 +228,7 @@ int test_sinh( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_sinh(args, &v, SETTING_ANGLE_DEG));
 	return 0;
 }
 
@@ -177,7 +238,15 @@ int test_log10( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(FAILURE_INVALID_ARGS, builtin_log10(args, &v, SETTING_ANGLE_DEG));
+
+	args[0] = value_neg;
+	ASSERT_EQUAL(FAILURE_INVALID_ARGS, builtin_log10(args, &v, SETTING_ANGLE_DEG));
+
+	args[0].iv = 100;
+	ASSERT_EQUAL(NO_FAILURE, builtin_log10(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(2, RESOLVED_VALUE(v));
+
 	return 0;
 }
 
@@ -187,17 +256,24 @@ int test_ln( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(FAILURE_INVALID_ARGS, builtin_ln(args, &v, SETTING_ANGLE_DEG));
+
 	return 0;
 }
 
 int test_log( void ) {
 	value args[] = {
 		value_zero,
+		{VALUE_INT, 2},
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(FAILURE_INVALID_ARGS, builtin_log(args, &v, SETTING_ANGLE_DEG));
+
+	args[0].iv = 32;
+	ASSERT_EQUAL(NO_FAILURE, builtin_log(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(5, RESOLVED_VALUE(v));
+
 	return 0;
 }
 
@@ -208,17 +284,36 @@ int test_sqrt( void ) {
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_sqrt(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(0, RESOLVED_VALUE(v));
+
+	args[0] = value_neg;
+	ASSERT_EQUAL(FAILURE_INVALID_ARGS, builtin_sqrt(args, &v, SETTING_ANGLE_DEG));
+
+	args[0].iv = 16;
+	ASSERT_EQUAL(NO_FAILURE, builtin_sqrt(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(4, RESOLVED_VALUE(v));
+
 	return 0;
 }
 
 int test_root( void ) {
 	value args[] = {
 		value_zero,
+		{VALUE_INT, 2},
 	};
 	value v;
 
-	ASSERT_EQUAL(NO_FAILURE, builtin_floor(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(NO_FAILURE, builtin_root(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(0, RESOLVED_VALUE(v));
+
+	args[0] = value_neg;
+	ASSERT_EQUAL(FAILURE_INVALID_ARGS, builtin_sqrt(args, &v, SETTING_ANGLE_DEG));
+
+	args[0].iv = 16;
+	ASSERT_EQUAL(NO_FAILURE, builtin_sqrt(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(4, RESOLVED_VALUE(v));
+
 	return 0;
 }
 

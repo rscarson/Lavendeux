@@ -5,7 +5,7 @@
 
 	/* Helper macros */
 	#define TO_RADIANS(x) x * PI / 180.0
-	#define RESOLVED_VALUE(v) (v.type == VALUE_FLOAT) ? v.fv : v.iv
+	#define RESOLVED_VALUE(v) ((v.type == VALUE_FLOAT) ? ((float_value_t) v.fv) : ((int_value_t) v.iv))
 
 	enum failure_t {
 		FAILURE_UNKNOWN,
