@@ -30,7 +30,8 @@ TEST_PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_PARSE_DEPS))
 
 CC = gcc
 COMPILE_FLAGS = -std=c99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -lm -Wall -g -Wno-unused
-WIN32_FLAGS =  -Wl,-subsystem,windows
+WIN32_FLAGS = -Wl,-subsystem,windows
+LINUX_FLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) -c -o $@ $< $(COMPILE_FLAGS)
@@ -51,6 +52,9 @@ $(LIB_DIR)/libparse.a: grammar $(PARSE_DEPS)
 grammar:
 	bison $(SRC_DIR)/grammar.y --output=$(TAB_SOURCE) --defines=$(TAB_HEADER) --report-file=report.txt
 	flex --outfile=$(LEX_SOURCE) --header-file=$(LEX_HEADER) -B $(SRC_DIR)/grammar.lex
+
+linux: grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a
+	$(CC) $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(LINUX_FLAGS)
 
 win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a
 	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS)
