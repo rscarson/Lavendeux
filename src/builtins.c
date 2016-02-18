@@ -120,7 +120,7 @@ int call_builtin(const wchar_t* name, value args[], int n_args, value* v, int an
  * Return: int
  */
 int builtin_floor(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	result->type = VALUE_INT;
 	result->iv = floor(in);
@@ -135,7 +135,7 @@ int builtin_floor(value args[], value* result, int angle_mode) {
  * Return: int
  */
 int builtin_ceil(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	result->type = VALUE_INT;
 	result->iv = ceil(in);
@@ -151,8 +151,8 @@ int builtin_ceil(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_round(value args[], value* result, int angle_mode) {
-	float_value_t base = args[0].fv;
-	int_value_t precision = args[1].iv;
+	float_value_t base = RESOLVED_VALUE(args[0]);
+	int_value_t precision = RESOLVED_VALUE(args[1]);
 
 	result->type = VALUE_FLOAT;
 	result->fv = round(base * powl(10, precision)) / powl(10, precision);
@@ -190,7 +190,7 @@ int builtin_abs(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_tan(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (fmodl(in, PI/2.0))
 		return FAILURE_INVALID_ARGS;
@@ -210,7 +210,7 @@ int builtin_tan(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_cos(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
@@ -228,7 +228,7 @@ int builtin_cos(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_sin(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
@@ -246,7 +246,7 @@ int builtin_sin(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_atan(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
@@ -264,7 +264,7 @@ int builtin_atan(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_acos(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
@@ -282,7 +282,7 @@ int builtin_acos(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_asin(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
@@ -300,7 +300,7 @@ int builtin_asin(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_tanh(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
@@ -318,7 +318,7 @@ int builtin_tanh(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_cosh(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
@@ -336,7 +336,7 @@ int builtin_cosh(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_sinh(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
@@ -354,7 +354,7 @@ int builtin_sinh(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_log10(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (in == 0)
 		return FAILURE_INVALID_ARGS;
@@ -372,7 +372,7 @@ int builtin_log10(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_ln(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (in == 0)
 		return FAILURE_INVALID_ARGS;
@@ -391,8 +391,8 @@ int builtin_ln(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_log(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
-	float_value_t base = args[1].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
+	float_value_t base = RESOLVED_VALUE(args[1]);
 
 	if (in == 0 || base <= 1)
 		return FAILURE_INVALID_ARGS;
@@ -410,7 +410,7 @@ int builtin_log(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_sqrt(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
 
 	if (in < 0)
 		return FAILURE_INVALID_ARGS;
@@ -429,8 +429,8 @@ int builtin_sqrt(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_root(value args[], value* result, int angle_mode) {
-	float_value_t in = args[0].fv;
-	float_value_t base = args[1].fv;
+	float_value_t in = RESOLVED_VALUE(args[0]);
+	float_value_t base = RESOLVED_VALUE(args[1]);
 
 	if (in < 0 || base == 0)
 		return FAILURE_INVALID_ARGS;
