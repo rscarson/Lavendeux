@@ -47,7 +47,8 @@ $(LIB_DIR)/libinterface.a: $(SRC_DIR)/interface_win32.c
 $(LIB_DIR)/libparse.a: grammar $(PARSE_DEPS)
 	$(CC) -c $(LEX_SOURCE) -o $(OBJ_DIR)/lex.o $(COMPILE_FLAGS)
 	$(CC) -c $(TAB_SOURCE) -o $(OBJ_DIR)/tab.o $(COMPILE_FLAGS)
-	ar rcs $(LIB_DIR)/libparse.a $(PARSE_DEPS) $(OBJ_DIR)/lex.o $(OBJ_DIR)/tab.o
+	gcc -c src\extensions.c -o $(OBJ_DIR)/extensions.o $(COMPILE_FLAGS) -IC:\\Python27\\include
+	ar rcs $(LIB_DIR)/libparse.a $(PARSE_DEPS) $(OBJ_DIR)/extensions.o $(OBJ_DIR)/lex.o $(OBJ_DIR)/tab.o 
 
 grammar:
 	bison $(SRC_DIR)/grammar.y --output=$(TAB_SOURCE) --defines=$(TAB_HEADER) --report-file=report.txt
@@ -57,7 +58,7 @@ linux: grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a
 	$(CC) $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(LINUX_FLAGS)
 
 win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a
-	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS)
+	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) libpython27.a $(WIN32_FLAGS)
 
 windows_binaries: win32
 	zip bin/lavendeux.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe .lavendeuxsettings -j
