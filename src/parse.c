@@ -31,7 +31,10 @@ int parser_init( void ) {
 		return FAILURE_ALLOCATION;
 
 	init_decorators();
-	extensions_init();
+
+	#ifdef EXTENSIONS_INCLUDED
+		extensions_init();
+	#endif
 
 	return NO_FAILURE;
 }
@@ -42,8 +45,11 @@ int parser_init( void ) {
 void parser_destroy( void ) {
 	constructs_destroy();
 	decorators_destroy();
-	extensions_destroy();
 	builtins_destroy();
+
+	#ifdef EXTENSIONS_INCLUDED
+		extensions_destroy();
+	#endif
 }
 
 /**
@@ -112,11 +118,13 @@ int call_function(const wchar_t* name, value args[], int n_args, value* v, int a
 	}
 
 	/* Try extensions */
-	if (wcstombs(short_name, name, EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
-		short_name[EXPRESSION_MAX_LEN-1] = '\0';
-	result = extensions_call(short_name, args, n_args, v);
-	if (result != FAILURE_BAD_EXTENSION)
-		return result;
+	#ifdef EXTENSIONS_INCLUDED
+		if (wcstombs(short_name, name, EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
+			short_name[EXPRESSION_MAX_LEN-1] = '\0';
+		result = extensions_call(short_name, args, n_args, v);
+		if (result != FAILURE_BAD_EXTENSION)
+			return result;
+	#endif
 
 	return FAILURE_INVALID_NAME;
 }
