@@ -98,7 +98,6 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 	/* Remove a few references */
 	Py_DECREF(pFunc);
 	Py_DECREF(pModule);
-
 	/* Use value */
 	if (pValue != NULL && PyTuple_Check(pValue) && PyTuple_Size(pValue) == 2) {
 		pResultType = PyTuple_GetItem(pValue, 0);

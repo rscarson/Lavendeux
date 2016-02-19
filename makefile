@@ -1,6 +1,7 @@
 # Configuration options
-# NO_EXTENSIONS=true will disable extensions
+# NO_EXTENSIONS=1 will disable extensions
 PYTHON_INCLUDE_DIR = C:\\Python27\\include
+PYTHON_LIB_DIR = ./lib
 
 SRC_DIR = src
 LIB_DIR = lib
@@ -24,13 +25,13 @@ _TEST_PARSE_DEPS = test.o
 
 CC = gcc
 COMPILE_FLAGS = -std=gnu99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -lm -Wall -g -Wno-unused
-WIN32_FLAGS = -Wl,-subsystem,windows -DEXTENSIONS_INCLUDED libpython27.a
+WIN32_FLAGS = -Wl,-subsystem,windows
 LINUX_FLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 PYTHON_FLAGS = 
 
 ifndef NO_EXTENSIONS
-	PYTHON_FLAGS = libpython27.a
-	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR)
+	PYTHON_FLAGS = -lpython27
+	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR) -L$(PYTHON_LIB_DIR) -lpython27
 	_PARSE_DEPS += extensions.o
 endif
 
