@@ -1,5 +1,6 @@
 #ifdef _WIN32
-    #define _WIN32_IE 0x0500
+#define NTDDI_VERSION NTDDI_WIN2K
+#define _WIN32_IE 0x0500
 
     #include <stdio.h>
     #include <windows.h>
@@ -96,7 +97,9 @@
         nid.uFlags = NIF_INFO | NIF_MESSAGE | NIF_ICON | NIF_TIP;
         nid.uCallbackMessage = RegisterWindowMessage(WINDOW_CALLBACK);
         nid.hIcon = hIcon;
+        nid.dwInfoFlags = NIIF_INFO;
         strcpy(nid.szTip, APPLICATION_NAME);
+        strcpy(nid.szInfoTitle, RUNNING_TITLE);
         strcpy(nid.szInfo, RUNNING_MSG);
 
         /* Add notification icon to tray */
