@@ -21,6 +21,8 @@ What it can do
 - Values can be integers, floating point, scientific notation, binary (*0b01010*), octal (*0o132423*), or hexadecimal (*0x76A*)
 - Set and use variables, names can be composed of alphanumeric characters and underscores (x = 5+5)
 - Use decorators at the end of an expression to modify the format of the output (@int, @float, @bin, @hex, and several others)
+- Supports english and french languages
+- 
 - Call any of these functions:
     - Ceiling round : ceil(in)
     - Floor round : floor(in)
@@ -40,9 +42,25 @@ What it can do
     - Base n logarithm : log(in, base)
     - Square root : sqrt(in)
     - Nth root : root(in, base)
+- Mathematical operators:
+    - Add ( + )
+    - Substract ( - )
+    - Multiply ( * )
+    - Divide ( / )
+    - Exponentiation ( ** )
+    - Modulus ( % )
+    - Factorial ( ! )
+- Binary operators:
+    - And ( & )
+    - Or ( | )
+    - Xor ( ^ )
+    - Not ( ~ )
+    - Left shift ( < )
+    - Right shift ( > )
 
 ## To do
 - Linux and OSX versions
 - Anti-trig functions (cotan, cosec, sec)
 - Generating test sentences to automate parser tests
 - Unit tests
+- Extension support
