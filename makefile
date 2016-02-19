@@ -85,6 +85,7 @@ win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/lib
 
 windows_binaries: win32
 	zip bin/lavendeux.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe .lavendeuxsettings -j
+	zip -r bin/lavendeux.zip extensions
 	makensis src/setup.nsi
 
 ###############
