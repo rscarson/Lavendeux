@@ -9,7 +9,9 @@
 
 	#include "parse.h"
 	
-	int extensions_init();
-	void extensions_destroy();
+	int extensions_init( void );
+	int extensions_homeset( void );
+	int extensions_available( void );
+	void extensions_destroy( void );
 	int extensions_call(const char*, value[], int, value*);
 #endif

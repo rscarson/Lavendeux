@@ -5,7 +5,7 @@
 #include "parse.h"
 #include "extensions.h"
 
-int extensions_init() {
+int extensions_init( void ) {
 	PyObject *syspath, *pName;
 
 	if(Py_GetPythonHome() == NULL)
@@ -20,10 +20,13 @@ int extensions_init() {
 
 	/* Add extension dir to search path */
 	pName = PyString_FromString(EXTENSIONS_PATH);
-	if ( (syspath = PySys_GetObject("path")) == 0)
+	if ( (syspath = PySys_GetObject("path")) == 0) {
+		extensions_destroy();
 		return 0;
+	}
 	if (PyList_Insert(syspath, 0, pName) || PySys_SetObject("path", syspath)) {
 		Py_DECREF(pName);
+		extensions_destroy();
 		return 0;
 	}
 
@@ -31,7 +34,15 @@ int extensions_init() {
 	return 1;
 }
 
-void extensions_destroy() {
+int extensions_homeset( void ) {
+	return (Py_GetPythonHome() != NULL);
+}
+
+int extensions_available( void ) {
+	return Py_IsInitialized();
+}
+
+void extensions_destroy( void ) {
 	Py_Finalize();
 }
 

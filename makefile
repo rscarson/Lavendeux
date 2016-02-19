@@ -25,12 +25,9 @@ TEST_CONSTRUCTS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_CONSTRUCTS_DEPS))
 _TEST_DECORATORS_DEPS = test.o decorators.o hashing.o
 TEST_DECORATORS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_DECORATORS_DEPS))
 
-_TEST_PARSE_DEPS = test.o
-TEST_PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_PARSE_DEPS))
-
 CC = gcc
 COMPILE_FLAGS = -std=gnu99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -lm -Wall -g -Wno-unused
-WIN32_FLAGS = -Wl,-subsystem,windows
+WIN32_FLAGS = -Wl,-subsystem,windows libpython27.a
 LINUX_FLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
@@ -58,7 +55,7 @@ linux: grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a
 	$(CC) $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(LINUX_FLAGS)
 
 win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a
-	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) libpython27.a $(WIN32_FLAGS)
+	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS)
 
 windows_binaries: win32
 	zip bin/lavendeux.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe .lavendeuxsettings -j
@@ -80,11 +77,7 @@ test_decorators: $(TEST_DECORATORS_DEPS)
 	@$(CC) $(TEST_DIR)/decorators.c $(TEST_DECORATORS_DEPS) -o $(BIN_DIR)/$@ $(COMPILE_FLAGS)
 	@bin/$@
 
-test_parse: $(LIB_DIR)/libparse.a grammar
-	@$(CC) $(TEST_DIR)/parse.c $(TEST_PARSE_DEPS) -o $(BIN_DIR)/$@ -lparse $(COMPILE_FLAGS)
-	@bin/$@
-
-test: test_hashing test_builtins test_constructs test_decorators test_parse
+test: test_hashing test_builtins test_constructs test_decorators
 
 clean:
 	rm -f $(LIB_DIR)/*.a
