@@ -29,8 +29,6 @@ int main(int argc, char* argv[]) {
 	/* Config */
 	if (config == NULL && !config_off)
 		config = fopen(config_path(), "r");
-	if (config == NULL)
-		error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_CONFIG), 1);
 
 	/* Read in settings */
 	if (config != NULL) {
@@ -242,15 +240,16 @@ void exit_callback( void ) {
 	/* Open config */
 	if (!config_off) {
 		config = fopen(config_path(), "w+");
+		if (config != NULL) {
+			/* Write all settings out */
+			fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));
+			fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
+			fprintf(config, "%d=%d\n", SETTING_LANG, get_setting(SETTING_LANG));
+			fprintf(config, "%d=%d\n", SETTING_AUTOCOPY, get_setting(SETTING_AUTOCOPY));
 
-		/* Write all settings out */
-		fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));
-		fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
-		fprintf(config, "%d=%d\n", SETTING_LANG, get_setting(SETTING_LANG));
-		fprintf(config, "%d=%d\n", SETTING_AUTOCOPY, get_setting(SETTING_AUTOCOPY));
-
-		/* Close up and leave */
-		fclose(config);
+			/* Close up and leave */
+			fclose(config);
+		}
 	}
 
 	exit(0);

@@ -132,12 +132,14 @@
     LRESULT CALLBACK wnd_callback(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
         static UINT wndMsg = 0;
         static INPUT control_c[] = {
+            {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
             {INPUT_KEYBOARD, .ki={VK_CONTROL,0,0,0,0}},
             {INPUT_KEYBOARD, .ki={0x43,0,0,0,0}},
             {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
             {INPUT_KEYBOARD, .ki={0x43,0,KEYEVENTF_KEYUP,0,0}},
         };
         static INPUT control_v[] = {
+            {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
             {INPUT_KEYBOARD, .ki={VK_CONTROL,0,0,0,0}},
             {INPUT_KEYBOARD, .ki={0x56,0,0,0,0}},
             {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
