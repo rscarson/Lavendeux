@@ -9,6 +9,7 @@
 #include "language.h"
 #include "parse.h"
 #include "interface.h"
+#include "extensions.h"
 
 /* Configuration file settings */
 int config_off = 0;
@@ -64,6 +65,14 @@ void parse_argument(const char* arg) {
 		config_off = 1;
 		return;
 	}
+
+	#ifdef EXTENSIONS_INCLUDED
+		/* Extension logs */
+		if (strncmp(arg, ARG_EXTENSIONS_LOG_LONG, strlen(ARG_EXTENSIONS_LOG_LONG)) == 0) {
+			extensions_log_enable();
+			return;
+		}
+	#endif
 
 	/* Config path */
 	if (strncmp(arg, ARG_CONFIG_PATH_LONG, strlen(ARG_CONFIG_PATH_LONG)) == 0 || strncmp(arg, ARG_CONFIG_PATH_SHORT, strlen(ARG_CONFIG_PATH_SHORT)) == 0) {

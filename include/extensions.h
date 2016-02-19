@@ -1,6 +1,7 @@
 #ifndef EXTENSIONS_H
 	#define EXTENSIONS_H
-
+	
+	#define LAVENDEUX_MODULE "lavendeux"
 	#define EXTENSIONS_PATH "./extensions"
 	#define EXTENSIONS_FUNCTION "call"
 
@@ -10,6 +11,8 @@
 	#include "parse.h"
 	
 	int extensions_init( void );
+	void extensions_log_enable();
+	void extensions_add_log(const char*);
 	int extensions_homeset( void );
 	int extensions_available( void );
 	void extensions_destroy( void );

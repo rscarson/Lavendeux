@@ -5,33 +5,53 @@
 #include "parse.h"
 #include "extensions.h"
 
+FILE* extensions_log = NULL;
+
 int extensions_init( void ) {
 	PyObject *syspath, *pName;
+	extensions_add_log("Starting extensions...");
 
-	if(Py_GetPythonHome() == NULL)
+	if(Py_GetPythonHome() == NULL) {
+		extensions_add_log("PYTHONHOME not set! Extensions unavailable");
 		return 0;
+	}
 
 	Py_SetProgramName("Lavendeux");
 	Py_Initialize();
 
 	/* Make sure it worked */
-	if (!Py_IsInitialized())
+	if (!Py_IsInitialized()) {
+		extensions_add_log("PYTHONHOME not set! Extensions unavailable");
 		return 0;
+	}
 
 	/* Add extension dir to search path */
 	pName = PyString_FromString(EXTENSIONS_PATH);
 	if ( (syspath = PySys_GetObject("path")) == 0) {
+		extensions_add_log("Cannot fetch python path");
 		extensions_destroy();
 		return 0;
 	}
 	if (PyList_Insert(syspath, 0, pName) || PySys_SetObject("path", syspath)) {
+		extensions_add_log("Cannot add to python path");
 		Py_DECREF(pName);
 		extensions_destroy();
 		return 0;
 	}
 
+	extensions_add_log("Extensions available...");
+
 	Py_DECREF(pName);
 	return 1;
+}
+
+void extensions_log_enable() {
+	extensions_log = fopen("extensions.log", "w+");
+}
+
+void extensions_add_log(const char* entry) {
+	if (extensions_log != NULL)
+		fprintf(extensions_log, "%s\n", entry);
 }
 
 int extensions_homeset( void ) {
@@ -43,6 +63,7 @@ int extensions_available( void ) {
 }
 
 void extensions_destroy( void ) {
+	fclose(extensions_log);
 	Py_Finalize();
 }
 
@@ -52,10 +73,14 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 	float_value_t fv;
 	unsigned long err;
 	PyObject *pName, *pModule, *pFunc, *pArgs, *pList, *pValue, *pResultType, *pResult;
+	
+	extensions_add_log("Running an extension");
 
 	/* Can we? */
-	if (!Py_IsInitialized())
+	if (!Py_IsInitialized()) {
+		extensions_add_log("Extensions not available.");
 		return FAILURE_BAD_EXTENSION;
+	}
 
 	/* Try to get the module */
 	pName = PyString_FromString(name);
@@ -63,6 +88,7 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 
 	/* Make sure it worked */
 	if (pModule == NULL) {
+		extensions_add_log("Cannot fetch requested extension module");
 		return FAILURE_BAD_EXTENSION;
 	}
 
@@ -70,6 +96,7 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 	pFunc = PyObject_GetAttrString(pModule, EXTENSIONS_FUNCTION);
 	if (!pFunc || !PyCallable_Check(pFunc)) {
 		//Py_DECREF(pModule);
+		extensions_add_log("Cannot call module function");
 		return FAILURE_BAD_EXTENSION;
 	}
 
@@ -82,6 +109,7 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 			Py_DECREF(pModule);
 			Py_DECREF(pFunc);
 			Py_DECREF(pArgs);
+			extensions_add_log("Error while preparing an argument");
 			return FAILURE_BAD_EXTENSION;
 		}
 		PyList_SetItem(pList, i, pValue);
@@ -93,11 +121,8 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 	Py_INCREF(pFunc);
 	Py_INCREF(pArgs);
 	pValue = PyObject_CallObject(pFunc, pArgs);
-	Py_DECREF(pArgs);
 
 	/* Remove a few references */
-	Py_DECREF(pFunc);
-	Py_DECREF(pModule);
 	/* Use value */
 	if (pValue != NULL && PyTuple_Check(pValue) && PyTuple_Size(pValue) == 2) {
 		pResultType = PyTuple_GetItem(pValue, 0);
@@ -111,27 +136,26 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 
 			case VALUE_FLOAT:
 				fv = PyFloat_AsDouble(pResult);
-				Py_DECREF(pResult);
 				v->type = VALUE_FLOAT;
 				v->iv = fv;
 			break;
 
 			case VALUE_INT:
 				iv = PyLong_AsLongLong(pResult);
-				Py_DECREF(pResult);
 				v->type = VALUE_INT;
 				v->iv = iv;
 			break;
 
 			default:
-				Py_DECREF(pValue);
+				extensions_add_log("Bad type returned");
 				return FAILURE_BAD_EXTENSION;
 		}
 	} else {
-		Py_DECREF(pValue);
+		PyErr_Print();
+		extensions_add_log("Error while executing extension");
 		return FAILURE_BAD_EXTENSION;
 	}
 
-	Py_DECREF(pValue);
+	extensions_add_log("Run complete");
 	return NO_FAILURE;
 }
