@@ -1,7 +1,7 @@
 # Configuration options
 # NO_EXTENSIONS=1 will disable extensions
 PYTHON_INCLUDE_DIR = C:\\Python27\\include
-PYTHON_LIB_DIR = ./lib
+PYTHON_LIB_DIR = C:\\Python27\\libs
 
 SRC_DIR = src
 LIB_DIR = lib

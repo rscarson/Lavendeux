@@ -4,6 +4,7 @@
 	#define LAVENDEUX_MODULE "lavendeux"
 	#define EXTENSIONS_PATH "./extensions"
 	#define EXTENSIONS_FUNCTION "call"
+	#define EXTENSIONS_DECORATOR "decorate"
 
 	#include <stdlib.h>
 	#include <wchar.h>

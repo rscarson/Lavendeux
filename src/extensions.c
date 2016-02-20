@@ -67,19 +67,14 @@ void extensions_destroy( void ) {
 	Py_Finalize();
 }
 
-int extensions_call(const char* name, value args[], int n_args, value* v) {
-	int i;
-	int_value_t iv;
-	float_value_t fv;
-	unsigned long err;
-	PyObject *pName, *pModule, *pFunc, *pArgs, *pList, *pValue, *pResultType, *pResult;
-	
-	extensions_add_log("Running an extension");
+PyObject* extensions_module(const char* name, const char* function) {
+	PyObject *pName, *pModule, *pFunc;
+	extensions_add_log("Loading an extension");
 
 	/* Can we? */
 	if (!Py_IsInitialized()) {
 		extensions_add_log("Extensions not available.");
-		return FAILURE_BAD_EXTENSION;
+		return NULL;
 	}
 
 	/* Try to get the module */
@@ -88,17 +83,68 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 
 	/* Make sure it worked */
 	if (pModule == NULL) {
-		extensions_add_log("Cannot fetch requested extension module");
-		return FAILURE_BAD_EXTENSION;
+		extensions_add_log("Cannot load requested extension module");
+		return NULL;
 	}
 
 	/* Get function from module */
 	pFunc = PyObject_GetAttrString(pModule, EXTENSIONS_FUNCTION);
 	if (!pFunc || !PyCallable_Check(pFunc)) {
 		//Py_DECREF(pModule);
-		extensions_add_log("Cannot call module function");
+		extensions_add_log("Cannot load module function");
+		return NULL;
+	}
+
+	return pFunc;
+}
+
+int extensions_decorate(const char* name, value v,  wchar_t* decorated) {
+	PyObject *pFunc, *pArgs, *pValue;
+
+	/* Get function */
+	pFunc = extensions_module(name, EXTENSIONS_DECORATOR);
+	if (!pFunc) return FAILURE_BAD_EXTENSION;
+
+	/* Prepare argument */
+	pArgs = PyTuple_New(1);
+	pValue = (v.type == VALUE_INT) ? PyLong_FromLongLong(v.iv) : PyFloat_FromDouble(v.fv);
+	if (!pValue) {
+		extensions_add_log("Error while preparing an argument");
 		return FAILURE_BAD_EXTENSION;
 	}
+	PyTuple_SetItem(pArgs, 0, pValue);
+
+	/* Call function */
+	Py_INCREF(pFunc);
+	Py_INCREF(pArgs);
+	pValue = PyObject_CallObject(pFunc, pArgs);
+
+	if (pValue != NULL) {
+		pValue = PyObject_Str(pValue);
+		if (pValue == NULL) {
+			extensions_add_log("Argument cannot be converted to string");
+			return FAILURE_BAD_EXTENSION;
+		}
+
+		if (mbstowcs(decorated, PyString_AsString(pValue), EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
+			decorated[EXPRESSION_MAX_LEN-1] = L'\0';
+		return NO_FAILURE;
+	} else {
+		extensions_add_log("Error while executing extension");
+		return FAILURE_BAD_EXTENSION;
+	}
+}
+
+int extensions_call(const char* name, value args[], int n_args, value* v) {
+	int i;
+	int_value_t iv;
+	float_value_t fv;
+	unsigned long err;
+	PyObject *pFunc, *pArgs, *pList, *pValue, *pResultType, *pResult;
+
+	/* Get function */
+	pFunc = extensions_module(name, EXTENSIONS_DECORATOR);
+	if (!pFunc) return FAILURE_BAD_EXTENSION;
 
 	/* Prepare arguments */
 	pArgs = PyTuple_New(1);
@@ -106,16 +152,12 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 	for (i=0; i<n_args; i++) {
 		pValue = (args[i].type == VALUE_INT) ? PyLong_FromLongLong(args[i].iv) : PyFloat_FromDouble(args[i].fv);
 		if (!pValue) {
-			Py_DECREF(pModule);
-			Py_DECREF(pFunc);
-			Py_DECREF(pArgs);
 			extensions_add_log("Error while preparing an argument");
 			return FAILURE_BAD_EXTENSION;
 		}
 		PyList_SetItem(pList, i, pValue);
 	}
 	PyTuple_SetItem(pArgs, 0, pList);
-
 
 	/* Call function */
 	Py_INCREF(pFunc);
