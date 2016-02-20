@@ -12,13 +12,18 @@
 	
 	#define ASSERT_NULL(v) if (v != NULL) TEST_FAIL(); 
 	#define ASSERT_NOT_NULL(v) if (v == NULL) TEST_FAIL(); 
+
 	#define ASSERT_TRUE(v) if (!v) TEST_FAIL(); 
 	#define ASSERT_FALSE(v) if (v) TEST_FAIL(); 
+
 	#define ASSERT_EQUAL(l, r) if (l != r) TEST_FAIL();
-	#define ASSERT_FLOAT_APROX(l, r) if ((int)l != (int)r) TEST_FAIL();
 	#define ASSERT_NOT_EQUAL(l, r) if (l == r) TEST_FAIL();
+
+	#define ASSERT_FLOAT_APROX(l, r) if ((int)(100.0*((double) l)) != (int)(100.0*((double)r))) TEST_FAIL();
+
 	#define ASSERT_STR_EQUAL(l, r) if (strcmp(l, r) != 0) TEST_FAIL();
 	#define ASSERT_STR_NOT_EQUAL(l, r) if (strcmp(l, r) == 0) TEST_FAIL();
+
 	#define ASSERT_WSTR_EQUAL(l, r) if (wcscmp(l, r) != 0) TEST_FAIL();
 	#define ASSERT_WSTR_NOT_EQUAL(l, r) if (wcscmp(l, r) == 0) TEST_FAIL();
 	

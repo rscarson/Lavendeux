@@ -47,14 +47,17 @@ int table_create(hash_table *table, unsigned int size) {
 void table_destroy(hash_table *table, value_destructor destructor) {
 	unsigned int i;
 	hash_node *entry;
+	hash_node *next;
 
 	for (i=0; i<table->size; ++i) {
 		entry = table->entries[i];
 		while (entry != NULL) {
 			if (destructor != NULL)
 				destructor(entry->value);
+			next = entry->next;
+			free(entry->key);
 			free(entry);
-			entry = entry->next;
+			entry = next;
 		}
 	}
 
@@ -152,6 +155,7 @@ void table_remove(hash_table *table, const wchar_t *key, value_destructor destru
 			
 			if (destructor != NULL)
 				destructor(entry->value);
+			free(entry->key);
 			free(entry);
 			break;
 		}

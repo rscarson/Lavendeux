@@ -7,3 +7,9 @@ Initial public release
 Added unit tests
 Rebuilt binary decorator
 Prepare for multiplatform compatibility
+
+0.2.0
+-----
+Deprecated a few commandline options
+Added auto copy/paste
+Improved memory usage

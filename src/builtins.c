@@ -1,8 +1,9 @@
 #include <math.h>
+#include <fenv.h>
 
 #include "hashing.h"
-#include "constructs.h"
 #include "interface.h"
+#include "constructs.h"
 #include "parse.h"
 #include "builtins.h"
 
@@ -13,25 +14,10 @@
  * @return Result of the operation
  */
 int builtins_init( void ) {
-	value* val;
 	int i;
 	int len;
 	
 	table_create(&builtins, HASH_DEFAULT_SIZE);
-
-	/* Start with values */
-	len = sizeof(builtin_variable_declarations) / sizeof(builtin_variable_declarations[0]);
-	for (i=0; i<len ; i++) {
-		/* Allocate the new value */
-		val = (value*) malloc(sizeof(value));
-		if (val == NULL)
-			return FAILURE_ALLOCATION;
-
-		/* Add it to the table */
-		*val = builtin_variable_declarations[i].v;
-		if (put_variable(builtin_variable_declarations[i].name, val) != NO_FAILURE)
-			return FAILURE_ALLOCATION;
-	}
 
 	/* Now functions */
 	len = sizeof(builtin_function_declarations) / sizeof(builtin_function_declarations[0]);
@@ -155,7 +141,7 @@ int builtin_round(value args[], value* result, int angle_mode) {
 	int_value_t precision = RESOLVED_VALUE(args[1]);
 
 	result->type = VALUE_FLOAT;
-	result->fv = round(base * powl(10, precision)) / powl(10, precision);
+	result->fv = round(base * ((float_value_t) powl(10, precision))) / ((float_value_t) powl(10, precision));
 
 	return NO_FAILURE;
 }
@@ -190,15 +176,23 @@ int builtin_abs(value args[], value* result, int angle_mode) {
  * Return: float
  */
 int builtin_tan(value args[], value* result, int angle_mode) {
+	float_value_t domain_test;
 	float_value_t in = RESOLVED_VALUE(args[0]);
 
-	if (fmodl(in, PI/2.0))
-		return FAILURE_INVALID_ARGS;
 	if (angle_mode == SETTING_ANGLE_DEG)
 		in = TO_RADIANS(in);
 
+	/* Test for domain errors */
+	domain_test = fabsl(tanl(PI/2) / tanl(in));
+	if (domain_test > 0.99 && domain_test < 1.00 && domain_test != INFINITY)
+		return FAILURE_INVALID_ARGS;
+
 	result->type = VALUE_FLOAT;
+
+	feclearexcept (FE_ALL_EXCEPT);
 	result->fv = tanl(in);
+	if (fetestexcept (FE_INVALID))
+		return FAILURE_INVALID_ARGS;
 
 	return NO_FAILURE;
 }
@@ -216,7 +210,11 @@ int builtin_cos(value args[], value* result, int angle_mode) {
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
+
+	feclearexcept (FE_ALL_EXCEPT);
 	result->fv = cosl(in);
+	if (fetestexcept (FE_INVALID))
+		return FAILURE_INVALID_ARGS;
 
 	return NO_FAILURE;
 }
@@ -234,7 +232,11 @@ int builtin_sin(value args[], value* result, int angle_mode) {
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
+
+	feclearexcept (FE_ALL_EXCEPT);
 	result->fv = sinl(in);
+	if (fetestexcept (FE_INVALID))
+		return FAILURE_INVALID_ARGS;
 
 	return NO_FAILURE;
 }
@@ -252,7 +254,11 @@ int builtin_atan(value args[], value* result, int angle_mode) {
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
+
+	feclearexcept (FE_ALL_EXCEPT);
 	result->fv = atanl(in);
+	if (fetestexcept (FE_INVALID))
+		return FAILURE_INVALID_ARGS;
 
 	return NO_FAILURE;
 }
@@ -270,7 +276,11 @@ int builtin_acos(value args[], value* result, int angle_mode) {
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
+
+	feclearexcept (FE_ALL_EXCEPT);
 	result->fv = acosl(in);
+	if (fetestexcept (FE_INVALID))
+		return FAILURE_INVALID_ARGS;
 
 	return NO_FAILURE;
 }
@@ -288,7 +298,11 @@ int builtin_asin(value args[], value* result, int angle_mode) {
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
+
+	feclearexcept (FE_ALL_EXCEPT);
 	result->fv = asinl(in);
+	if (fetestexcept (FE_INVALID))
+		return FAILURE_INVALID_ARGS;
 
 	return NO_FAILURE;
 }
@@ -306,7 +320,11 @@ int builtin_tanh(value args[], value* result, int angle_mode) {
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
+
+	feclearexcept (FE_ALL_EXCEPT);
 	result->fv = tanhl(in);
+	if (fetestexcept (FE_INVALID))
+		return FAILURE_INVALID_ARGS;
 
 	return NO_FAILURE;
 }
@@ -324,7 +342,11 @@ int builtin_cosh(value args[], value* result, int angle_mode) {
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
+
+	feclearexcept (FE_ALL_EXCEPT);
 	result->fv = coshl(in);
+	if (fetestexcept (FE_INVALID))
+		return FAILURE_INVALID_ARGS;
 
 	return NO_FAILURE;
 }
@@ -342,7 +364,11 @@ int builtin_sinh(value args[], value* result, int angle_mode) {
 		in = TO_RADIANS(in);
 
 	result->type = VALUE_FLOAT;
+
+	feclearexcept (FE_ALL_EXCEPT);
 	result->fv = sinhl(in);
+	if (fetestexcept (FE_INVALID))
+		return FAILURE_INVALID_ARGS;
 
 	return NO_FAILURE;
 }
@@ -356,7 +382,7 @@ int builtin_sinh(value args[], value* result, int angle_mode) {
 int builtin_log10(value args[], value* result, int angle_mode) {
 	float_value_t in = RESOLVED_VALUE(args[0]);
 
-	if (in == 0)
+	if (in <= 0)
 		return FAILURE_INVALID_ARGS;
 
 	result->type = VALUE_FLOAT;
@@ -374,7 +400,7 @@ int builtin_log10(value args[], value* result, int angle_mode) {
 int builtin_ln(value args[], value* result, int angle_mode) {
 	float_value_t in = RESOLVED_VALUE(args[0]);
 
-	if (in == 0)
+	if (in <= 0)
 		return FAILURE_INVALID_ARGS;
 
 	result->type = VALUE_FLOAT;
@@ -394,7 +420,7 @@ int builtin_log(value args[], value* result, int angle_mode) {
 	float_value_t in = RESOLVED_VALUE(args[0]);
 	float_value_t base = RESOLVED_VALUE(args[1]);
 
-	if (in == 0 || base <= 1)
+	if (in <= 0 || base <= 1)
 		return FAILURE_INVALID_ARGS;
 
 	result->type = VALUE_FLOAT;

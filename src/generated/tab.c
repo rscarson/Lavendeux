@@ -484,10 +484,10 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    69,    69,    88,   112,   121,   124,   127,   130,   133,
-     136,   139,   142,   148,   151,   154,   182,   210,   238,   266,
-     293,   332,   371,   410,   457,   481,   519,   540,   574,   589,
-     605,   625,   633,   641
+       0,    69,    69,    90,   116,   125,   128,   131,   134,   137,
+     140,   143,   146,   152,   155,   158,   186,   214,   242,   270,
+     297,   336,   375,   414,   461,   485,   523,   544,   578,   593,
+     609,   629,   637,   645
 };
 #endif
 
@@ -1472,6 +1472,8 @@ yyreduce:
     {
 		char type;
 		int err;
+
+		/* Resolve value */
 		if (( err = value_type(&(yyvsp[(1) - (1)].val), &type) ) != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}
@@ -1479,10 +1481,10 @@ yyreduce:
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 		switch (type) {
 			case VALUE_FLOAT:
-				decorator_float(&(yyvsp[(1) - (1)].val), (yyval.val).sv);
+				decorator_float((yyvsp[(1) - (1)].val), (yyval.val).sv);
 				break;
 			case VALUE_INT:
-				decorator_int(&(yyvsp[(1) - (1)].val), (yyval.val).sv);
+				decorator_int((yyvsp[(1) - (1)].val), (yyval.val).sv);
 				break;
 		}
 
@@ -1493,13 +1495,15 @@ yyreduce:
   case 3:
 
 /* Line 1464 of yacc.c  */
-#line 88 "src/grammar.y"
+#line 90 "src/grammar.y"
     {
 		int_value_t iv;
 		float_value_t fv;
-		
+	
 		char type;
 		int err;
+		
+		/* Resolve value */
 		if (( err = value_type(&(yyvsp[(1) - (1)].val), &type) ) != NO_FAILURE) {
 			YYERROR_CODE(err);
 		}
@@ -1523,9 +1527,9 @@ yyreduce:
   case 4:
 
 /* Line 1464 of yacc.c  */
-#line 112 "src/grammar.y"
+#line 116 "src/grammar.y"
     {
-		if (!decorate((yyvsp[(3) - (3)].val).sv, &(yyvsp[(1) - (3)].val), (yyval.val).sv)) {
+		if (!decorate((yyvsp[(3) - (3)].val).sv, (yyvsp[(1) - (3)].val), (yyval.val).sv)) {
 			YYERROR_MSG(FAILURE_INVALID_NAME, LANG_STR_INVALID_DECORATOR);
 		}
 		*result = (yyval.val);
@@ -1535,7 +1539,7 @@ yyreduce:
   case 5:
 
 /* Line 1464 of yacc.c  */
-#line 121 "src/grammar.y"
+#line 125 "src/grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1544,7 +1548,7 @@ yyreduce:
   case 6:
 
 /* Line 1464 of yacc.c  */
-#line 124 "src/grammar.y"
+#line 128 "src/grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1553,7 +1557,7 @@ yyreduce:
   case 7:
 
 /* Line 1464 of yacc.c  */
-#line 127 "src/grammar.y"
+#line 131 "src/grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1562,7 +1566,7 @@ yyreduce:
   case 8:
 
 /* Line 1464 of yacc.c  */
-#line 130 "src/grammar.y"
+#line 134 "src/grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1571,7 +1575,7 @@ yyreduce:
   case 9:
 
 /* Line 1464 of yacc.c  */
-#line 133 "src/grammar.y"
+#line 137 "src/grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1580,7 +1584,7 @@ yyreduce:
   case 10:
 
 /* Line 1464 of yacc.c  */
-#line 136 "src/grammar.y"
+#line 140 "src/grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1589,7 +1593,7 @@ yyreduce:
   case 11:
 
 /* Line 1464 of yacc.c  */
-#line 139 "src/grammar.y"
+#line 143 "src/grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1598,7 +1602,7 @@ yyreduce:
   case 12:
 
 /* Line 1464 of yacc.c  */
-#line 142 "src/grammar.y"
+#line 146 "src/grammar.y"
     {
 		YYERROR_MSG(FAILURE_INVALID_ARGS, (yyvsp[(1) - (1)].val).iv);
 	;}
@@ -1607,7 +1611,7 @@ yyreduce:
   case 13:
 
 /* Line 1464 of yacc.c  */
-#line 148 "src/grammar.y"
+#line 152 "src/grammar.y"
     {
 		(yyval.val) = (yyvsp[(1) - (1)].val);
 	;}
@@ -1616,7 +1620,7 @@ yyreduce:
   case 14:
 
 /* Line 1464 of yacc.c  */
-#line 151 "src/grammar.y"
+#line 155 "src/grammar.y"
     {
 		(yyval.val) = (yyvsp[(2) - (3)].val);
 	;}
@@ -1625,7 +1629,7 @@ yyreduce:
   case 15:
 
 /* Line 1464 of yacc.c  */
-#line 154 "src/grammar.y"
+#line 158 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1659,7 +1663,7 @@ yyreduce:
   case 16:
 
 /* Line 1464 of yacc.c  */
-#line 182 "src/grammar.y"
+#line 186 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1693,7 +1697,7 @@ yyreduce:
   case 17:
 
 /* Line 1464 of yacc.c  */
-#line 210 "src/grammar.y"
+#line 214 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1727,7 +1731,7 @@ yyreduce:
   case 18:
 
 /* Line 1464 of yacc.c  */
-#line 238 "src/grammar.y"
+#line 242 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1761,7 +1765,7 @@ yyreduce:
   case 19:
 
 /* Line 1464 of yacc.c  */
-#line 266 "src/grammar.y"
+#line 270 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1794,7 +1798,7 @@ yyreduce:
   case 20:
 
 /* Line 1464 of yacc.c  */
-#line 293 "src/grammar.y"
+#line 297 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1839,7 +1843,7 @@ yyreduce:
   case 21:
 
 /* Line 1464 of yacc.c  */
-#line 332 "src/grammar.y"
+#line 336 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1884,7 +1888,7 @@ yyreduce:
   case 22:
 
 /* Line 1464 of yacc.c  */
-#line 371 "src/grammar.y"
+#line 375 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1929,7 +1933,7 @@ yyreduce:
   case 23:
 
 /* Line 1464 of yacc.c  */
-#line 410 "src/grammar.y"
+#line 414 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -1982,7 +1986,7 @@ yyreduce:
   case 24:
 
 /* Line 1464 of yacc.c  */
-#line 457 "src/grammar.y"
+#line 461 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -2012,7 +2016,7 @@ yyreduce:
   case 25:
 
 /* Line 1464 of yacc.c  */
-#line 481 "src/grammar.y"
+#line 485 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (3)].val), &(yyvsp[(3) - (3)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -2056,7 +2060,7 @@ yyreduce:
   case 26:
 
 /* Line 1464 of yacc.c  */
-#line 519 "src/grammar.y"
+#line 523 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(&(yyvsp[(1) - (2)].val), NULL);
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -2083,7 +2087,7 @@ yyreduce:
   case 27:
 
 /* Line 1464 of yacc.c  */
-#line 540 "src/grammar.y"
+#line 544 "src/grammar.y"
     {
 		(yyval.val) = verify_expression(NULL, &(yyvsp[(2) - (2)].val));
 		if ((yyval.val).type == VALUE_ERROR) {
@@ -2123,7 +2127,7 @@ yyreduce:
   case 28:
 
 /* Line 1464 of yacc.c  */
-#line 574 "src/grammar.y"
+#line 578 "src/grammar.y"
     {
 		int err;
 
@@ -2144,7 +2148,7 @@ yyreduce:
   case 29:
 
 /* Line 1464 of yacc.c  */
-#line 589 "src/grammar.y"
+#line 593 "src/grammar.y"
     {
 		int err;
 		value args[] = { (yyvsp[(3) - (4)].val) };
@@ -2166,7 +2170,7 @@ yyreduce:
   case 30:
 
 /* Line 1464 of yacc.c  */
-#line 605 "src/grammar.y"
+#line 609 "src/grammar.y"
     {
 		int err;
 
@@ -2189,7 +2193,7 @@ yyreduce:
   case 31:
 
 /* Line 1464 of yacc.c  */
-#line 625 "src/grammar.y"
+#line 629 "src/grammar.y"
     {
 		if (list_create(&(yyval.lst), DEFAULT_LIST_CAPACITY) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
@@ -2203,7 +2207,7 @@ yyreduce:
   case 32:
 
 /* Line 1464 of yacc.c  */
-#line 633 "src/grammar.y"
+#line 637 "src/grammar.y"
     {
 		if (list_add(&(yyval.lst), (yyvsp[(3) - (3)].val)) != NO_FAILURE) {
 			YYERROR_CODE(FAILURE_ALLOCATION);
@@ -2214,7 +2218,7 @@ yyreduce:
   case 33:
 
 /* Line 1464 of yacc.c  */
-#line 641 "src/grammar.y"
+#line 645 "src/grammar.y"
     {
 		value *v = (value*) malloc(sizeof(value));
 		if (v == NULL) {
@@ -2233,7 +2237,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 2237 "src/generated/tab.c"
+#line 2241 "src/generated/tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2445,7 +2449,7 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 655 "src/grammar.y"
+#line 659 "src/grammar.y"
 
 
 int yyerror(yyscan_t scanner, value* result, int angle_mode, const char* msg) {

@@ -4,20 +4,20 @@
 	#include "parse.h"
 	#include "hashing.h"
 	
-	typedef void (*decorator_fn)(const value*, wchar_t*);
+	typedef void (*decorator_fn)(value, wchar_t*);
 
 	/* For static table */
 	typedef struct { const wchar_t* name; decorator_fn fn; } static_decorator_fn;
 
 	/* Decorator functions */
-	int decorate(const wchar_t*, const value*, wchar_t*);
-	void decorator_int(const value*, wchar_t*);
-	void decorator_unsigned(const value*, wchar_t*);
-	void decorator_float(const value*, wchar_t*);
-	void decorator_sci(const value*, wchar_t*);
-	void decorator_bin(const value*, wchar_t*);
-	void decorator_oct(const value*, wchar_t*);
-	void decorator_hex(const value*, wchar_t*);
+	int decorate(const wchar_t*, value, wchar_t*);
+	void decorator_int(value, wchar_t*);
+	void decorator_unsigned(value, wchar_t*);
+	void decorator_float(value, wchar_t*);
+	void decorator_sci(value, wchar_t*);
+	void decorator_bin(value, wchar_t*);
+	void decorator_oct(value, wchar_t*);
+	void decorator_hex(value, wchar_t*);
 
 	/* Decorator table */
 	int init_decorators( void );

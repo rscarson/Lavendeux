@@ -5,9 +5,6 @@
 	#include "hashing.h"
 	#include <math.h>
 
-	#define PI 	3.14159265358979
-	#define E 	2.71828182845905
-
 	/* A builtin function looks like this */
 	typedef int(*builtin)(value[], value*, int);
 	typedef struct {
@@ -17,10 +14,6 @@
 
 	/* Store builtin functions */
 	hash_table builtins;
-
-	/* For static table entries */
-	typedef struct { const wchar_t* name; builtin fn; unsigned int args; } static_builtin_fn;
-	typedef struct { const wchar_t* name; value v; } static_builtin_var;
 
 	int builtins_init( void );
 	void builtin_destroy(void*);
@@ -38,12 +31,11 @@
 	int builtin_tan(value[], value*, int);
 	int builtin_cos(value[], value*, int);
 	int builtin_sin(value[], value*, int);
+
 	int builtin_atan(value[], value*, int);
 	int builtin_acos(value[], value*, int);
 	int builtin_asin(value[], value*, int);
-	int builtin_rtan(value[], value*, int);
-	int builtin_rcos(value[], value*, int);
-	int builtin_rsin(value[], value*, int);
+
 	int builtin_tanh(value[], value*, int);
 	int builtin_cosh(value[], value*, int);
 	int builtin_sinh(value[], value*, int);
@@ -55,6 +47,9 @@
 	int builtin_sqrt(value[], value*, int);
 	int builtin_root(value[], value*, int);
 
+	/* For static table entries */
+	typedef struct { const wchar_t* name; builtin fn; unsigned int args; } static_builtin_fn;
+
 	/* Builtin function definitions */
 	static const static_builtin_fn builtin_function_declarations[] = {
 		{ L"ceil", builtin_ceil, 1 },
@@ -65,9 +60,11 @@
 		{ L"tan", builtin_tan, 1 },
 		{ L"cos", builtin_cos, 1 },
 		{ L"sin", builtin_sin, 1 },
+
 		{ L"atan", builtin_atan, 1 },
 		{ L"acos", builtin_acos, 1 },
 		{ L"asin", builtin_asin, 1 },
+		
 		{ L"tanh", builtin_tanh, 1 },
 		{ L"cosh", builtin_cosh, 1 },
 		{ L"sinh", builtin_sinh, 1 },
@@ -78,11 +75,5 @@
 
 		{ L"sqrt", builtin_sqrt, 1 },
 		{ L"root", builtin_root, 2 },
-	};
-
-	/* Builtin function definitions */
-	static const static_builtin_var builtin_variable_declarations[] = {
-		{ L"pi", { VALUE_FLOAT, 0, PI } },
-		{ L"e", { VALUE_FLOAT, 0, E } },
 	};
 #endif
