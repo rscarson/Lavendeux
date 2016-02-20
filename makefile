@@ -30,8 +30,8 @@ LINUX_FLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 PYTHON_FLAGS = 
 
 ifndef NO_EXTENSIONS
-	PYTHON_FLAGS = -lpython27
-	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR) -L$(PYTHON_LIB_DIR) -lpython27
+	PYTHON_FLAGS = -lpython27 -static -static-libgcc
+	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR) -L$(PYTHON_LIB_DIR) 
 	_PARSE_DEPS += extensions.o
 endif
 
@@ -44,7 +44,7 @@ TEST_DECORATORS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_DECORATORS_DEPS))
 TEST_PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_PARSE_DEPS))
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) -c -o $@ $< $(COMPILE_FLAGS)
+	$(CC) -c -o $@ $< $(COMPILE_FLAGS) $(PYTHON_FLAGS)
 
 $(LIB_DIR)/libinterface.a: $(SRC_DIR)/interface_win32.c
 	$(CC) -c $(SRC_DIR)/interface_win32.c -o $(OBJ_DIR)/interface.o  $(COMPILE_FLAGS)
@@ -54,7 +54,7 @@ $(LIB_DIR)/libinterface.a: $(SRC_DIR)/interface_win32.c
 $(LIB_DIR)/libparse.a: grammar $(PARSE_DEPS)
 	$(CC) -c $(LEX_SOURCE) -o $(OBJ_DIR)/lex.o $(COMPILE_FLAGS)
 	$(CC) -c $(TAB_SOURCE) -o $(OBJ_DIR)/tab.o $(COMPILE_FLAGS)
-	ar rcs $(LIB_DIR)/libparse.a $(PARSE_DEPS) $(OBJ_DIR)/lex.o $(OBJ_DIR)/tab.o 
+	ar rcs $(LIB_DIR)/libparse.a $(PARSE_DEPS) $(OBJ_DIR)/lex.o $(OBJ_DIR)/tab.o
 
 grammar:
 	bison $(SRC_DIR)/grammar.y --output=$(TAB_SOURCE) --defines=$(TAB_HEADER) --report-file=report.txt
