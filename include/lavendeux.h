@@ -7,7 +7,7 @@
 	#define ARG_HELP_SHORT "-h"
 
 	#define ARG_NO_CONFIG_LONG "--no-config"
-	#define ARG_EXTENSIONS_LOG_LONG "--extensions-log"
+	#define ARG_DEBUG "--debug"
 
 	#define ARG_CONFIG_PATH_LONG "--config-path"
 	#define ARG_CONFIG_PATH_SHORT "-c"
