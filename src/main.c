@@ -28,18 +28,22 @@ int main(int argc, char* argv[]) {
 	}
 
 	/* Config */
-	if (config == NULL && !config_off)
+	if (config == NULL && !config_off) {
 		config = fopen(config_path(), "r");
+		if (config == NULL)
+			printf("Could not open '%s': %s", config_path(), strerror(errno));
+	}
 
 	/* Read in settings */
 	if (config != NULL) {
+		printf("Reading config\n");
 		while (fscanf(config, " %d = %d \n", &setting, &value) == 2) {
 			if (setting < N_SETTINGS)
 				set_setting(setting, value);
 		}
-	}
 
-	fclose(config);
+		fclose(config);
+	}
 
 	/* Main update loop */
 	while (1) {
@@ -66,13 +70,11 @@ void parse_argument(const char* arg) {
 		return;
 	}
 
-	#ifdef EXTENSIONS_INCLUDED
-		/* Extension logs */
-		if (strncmp(arg, ARG_EXTENSIONS_LOG_LONG, strlen(ARG_EXTENSIONS_LOG_LONG)) == 0) {
-			extensions_log_enable();
-			return;
-		}
-	#endif
+	/* Debug mode */
+	if (strncmp(arg, ARG_DEBUG, strlen(ARG_DEBUG)) == 0) {
+		debug_enable();
+		return;
+	}
 
 	/* Config path */
 	if (strncmp(arg, ARG_CONFIG_PATH_LONG, strlen(ARG_CONFIG_PATH_LONG)) == 0 || strncmp(arg, ARG_CONFIG_PATH_SHORT, strlen(ARG_CONFIG_PATH_SHORT)) == 0) {
@@ -101,6 +103,7 @@ void parse_callback(const wchar_t *target) {
 	wchar_t line[wcslen(target)+1];
 	unsigned int i, pos;
 	int winline_mode = 0;
+	printf("Received a callback. Target string: %S\n", target);
 
 	/* Prepare output buffer */
 	output = (wchar_t*) malloc(sizeof(wchar_t)*2);
@@ -244,10 +247,12 @@ wchar_t* parse_expression(const wchar_t* expression) {
  */
 void exit_callback( void ) {
 	/* Free up memory */
+	printf("Exiting...\n");
 	parser_destroy();
 
 	/* Open config */
 	if (!config_off) {
+		printf("Writing config.\n");
 		config = fopen(config_path(), "w+");
 		if (config != NULL) {
 			/* Write all settings out */

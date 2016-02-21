@@ -105,6 +105,16 @@
         /* Add notification icon to tray */
         Shell_NotifyIcon(NIM_ADD, &nid);
     }
+
+    /**
+     * Enable debug console
+     */
+    void debug_enable( void ) {
+        AllocConsole();
+        freopen("CONOUT$", "w", stdout);
+        freopen("CONOUT$", "w", stderr);
+        printf("Debug mode enabled.\n");
+    }
     
     /** 
      * Print help message to stdout
@@ -362,6 +372,8 @@
             SetClipboardData(CF_UNICODETEXT, hMem);
             CloseClipboard();
         }
+
+        printf("Saved a string to clipboard: %S\n", entry);
     }
 
     /** 
@@ -382,6 +394,7 @@
             CloseClipboard();
         }
 
+        printf("Read a string from clipboard: %S\n", clipText);
         return clipText;
     }
 
@@ -397,6 +410,8 @@
         test = fopen(CONFIG_FILENAME, "r");
         if (test != NULL) {
             fclose(test);
+
+            printf("Found configuration path: %s\n", CONFIG_FILENAME);
             return CONFIG_FILENAME;
         }
 
@@ -408,6 +423,8 @@
         /* Get home dir path */
         if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
             strcat(path, CONFIG_FILENAME);
+
+            printf("Found configuration path: %s\n", path);
             return path;
         }
 
@@ -427,6 +444,8 @@
                 msg,
                 title,
             MB_OK | MB_ICONWARNING | MB_DEFBUTTON1);
+
+            printf("Displaying an error message: %S\n", msg);
         }
 
         if (fatal)
