@@ -37,12 +37,6 @@ int extensions_init( void ) {
 	PyObject* io = PyImport_ImportModule("io");
 	PyObject* pystdout = PyObject_CallMethod(io, "open", "ssi", "CONOUT$", "wb", 0);
 	PyObject_SetAttrString(sys, "stderr", pystdout);
-	if (PyErr_Occurred()) {
-		printf("Could not redirect python stderr to stdout\n");
-		PyErr_Print();
-		extensions_destroy();
-		return 0;
-	}
 
 	printf("Extensions ready\n");
 
