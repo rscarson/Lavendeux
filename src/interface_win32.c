@@ -152,7 +152,6 @@
             {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
             {INPUT_KEYBOARD, .ki={VK_CONTROL,0,0,0,0}},
             {INPUT_KEYBOARD, .ki={0x56,0,0,0,0}},
-            {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
             {INPUT_KEYBOARD, .ki={0x56,0,KEYEVENTF_KEYUP,0,0}},
         };
         int i;
