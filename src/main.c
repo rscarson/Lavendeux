@@ -27,6 +27,10 @@ int main(int argc, char* argv[]) {
 		parse_argument(argv[argc-1]);
 	}
 
+	#ifdef EXTENSIONS_INCLUDED
+		extensions_init();
+	#endif
+
 	/* Config */
 	if (config == NULL && !config_off) {
 		config = fopen(config_path(), "r");
@@ -249,6 +253,10 @@ void exit_callback( void ) {
 	/* Free up memory */
 	printf("Exiting...\n");
 	parser_destroy();
+
+	#ifdef EXTENSIONS_INCLUDED
+		extensions_destroy();
+	#endif
 
 	/* Open config */
 	if (!config_off) {

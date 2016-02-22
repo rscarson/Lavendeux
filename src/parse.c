@@ -32,10 +32,6 @@ int parser_init( void ) {
 
 	init_decorators();
 
-	#ifdef EXTENSIONS_INCLUDED
-		extensions_init();
-	#endif
-
 	return NO_FAILURE;
 }
 
@@ -46,10 +42,6 @@ void parser_destroy( void ) {
 	constructs_destroy();
 	decorators_destroy();
 	builtins_destroy();
-
-	#ifdef EXTENSIONS_INCLUDED
-		extensions_destroy();
-	#endif
 }
 
 /**

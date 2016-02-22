@@ -7,6 +7,7 @@
 
 int extensions_init( void ) {
 	PyObject *syspath, *pName;
+	printf("Attempting to load extensions\n");
 
 	Py_SetProgramName("Lavendeux");
 	Py_NoSiteFlag=1;
@@ -19,23 +20,31 @@ int extensions_init( void ) {
 		return 0;
 	}
 
-	/* Add extension dir to search path */
-	pName = PyString_FromString(EXTENSIONS_PATH);
+	/* Add dirs to search path */
 	if ( (syspath = PySys_GetObject("path")) == 0) {
 		printf("Could not fetch python path\n");
 		extensions_destroy();
 		return 0;
 	}
-	if (PyList_Insert(syspath, 0, pName) || PySys_SetObject("path", syspath)) {
-		printf("Could not append to python path\n");
-		Py_DECREF(pName);
+	PyList_Insert(syspath, 0, PyString_FromString(EXTENSIONS_PATH));
+	PyList_Insert(syspath, 0, PyString_FromString("python27.zip"));
+	PyList_Insert(syspath, 0, PyString_FromString("python27.zip/site-packages"));
+	PySys_SetObject("path", syspath);
+
+	/* Redirect errors */
+	PyObject* sys = PyImport_ImportModule("sys");
+	PyObject* io = PyImport_ImportModule("io");
+	PyObject* pystdout = PyObject_CallMethod(io, "open", "ssi", "CONOUT$", "wb", 0);
+	PyObject_SetAttrString(sys, "stderr", pystdout);
+	if (PyErr_Occurred()) {
+		printf("Could not redirect python stderr to stdout\n");
+		PyErr_Print();
 		extensions_destroy();
 		return 0;
 	}
 
 	printf("Extensions ready\n");
 
-	Py_DECREF(pName);
 	return 1;
 }
 
@@ -68,13 +77,13 @@ PyObject* extensions_module(const char* name, const char* function) {
 	/* Make sure it worked */
 	if (pModule == NULL) {
 		printf("Cannot load requested extension module\n");
+		PyErr_Print();
 		return NULL;
 	}
 
 	/* Get function from module */
 	pFunc = PyObject_GetAttrString(pModule, EXTENSIONS_FUNCTION);
 	if (!pFunc || !PyCallable_Check(pFunc)) {
-		//Py_DECREF(pModule);
 		printf("Cannot load module function\n");
 		return NULL;
 	}
