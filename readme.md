@@ -57,10 +57,10 @@ What it can do
     - Not ( ~ )
     - Left shift ( < )
     - Right shift ( > )
+- Add functions or decorators
+    - Python modules in the extensions directory
 
 ## To do
 - Linux and OSX versions
 - Anti-trig functions (cotan, cosec, sec)
 - Generating test sentences to automate parser tests
-- Unit tests
-- Extension support
