@@ -11,6 +11,7 @@ int extensions_init( void ) {
 
 	Py_SetProgramName("Lavendeux");
 	Py_NoSiteFlag=1;
+	Py_DontWriteBytecodeFlag = 1;
 	Py_SetPythonHome("./");
 	Py_Initialize();
 
@@ -73,6 +74,7 @@ PyObject* extensions_module(const char* name, const char* function) {
 	/* Try to get the module */
 	pName = PyString_FromString(name);
 	pModule = PyImport_Import(pName);
+	Py_DECREF(pName);
 
 	/* Make sure it worked */
 	if (pModule == NULL) {
@@ -82,12 +84,15 @@ PyObject* extensions_module(const char* name, const char* function) {
 	}
 
 	/* Get function from module */
-	pFunc = PyObject_GetAttrString(pModule, EXTENSIONS_FUNCTION);
+	pFunc = PyObject_GetAttrString(pModule, function);
 	if (!pFunc || !PyCallable_Check(pFunc)) {
 		printf("Cannot load module function\n");
+		Py_DECREF(pModule);
 		return NULL;
 	}
 
+	Py_DECREF(pModule);
+	printf("Successfully loaded module\n");
 	return pFunc;
 }
 
@@ -104,24 +109,28 @@ int extensions_decorate(const char* name, value v,  wchar_t* decorated) {
 	pValue = (v.type == VALUE_INT) ? PyLong_FromLongLong(v.iv) : PyFloat_FromDouble(v.fv);
 	if (!pValue) {
 		printf("Error while preparing an argument\n");
+		Py_DECREF(pFunc);
 		return FAILURE_BAD_EXTENSION;
 	}
 	PyTuple_SetItem(pArgs, 0, pValue);
 
 	/* Call function */
-	Py_INCREF(pFunc);
-	Py_INCREF(pArgs);
 	pValue = PyObject_CallObject(pFunc, pArgs);
+	Py_DECREF(pArgs);
+	Py_DECREF(pFunc);
 
 	if (pValue != NULL) {
 		pValue = PyObject_Str(pValue);
 		if (pValue == NULL) {
 			printf("Argument cannot be converted to string\n");
+			Py_DECREF(pValue);
 			return FAILURE_BAD_EXTENSION;
 		}
 
 		if (mbstowcs(decorated, PyString_AsString(pValue), EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
 			decorated[EXPRESSION_MAX_LEN-1] = L'\0';
+
+		Py_DECREF(pValue);
 		return NO_FAILURE;
 	} else {
 		printf("Error while executing extension\n");
@@ -148,6 +157,7 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 		pValue = (args[i].type == VALUE_INT) ? PyLong_FromLongLong(args[i].iv) : PyFloat_FromDouble(args[i].fv);
 		if (!pValue) {
 			printf("Error while preparing an argument\n");
+			Py_DECREF(pFunc);
 			return FAILURE_BAD_EXTENSION;
 		}
 		PyList_SetItem(pList, i, pValue);
@@ -155,19 +165,28 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 	PyTuple_SetItem(pArgs, 0, pList);
 
 	/* Call function */
-	Py_INCREF(pFunc);
-	Py_INCREF(pArgs);
 	pValue = PyObject_CallObject(pFunc, pArgs);
+	Py_DECREF(pArgs);
+	Py_DECREF(pFunc);
 
 	/* Remove a few references */
 	/* Use value */
-	if (pValue != NULL && PyTuple_Check(pValue) && PyTuple_Size(pValue) == 2) {
+	if (pValue != NULL) {
+		if (!PyTuple_Check(pValue) || PyTuple_Size(pValue) != 2) {
+			Py_DECREF(pValue);
+			printf("Bad type returned\n");
+			return FAILURE_BAD_EXTENSION;
+		}
 		pResultType = PyTuple_GetItem(pValue, 0);
 		pResult = PyTuple_GetItem(pValue, 1);
 
 		switch (PyLong_AsLong(pResultType)) {
 			case VALUE_ERROR:
 				err = PyLong_AsUnsignedLong(pResult);
+
+				Py_DECREF(pResultType);
+				Py_DECREF(pResult);
+				Py_DECREF(pValue);
 				return (err < N_FAILURES) ? err : FAILURE_BAD_EXTENSION;
 			break;
 
@@ -185,8 +204,16 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 
 			default:
 				printf("Bad type returned\n");
+
+				Py_DECREF(pResultType);
+				Py_DECREF(pResult);
+				Py_DECREF(pValue);
 				return FAILURE_BAD_EXTENSION;
 		}
+
+		Py_DECREF(pResultType);
+		Py_DECREF(pResult);
+		Py_DECREF(pValue);
 	} else {
 		printf("Error while executing extension");
 		PyErr_Print();

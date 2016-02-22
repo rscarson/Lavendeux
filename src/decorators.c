@@ -49,8 +49,10 @@ void decorators_destroy( void ) {
 int decorate(const wchar_t* name, value v, wchar_t* decorated) {
 	char short_name[EXPRESSION_MAX_LEN];
 	decorator_fn decorator = (decorator_fn) table_get(&decorators, name);
-	if (decorator != NULL)
+	if (decorator != NULL) {
 		decorator(v, decorated);
+		return 1;
+	}
 
 	/* Try extensions */
 	#ifdef EXTENSIONS_INCLUDED
