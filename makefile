@@ -84,7 +84,7 @@ win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/lib
 	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS) $(PYTHON_FLAGS)
 
 windows_binaries: win32
-	zip bin/lavendeux.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe .lavendeuxsettings -j
+	zip bin/lavendeux.zip python27.dll python27.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe .lavendeuxsettings -j
 	zip -r bin/lavendeux.zip extensions
 	makensis src/setup.nsi
 
