@@ -10,7 +10,7 @@ LEX_HEADER = $(INC_DIR)/generated/lex.h
 TAB_SOURCE = $(SRC_DIR)/generated/tab.c
 TAB_HEADER = $(INC_DIR)/generated/tab.h
 
-_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o values.o
+_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o values.o settings.o
 PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
 
 _TEST_HASHING_DEPS = test.o hashing.o
@@ -42,7 +42,8 @@ $(OBJ_DIR)/lavendeux.res: $(SRC_DIR)/lavendeux.rc
 $(LIB_DIR)/libinterface.a: $(SRC_DIR)/interface_win32.c
 	$(CC) -c $(SRC_DIR)/interface_win32.c -o $(OBJ_DIR)/interface.o  $(COMPILE_FLAGS)
 	$(CC) -c $(SRC_DIR)/language.c -o $(OBJ_DIR)/language.o  $(COMPILE_FLAGS)
-	ar rcs $(LIB_DIR)/libinterface.a $(OBJ_DIR)/interface.o $(OBJ_DIR)/language.o
+	$(CC) -c $(SRC_DIR)/settings.c -o $(OBJ_DIR)/settings.o  $(COMPILE_FLAGS)
+	ar rcs $(LIB_DIR)/libinterface.a $(OBJ_DIR)/interface.o $(OBJ_DIR)/language.o $(OBJ_DIR)/settings.o
 
 $(LIB_DIR)/libparse.a: grammar $(PARSE_DEPS)
 	$(CC) -c $(LEX_SOURCE) -o $(OBJ_DIR)/lex.o $(COMPILE_FLAGS)
