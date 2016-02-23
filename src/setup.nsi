@@ -69,6 +69,7 @@ Section "MainSection" SEC01
   File "..\bin\lavendeux.exe"
   CreateDirectory "$SMPROGRAMS\Lavendeux"
   CreateShortCut "$SMPROGRAMS\Lavendeux\Lavendeux.lnk" "$INSTDIR\lavendeux.exe"
+  CreateShortCut "$SMPROGRAMS\Lavendeux\Extensions.lnk" "$INSTDIR\extensions\"
   CreateShortCut "$DESKTOP\Lavendeux.lnk" "$INSTDIR\lavendeux.exe"
   File "..\README"
   File "..\LICENSE"
