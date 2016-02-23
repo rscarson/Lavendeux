@@ -78,6 +78,7 @@ PyObject* extensions_module(const char* name, const char* function) {
 	}
 
 	/* Get function from module */
+	pModule = PyImport_ReloadModule(pModule);
 	pFunc = PyObject_GetAttrString(pModule, function);
 	if (!pFunc || !PyCallable_Check(pFunc)) {
 		printf("Cannot load module function\n");

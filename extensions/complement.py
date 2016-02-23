@@ -1,3 +1,6 @@
+# Color complement
+# 	As function: 1 arg... Hexadecimal color code, return Complementary color code
+
 from lavendeux import Types, Errors
 import colorsys
 
