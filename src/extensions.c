@@ -188,7 +188,7 @@ int extensions_call(const char* name, value args[], int n_args, value* v) {
 			case VALUE_FLOAT:
 				fv = PyFloat_AsDouble(pResult);
 				v->type = VALUE_FLOAT;
-				v->iv = fv;
+				v->fv = fv;
 			break;
 
 			case VALUE_INT:
