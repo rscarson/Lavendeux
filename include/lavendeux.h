@@ -7,6 +7,7 @@
 	#define ARG_HELP_SHORT "-h"
 
 	#define ARG_NO_CONFIG_LONG "--no-config"
+	#define ARG_DEBUG "--debug"
 
 	#define ARG_CONFIG_PATH_LONG "--config-path"
 	#define ARG_CONFIG_PATH_SHORT "-c"
@@ -27,7 +28,8 @@
 		"-h : Short form of --help\n" \
 		"--config-path=<path> : Use <path> as the configuration file\n" \
 		"-c=<path> : Short form of --config-path\n" \
-		"--no-config : Do not use a configuration file\n"
+		"--no-config : Do not use a configuration file\n" \
+		"--extensions-log : Log all extension activity in extensions.log\n"
 
 	void parse_argument(const char*);
 	void exit_callback(void);

@@ -10,7 +10,7 @@
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
 ; MUI 1.67 compatible ------
-!include "MUI.nsh"
+!include "MUI2.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -30,10 +30,18 @@
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
+
 ; Finish page
-!define MUI_FINISHPAGE_RUN "$INSTDIR\lavendeux.exe"
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_TEXT "Run Lavendeux"
+!define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
+!define MUI_FINISHPAGE_SHOWREADME_TEXT "Open documentation"
 !define MUI_FINISHPAGE_SHOWREADME "https://github.com/rscarson/Lavendeux/wiki"
 !insertmacro MUI_PAGE_FINISH
+
+Function LaunchLink
+  ExecShell "" "$SMPROGRAMS\Lavendeux\Lavendeux.lnk"
+FunctionEnd
 
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
@@ -61,10 +69,17 @@ Section "MainSection" SEC01
   File "..\bin\lavendeux.exe"
   CreateDirectory "$SMPROGRAMS\Lavendeux"
   CreateShortCut "$SMPROGRAMS\Lavendeux\Lavendeux.lnk" "$INSTDIR\lavendeux.exe"
+  CreateShortCut "$SMPROGRAMS\Lavendeux\Extensions.lnk" "$INSTDIR\extensions\"
   CreateShortCut "$DESKTOP\Lavendeux.lnk" "$INSTDIR\lavendeux.exe"
   File "..\README"
   File "..\LICENSE"
   File "..\CHANGELOG"
+  File "..\python27.zip"
+  File "..\python27.dll"
+
+  CreateDirectory "$INSTDIR\extensions"
+  SetOutPath "$INSTDIR\extensions"
+  File /r "..\extensions\"
 SectionEnd
 
 Section -AdditionalIcons
@@ -100,6 +115,8 @@ Section Uninstall
   Delete "$INSTDIR\CHANGELOG"
   Delete "$INSTDIR\LICENSE"
   Delete "$INSTDIR\README"
+  Delete "$INSTDIR\python27.dll"
+  Delete "$INSTDIR\python27.zip"
   Delete "$INSTDIR\lavendeux.exe"
 
   Delete "$SMPROGRAMS\Lavendeux\Uninstall.lnk"

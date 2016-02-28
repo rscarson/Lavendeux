@@ -8,6 +8,7 @@
 #include "builtins.h"
 #include "decorators.h"
 #include "list.h"
+#include "extensions.h"
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 	#define YY_TYPEDEF_YY_SCANNER_T
@@ -95,6 +96,7 @@ int call_function(const wchar_t* name, value args[], int n_args, value* v, int a
 	int i;
 	char type;
 	int result;
+	char short_name[EXPRESSION_MAX_LEN];
 
 	/* Resolve all the arguments */
 	for (i=0; i<n_args; i++) {
@@ -106,6 +108,15 @@ int call_function(const wchar_t* name, value args[], int n_args, value* v, int a
 	if (is_builtin(name)) {
 		return call_builtin(name, args, n_args, v, angle_mode);
 	}
+
+	/* Try extensions */
+	#ifdef EXTENSIONS_INCLUDED
+		if (wcstombs(short_name, name, EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
+			short_name[EXPRESSION_MAX_LEN-1] = '\0';
+		result = extensions_call(short_name, args, n_args, v);
+		if (result != FAILURE_BAD_EXTENSION)
+			return result;
+	#endif
 
 	return FAILURE_INVALID_NAME;
 }

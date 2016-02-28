@@ -65,6 +65,11 @@
 	 * Check window messages, process events
 	 */
 	void update_interface( void );
+
+	/**
+     * Enable debug console
+     */
+    void debug_enable( void );
 	
 	/** 
 	 * Print help message to stdout

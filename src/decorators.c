@@ -1,6 +1,7 @@
 #include "hashing.h"
 #include "parse.h"
 #include "decorators.h"
+#include "extensions.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -46,12 +47,22 @@ void decorators_destroy( void ) {
  * @return 0 if the operation fails
  */
 int decorate(const wchar_t* name, value v, wchar_t* decorated) {
+	char short_name[EXPRESSION_MAX_LEN];
 	decorator_fn decorator = (decorator_fn) table_get(&decorators, name);
-	if (decorator == NULL)
-		return 0;
-	
-	decorator(v, decorated);
-	return 1;
+	if (decorator != NULL) {
+		decorator(v, decorated);
+		return 1;
+	}
+
+	/* Try extensions */
+	#ifdef EXTENSIONS_INCLUDED
+		if (wcstombs(short_name, name, EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
+			short_name[EXPRESSION_MAX_LEN-1] = '\0';
+		if (extensions_decorate(short_name, v, decorated) != FAILURE_BAD_EXTENSION)
+			return 1;
+	#endif
+
+	return 0;
 }
 
 /**
