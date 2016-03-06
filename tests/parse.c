@@ -4,6 +4,7 @@
 #include "test.h"
 #include "parse.h"
 #include "interface.h"
+#include "settings.h"
 
 int init_tests( void ) {
 	ASSERT_EQUAL(NO_FAILURE, parser_init());
