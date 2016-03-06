@@ -56,7 +56,7 @@
 %left <val> LSHIFT RSHIFT
 %left <val> PLUS MINUS
 %left <val> MUL DIV MOD
-%left <val> POW
+%right <val> POW
 %left <val> FACTORIAL
 %left <val> NOT
 
@@ -142,6 +142,41 @@ atomic_value:
 	}
 	| INT {
 		$$ = $1;
+	}
+	| MINUS atomic_value {
+		$$ = verify_expression(&$1, NULL);
+		if ($$.type == VALUE_ERROR) {
+			YYERROR_CODE($$.iv);
+		}
+
+		float_value_t fop;
+		int_value_t iop;
+		switch ($$.type) {
+			case VALUE_FLOAT:
+				float_value(&$2, &fop);
+
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.fv = (-1.0) * fop;
+
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+			break;
+
+			case VALUE_INT:
+				int_value(&$2, &iop);
+
+				feclearexcept (FE_ALL_EXCEPT);
+				$$.iv = (-1) * iop;
+
+				if (fetestexcept (FE_OVERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
+				} else if (fetestexcept (FE_UNDERFLOW)) {
+					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
+				}
+		}
 	}
 	| ERROR {
 		YYERROR_MSG(FAILURE_INVALID_ARGS, $1.iv);

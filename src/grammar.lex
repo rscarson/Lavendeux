@@ -86,7 +86,7 @@
 	return OCT;
 }
 
--?[0-9]*(\.[0-9]+)?(E|e)(\+|-)?[0-9]+ {
+[0-9]*(\.[0-9]+)?(E|e)(\+|-)?[0-9]+ {
 	/* Store token value */
 	yylval->val.type = VALUE_FLOAT;
 
@@ -103,7 +103,7 @@
 	return SCI;
 }
 
--?[0-9]*\.[0-9]+ { 
+[0-9]*\.[0-9]+ { 
 	/* Store token value */
 	yylval->val.type = VALUE_FLOAT;
 
@@ -120,7 +120,7 @@
 
 	return FLOAT;
 }
--?[0-9]+ { 
+[0-9]+ { 
 	/* Store token value */
 	yylval->val.type = VALUE_INT;
 
