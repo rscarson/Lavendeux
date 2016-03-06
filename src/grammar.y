@@ -156,7 +156,7 @@ atomic_value:
 				float_value(&$2, &fop);
 
 				feclearexcept (FE_ALL_EXCEPT);
-				$$.fv = -fop;
+				$$.fv = (-1.0) * fop;
 
 				if (fetestexcept (FE_OVERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
@@ -169,7 +169,7 @@ atomic_value:
 				int_value(&$2, &iop);
 
 				feclearexcept (FE_ALL_EXCEPT);
-				$$.iv = -iop;
+				$$.iv = (-1) * iop;
 
 				if (fetestexcept (FE_OVERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_OVERFLOW);
