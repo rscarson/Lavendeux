@@ -1,7 +1,7 @@
 100 ICON "../icon/lavendeux.ico"
 1 VERSIONINFO
-FILEVERSION     0,2,0,0
-PRODUCTVERSION  0,2,0,0
+FILEVERSION     0,3,0,0
+PRODUCTVERSION  0,3,0,0
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
@@ -9,12 +9,12 @@ BEGIN
     BEGIN
       VALUE "CompanyName", "Richard Carson"
       VALUE "FileDescription", "Lavendeux"
-      VALUE "FileVersion", "0.2.0"
+      VALUE "FileVersion", "0.3.0"
       VALUE "InternalName", "Lavendeux"
       VALUE "LegalCopyright", "Copyright Richard Carson, 2016"
       VALUE "OriginalFilename", "lavendeux.exe"
       VALUE "ProductName", "Lavendeux"
-      VALUE "ProductVersion", "0.2.0"
+      VALUE "ProductVersion", "0.3.0"
     END
   END
 

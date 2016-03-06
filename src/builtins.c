@@ -6,6 +6,7 @@
 #include "constructs.h"
 #include "parse.h"
 #include "builtins.h"
+#include "settings.h"
 
 /**
  * Populate builtin functions table

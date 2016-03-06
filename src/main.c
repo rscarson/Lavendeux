@@ -9,14 +9,9 @@
 #include "language.h"
 #include "parse.h"
 #include "interface.h"
-
-/* Configuration file settings */
-int config_off = 0;
-FILE* config = NULL;
+#include "settings.h"
 
 int main(int argc, char* argv[]) {
-	int setting, value;
-
 	/* Start UI */
 	init_interface(exit_callback, parse_callback);
 	parser_init();
@@ -27,18 +22,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	/* Config */
-	if (config == NULL && !config_off)
-		config = fopen(config_path(), "r");
-
-	/* Read in settings */
-	if (config != NULL) {
-		while (fscanf(config, " %d = %d \n", &setting, &value) == 2) {
-			if (setting < N_SETTINGS)
-				set_setting(setting, value);
-		}
-	}
-
-	fclose(config);
+	init_settings(config_path());
 
 	/* Main update loop */
 	while (1) {
@@ -61,7 +45,7 @@ void parse_argument(const char* arg) {
 
 	/* No config */
 	if (strncmp(arg, ARG_NO_CONFIG_LONG, strlen(ARG_NO_CONFIG_LONG)) == 0) {
-		config_off = 1;
+		init_settings(NULL);
 		return;
 	}
 
@@ -73,9 +57,7 @@ void parse_argument(const char* arg) {
 				break;
 			} else arg++;
 
-		config = fopen(arg, "w+");
-		if (config == NULL)
-			error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_CONFIG), 1);
+		init_settings(arg);
 		return;
 	}
 	
@@ -238,19 +220,7 @@ void exit_callback( void ) {
 	parser_destroy();
 
 	/* Open config */
-	if (!config_off) {
-		config = fopen(config_path(), "w+");
-		if (config != NULL) {
-			/* Write all settings out */
-			fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));
-			fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
-			fprintf(config, "%d=%d\n", SETTING_LANG, get_setting(SETTING_LANG));
-			fprintf(config, "%d=%d\n", SETTING_AUTOCOPY, get_setting(SETTING_AUTOCOPY));
-
-			/* Close up and leave */
-			fclose(config);
-		}
-	}
+	save_settings();
 
 	exit(0);
 }
