@@ -63,6 +63,7 @@ void save_settings( void ) {
 		fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
 		fprintf(config, "%d=%d\n", SETTING_LANG, get_setting(SETTING_LANG));
 		fprintf(config, "%d=%d\n", SETTING_AUTOCOPY, get_setting(SETTING_AUTOCOPY));
+		fprintf(config, "%d=%d\n", SETTING_SILENTSTART, get_setting(SETTING_SILENTSTART));
 
 		/* Close up and leave */
 		fclose(config);
