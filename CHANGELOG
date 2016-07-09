@@ -18,3 +18,7 @@ Improved memory usage
 -----
 Fixed a few grammar issues
 Changed how settings are integrated
+
+0.3.1
+-----
+Added silent start option

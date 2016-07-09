@@ -88,13 +88,16 @@
         nid.cbSize = sizeof(nid);
         nid.hWnd = hWnd;
         nid.uID = 100;
-        nid.uFlags = NIF_INFO | NIF_MESSAGE | NIF_ICON | NIF_TIP;
+        nid.uFlags = NIF_INFO | NIF_ICON | NIF_TIP | NIF_MESSAGE;
         nid.uCallbackMessage = RegisterWindowMessage(WINDOW_CALLBACK);
         nid.hIcon = hIcon;
         nid.dwInfoFlags = NIIF_INFO;
         strcpy(nid.szTip, APPLICATION_NAME);
-        strcpy(nid.szInfoTitle, RUNNING_TITLE);
-        strcpy(nid.szInfo, RUNNING_MSG);
+        if (get_setting(SETTING_SILENTSTART) == SETTING_SILENTSTART_OFF) {
+            nid.uFlags |= NIF_INFO;
+            strcpy(nid.szInfoTitle, RUNNING_TITLE);
+            strcpy(nid.szInfo, RUNNING_MSG);
+        }
 
         /* Add notification icon to tray */
         Shell_NotifyIcon(NIM_ADD, &nid);
@@ -235,6 +238,11 @@
                         set_setting(SETTING_AUTOCOPY, (get_setting(SETTING_AUTOCOPY)==SETTING_AUTOCOPY_ON) ? SETTING_AUTOCOPY_OFF : SETTING_AUTOCOPY_ON);
                     break;
 
+                    /* Turn silent start on and off */
+                    case CMD_TOGGLE_SILENTSTART:
+                        set_setting(SETTING_SILENTSTART, (get_setting(SETTING_SILENTSTART)==SETTING_SILENTSTART_ON) ? SETTING_SILENTSTART_OFF : SETTING_SILENTSTART_ON);
+                    break;
+
                     /* English language */
                     case CMD_LANG_EN:
                         set_setting(SETTING_LANG, LANG_EN);
@@ -304,6 +312,7 @@
 
         AppendMenuW(hMenu, (get_setting(SETTING_SILENT)==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, language_str(LANG_STR_SILENT_ERRS));
         AppendMenuW(hMenu, (get_setting(SETTING_AUTOCOPY)==SETTING_AUTOCOPY_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_AUTOCOPY, language_str(LANG_STR_ENABLEAUTOCOPY));
+        AppendMenuW(hMenu, (get_setting(SETTING_SILENTSTART)==SETTING_SILENTSTART_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENTSTART, language_str(LANG_STR_ENABLESILENTSTART));
 
         AppendMenuW(hAnglesMenu, (get_setting(SETTING_ANGLE)==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, language_str(LANG_STR_DEGREES));
         AppendMenuW(hAnglesMenu, (get_setting(SETTING_ANGLE)==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, language_str(LANG_STR_RADIANS));

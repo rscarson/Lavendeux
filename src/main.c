@@ -12,9 +12,6 @@
 #include "settings.h"
 
 int main(int argc, char* argv[]) {
-	/* Start UI */
-	init_interface(exit_callback, parse_callback);
-	parser_init();
 
 	/* Commandline arguments */
 	for (; argc>1; argc--) {
@@ -23,6 +20,10 @@ int main(int argc, char* argv[]) {
 
 	/* Config */
 	init_settings(config_path());
+	
+	/* Start UI */
+	init_interface(exit_callback, parse_callback);
+	parser_init();
 
 	/* Main update loop */
 	while (1) {

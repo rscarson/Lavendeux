@@ -15,6 +15,7 @@
     #define CMD_LANG_EN             1005
     #define CMD_LANG_FR             1006
     #define CMD_TOGGLE_AUTOCOPY     1007
+    #define CMD_TOGGLE_SILENTSTART  1008
     #define CMD_CPX                 1010
 
     LRESULT CALLBACK wnd_callback(HWND, UINT, WPARAM, LPARAM);
