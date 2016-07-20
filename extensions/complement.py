@@ -14,6 +14,10 @@ def call(args):
 	r, g, b = [x/255 for x in r, g, b]
 	h,l,s = colorsys.rgb_to_hls(r,g,b)
 
+	print r
+	print g
+	print b
+
 	# Complement and convert back
 	h = (h + 0.5) % 1.0
 	r,g,b = colorsys.hls_to_rgb(h,l,s)
