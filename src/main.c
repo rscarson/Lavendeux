@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 
 	/* Config */
 	path = config_path();
-	init_settings(config_path());
+	init_settings(path);
 	free(path);
 	
 	/* Start UI */

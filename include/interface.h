@@ -22,7 +22,7 @@
     /* Window settings */
     #define RUNNING_TITLE "Lavendeux is running..."
     #define RUNNING_MSG "CTRL-Space evaluates mathematical expressions"
-	#define CONFIG_FILENAME "/.lavendeuxsettings"
+	#define CONFIG_FILENAME ".lavendeuxsettings"
     #define MAX_EQUATIONS 5
 	#define MAX_LEN 255
 

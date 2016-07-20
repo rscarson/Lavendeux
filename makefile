@@ -1,5 +1,5 @@
 # Configuration options
-NO_EXTENSIONS=1 will disable extensions
+#NO_EXTENSIONS=1
 PYTHON_INCLUDE_DIR = C:\\Python27\\include
 PYTHON_LIB_DIR = C:\\Python27\\libs
 
@@ -15,7 +15,7 @@ LEX_HEADER = $(INC_DIR)/generated/lex.h
 TAB_SOURCE = $(SRC_DIR)/generated/tab.c
 TAB_HEADER = $(INC_DIR)/generated/tab.h
 
-_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o values.o settings.o
+_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o values.o settings.o extensions.o
 PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
 
 _INTERFACE_DEPS = language.o cmdflags.o settings.o interface_win32.o
@@ -28,18 +28,17 @@ _TEST_DECORATORS_DEPS = test.o decorators.o hashing.o
 _TEST_PARSE_DEPS = test.o
 
 CC = gcc
-COMPILE_FLAGS = -std=gnu99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -lm -Wall -g -Wno-unused
+_COMPILE_FLAGS = -std=gnu99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -lm -Wall -g -Wno-unused
 WIN32_FLAGS = -Wl,-subsystem,windows
 LINUX_FLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 PYTHON_FLAGS = 
 
+COMPILE_FLAGS = $(_COMPILE_FLAGS)
 ifndef NO_EXTENSIONS
 	PYTHON_FLAGS = -lpython27 -static -static-libgcc
 	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR) -L$(PYTHON_LIB_DIR) 
-	_PARSE_DEPS += extensions.o
 endif
 
-PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
 
 TEST_HASHING_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_HASHING_DEPS))
 TEST_BUILTINS_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_BUILTINS_DEPS))
@@ -93,6 +92,8 @@ windows_binaries: win32
 ###############
 # Tests Begin #
 ###############
+test : PYTHON_FLAGS = 
+test :COMPILE_FLAGS = $(_COMPILE_FLAGS)
 
 test_hashing: $(TEST_HASHING_DEPS)
 	@$(CC) $(TEST_DIR)/hashing.c $(TEST_HASHING_DEPS) -o $(BIN_DIR)/$@ $(COMPILE_FLAGS)

@@ -65,13 +65,13 @@
 		},
 
 		[LANG_STR_ENABLEAUTOCOPY] = {
-			[LANG_EN] = L"Enable auto copy/paste",
-			[LANG_FR] = L"Copier/coller automatiquement"
+			[LANG_EN] = L"Enable Auto Copy/Paste",
+			[LANG_FR] = L"Copier/Coller Automatiquement"
 		},
 
 		[LANG_STR_ENABLESILENTSTART] = {
-			[LANG_EN] = L"Start silently",
-			[LANG_FR] = L"Commence silencieusement"
+			[LANG_EN] = L"Start Silently",
+			[LANG_FR] = L"Commence Silencieusement"
 		},
 
 		[LANG_STR_ERR_STARTING] = {
