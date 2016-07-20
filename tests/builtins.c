@@ -6,6 +6,7 @@
 #include "interface.h"
 #include "constructs.h"
 #include "parse.h"
+#include "settings.h"
 
 static const value value_zero = {VALUE_INT, 0};
 static const value value_small = {VALUE_FLOAT, 0, 0.12345};

@@ -9,6 +9,7 @@
 #include "language.h"
 #include "parse.h"
 #include "interface.h"
+#include "settings.h"
 #include "extensions.h"
 #include "cmdflags.h"
 
@@ -20,10 +21,6 @@ int main(int argc, char* argv[]) {
 	int setting, value;
 	char* path;
 
-	/* Start UI */
-	init_interface(exit_callback, parse_callback);
-	parser_init();
-
 	/* Commandline arguments */
 	cmdflag_run(argc, argv);
 
@@ -32,22 +29,13 @@ int main(int argc, char* argv[]) {
 	#endif
 
 	/* Config */
-	if (!config_off) {
-		path = config_path();
-		config = fopen(path, "r");
-		if (config == NULL)
-			printf("Could not open '%s': %s", path, strerror(errno));
-
-		/* Read in settings */
-		printf("Reading config at %s\n", path);
-		while (fscanf(config, " %d = %d \n", &setting, &value) == 2) {
-			if (setting < N_SETTINGS)
-				set_setting(setting, value);
-		}
-
-		fclose(config);
-		free(path);
-	}
+	path = config_path();
+	init_settings(config_path());
+	free(path);
+	
+	/* Start UI */
+	init_interface(exit_callback, parse_callback);
+	parser_init();
 
 	/* Main update loop */
 	while (1) {
@@ -58,6 +46,41 @@ int main(int argc, char* argv[]) {
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * Process a commandline argument
+ * @param arg The argument string
+ */
+void parse_argument(const char* arg) {
+	/* Help */
+	if (strcmp(arg, ARG_HELP_LONG) == 0 || strcmp(arg, ARG_HELP_SHORT) == 0) {
+		print_help();
+		return;
+	}
+
+	/* No config */
+	if (strncmp(arg, ARG_NO_CONFIG_LONG, strlen(ARG_NO_CONFIG_LONG)) == 0) {
+		init_settings(NULL);
+		return;
+	}
+
+	/* Config path */
+	if (strncmp(arg, ARG_CONFIG_PATH_LONG, strlen(ARG_CONFIG_PATH_LONG)) == 0 || strncmp(arg, ARG_CONFIG_PATH_SHORT, strlen(ARG_CONFIG_PATH_SHORT)) == 0) {
+		while (*arg != '\0')
+			if (*arg == '=') {
+				arg++;
+				break;
+			} else arg++;
+
+		init_settings(arg);
+		return;
+	}
+	
+	error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_UNRECOGNIZED_COMMAND), 1);
+}
+
+/**
+>>>>>>> 1ad269e54946c2751aa943ba52cebc30e7a89756
  * Process a callback from the interface
  * @param target The input string
  */
@@ -219,25 +242,8 @@ void exit_callback( void ) {
 	#ifdef EXTENSIONS_INCLUDED
 		extensions_destroy();
 	#endif
-
-	/* Open config */
-	if (!config_off) {
-		path = config_path();
-		printf("Writing to config at %s.\n", path);
-		config = fopen(path, "w+");
-		if (config != NULL) {
-			/* Write all settings out */
-			fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));
-			fprintf(config, "%d=%d\n", SETTING_SILENT, get_setting(SETTING_SILENT));
-			fprintf(config, "%d=%d\n", SETTING_LANG, get_setting(SETTING_LANG));
-			fprintf(config, "%d=%d\n", SETTING_AUTOCOPY, get_setting(SETTING_AUTOCOPY));
-
-			/* Close up and leave */
-			fclose(config);
-		}
-
-		free(path);
-	}
+		
+	save_settings();
 
 	exit(0);
 }

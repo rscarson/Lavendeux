@@ -13,3 +13,12 @@ Prepare for multiplatform compatibility
 Deprecated a few commandline options
 Added auto copy/paste
 Improved memory usage
+
+0.3.0
+-----
+Fixed a few grammar issues
+Changed how settings are integrated
+
+0.3.1
+-----
+Added silent start option

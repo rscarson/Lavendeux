@@ -19,6 +19,7 @@
 		LANG_STR_ABOUT,
 		LANG_STR_LANGUAGE,
 		LANG_STR_ENABLEAUTOCOPY,
+		LANG_STR_ENABLESILENTSTART,
 		LANG_STR_ERR_STARTING,
 		LANG_STR_NO_EQUATIONS,
 		LANG_STR_SILENT_ERRS,
@@ -66,6 +67,11 @@
 		[LANG_STR_ENABLEAUTOCOPY] = {
 			[LANG_EN] = L"Enable auto copy/paste",
 			[LANG_FR] = L"Copier/coller automatiquement"
+		},
+
+		[LANG_STR_ENABLESILENTSTART] = {
+			[LANG_EN] = L"Start silently",
+			[LANG_FR] = L"Commence silencieusement"
 		},
 
 		[LANG_STR_ERR_STARTING] = {

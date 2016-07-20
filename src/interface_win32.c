@@ -13,6 +13,7 @@
     #include "lavendeux.h"
     #include "interface_win32.h"
     #include "interface.h"
+    #include "settings.h"
 
     /* Event globals */
     HWND hWnd;
@@ -25,9 +26,7 @@
     /* Menu equations */
     wchar_t *stored_entries[MAX_EQUATIONS];
 
-    /* Options */
     char prefered_path[MAX_PATH+1];
-    int settings[N_SETTINGS];
 
     /** 
      * Prepare and draw the interface 
@@ -48,10 +47,8 @@
         for (i=0; i<MAX_EQUATIONS; ++i)
             stored_entries[i] = NULL;
 
-        /* Default options */
+        /* No default path yet */
         prefered_path[0] = '\0';
-        for (i=0; i<N_SETTINGS; ++i)
-            settings[i] = 0;
 
         /* Get module instance */
         hInstance = GetModuleHandle(NULL);
@@ -96,13 +93,16 @@
         nid.cbSize = sizeof(nid);
         nid.hWnd = hWnd;
         nid.uID = 100;
-        nid.uFlags = NIF_INFO | NIF_MESSAGE | NIF_ICON | NIF_TIP;
+        nid.uFlags = NIF_INFO | NIF_ICON | NIF_TIP | NIF_MESSAGE;
         nid.uCallbackMessage = RegisterWindowMessage(WINDOW_CALLBACK);
         nid.hIcon = hIcon;
         nid.dwInfoFlags = NIIF_INFO;
         strcpy(nid.szTip, APPLICATION_NAME);
-        strcpy(nid.szInfoTitle, RUNNING_TITLE);
-        strcpy(nid.szInfo, RUNNING_MSG);
+        if (get_setting(SETTING_SILENTSTART) == SETTING_SILENTSTART_OFF) {
+            nid.uFlags |= NIF_INFO;
+            strcpy(nid.szInfoTitle, RUNNING_TITLE);
+            strcpy(nid.szInfo, RUNNING_MSG);
+        }
 
         /* Add notification icon to tray */
         Shell_NotifyIcon(NIM_ADD, &nid);
@@ -167,7 +167,7 @@
 
             /* New thing to process */
             case WM_HOTKEY:
-                if (settings[SETTING_AUTOCOPY]==SETTING_AUTOCOPY_ON) {
+                if (get_setting(SETTING_AUTOCOPY)==SETTING_AUTOCOPY_ON) {
                     /* Control C */
                     SendInput(sizeof(control_c)/sizeof(INPUT), control_c, sizeof(INPUT));
                     Sleep(50);
@@ -175,7 +175,7 @@
 
                 _parse_callback(from_clipboard());
 
-                if (settings[SETTING_AUTOCOPY]==SETTING_AUTOCOPY_ON) {
+                if (get_setting(SETTING_AUTOCOPY)==SETTING_AUTOCOPY_ON) {
                     /* Control V */
                     SendInput(sizeof(control_v)/sizeof(INPUT), control_v, sizeof(INPUT));
                 }
@@ -234,33 +234,38 @@
 
                     /* Change to degrees mode */
                     case CMD_ANGLE_DEG:
-                        settings[SETTING_ANGLE] = SETTING_ANGLE_DEG;
+                        set_setting(SETTING_ANGLE, SETTING_ANGLE_DEG);
                     break;
 
                     /* Change to radians mode */
                     case CMD_ANGLE_RAD:
-                        settings[SETTING_ANGLE] = SETTING_ANGLE_RAD;
+                        set_setting(SETTING_ANGLE, SETTING_ANGLE_RAD);
                     break;
 
                     /* Turn silent errors on and off mode */
                     case CMD_TOGGLE_SILENT_MODE:
-                        settings[SETTING_SILENT] = (settings[SETTING_SILENT]==SETTING_SILENT_ON) ? SETTING_SILENT_OFF : SETTING_SILENT_ON;
+                        set_setting(SETTING_SILENT, (get_setting(SETTING_SILENT)==SETTING_SILENT_ON) ? SETTING_SILENT_OFF : SETTING_SILENT_ON);
                     break;
 
                     /* Turn autocopy on and off */
                     case CMD_TOGGLE_AUTOCOPY:
-                        settings[SETTING_AUTOCOPY] = (settings[SETTING_AUTOCOPY]==SETTING_AUTOCOPY_ON) ? SETTING_AUTOCOPY_OFF : SETTING_AUTOCOPY_ON;
+                        set_setting(SETTING_AUTOCOPY, (get_setting(SETTING_AUTOCOPY)==SETTING_AUTOCOPY_ON) ? SETTING_AUTOCOPY_OFF : SETTING_AUTOCOPY_ON);
+                    break;
+
+                    /* Turn silent start on and off */
+                    case CMD_TOGGLE_SILENTSTART:
+                        set_setting(SETTING_SILENTSTART, (get_setting(SETTING_SILENTSTART)==SETTING_SILENTSTART_ON) ? SETTING_SILENTSTART_OFF : SETTING_SILENTSTART_ON);
                     break;
 
                     /* English language */
                     case CMD_LANG_EN:
-                        settings[SETTING_LANG] = LANG_EN;
+                        set_setting(SETTING_LANG, LANG_EN);
                         language_set_current(LANG_EN);
                     break;
 
                     /* French language */
                     case CMD_LANG_FR:
-                        settings[SETTING_LANG] = LANG_FR;
+                        set_setting(SETTING_LANG, LANG_FR);
                         language_set_current(LANG_FR);
                     break;
 
@@ -315,15 +320,16 @@
 
         /* Settings */
         AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
-        AppendMenuW(hLangMenu, (settings[SETTING_LANG]==LANG_EN)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_EN, L"English");
-        AppendMenuW(hLangMenu, (settings[SETTING_LANG]==LANG_FR)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_FR, L"Français");
+        AppendMenuW(hLangMenu, (get_setting(SETTING_LANG)==LANG_EN)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_EN, L"English");
+        AppendMenuW(hLangMenu, (get_setting(SETTING_LANG)==LANG_FR)?MF_CHECKED:MF_UNCHECKED, CMD_LANG_FR, L"Français");
         AppendMenuW(hMenu, MF_POPUP, (UINT) hLangMenu, language_str(LANG_STR_LANGUAGE));
 
-        AppendMenuW(hMenu, (settings[SETTING_SILENT]==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, language_str(LANG_STR_SILENT_ERRS));
-        AppendMenuW(hMenu, (settings[SETTING_AUTOCOPY]==SETTING_AUTOCOPY_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_AUTOCOPY, language_str(LANG_STR_ENABLEAUTOCOPY));
+        AppendMenuW(hMenu, (get_setting(SETTING_SILENT)==SETTING_SILENT_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENT_MODE, language_str(LANG_STR_SILENT_ERRS));
+        AppendMenuW(hMenu, (get_setting(SETTING_AUTOCOPY)==SETTING_AUTOCOPY_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_AUTOCOPY, language_str(LANG_STR_ENABLEAUTOCOPY));
+        AppendMenuW(hMenu, (get_setting(SETTING_SILENTSTART)==SETTING_SILENTSTART_ON)?MF_CHECKED:MF_UNCHECKED, CMD_TOGGLE_SILENTSTART, language_str(LANG_STR_ENABLESILENTSTART));
 
-        AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, language_str(LANG_STR_DEGREES));
-        AppendMenuW(hAnglesMenu, (settings[SETTING_ANGLE]==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, language_str(LANG_STR_RADIANS));
+        AppendMenuW(hAnglesMenu, (get_setting(SETTING_ANGLE)==SETTING_ANGLE_DEG)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_DEG, language_str(LANG_STR_DEGREES));
+        AppendMenuW(hAnglesMenu, (get_setting(SETTING_ANGLE)==SETTING_ANGLE_RAD)?MF_CHECKED:MF_UNCHECKED, CMD_ANGLE_RAD, language_str(LANG_STR_RADIANS));
         AppendMenuW(hMenu, MF_POPUP, (UINT) hAnglesMenu, language_str(LANG_STR_ANGLE_UNITS));
         
 
@@ -449,7 +455,7 @@
      * @param fatal if non 0, exit
      */
     void error_msg(const wchar_t* title, const wchar_t* msg, char fatal) {
-        if (settings[SETTING_SILENT] == SETTING_SILENT_OFF || fatal) {
+        if (get_setting(SETTING_SILENT) == SETTING_SILENT_OFF || fatal) {
             SetForegroundWindow(hWnd);
             MessageBoxW(hWnd, 
                 msg,
@@ -461,29 +467,6 @@
 
         if (fatal)
             exit(EXIT_FAILURE);
-    }
-
-    /**
-     * Get the value of a given setting
-     * @param setting The setting to fetch
-     *
-     * @return The setting's current value. -1 if setting is invalid
-     */
-    int get_setting(unsigned int setting) {
-        if (setting < N_SETTINGS)
-            return settings[setting];
-
-        return -1;
-    }
-
-    /**
-     * Set the value of a given setting
-     * @param setting The setting to modify
-     * @param value The value to store
-     */
-    void set_setting(unsigned int setting, int value) {
-        if (setting < N_SETTINGS)
-            settings[setting] = value;
     }
 
 #endif

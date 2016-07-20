@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "parse.h"
+#include "settings.h"
 #include "language.h"
 #include "constructs.h"
 #include "builtins.h"

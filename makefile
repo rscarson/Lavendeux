@@ -15,7 +15,11 @@ LEX_HEADER = $(INC_DIR)/generated/lex.h
 TAB_SOURCE = $(SRC_DIR)/generated/tab.c
 TAB_HEADER = $(INC_DIR)/generated/tab.h
 
-_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o values.o
+_PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o values.o settings.o
+PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
+
+_INTERFACE_DEPS = language.o cmdflags.o settings.o interface_win32.o
+INTERFACE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_INTERFACE_DEPS))
 
 _TEST_HASHING_DEPS = test.o hashing.o
 _TEST_BUILTINS_DEPS = test.o hashing.o builtins.o
@@ -46,11 +50,8 @@ TEST_PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_TEST_PARSE_DEPS))
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) -c -o $@ $< $(COMPILE_FLAGS) $(PYTHON_FLAGS)
 
-$(LIB_DIR)/libinterface.a: $(SRC_DIR)/interface_win32.c
-	$(CC) -c $(SRC_DIR)/interface_win32.c -o $(OBJ_DIR)/interface.o  $(COMPILE_FLAGS)
-	$(CC) -c $(SRC_DIR)/language.c -o $(OBJ_DIR)/language.o  $(COMPILE_FLAGS)
-	$(CC) -c $(SRC_DIR)/cmdflags.c -o $(OBJ_DIR)/cmdflags.o  $(COMPILE_FLAGS)
-	ar rcs $(LIB_DIR)/libinterface.a $(OBJ_DIR)/interface.o $(OBJ_DIR)/language.o $(OBJ_DIR)/cmdflags.o
+$(LIB_DIR)/libinterface.a: $(INTERFACE_DEPS)
+	ar rcs $(LIB_DIR)/libinterface.a $(INTERFACE_DEPS)
 
 $(LIB_DIR)/libparse.a: grammar $(PARSE_DEPS)
 	$(CC) -c $(LEX_SOURCE) -o $(OBJ_DIR)/lex.o $(COMPILE_FLAGS)

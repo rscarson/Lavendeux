@@ -34,26 +34,6 @@
 	typedef void (*exitCallback)();
 	typedef void (*parseCallback)(const wchar_t*);
 
-	/* Settings available */
-	/* 0 Value should be default */
-	enum SETTINGS {
-		SETTING_ANGLE,
-		SETTING_SILENT,
-		SETTING_LANG,
-		SETTING_AUTOCOPY,
-
-		N_SETTINGS
-	};
-	
-	#define SETTING_ANGLE_DEG 	0
-	#define SETTING_ANGLE_RAD 	1
-		
-	#define SETTING_SILENT_ON  	0
-	#define SETTING_SILENT_OFF 	1 
-
-	#define SETTING_AUTOCOPY_ON 0
-	#define SETTING_AUTOCOPY_OFF 1
-
 	/** 
      * Prepare and draw the interface 
      * @param exit_callback Method to be called in event of a quit
@@ -117,19 +97,4 @@
 	 * @param fatal if non 0, exit
 	 */
 	void error_msg(const wchar_t*, const wchar_t*, char);
-
-	/**
-	 * Get the value of a given setting
-	 * @param setting The setting to fetch
-	 *
-	 * @return The setting's current value. -1 if setting is invalid
-	 */
-	int get_setting(unsigned int);
-
-	/**
-	 * Set the value of a given setting
-	 * @param setting The setting to modify
-	 * @param value The value to store
-	 */
-	void set_setting(unsigned int, int);
 #endif
