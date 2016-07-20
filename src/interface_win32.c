@@ -26,6 +26,7 @@
     wchar_t *stored_entries[MAX_EQUATIONS];
 
     /* Options */
+    char prefered_path[MAX_PATH+1];
     int settings[N_SETTINGS];
 
     /** 
@@ -48,6 +49,7 @@
             stored_entries[i] = NULL;
 
         /* Default options */
+        prefered_path[0] = '\0';
         for (i=0; i<N_SETTINGS; ++i)
             settings[i] = 0;
 
@@ -401,9 +403,20 @@
      * Get the path to a valid configuration file
      * Search in current directory, then relevant home dir
      */
-    const char* config_path( void ) {
+    char* config_path( void ) {
         char *path;
         FILE* test;
+
+        /* Prepare to hold path */
+        path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
+        if (path == NULL)
+            error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_ALLOCATION), 1);
+
+        /* Preferences first */
+        if (strlen(prefered_path) != 0) {
+            strcpy(path, prefered_path);
+            return path;
+        }
 
         /* Test current directory */
         test = fopen(CONFIG_FILENAME, "r");
@@ -414,11 +427,6 @@
             return CONFIG_FILENAME;
         }
 
-        /* Prepare to hold path */
-        path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
-        if (path == NULL)
-            error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_ALLOCATION), 1);
-
         /* Get home dir path */
         if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
             strcat(path, CONFIG_FILENAME);
@@ -428,7 +436,11 @@
         }
 
         return NULL;
-     }
+    }
+
+    void config_set(const char* path) {
+        strcpy(prefered_path, path);
+    }
 
     /**
      * Get the path to a valid configuration file

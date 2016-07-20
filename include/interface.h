@@ -101,7 +101,14 @@
 	 *
 	 * @return Path to the configuration file
 	 */
-	const char* config_path( void );
+	char* config_path( void );
+
+	/**
+	 * Set a prefered config path. Overrides normal settings
+	 *
+	 * @param path Path to the configuration file
+	 */
+	void config_set(const char*);
 
 	/**
 	 * Get the path to a valid configuration file

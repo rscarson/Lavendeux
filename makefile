@@ -1,5 +1,5 @@
 # Configuration options
-# NO_EXTENSIONS=1 will disable extensions
+NO_EXTENSIONS=1 will disable extensions
 PYTHON_INCLUDE_DIR = C:\\Python27\\include
 PYTHON_LIB_DIR = C:\\Python27\\libs
 
@@ -49,7 +49,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 $(LIB_DIR)/libinterface.a: $(SRC_DIR)/interface_win32.c
 	$(CC) -c $(SRC_DIR)/interface_win32.c -o $(OBJ_DIR)/interface.o  $(COMPILE_FLAGS)
 	$(CC) -c $(SRC_DIR)/language.c -o $(OBJ_DIR)/language.o  $(COMPILE_FLAGS)
-	ar rcs $(LIB_DIR)/libinterface.a $(OBJ_DIR)/interface.o $(OBJ_DIR)/language.o
+	$(CC) -c $(SRC_DIR)/cmdflags.c -o $(OBJ_DIR)/cmdflags.o  $(COMPILE_FLAGS)
+	ar rcs $(LIB_DIR)/libinterface.a $(OBJ_DIR)/interface.o $(OBJ_DIR)/language.o $(OBJ_DIR)/cmdflags.o
 
 $(LIB_DIR)/libparse.a: grammar $(PARSE_DEPS)
 	$(CC) -c $(LEX_SOURCE) -o $(OBJ_DIR)/lex.o $(COMPILE_FLAGS)

@@ -10,6 +10,7 @@
 #include "parse.h"
 #include "interface.h"
 #include "extensions.h"
+#include "cmdflags.h"
 
 /* Configuration file settings */
 int config_off = 0;
@@ -17,36 +18,35 @@ FILE* config = NULL;
 
 int main(int argc, char* argv[]) {
 	int setting, value;
+	char* path;
 
 	/* Start UI */
 	init_interface(exit_callback, parse_callback);
 	parser_init();
 
 	/* Commandline arguments */
-	for (; argc>1; argc--) {
-		parse_argument(argv[argc-1]);
-	}
+	cmdflag_run(argc, argv);
 
 	#ifdef EXTENSIONS_INCLUDED
 		extensions_init();
 	#endif
 
 	/* Config */
-	if (config == NULL && !config_off) {
-		config = fopen(config_path(), "r");
+	if (!config_off) {
+		path = config_path();
+		config = fopen(path, "r");
 		if (config == NULL)
-			printf("Could not open '%s': %s", config_path(), strerror(errno));
-	}
+			printf("Could not open '%s': %s", path, strerror(errno));
 
-	/* Read in settings */
-	if (config != NULL) {
-		printf("Reading config\n");
+		/* Read in settings */
+		printf("Reading config at %s\n", path);
 		while (fscanf(config, " %d = %d \n", &setting, &value) == 2) {
 			if (setting < N_SETTINGS)
 				set_setting(setting, value);
 		}
 
 		fclose(config);
+		free(path);
 	}
 
 	/* Main update loop */
@@ -55,46 +55,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	return 0;
-}
-
-/**
- * Process a commandline argument
- * @param arg The argument string
- */
-void parse_argument(const char* arg) {
-	/* Help */
-	if (strcmp(arg, ARG_HELP_LONG) == 0 || strcmp(arg, ARG_HELP_SHORT) == 0) {
-		print_help();
-		return;
-	}
-
-	/* No config */
-	if (strncmp(arg, ARG_NO_CONFIG_LONG, strlen(ARG_NO_CONFIG_LONG)) == 0) {
-		config_off = 1;
-		return;
-	}
-
-	/* Debug mode */
-	if (strncmp(arg, ARG_DEBUG, strlen(ARG_DEBUG)) == 0) {
-		debug_enable();
-		return;
-	}
-
-	/* Config path */
-	if (strncmp(arg, ARG_CONFIG_PATH_LONG, strlen(ARG_CONFIG_PATH_LONG)) == 0 || strncmp(arg, ARG_CONFIG_PATH_SHORT, strlen(ARG_CONFIG_PATH_SHORT)) == 0) {
-		while (*arg != '\0')
-			if (*arg == '=') {
-				arg++;
-				break;
-			} else arg++;
-
-		config = fopen(arg, "w+");
-		if (config == NULL)
-			error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_CONFIG), 1);
-		return;
-	}
-	
-	error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_UNRECOGNIZED_COMMAND), 1);
 }
 
 /**
@@ -250,6 +210,8 @@ wchar_t* parse_expression(const wchar_t* expression) {
  * Callback to exit
  */
 void exit_callback( void ) {
+	char* path;
+
 	/* Free up memory */
 	printf("Exiting...\n");
 	parser_destroy();
@@ -260,8 +222,9 @@ void exit_callback( void ) {
 
 	/* Open config */
 	if (!config_off) {
-		printf("Writing config.\n");
-		config = fopen(config_path(), "w+");
+		path = config_path();
+		printf("Writing to config at %s.\n", path);
+		config = fopen(path, "w+");
 		if (config != NULL) {
 			/* Write all settings out */
 			fprintf(config, "%d=%d\n", SETTING_ANGLE, get_setting(SETTING_ANGLE));
@@ -272,8 +235,37 @@ void exit_callback( void ) {
 			/* Close up and leave */
 			fclose(config);
 		}
+
+		free(path);
 	}
 
 	exit(0);
 }
 
+/**
+ * Handler for --help
+ */
+void optionhandler_help( void ) {
+	print_help();
+}
+
+/**
+ * Handler for --config
+ */
+void optionhandler_config( void ) {
+	config_set(cmdflag_value("config"));
+}
+
+/**
+ * Handler for --no-config
+ */
+void optionhandler_noconfig( void ) {
+	config_off = 1;
+}
+
+/**
+ * Handler for --debug
+ */
+void optionhandler_debug( void ) {
+	debug_enable();
+}

@@ -37,6 +37,7 @@ int extensions_init( void ) {
 	PyObject* io = PyImport_ImportModule("io");
 	PyObject* pystdout = PyObject_CallMethod(io, "open", "ssi", "CONOUT$", "wb", 0);
 	PyObject_SetAttrString(sys, "stderr", pystdout);
+	PyObject_SetAttrString(sys, "stdout", pystdout);
 
 	printf("Extensions ready\n");
 
