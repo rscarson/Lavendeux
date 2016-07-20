@@ -1,7 +1,6 @@
 # Configuration options
 #NO_EXTENSIONS=1
 PYTHON_INCLUDE_DIR = C:\\Python27\\include
-PYTHON_LIB_DIR = C:\\Python27\\libs
 
 SRC_DIR = src
 LIB_DIR = lib
@@ -36,7 +35,7 @@ PYTHON_FLAGS =
 COMPILE_FLAGS = $(_COMPILE_FLAGS)
 ifndef NO_EXTENSIONS
 	PYTHON_FLAGS = -lpython27 -static -static-libgcc
-	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR) -L$(PYTHON_LIB_DIR) 
+	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR)
 endif
 
 
@@ -93,7 +92,7 @@ windows_binaries: win32
 # Tests Begin #
 ###############
 test : PYTHON_FLAGS = 
-test :COMPILE_FLAGS = $(_COMPILE_FLAGS)
+test : COMPILE_FLAGS = $(_COMPILE_FLAGS)
 
 test_hashing: $(TEST_HASHING_DEPS)
 	@$(CC) $(TEST_DIR)/hashing.c $(TEST_HASHING_DEPS) -o $(BIN_DIR)/$@ $(COMPILE_FLAGS)
