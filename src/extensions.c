@@ -34,26 +34,21 @@
 		path = self_path();
 		strcat(path, &EXTENSIONS_PATH[2]);
 		PyList_Insert(syspath, 0, PyString_FromString(path));
-		printf("%s\n", path);
 		free(path);
 
 		path = self_path();
 		strcat(path, &EXTENSIONS_LIB_PATH[2]);
 		PyList_Insert(syspath, 0, PyString_FromString(path));
-		printf("%s\n", path);
 		free(path);
 
 		path = self_path();
 		strcat(path, "python27.zip");
 		PyList_Insert(syspath, 0, PyString_FromString(path));
-		printf("%s\n", path);
 		free(path);
-
 
 		path = self_path();
 		strcat(path, "python27.zip/site-packages");
 		PyList_Insert(syspath, 0, PyString_FromString(path));
-		printf("%s\n", path);
 		free(path);
 
 		PyList_Insert(syspath, 0, PyString_FromString(EXTENSIONS_PATH));
@@ -170,8 +165,21 @@
 		int_value_t iv;
 		float_value_t fv;
 		unsigned long err;
+		char *mod_help;
 		PyObject *pFunc, *pArgs, *pList, *pValue, *pResultType, *pResult, *pUnicode;
-		printf("Trying to run %s as an extention function\n", name);
+		printf("Trying to run %s as an extension function\n", name);
+
+		/* Help? */
+		if (strcmp(name, EXTENSIONS_HELP) == 0 && n_args==1 && args[0].type == VALUE_STRING) {
+			mod_help = malloc(sizeof(wchar_t) * (wcslen(args[0].sv) + 1));
+			if (mod_help == NULL)
+				return FAILURE_ALLOCATION;
+			mod_help[ wcstombs(mod_help, args[0].sv, wcslen(args[0].sv)) ] = L'\0';
+			
+			i = extensions_help(mod_help, v);
+			free(mod_help);
+			return i;
+		}
 
 		/* Get function */
 		pFunc = extensions_module(name, EXTENSIONS_FUNCTION);
@@ -219,8 +227,6 @@
 				case VALUE_ERROR:
 					err = PyLong_AsUnsignedLong(pResult);
 
-					//Py_DECREF(pResultType);
-					//Py_DECREF(pResult);
 					Py_DECREF(pValue);
 					return (err < N_FAILURES) ? err : FAILURE_BAD_EXTENSION;
 				break;
@@ -248,14 +254,10 @@
 				default:
 					printf("Bad type returned\n");
 
-					//Py_DECREF(pResultType);
-					//Py_DECREF(pResult);
 					Py_DECREF(pValue);
 					return FAILURE_BAD_EXTENSION;
 			}
 
-			//Py_DECREF(pResultType);
-			//Py_DECREF(pResult);
 			Py_DECREF(pValue);
 		} else {
 			printf("Error while executing extension");
@@ -264,6 +266,25 @@
 		}
 
 		printf("Run complete\n");
+		return NO_FAILURE;
+	}
+
+	int extensions_help(const char *name, value *v) {
+		PyObject *pFunc, *pValue, *pUnicode;
+
+		/* Get function */
+		pFunc = extensions_module(name, EXTENSIONS_HELP);
+		if (!pFunc) return FAILURE_BAD_EXTENSION;
+
+		pValue = PyObject_CallObject(pFunc, NULL);
+
+		pUnicode = (PyObject*) PyUnicode_FromObject(pValue);
+		v->sv[ PyUnicode_AsWideChar( (PyUnicodeObject*) pUnicode, v->sv, EXPRESSION_MAX_LEN-1) ] = L'\0';
+		v->type = VALUE_STRING;
+
+		Py_DECREF(pUnicode);
+		Py_DECREF(pValue);
+
 		return NO_FAILURE;
 	}
 #endif

@@ -6,6 +6,7 @@
 	#define EXTENSIONS_LIB_PATH "./lib"
 	#define EXTENSIONS_FUNCTION "call"
 	#define EXTENSIONS_DECORATOR "decorate"
+	#define EXTENSIONS_HELP "help"
 
 	#include <stdlib.h>
 	#include <wchar.h>
@@ -18,4 +19,5 @@
 	void extensions_destroy( void );
 	int extensions_decorate(const char*, value, wchar_t*);
 	int extensions_call(const char*, value[], int, value*);
+	int extensions_help(const char*, value*);
 #endif

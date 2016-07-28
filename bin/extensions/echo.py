@@ -6,3 +6,6 @@ def call(args):
 		return (Types.ERROR, Errors.INVALID_ARGS)
 	print args[0]
 	return (Types.STRING, args[0])
+
+def help():
+	return "Function taking one string argument, and prints it to the debug console."
