@@ -3,6 +3,7 @@
 	
 	#define LAVENDEUX_MODULE "lavendeux"
 	#define EXTENSIONS_PATH "./extensions"
+	#define EXTENSIONS_LIB_PATH "./lib"
 	#define EXTENSIONS_FUNCTION "call"
 	#define EXTENSIONS_DECORATOR "decorate"
 

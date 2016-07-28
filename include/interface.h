@@ -84,6 +84,13 @@
 	char* config_path( void );
 
 	/**
+	 * Get the path to the executable
+	 *
+	 * @return Directory path
+	 */
+	char* self_path( void );
+
+	/**
 	 * Set a prefered config path. Overrides normal settings
 	 *
 	 * @param path Path to the configuration file

@@ -415,7 +415,7 @@
      * Search in current directory, then relevant home dir
      */
     char* config_path( void ) {
-        char *path;
+        char *path, *self;
         FILE* test;
 
         /* Prepare to hold path */
@@ -434,20 +434,50 @@
         if (test != NULL) {
             fclose(test);
 
-            printf("Found configuration path: %s\n", CONFIG_FILENAME);
-            return CONFIG_FILENAME;
-        }
-
-        /* Get home dir path */
-        if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
+            path[0] = '\0';
             strcat(path, CONFIG_FILENAME);
-            strcat(path, "\\");
 
             printf("Found configuration path: %s\n", path);
             return path;
         }
 
+        /* Test executable directory */
+        self = self_path();
+        strcat(self, "\\");
+        strcat(self, CONFIG_FILENAME);
+        test = fopen(self, "r");
+        if (test != NULL) {
+            fclose(test);
+
+            printf("Found configuration path: %s\n", self);
+            return self;
+        }
+        free(self);
+
+        /* Get home dir path */
+        if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
+            strcat(path, CONFIG_FILENAME);
+            printf("Found configuration path: %s\n", path);
+            return path;
+        }
+
         return NULL;
+    }
+
+    char* self_path( void ) {
+        int i;
+        char *path;
+
+        /* Prepare to hold path */
+        path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
+        if (path == NULL)
+            error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_ALLOCATION), 1);
+
+        GetModuleFileName(NULL, path, MAX_PATH+1);
+        for (i=strlen(path)-1; i>=0; i--)
+            if (path[i] == '\\') break;
+            else path[i] = '\0';
+        return path;
     }
 
     void config_set(const char* path) {

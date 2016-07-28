@@ -5,9 +5,11 @@
 
 	#include "parse.h"
 	#include "extensions.h"
+	#include "interface.h"
 
 	int extensions_init( void ) {
 		PyObject *syspath, *pName;
+		char* path;
 		printf("Attempting to load extensions\n");
 
 		Py_SetProgramName("Lavendeux");
@@ -28,7 +30,34 @@
 			extensions_destroy();
 			return 0;
 		}
+
+		path = self_path();
+		strcat(path, &EXTENSIONS_PATH[2]);
+		PyList_Insert(syspath, 0, PyString_FromString(path));
+		printf("%s\n", path);
+		free(path);
+
+		path = self_path();
+		strcat(path, &EXTENSIONS_LIB_PATH[2]);
+		PyList_Insert(syspath, 0, PyString_FromString(path));
+		printf("%s\n", path);
+		free(path);
+
+		path = self_path();
+		strcat(path, "python27.zip");
+		PyList_Insert(syspath, 0, PyString_FromString(path));
+		printf("%s\n", path);
+		free(path);
+
+
+		path = self_path();
+		strcat(path, "python27.zip/site-packages");
+		PyList_Insert(syspath, 0, PyString_FromString(path));
+		printf("%s\n", path);
+		free(path);
+
 		PyList_Insert(syspath, 0, PyString_FromString(EXTENSIONS_PATH));
+		PyList_Insert(syspath, 0, PyString_FromString(EXTENSIONS_LIB_PATH));
 		PyList_Insert(syspath, 0, PyString_FromString("python27.zip"));
 		PyList_Insert(syspath, 0, PyString_FromString("python27.zip/site-packages"));
 		PySys_SetObject("path", syspath);
