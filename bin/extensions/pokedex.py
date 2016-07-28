@@ -1,6 +1,3 @@
-# Super critical pokemon ops
-#	As decorator: Get name by index
-
 from lavendeux import Types, Errors
 
 def call(args):
@@ -15,12 +12,8 @@ def call(args):
 	
 	return (Types.STRING, 'MissingNo')
 
-def decorate(value):
-	if int(value) in pokedex.keys():
-		return pokedex[int(value)]
-	elif value in pokedex.values():
-		return pokedex.keys()[pokedex.values().index(value)]
-	return 'MissingNo'
+def help():
+	return "Function taking 1 argument. A pokemon's name, returning it's ID number or a a pokedex ID, returning it's name"
 
 pokedex = {
 	1: 'Bulbasaur',

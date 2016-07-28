@@ -1,6 +1,3 @@
-# Color complement
-# 	As function: 1 arg... Hexadecimal color code, return Complementary color code
-
 from lavendeux import Types, Errors
 import colorsys
 
@@ -43,3 +40,6 @@ def packRGB(r,g,b):
 	val = val | int(round(b))
 
 	return val
+
+def help():
+	return "Function taking 1 hexadecimal color code as an argument. Returns the complimentary color code."

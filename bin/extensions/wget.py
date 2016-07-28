@@ -13,3 +13,6 @@ def call(args):
 		return (Types.STRING, args[0])
 
 	return (Types.STRING, html)
+
+def help():
+	return "A function taking 1 argument. Fetches a network resource."

@@ -1,7 +1,3 @@
-# Unix timestamp operations
-# 	As function: 0 args, return current timestamp
-#	As decorator: Format timestamp
-
 from lavendeux import Types, Errors
 import time
 
@@ -13,3 +9,7 @@ def call(args):
 
 def decorate(value):
 	return time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(value))
+
+def help():
+	return """A function not taking any arguments, Returns the current unix timestamp.
+A decorator that formats a timestamp"""

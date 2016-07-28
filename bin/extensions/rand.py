@@ -1,6 +1,3 @@
-# Random integer generation
-# 	As function: 2 args, return int between a and b -> rand(a, b)
-
 from lavendeux import Types, Errors
 import random
 
@@ -12,3 +9,6 @@ def call(args):
 		return (Types.FLOAT, random.random())
 	else:
 		return (Types.ERROR, Errors.INVALID_ARGS)
+
+def help():
+	return "A function taking 0 or 2 arguments. 2 integer arguments forming a range from which an integer is randomly selected. Or 0 arguments, returning a random floating point number between 0 and 1."
