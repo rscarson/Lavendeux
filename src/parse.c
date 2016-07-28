@@ -112,8 +112,7 @@ int call_function(const wchar_t* name, value args[], int n_args, value* v, int a
 
 	/* Try extensions */
 	#ifdef EXTENSIONS_INCLUDED
-		if (wcstombs(short_name, name, EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
-			short_name[EXPRESSION_MAX_LEN-1] = '\0';
+		short_name[ wcstombs(short_name, name, EXPRESSION_MAX_LEN) ] = '\0';
 		result = extensions_call(short_name, args, n_args, v);
 		if (result != FAILURE_BAD_EXTENSION)
 			return result;

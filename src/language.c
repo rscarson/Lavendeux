@@ -31,7 +31,7 @@ const wchar_t* language_str(int s) {
 char* language_char_str(int s) {
 	const wchar_t* wstr = language_str(s);
 	char* str = (char*) malloc(sizeof(char) * (wcslen(wstr)+1));
-	wcstombs(str, wstr, wcslen(wstr));
+	str[ wcstombs(str, wstr, wcslen(wstr)) ] = '\0';
 
 	return str;
 }

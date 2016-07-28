@@ -82,7 +82,7 @@
 	}
 
 	PyObject* extensions_module(const char* name, const char* function) {
-		PyObject *pModule, *pFunc;
+		PyObject *pModule, *pFunc, *pErr;
 		printf("Loading an extension module: %s; %s function\n", name, function);
 
 		/* Can we? */
@@ -95,7 +95,11 @@
 		pModule = PyImport_ImportModule(name);
 		if (pModule == NULL) {
 			printf("Cannot load requested extension module\n");
-			PyErr_Print();
+			if (!PyErr_ExceptionMatches(PyExc_ImportError))	{
+				printf("Error in extension\n");
+				PyErr_Print();
+			}
+
 			return NULL;
 		}
 
@@ -260,7 +264,7 @@
 
 			Py_DECREF(pValue);
 		} else {
-			printf("Error while executing extension");
+			printf("Error while executing extension\n");
 			PyErr_Print();
 			return FAILURE_BAD_EXTENSION;
 		}
