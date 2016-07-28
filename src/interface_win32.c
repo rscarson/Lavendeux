@@ -1,6 +1,7 @@
 #ifdef _WIN32
 #define NTDDI_VERSION NTDDI_WIN2K
 #define _WIN32_IE 0x0500
+#define _WIN32_WINNT 0x0500
 
     #include <stdio.h>
     #include <windows.h>
@@ -8,6 +9,7 @@
     #include <shellapi.h>
     #include <conio.h>
     #include <Shlobj.h>
+    #include <Winuser.h>
 
     #include "language.h"
     #include "lavendeux.h"
@@ -18,6 +20,7 @@
 
     /* Event globals */
     HWND hWnd;
+    HICON hIcon;
     NOTIFYICONDATA nid;
 
     /* Stored callbacks */
@@ -36,7 +39,6 @@
      */
     void init_interface(exitCallback exit_callback, parseCallback parse_callback) {
         int i;
-        HICON hIcon;
         WNDCLASSEX hClass;
         HINSTANCE hInstance;
 
@@ -113,7 +115,13 @@
      * Enable debug console
      */
     void debug_enable( void ) {
+        HWND console;
+
         AllocConsole();
+        console = GetConsoleWindow();
+        SetConsoleTitle(DEBUG_TITLE);
+        SendMessage(console, WM_SETICON, 0, (LPARAM) LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_ID)) );
+
         freopen("CONOUT$", "w", stdout);
         freopen("CONOUT$", "w", stderr);
         printf("Debug mode enabled.\n");
