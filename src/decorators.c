@@ -56,10 +56,12 @@ int decorate(const wchar_t* name, value v, wchar_t* decorated) {
 
 	/* Try extensions */
 	#ifdef EXTENSIONS_INCLUDED
-		if (wcstombs(short_name, name, EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
-			short_name[EXPRESSION_MAX_LEN-1] = '\0';
-		if (extensions_decorate(short_name, v, decorated) != FAILURE_BAD_EXTENSION)
-			return 1;
+		if (extensions_available()) {
+			if (wcstombs(short_name, name, EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
+				short_name[EXPRESSION_MAX_LEN-1] = '\0';
+			if (extensions_decorate(short_name, v, decorated) != FAILURE_BAD_EXTENSION)
+				return 1;
+		}
 	#endif
 
 	return 0;

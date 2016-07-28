@@ -112,10 +112,12 @@ int call_function(const wchar_t* name, value args[], int n_args, value* v, int a
 
 	/* Try extensions */
 	#ifdef EXTENSIONS_INCLUDED
-		short_name[ wcstombs(short_name, name, EXPRESSION_MAX_LEN) ] = '\0';
-		result = extensions_call(short_name, args, n_args, v);
-		if (result != FAILURE_BAD_EXTENSION)
-			return result;
+		if (extensions_available()) {
+			short_name[ wcstombs(short_name, name, EXPRESSION_MAX_LEN) ] = '\0';
+			result = extensions_call(short_name, args, n_args, v);
+			if (result != FAILURE_BAD_EXTENSION)
+				return result;
+		}
 	#endif
 
 	return FAILURE_INVALID_NAME;

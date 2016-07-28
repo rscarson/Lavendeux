@@ -456,6 +456,7 @@
 
         /* Get home dir path */
         if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
+            strcat(path, "\\");
             strcat(path, CONFIG_FILENAME);
             printf("Found configuration path: %s\n", path);
             return path;

@@ -7,9 +7,12 @@
 	#include "extensions.h"
 	#include "interface.h"
 
-	int extensions_init( void ) {
-		PyObject *syspath, *pName;
+	int _extensions_available;
+
+	void extensions_init( void ) {
+		PyObject *syspath, *pName, *pModule, *stdOut;
 		char* path;
+		_extensions_available = 0;
 		printf("Attempting to load extensions\n");
 
 		Py_SetProgramName("Lavendeux");
@@ -21,14 +24,15 @@
 		/* Make sure it worked */
 		if (!Py_IsInitialized()) {
 			printf("Could not load python\n");
-			return 0;
+			return;
 		}
 
 		/* Add dirs to search path */
 		if ( (syspath = PySys_GetObject("path")) == 0) {
 			printf("Could not fetch python path\n");
 			extensions_destroy();
-			return 0;
+		
+			return;
 		}
 
 		path = self_path();
@@ -57,16 +61,33 @@
 		PyList_Insert(syspath, 0, PyString_FromString("python27.zip/site-packages"));
 		PySys_SetObject("path", syspath);
 
+		/* Reopen console output */
+		pModule = PyImport_ImportModule("io");
+		if (pModule == NULL) {
+			/* Cannot load standard library! */
+			printf("Could not find standard library! python27.zip missing or corrupted.\n");
+			return;
+		}
+		stdOut = PyObject_CallMethod(pModule, "open", "ssi", "CONOUT$", "wb", 0);
+		Py_DECREF(pModule);
+
 		/* Redirect errors */
-		PyObject* sys = PyImport_ImportModule("sys");
-		PyObject* io = PyImport_ImportModule("io");
-		PyObject* pystdout = PyObject_CallMethod(io, "open", "ssi", "CONOUT$", "wb", 0);
-		PyObject_SetAttrString(sys, "stderr", pystdout);
-		PyObject_SetAttrString(sys, "stdout", pystdout);
+		pModule = PyImport_ImportModule("sys");
+		if (pModule == NULL) {
+			/* Cannot load standard library! */
+			printf("Could not find standard library! python27.zip missing or corrupted.\n");
+			return;
+		}
+		PyObject_SetAttrString(pModule, "stderr", stdOut);
+		PyObject_SetAttrString(pModule, "stdout", stdOut);
+		Py_DECREF(pModule);
+
 
 		printf("Extensions ready\n");
 
-		return 1;
+			
+		_extensions_available = 1;
+		return;
 	}
 
 	int extensions_homeset( void ) {
@@ -74,7 +95,7 @@
 	}
 
 	int extensions_available( void ) {
-		return Py_IsInitialized();
+		return Py_IsInitialized() && _extensions_available;
 	}
 
 	void extensions_destroy( void ) {
@@ -95,8 +116,8 @@
 		pModule = PyImport_ImportModule(name);
 		if (pModule == NULL) {
 			printf("Cannot load requested extension module\n");
-			if (!PyErr_ExceptionMatches(PyExc_ImportError))	{
-				printf("Error in extension\n");
+			if (PyErr_Occurred()) {
+				printf("Error loading extension :\n");
 				PyErr_Print();
 			}
 

@@ -13,7 +13,7 @@
 
 	#include "parse.h"
 	
-	int extensions_init( void );
+	void extensions_init( void );
 	int extensions_homeset( void );
 	int extensions_available( void );
 	void extensions_destroy( void );
