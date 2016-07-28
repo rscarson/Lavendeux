@@ -58,7 +58,7 @@
 	}
 
 	PyObject* extensions_module(const char* name, const char* function) {
-		PyObject *pName, *pModule, *pFunc;
+		PyObject *pModule, *pFunc;
 		printf("Loading an extension module: %s; %s function\n", name, function);
 
 		/* Can we? */
@@ -68,11 +68,7 @@
 		}
 
 		/* Try to get the module */
-		pName = PyString_FromString(name);
-		pModule = PyImport_Import(pName);
-		Py_DECREF(pName);
-
-		/* Make sure it worked */
+		pModule = PyImport_ImportModule(name);
 		if (pModule == NULL) {
 			printf("Cannot load requested extension module\n");
 			PyErr_Print();
@@ -103,7 +99,13 @@
 
 		/* Prepare argument */
 		pArgs = PyTuple_New(1);
-		pValue = (v.type == VALUE_INT) ? PyLong_FromLongLong(v.iv) : PyFloat_FromDouble(v.fv);
+		if (v.type == VALUE_INT)
+			pValue = PyLong_FromLongLong(v.iv);
+		else if (v.type == VALUE_FLOAT)
+			pValue = PyFloat_FromDouble(v.fv);
+		else if (v.type == VALUE_STRING)
+			pValue = PyUnicode_FromWideChar(v.sv, wcslen(v.sv));
+
 		if (!pValue) {
 			printf("Error while preparing an argument\n");
 			Py_DECREF(pFunc);
@@ -117,15 +119,14 @@
 		Py_DECREF(pFunc);
 
 		if (pValue != NULL) {
-			pValue = PyObject_Str(pValue);
+			pValue = PyObject_Unicode(pValue);
 			if (pValue == NULL) {
 				printf("Argument cannot be converted to string\n");
 				Py_DECREF(pValue);
 				return FAILURE_BAD_EXTENSION;
 			}
 
-			if (mbstowcs(decorated, PyString_AsString(pValue), EXPRESSION_MAX_LEN) == EXPRESSION_MAX_LEN)
-				decorated[EXPRESSION_MAX_LEN-1] = L'\0';
+			decorated[ PyUnicode_AsWideChar((PyUnicodeObject*) pValue, decorated, EXPRESSION_MAX_LEN-1) ] = L'\0';
 
 			Py_DECREF(pValue);
 			return NO_FAILURE;
@@ -140,7 +141,7 @@
 		int_value_t iv;
 		float_value_t fv;
 		unsigned long err;
-		PyObject *pFunc, *pArgs, *pList, *pValue, *pResultType, *pResult;
+		PyObject *pFunc, *pArgs, *pList, *pValue, *pResultType, *pResult, *pUnicode;
 		printf("Trying to run %s as an extention function\n", name);
 
 		/* Get function */
@@ -150,8 +151,15 @@
 		/* Prepare arguments */
 		pArgs = PyTuple_New(1);
 		pList = PyList_New(n_args);
+		pValue = NULL;
 		for (i=0; i<n_args; i++) {
-			pValue = (args[i].type == VALUE_INT) ? PyLong_FromLongLong(args[i].iv) : PyFloat_FromDouble(args[i].fv);
+			if (args[i].type == VALUE_INT)
+				pValue = PyLong_FromLongLong(args[i].iv);
+			else if (args[i].type == VALUE_FLOAT)
+				pValue = PyFloat_FromDouble(args[i].fv);
+			else if (args[i].type == VALUE_STRING)
+				pValue = PyUnicode_FromWideChar(args[i].sv, wcslen(args[i].sv));
+
 			if (!pValue) {
 				printf("Error while preparing an argument\n");
 				Py_DECREF(pFunc);
@@ -163,6 +171,7 @@
 
 		/* Call function */
 		pValue = PyObject_CallObject(pFunc, pArgs);
+		printf("Function call complete.\n");
 		Py_DECREF(pArgs);
 		Py_DECREF(pFunc);
 
@@ -181,8 +190,8 @@
 				case VALUE_ERROR:
 					err = PyLong_AsUnsignedLong(pResult);
 
-					Py_DECREF(pResultType);
-					Py_DECREF(pResult);
+					//Py_DECREF(pResultType);
+					//Py_DECREF(pResult);
 					Py_DECREF(pValue);
 					return (err < N_FAILURES) ? err : FAILURE_BAD_EXTENSION;
 				break;
@@ -199,17 +208,25 @@
 					v->iv = iv;
 				break;
 
+				case VALUE_STRING:
+					pUnicode = (PyObject*) PyUnicode_FromObject(pResult);
+					v->sv[ PyUnicode_AsWideChar( (PyUnicodeObject*) pUnicode, v->sv, EXPRESSION_MAX_LEN-1) ] = L'\0';
+					v->type = VALUE_STRING;
+
+					Py_DECREF(pUnicode);
+				break;
+
 				default:
 					printf("Bad type returned\n");
 
-					Py_DECREF(pResultType);
-					Py_DECREF(pResult);
+					//Py_DECREF(pResultType);
+					//Py_DECREF(pResult);
 					Py_DECREF(pValue);
 					return FAILURE_BAD_EXTENSION;
 			}
 
-			Py_DECREF(pResultType);
-			Py_DECREF(pResult);
+			//Py_DECREF(pResultType);
+			//Py_DECREF(pResult);
 			Py_DECREF(pValue);
 		} else {
 			printf("Error while executing extension");

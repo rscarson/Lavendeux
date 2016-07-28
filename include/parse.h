@@ -25,7 +25,8 @@
 		VALUE_ERROR,
 		VALUE_FLOAT,
 		VALUE_INT,
-		VALUE_STRING
+		VALUE_STRING,
+		VALUE_IDENT
 	};
 	typedef long long int int_value_t;
 

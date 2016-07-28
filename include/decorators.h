@@ -18,6 +18,7 @@
 	void decorator_bin(value, wchar_t*);
 	void decorator_oct(value, wchar_t*);
 	void decorator_hex(value, wchar_t*);
+	void decorator_string(value, wchar_t*);
 
 	/* Decorator table */
 	int init_decorators( void );

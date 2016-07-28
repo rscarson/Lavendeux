@@ -27,10 +27,14 @@ int float_value(const value* v, float_value_t *out) {
 			return NO_FAILURE;
 		break;
 
-		case VALUE_STRING:
+		case VALUE_IDENT:
 			if( (result = get_variable(v->sv, &resolved)) == NO_FAILURE )
 				return float_value(&resolved, out);
 			else return result;
+		break;
+
+		case VALUE_STRING:
+			return FAILURE_TYPE;
 		break;
 	}
 
@@ -59,10 +63,14 @@ int int_value(const value* v, int_value_t *out) {
 			return NO_FAILURE;
 		break;
 
-		case VALUE_STRING:
+		case VALUE_IDENT:
 			if( (result = get_variable(v->sv, &resolved)) == NO_FAILURE )
 				return int_value(&resolved, out);
 			else return result;
+		break;
+
+		case VALUE_STRING:
+			return FAILURE_TYPE;
 		break;
 	}
 
@@ -80,7 +88,7 @@ int value_type(value* v, char* type) {
 	value resolved;
 	int result;
 
-	if (v->type == VALUE_STRING) {
+	if (v->type == VALUE_IDENT) {
 		result = get_variable(v->sv, &resolved);
 		if (result != NO_FAILURE)
 			return result;
@@ -112,6 +120,11 @@ char expression_type(const value* left, const value* right, int *result) {
 		
 		if (left_type == VALUE_FLOAT)
 			return VALUE_FLOAT;
+
+		if (left_type == VALUE_STRING) {
+			*result = FAILURE_TYPE;
+			return VALUE_ERROR;
+		}
 	}
 	
 	if (right != NULL) {
@@ -121,6 +134,11 @@ char expression_type(const value* left, const value* right, int *result) {
 		
 		if (right_type == VALUE_FLOAT)
 			return VALUE_FLOAT;
+
+		if (right_type == VALUE_STRING) {
+			*result = FAILURE_TYPE;
+			return VALUE_ERROR;
+		}
 	}
 
 	return VALUE_INT;

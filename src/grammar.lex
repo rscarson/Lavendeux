@@ -22,13 +22,24 @@
 
 %%
 
+(\"([^\\\"]|\\.)*\")|(\'([^\\\']|\\.)*\') {
+	unsigned int len = yyget_leng(yyscanner) - 2;
+	if (len >= EXPRESSION_MAX_LEN)
+		len = EXPRESSION_MAX_LEN-1;
+
+	yylval->val.type = VALUE_STRING;
+	yylval->val.sv[ mbstowcs(yylval->val.sv, yyget_text(yyscanner)+1, len) ] = L'\0';
+
+	return STRING;
+}
+
 [a-zA-Z_][a-zA-Z0-9_]* {
 	unsigned int id_len = yyget_leng(yyscanner);
 	if (id_len >= EXPRESSION_MAX_LEN-1)
 		id_len = EXPRESSION_MAX_LEN-2;
 
 	/* Store token value */
-	yylval->val.type = VALUE_STRING;
+	yylval->val.type = VALUE_IDENT;
 	mbstowcs(yylval->val.sv, yyget_text(yyscanner), id_len);
 	yylval->val.sv[id_len] = L'\0';
 

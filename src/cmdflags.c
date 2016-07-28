@@ -10,16 +10,16 @@
  * Get help message for defined flags
  * @return Help string
  */
-char* cmdflag_help() {
+char* cmdflag_help(const char* msg) {
 	int i;
 	char helpbuf[HELP_BUFFER_LEN];
 	int nFlags = sizeof(flags) / sizeof(cmd_flag);
 
-	char* help = malloc(sizeof(char) * HELP_BUFFER_LEN * nFlags);
+	char* help = malloc(sizeof(char) * ((HELP_BUFFER_LEN * nFlags)+strlen(msg)) );
 	if (help == NULL)
 		return "";
 
-	help[0] = '\0';
+	strcpy(help, msg);
 	for (i=0; i < nFlags; i++) {
 		switch (flags[i].type) {
 			case TYPE_DEFAULT:

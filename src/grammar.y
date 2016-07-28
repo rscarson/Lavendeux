@@ -45,7 +45,7 @@
 }
 
 /* Valid tokens */
-%token <val> IDENTIFIER HEX BIN OCT SCI FLOAT INT
+%token <val> IDENTIFIER HEX BIN OCT SCI FLOAT INT STRING
 %token <val> DECORATOR EQUAL LPAREN RPAREN
 %token <val> ERROR
 %token <list> COMMA
@@ -82,6 +82,9 @@ expression:
 				break;
 			case VALUE_INT:
 				decorator_int($1, $$.sv);
+				break;
+			case VALUE_STRING:
+				decorator_string($1, $$.sv);
 				break;
 		}
 
@@ -141,6 +144,9 @@ atomic_value:
 		$$ = $1;
 	}
 	| INT {
+		$$ = $1;
+	}
+	| STRING {
 		$$ = $1;
 	}
 	| MINUS atomic_value {
@@ -642,7 +648,7 @@ constant_expression:
 		}
 	}
 	| IDENTIFIER LPAREN expression_list RPAREN {
-		int err;
+		int i,err;
 
 		feclearexcept (FE_ALL_EXCEPT);
 		err = call_function($1.sv, $3.elements, $3.size, &$$, angle_mode);

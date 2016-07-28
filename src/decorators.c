@@ -177,3 +177,17 @@ void decorator_hex(value v, wchar_t* decorated) {
 	int_value_t iv = RESOLVED_VALUE(v);
 	swprintf(decorated, EXPRESSION_MAX_LEN, L"0x%Lx", iv);
 }
+
+/**
+ * String
+ * @param v Value to apply the decorator to
+ * @param decorated Returned string
+ */
+void decorator_string(value v, wchar_t* decorated) {
+	int len = wcslen(v.sv);
+	if (len > EXPRESSION_MAX_LEN)
+		len = EXPRESSION_MAX_LEN-1;
+
+	wcscpy(decorated, v.sv);
+	v.sv[len] = L'\0';
+}

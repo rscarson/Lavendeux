@@ -46,25 +46,26 @@
      SCI = 262,
      FLOAT = 263,
      INT = 264,
-     DECORATOR = 265,
-     EQUAL = 266,
-     LPAREN = 267,
-     RPAREN = 268,
-     ERROR = 269,
-     COMMA = 270,
-     OR = 271,
-     XOR = 272,
-     AND = 273,
-     RSHIFT = 274,
-     LSHIFT = 275,
-     MINUS = 276,
-     PLUS = 277,
-     MOD = 278,
-     DIV = 279,
-     MUL = 280,
-     POW = 281,
-     FACTORIAL = 282,
-     NOT = 283
+     STRING = 265,
+     DECORATOR = 266,
+     EQUAL = 267,
+     LPAREN = 268,
+     RPAREN = 269,
+     ERROR = 270,
+     COMMA = 271,
+     OR = 272,
+     XOR = 273,
+     AND = 274,
+     RSHIFT = 275,
+     LSHIFT = 276,
+     MINUS = 277,
+     PLUS = 278,
+     MOD = 279,
+     DIV = 280,
+     MUL = 281,
+     POW = 282,
+     FACTORIAL = 283,
+     NOT = 284
    };
 #endif
 
@@ -83,7 +84,7 @@ typedef union YYSTYPE
 
 
 /* Line 1685 of yacc.c  */
-#line 87 "include/generated/tab.h"
+#line 88 "include/generated/tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
