@@ -74,12 +74,16 @@ Section "MainSection" SEC01
   File "..\README"
   File "..\LICENSE"
   File "..\CHANGELOG"
-  File "..\python27.zip"
-  File "..\python27.dll"
+  File "..\bin\python27.zip"
+  File "..\bin\python27.dll"
 
   CreateDirectory "$INSTDIR\extensions"
   SetOutPath "$INSTDIR\extensions"
-  File /r "..\extensions\"
+  File /r "..\bin\extensions\"
+
+  CreateDirectory "$INSTDIR\lib"
+  SetOutPath "$INSTDIR\lib"
+  File /r "..\bin\lib\"
 SectionEnd
 
 Section -AdditionalIcons

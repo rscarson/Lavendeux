@@ -66,6 +66,7 @@ clean:
 	rm -f $(OBJ_DIR)/*.o
 	rm -f $(OBJ_DIR)/*.res
 	rm -f $(BIN_DIR)/*.exe
+	rm -f $(BIN_DIR)/lavendeux.zip
 
 ##################
 # Linux Platform #
@@ -85,8 +86,10 @@ win32: $(OBJ_DIR)/lavendeux.res grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/lib
 	$(CC) $(OBJ_DIR)/lavendeux.res $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(WIN32_FLAGS) $(PYTHON_FLAGS)
 
 windows_binaries: win32
-	zip bin/lavendeux.zip python27.dll python27.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe .lavendeuxsettings -j
-	zip -r bin/lavendeux.zip extensions
+	zip bin/lavendeux.zip $(BIN_DIR)/python27.dll $(BIN_DIR)/python27.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
+	cd  $(BIN_DIR); zip -r lavendeux.zip extensions
+	cd  $(BIN_DIR); zip -r lavendeux.zip lib
+	cd ..
 	makensis src/setup.nsi
 
 ###############
