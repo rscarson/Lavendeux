@@ -121,6 +121,7 @@
         console = GetConsoleWindow();
         SetConsoleTitle(DEBUG_TITLE);
         SendMessage(console, WM_SETICON, 0, (LPARAM) LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_ID)) );
+        SendMessage(console, WM_SETICON, ICON_BIG, (LPARAM) LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_ID)) );
 
         freopen("CONOUT$", "w", stdout);
         freopen("CONOUT$", "w", stderr);
