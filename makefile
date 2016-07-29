@@ -1,6 +1,7 @@
 # Configuration options
 #NO_EXTENSIONS=1
-PYTHON_INCLUDE_DIR = C:\\Python27\\include
+PYTHON_DIR = C:\\Python27
+PYTHON_INCLUDE_DIR = $(PYTHON_DIR)\\include
 
 SRC_DIR = src
 LIB_DIR = lib

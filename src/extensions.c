@@ -61,6 +61,14 @@
 		PyList_Insert(syspath, 0, PyString_FromString("python27.zip/site-packages"));
 		PySys_SetObject("path", syspath);
 
+		/* Test libraries */
+		pModule = PyImport_ImportModule("_socket");
+		if (pModule == NULL) {
+			printf("Could not find python dynamic libraries!\n");
+			return;
+		}
+		Py_DECREF(pModule);
+
 		/* Reopen console output */
 		pModule = PyImport_ImportModule("io");
 		if (pModule == NULL) {
