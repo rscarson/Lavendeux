@@ -20,7 +20,6 @@
 
     /* Event globals */
     HWND hWnd;
-    HICON hIcon;
     NOTIFYICONDATA nid;
 
     /* Stored callbacks */
@@ -39,6 +38,7 @@
      */
     void init_interface(exitCallback exit_callback, parseCallback parse_callback) {
         int i;
+        HICON hIcon;
         WNDCLASSEX hClass;
         HINSTANCE hInstance;
 
@@ -109,6 +109,7 @@
 
         /* Add notification icon to tray */
         Shell_NotifyIcon(NIM_ADD, &nid);
+        DestroyIcon(hIcon);
     }
 
     /**
@@ -116,12 +117,20 @@
      */
     void debug_enable( void ) {
         HWND console;
+        HICON hIcon;
+
+        /* Load icon */
+        hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_ID)); 
+        if (!hIcon) {
+            exit(EXIT_FAILURE);
+        }
 
         AllocConsole();
         console = GetConsoleWindow();
         SetConsoleTitle(DEBUG_TITLE);
-        SendMessage(console, WM_SETICON, 0, (LPARAM) LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_ID)) );
-        SendMessage(console, WM_SETICON, ICON_BIG, (LPARAM) LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ICON_ID)) );
+        SendMessage(console, WM_SETICON, ICON_SMALL, (LPARAM) hIcon);
+        SendMessage(console, WM_SETICON, ICON_BIG, (LPARAM) hIcon);
+        DestroyIcon(hIcon);
 
         freopen("CONOUT$", "w", stdout);
         freopen("CONOUT$", "w", stderr);
