@@ -1,5 +1,8 @@
+# coding: utf-8
+
 from lavendeux import Types, Errors
-import urllib
+from  urllib2 import urlopen
+import encodings.idna
 
 def call(args):
 	# Check number of arguments
@@ -7,9 +10,9 @@ def call(args):
 		return (Types.ERROR, Errors.INVALID_ARGS)
 
 	try:
-		response = urllib.urlopen(args[0])
+		response = urlopen(url=args[0], timeout=0.5)
 		html = response.read()
-	except IOError:
+	except (IOError, ValueError):
 		return (Types.STRING, args[0])
 
 	return (Types.STRING, html)
