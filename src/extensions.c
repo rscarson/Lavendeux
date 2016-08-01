@@ -198,19 +198,19 @@
 		int_value_t iv;
 		float_value_t fv;
 		unsigned long err;
-		char *mod_help;
+		char *result;
 		PyObject *pFunc, *pArgs, *pList, *pValue, *pResultType, *pResult, *pUnicode;
 		printf("Trying to run %s as an extension function\n", name);
 
 		/* Help? */
 		if (strcmp(name, EXTENSIONS_HELP) == 0 && n_args==1 && args[0].type == VALUE_STRING) {
-			mod_help = malloc(sizeof(wchar_t) * (wcslen(args[0].sv) + 1));
-			if (mod_help == NULL)
+			result = malloc(sizeof(char) * (wcslen(args[0].sv) + 1));
+			if (result == NULL)
 				return FAILURE_ALLOCATION;
-			mod_help[ wcstombs(mod_help, args[0].sv, wcslen(args[0].sv)) ] = L'\0';
+			result[ wcstombs(result, args[0].sv, wcslen(args[0].sv)) ] = L'\0';
 			
-			i = extensions_help(mod_help, v);
-			free(mod_help);
+			i = extensions_help(result, v);
+			free(result);
 			return i;
 		}
 
@@ -277,11 +277,18 @@
 				break;
 
 				case VALUE_STRING:
-					pUnicode = (PyObject*) PyUnicode_FromObject(pResult);
-					v->sv[ PyUnicode_AsWideChar( (PyUnicodeObject*) pUnicode, v->sv, EXPRESSION_MAX_LEN-1) ] = L'\0';
-					v->type = VALUE_STRING;
+					if (PyUnicode_Check(pResult)) {
+						pUnicode = (PyObject*) PyUnicode_FromObject(pResult);
+						v->sv[ PyUnicode_AsWideChar( (PyUnicodeObject*) pUnicode, v->sv, EXPRESSION_MAX_LEN-1) ] = L'\0';
+						v->type = VALUE_STRING;
+					} else {
+						v->type = VALUE_STRING;
+						result = PyString_AsString(pResult);
+						v->sv[ mbstowcs(v->sv, result, EXPRESSION_MAX_LEN-1) ] = L'\0';
+						free(result);
+					}
 
-					Py_DECREF(pUnicode);
+
 				break;
 
 				default:
