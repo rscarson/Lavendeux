@@ -5,8 +5,8 @@ def call(args):
 	if len(args) != 1:
 		return (Types.ERROR, Errors.INVALID_ARGS)
 
-	if isinstance(args[0], basestring) and args[0] in pokedex.values():
-		return (Types.INT, pokedex.keys()[pokedex.values().index(args[0])])
+	if isinstance(args[0], basestring) and str(args[0].capitalize()) in pokedex.values():
+		return (Types.INT, pokedex.keys()[pokedex.values().index(str(args[0].capitalize()))])
 	elif int(args[0]) in pokedex.keys():
 			return (Types.STRING, pokedex[int(args[0])])
 	
