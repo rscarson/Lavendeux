@@ -34,3 +34,7 @@ Added string type
 -----
 Added synonyms extension
 Fixed crash bug when reloading a faulty extension
+
+0.5.2
+-----
+Fixed a crash when repeatedly calling an extension

@@ -122,6 +122,17 @@
 
 		/* Try to get the module */
 		pModule = PyImport_ImportModule(name);
+		if (pModule == NULL) {
+			printf("Cannot load requested extension module\n");
+			if (PyErr_Occurred()) {
+				printf("Error loading extension :\n");
+				PyErr_Print();
+			}
+
+			return NULL;
+		}
+
+		/* Call reload */
 		pModule = PyImport_ReloadModule(pModule);
 		if (pModule == NULL) {
 			printf("Cannot load requested extension module\n");
@@ -172,7 +183,7 @@
 
 		/* Call function */
 		pValue = PyObject_CallObject(pFunc, pArgs);
-		Py_DECREF(pArgs);
+		//Py_DECREF(pArgs);
 		Py_DECREF(pFunc);
 
 		if (pValue != NULL) {
@@ -242,7 +253,7 @@
 		/* Call function */
 		pValue = PyObject_CallObject(pFunc, pArgs);
 		printf("Function call complete.\n");
-		Py_DECREF(pArgs);
+		//Py_DECREF(pArgs);
 		Py_DECREF(pFunc);
 
 		/* Remove a few references */
