@@ -122,6 +122,7 @@
 
 		/* Try to get the module */
 		pModule = PyImport_ImportModule(name);
+		pModule = PyImport_ReloadModule(pModule);
 		if (pModule == NULL) {
 			printf("Cannot load requested extension module\n");
 			if (PyErr_Occurred()) {
@@ -133,7 +134,6 @@
 		}
 
 		/* Get function from module */
-		pModule = PyImport_ReloadModule(pModule);
 		pFunc = PyObject_GetAttrString(pModule, function);
 		if (!pFunc || !PyCallable_Check(pFunc)) {
 			printf("Cannot load module function\n");

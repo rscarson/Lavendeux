@@ -1,6 +1,6 @@
 # Thesaurus service provided by words.bighugelabs.com
 # ------------------------
-# PLEASE GET AN API KEY FROM THE URL AND ADD IT TO apis.py:
+# PLEASE GET AN API KEY FROM THE FOLLOWING URL AND ADD IT TO apis.py:
 # https://words.bighugelabs.com/api.php
 # Only 1000 total requests per day for all users can be made via the default key
 # ------------------------
