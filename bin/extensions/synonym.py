@@ -9,6 +9,7 @@ from lavendeux import Types, Errors
 from apis import ApiKeys
 from random import choice
 from urllib2 import urlopen
+from urllib import quote_plus
 from json import loads
 
 def call(args):
@@ -19,9 +20,9 @@ def call(args):
 	if ApiKeys.SYNONYM != None:
 		return (Types.STRING, synonym(args[0], args[1] if len(args)>1 else None, ApiKeys.SYNONYM))
 
-	url = u'http://dev.richardcarson.ca/lavendeux.php?function=synonym&word='+args[0]
+	url = u'http://dev.richardcarson.ca/lavendeux.php?function=synonym&word='+quote_plus(args[0])
 	if len(args) == 2:
-		url += u'&type='+args[1]
+		url += u'&type='+quote_plus(args[1])
 	try:
 		response = urlopen(url=url, timeout=0.5)
 		value = response.read()
@@ -31,7 +32,7 @@ def call(args):
 	return (Types.STRING, value)
 
 def synonym(word, word_type, key):
-	url = "http://words.bighugelabs.com/api/2/"+key+"/"+word+"/json"
+	url = "http://words.bighugelabs.com/api/2/"+key+"/"+quote_plus(word)+"/json"
 	try:
 		response = urlopen(url=url, timeout=0.5)
 		value = response.read()
