@@ -22,3 +22,15 @@ Changed how settings are integrated
 0.3.1
 -----
 Added silent start option
+
+0.5.0
+-----
+Overhaul of commandline flags
+Added python extensions
+Added string type
+
+
+0.5.1
+-----
+Added synonyms extension
+Fixed crash bug when reloading a faulty extension
