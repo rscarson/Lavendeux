@@ -181,6 +181,17 @@ void decorator_hex(value v, wchar_t* decorated) {
 }
 
 /**
+ * HTML colour code
+ * @param v Value to apply the decorator to
+ * @param decorated Returned string
+ */
+void decorator_colour(value v, wchar_t* decorated) {
+	int_value_t iv = RESOLVED_VALUE(v);
+	swprintf(decorated, EXPRESSION_MAX_LEN, L"#%06LX", iv);
+	decorated[7] = L'\0';
+}
+
+/**
  * String
  * @param v Value to apply the decorator to
  * @param decorated Returned string

@@ -47,6 +47,11 @@
 	int builtin_sqrt(value[], value*, int);
 	int builtin_root(value[], value*, int);
 
+	int builtin_strlen(value[], value*, int);
+	int builtin_substr(value[], value*, int);
+	int builtin_chr(value[], value*, int);
+	int builtin_ord(value[], value*, int);
+
 	/* For static table entries */
 	typedef struct { const wchar_t* name; builtin fn; unsigned int args; } static_builtin_fn;
 
@@ -75,5 +80,10 @@
 
 		{ L"sqrt", builtin_sqrt, 1 },
 		{ L"root", builtin_root, 2 },
+
+		{ L"strlen", builtin_strlen, 1 },
+		{ L"substr", builtin_substr, 3 },
+		{ L"chr", builtin_chr, 1 },
+		{ L"ord", builtin_ord, 1 },
 	};
 #endif

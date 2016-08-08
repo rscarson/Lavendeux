@@ -1,5 +1,6 @@
 #include <math.h>
 #include <fenv.h>
+#include <wchar.h>
 
 #include "hashing.h"
 #include "interface.h"
@@ -7,6 +8,10 @@
 #include "parse.h"
 #include "builtins.h"
 #include "settings.h"
+
+#ifdef _WIN32
+	#define swprintf _snwprintf
+#endif 
 
 /**
  * Populate builtin functions table
@@ -465,5 +470,75 @@ int builtin_root(value args[], value* result, int angle_mode) {
 	result->type = VALUE_FLOAT;
 	result->fv = powl(in, (float_value_t)1/base);
 
+	return NO_FAILURE;
+}
+
+/**
+ * String length
+ * Param 0: (string) input
+ *
+ * Return: int
+ */
+int builtin_strlen(value args[], value* result, int angle_mode) {
+	if (args[0].type != VALUE_STRING)
+		return FAILURE_INVALID_ARGS;
+
+	result->type = VALUE_INT;
+	result->iv = wcslen(args[0].sv);
+	return NO_FAILURE;
+}
+
+/**
+ * Substring
+ * Param 0: (string) input
+ * Param 1: (int) start
+ * Param 2: (int) len
+ *
+ * Return: int
+ */
+int builtin_substr(value args[], value* result, int angle_mode) {
+	if (args[0].type != VALUE_STRING || 
+		args[1].type != VALUE_INT || args[1].iv >= wcslen(args[0].sv) ||
+		args[2].type != VALUE_INT || args[2].iv < 0)
+		return FAILURE_INVALID_ARGS;
+
+	result->type = VALUE_STRING;
+	wcsncpy(result->sv, &args[0].sv[args[1].iv], args[2].iv);
+	result->sv[args[2].iv] = L'\0';
+	return NO_FAILURE;
+}
+
+/**
+ * Char from int
+ * Param 0: (string) input
+ * Param 1: (int) start
+ * Param 2: (int) len
+ *
+ * Return: int
+ */
+int builtin_chr(value args[], value* result, int angle_mode) {
+	if (args[0].type != VALUE_INT)
+		return FAILURE_INVALID_ARGS;
+
+	result->type = VALUE_STRING;
+	swprintf(result->sv, EXPRESSION_MAX_LEN, L"%c", args[0].iv);
+	result->sv[1] = L'\0';
+	return NO_FAILURE;
+}
+
+/**
+ * Int from char
+ * Param 0: (string) input
+ * Param 1: (int) start
+ * Param 2: (int) len
+ *
+ * Return: int
+ */
+int builtin_ord(value args[], value* result, int angle_mode) {
+	if (args[0].type != VALUE_STRING || wcslen(args[0].sv) == 0)
+		return FAILURE_INVALID_ARGS;
+
+	result->type = VALUE_INT;
+	result->iv = args[0].sv[0];
 	return NO_FAILURE;
 }

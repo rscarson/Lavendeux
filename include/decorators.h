@@ -18,6 +18,7 @@
 	void decorator_bin(value, wchar_t*);
 	void decorator_oct(value, wchar_t*);
 	void decorator_hex(value, wchar_t*);
+	void decorator_colour(value, wchar_t*);
 	void decorator_string(value, wchar_t*);
 
 	/* Decorator table */
@@ -51,5 +52,9 @@
 		{ L"h", decorator_hex },
 		{ L"hex", decorator_hex },
 		{ L"hexadecimal", decorator_hex },
+
+		{ L"c", decorator_colour },
+		{ L"color", decorator_colour },
+		{ L"colour", decorator_colour },
 	};
 #endif
