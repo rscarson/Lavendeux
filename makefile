@@ -33,10 +33,13 @@ WIN32_FLAGS = -Wl,-subsystem,windows
 LINUX_FLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 PYTHON_FLAGS = 
 
+SETUP_SCRIPT = src/setup-noextensions.nsi
+
 COMPILE_FLAGS = $(_COMPILE_FLAGS)
 ifndef NO_EXTENSIONS
 	PYTHON_FLAGS = -lpython27 -static -static-libgcc
 	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR)
+	SETUP_SCRIPT = src/setup.nsi
 endif
 
 
@@ -90,7 +93,7 @@ windows_binaries: win32
 	cd  $(BIN_DIR); zip -r lavendeux.zip extensions
 	cd  $(BIN_DIR); zip -r lavendeux.zip lib
 	cd ..
-	makensis src/setup.nsi
+	makensis $(SETUP_SCRIPT)
 
 ###############
 # Tests Begin #

@@ -38,3 +38,10 @@ Fixed crash bug when reloading a faulty extension
 0.5.2
 -----
 Fixed a crash when repeatedly calling an extension
+
+0.5.3
+-----
+Removed comments, and added # as a new type of hex integer
+Added capital versions of existing alternate bases (0B, 0X, 0O)
+Numbers starting with 0 are now properly octal
+Better string support in grammar

@@ -182,6 +182,9 @@ atomic_value:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| ERROR {
@@ -222,6 +225,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression XOR constant_expression {
@@ -250,6 +256,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression AND constant_expression {
@@ -278,6 +287,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression LSHIFT constant_expression {
@@ -306,6 +318,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression RSHIFT constant_expression {
@@ -333,6 +348,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression PLUS constant_expression {
@@ -372,6 +390,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression MINUS constant_expression {
@@ -411,6 +432,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression MUL constant_expression {
@@ -450,6 +474,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression DIV constant_expression {
@@ -497,6 +524,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression MOD constant_expression {
@@ -559,6 +589,9 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+
+			default:
+				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
 		}
 	}
 	| constant_expression FACTORIAL {

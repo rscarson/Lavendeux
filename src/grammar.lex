@@ -46,7 +46,7 @@
 	return IDENTIFIER; 
 }
 
-0x[0-9a-fA-F]+ { 
+(0x|0X)[0-9a-fA-F]+ { 
 	/* Store token value */
 	yylval->val.type = VALUE_INT;
 	
@@ -63,7 +63,24 @@
 	return HEX;
 }
 
-0b[0-1]+ { 
+#[0-9a-fA-F]+ { 
+	/* Store token value */
+	yylval->val.type = VALUE_INT;
+	
+	errno = 0;
+	yylval->val.iv = strtoll(&(yyget_text(yyscanner)[1]), NULL, 16);
+	if (errno == ERANGE && yylval->val.iv == LLONG_MAX) {
+		yylval->val.iv = LANG_STR_OVERFLOW;
+		return ERROR;
+	} else if (errno == ERANGE && yylval->val.iv == LLONG_MAX) {
+		yylval->val.iv = LANG_STR_UNDERFLOW;
+		return ERROR;
+	}
+
+	return HEX;
+}
+
+(0b|0B)[0-1]+ { 
 	/* Store token value */
 	yylval->val.type = VALUE_INT;
 	
@@ -80,7 +97,7 @@
 	return BIN;
 }
 
-0o[0-7]+ { 
+(0o|0O|0)[0-7]+ { 
 	/* Store token value */
 	yylval->val.type = VALUE_INT;
 	
@@ -223,6 +240,5 @@
 [ \t] ;
 \n { ++linenumber; }
 \r ;
-[#[^\n]*] ;
 
 %%
