@@ -45,3 +45,9 @@ Removed comments, and added # as a new type of hex integer
 Added capital versions of existing alternate bases (0B, 0X, 0O)
 Numbers starting with 0 are now properly octal
 Better string support in grammar
+
+0.5.4
+-----
+Added new built-in functions for strings
+Moved strlen to builtins
+Added @c/@color/@colour decorators for html color codes
