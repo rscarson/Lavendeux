@@ -14,7 +14,7 @@ Or, alternatively, turn auto copy/paste off in the menu, and CTRL-Space will ins
 Extend Lavendeux's featureset with [extensions](http://rscarson.github.io/Lavendeux/extensions). Extensions are written in python, and should be placed in the extensions directory where Lavendeux was installed.
 
 #### What it can do
-For list of supported operations and data types, please click [here](http://rscarson.github.io/Lavendeux/#features)
+For list of supported operations and data types, please click [here](http://rscarson.github.io/Lavendeux/features)
 
 For build in extensions, click [here](http://rscarson.github.io/Lavendeux/extensions)
 
