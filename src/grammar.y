@@ -182,6 +182,7 @@ atomic_value:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -225,6 +226,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -256,6 +258,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -287,6 +290,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -318,6 +322,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -348,6 +353,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -390,6 +396,16 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
+
+			case VALUE_STRING:
+				string_value(&$1);
+				string_value(&$3);
+
+				wcsncat($$.sv, $1.sv, EXPRESSION_MAX_LEN-1);
+				wcsncat($$.sv, $3.sv, EXPRESSION_MAX_LEN-1);
+				printf("%S %S\n", $1.sv, $3.sv);
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -432,6 +448,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -474,6 +491,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -524,6 +542,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -589,6 +608,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 
 			default:
 				YYERROR_MSG(FAILURE_TYPE, LANG_STR_ERR_TYPE);
@@ -647,6 +667,7 @@ constant_expression:
 				} else if (fetestexcept (FE_UNDERFLOW)) {
 					YYERROR_MSG(FAILURE_INVALID_ARGS, LANG_STR_UNDERFLOW);
 				}
+			break;
 		}
 	}
 	| IDENTIFIER LPAREN RPAREN {

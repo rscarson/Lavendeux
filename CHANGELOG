@@ -50,4 +50,6 @@ Better string support in grammar
 -----
 Added new built-in functions for strings
 Moved strlen to builtins
+Added string concatenation
+Fixed bug with base operators
 Added @c/@color/@colour decorators for html color codes

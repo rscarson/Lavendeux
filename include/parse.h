@@ -53,6 +53,7 @@
 
 	int float_value(const value*, float_value_t*);
 	int int_value(const value*, int_value_t*);
+	int string_value(value*);
 	int value_type(value*, char*);
 	char expression_type(const value*, const value*, int*);
 	value verify_expression(const value*, const value*);

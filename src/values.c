@@ -1,6 +1,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <wchar.h>
+#include <string.h>
+#include <stdio.h>
+
+/* Blech */
+#ifdef _WIN32
+	#define swprintf _snwprintf
+#endif 
 
 #include "parse.h"
 #include "constructs.h"
@@ -77,6 +85,37 @@ int int_value(const value* v, int_value_t *out) {
 	return FAILURE_ALLOCATION;
 }
 
+int string_value(value* v) {
+	value resolved;
+	wchar_t sv[EXPRESSION_MAX_LEN];
+	int result;
+
+	switch (v->type) {
+		case VALUE_INT:
+			sv[ swprintf(sv, EXPRESSION_MAX_LEN-1, L"%Ld", v->iv) ] = L'\0';
+			wcscpy(v->sv, sv);
+			return NO_FAILURE;
+		break;
+
+		case VALUE_FLOAT:
+			sv[ swprintf(sv, EXPRESSION_MAX_LEN-1, L"%Lf", v->fv) ] = L'\0';
+			return NO_FAILURE;
+		break;
+
+		case VALUE_IDENT:
+			if( (result = get_variable(v->sv, &resolved)) == NO_FAILURE )
+				return string_value(&resolved);
+			else return result;
+		break;
+
+		case VALUE_STRING:
+			return FAILURE_TYPE;
+		break;
+	}
+
+	return FAILURE_TYPE;
+}
+
 /**
  * Get the type of a value
  * @param v Value
@@ -112,34 +151,23 @@ char expression_type(const value* left, const value* right, int *result) {
 	char left_type;
 	char right_type;
 	*result = NO_FAILURE;
-	
-	if (left != NULL) {
-		*result = value_type((value*) left, &left_type);
-		if (*result != NO_FAILURE)
-			return VALUE_ERROR;
-		
-		if (left_type == VALUE_FLOAT)
-			return VALUE_FLOAT;
 
-		if (left_type == VALUE_STRING) {
-			*result = FAILURE_TYPE;
-			return VALUE_ERROR;
-		}
-	}
-	
-	if (right != NULL) {
-		*result = value_type((value*) right, &right_type);
-		if (*result != NO_FAILURE)
-			return VALUE_ERROR;
-		
-		if (right_type == VALUE_FLOAT)
-			return VALUE_FLOAT;
+	if (left == NULL)
+		left = right;
+	if (right == NULL)
+		right = left;
 
-		if (right_type == VALUE_STRING) {
-			*result = FAILURE_TYPE;
-			return VALUE_ERROR;
-		}
-	}
+	if (left == NULL || right == NULL)
+		return VALUE_ERROR;
+
+	if (value_type((value*) left, &left_type) != NO_FAILURE || value_type((value*) right, &right_type) != NO_FAILURE)
+		return VALUE_ERROR;
+
+	if (left_type == VALUE_STRING || right_type == VALUE_STRING)
+		return VALUE_STRING;
+
+	if (left_type == VALUE_FLOAT || right_type == VALUE_FLOAT)
+		return VALUE_FLOAT;
 
 	return VALUE_INT;
 }
