@@ -54,7 +54,11 @@ Added string concatenation
 Fixed bug with base operators
 Added @c/@color/@colour decorators for html color codes
 
-0.55
+0.5.5
 ----
 The right DLL!
 New documentation link on installer
+
+0.6.0
+-----
+Hotkey selection!

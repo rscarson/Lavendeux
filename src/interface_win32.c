@@ -10,6 +10,7 @@
     #include <conio.h>
     #include <Shlobj.h>
     #include <Winuser.h>
+    #include <tchar.h>
 
     #include "language.h"
     #include "lavendeux.h"
@@ -20,6 +21,7 @@
 
     /* Event globals */
     HWND hWnd;
+    HWND hDlg, hEdit;
     NOTIFYICONDATA nid;
 
     /* Stored callbacks */
@@ -39,8 +41,8 @@
     void init_interface(exitCallback exit_callback, parseCallback parse_callback) {
         int i;
         HICON hIcon;
-        WNDCLASSEX hClass;
         HINSTANCE hInstance;
+        WNDCLASSEX hClass;
 
         /* Callback methods */
         _parse_callback = parse_callback;
@@ -84,8 +86,13 @@
         if (GetLastError() != 0)
             error_msg(L"Error while starting", L"Cannot get handle to window", 1);
 
+        if (get_setting(SETTING_HOTMOD) == 0 || get_setting(SETTING_HOTKEY) == 0) {
+            set_setting(SETTING_HOTMOD, MOD_CONTROL);
+            set_setting(SETTING_HOTKEY, VK_SPACE);
+        }
+
         /* Register hotkey */
-        if (!RegisterHotKey(hWnd, HOTKEY_ID, MOD_CONTROL, VK_SPACE))
+        if (!RegisterHotKey(hWnd, HOTKEY_ID, get_setting(SETTING_HOTMOD), get_setting(SETTING_HOTKEY)))
             error_msg(L"Error while starting", L"Cannot register hotkey. Is Lavendeux already running?", 1);
 
         /* Start window */
@@ -110,6 +117,155 @@
         /* Add notification icon to tray */
         Shell_NotifyIcon(NIM_ADD, &nid);
         DestroyIcon(hIcon);
+    }
+
+    /**
+     * Prepare to register a new hothey
+     */
+    void key_registrar( void ) {
+        HINSTANCE hInstance;
+        WNDCLASSEX wcex;
+        MSG msg;
+        int modifiers = 0;
+        char text[256];
+        char buffer[256];
+        unsigned char lpKeyState[256];
+        hInstance = GetModuleHandle(NULL);
+
+        /* Register dialog class */
+        wcex.cbSize = sizeof(WNDCLASSEX);
+        wcex.style          = CS_HREDRAW | CS_VREDRAW;
+        wcex.lpfnWndProc    = key_callback;
+        wcex.cbClsExtra     = 0;
+        wcex.cbWndExtra     = 0;
+        wcex.hInstance      = hInstance;
+        wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(ICON_ID));
+        wcex.hCursor        = LoadCursor(NULL, IDC_ARROW);
+        wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+        wcex.lpszMenuName   = NULL;
+        wcex.lpszClassName  = HOTKEY_CALLBACK;
+        wcex.hIconSm        = LoadIcon(hInstance, MAKEINTRESOURCE(ICON_ID));
+        if (!RegisterClassEx(&wcex))
+            error_msg(L"Error loading window", L"Can't register class", 1);
+
+        /* Create window */
+        hDlg = CreateWindow(
+            HOTKEY_CALLBACK,
+            _T("Hotkey selection"),
+            WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX,
+            CW_USEDEFAULT, CW_USEDEFAULT,
+            500, 100,
+            NULL,
+            NULL,
+            hInstance,
+            NULL
+        );
+        if (!hDlg)
+            error_msg(L"Error loading window", L"Can't create window", 1);
+
+        /* Add a text element */
+        hEdit = CreateWindowEx(WS_EX_CLIENTEDGE, "static", "ST_U", 
+            WS_CHILD | WS_VISIBLE | SS_CENTER, 
+            0, 0, 500, 100, hDlg, NULL, hInstance, NULL);
+        if (!hEdit)
+            error_msg(L"Error loading window", L"Can't create label", 1);
+
+        /* Start the dialog */
+        if (!hotkey_name(get_setting(SETTING_HOTMOD), get_setting(SETTING_HOTKEY), buffer))
+            error_msg(L"Error loading window", L"Invalid hotkey! Try running with the -n flag to restore defaults!", 1);
+        sprintf(text, "\nCurrent hotkey is %s\nPlease enter the new hotkey", buffer);
+        SetWindowText(hEdit, _T(text));
+        ShowWindow(hDlg, SW_SHOW);
+        UpdateWindow(hDlg);
+
+        /* Message loop */
+        while (GetMessage(&msg, NULL, 0, 0)) {
+            GetKeyboardState(lpKeyState);
+
+
+            /* Get modifiers */
+            if (lpKeyState[VK_SHIFT]>1) {
+                modifiers |= MOD_SHIFT;
+            } 
+            if (lpKeyState[VK_CONTROL]>1) {
+                modifiers |= MOD_CONTROL;
+            } 
+            if (lpKeyState[VK_MENU]>1) {
+                modifiers |= MOD_ALT;
+            }
+
+            /* Don't do this if we don't need to */
+            if (modifiers != 0) {
+                for (int i=0x01; i<0xFF; i++) {
+                    /* Skip useless cases */
+                    if (i == VK_SHIFT || i == VK_CONTROL || i == VK_MENU || 
+                        i == VK_LSHIFT || i == VK_LCONTROL || i == VK_LMENU || 
+                        i == VK_RSHIFT || i == VK_RCONTROL || i == VK_RMENU
+                    ) continue;
+
+                    /* If pressed */
+                    if (lpKeyState[i]>1) {
+                        if (!hotkey_name(modifiers, i, buffer))
+                            continue;
+                        sprintf(text, "\nHotkey set to %s", buffer);
+
+
+                        /* Unregister old hotkey */
+                        UnregisterHotKey(hWnd, HOTKEY_ID);
+
+                        /* New hotkey */
+                        if (!RegisterHotKey(hWnd, HOTKEY_ID, modifiers, i)) {
+                            if (!RegisterHotKey(hWnd, HOTKEY_ID, MOD_CONTROL, VK_SPACE))
+                                error_msg(L"Runtime Error", L"Cannot re-register default hotkey.", 1);
+
+                            sprintf(text, "\nError registering new hotkey: %s", buffer);
+                        }
+
+                        /* Save */
+                        set_setting(SETTING_HOTMOD, modifiers);
+                        set_setting(SETTING_HOTKEY, i);
+
+                        /* Update window */
+                        SetWindowText(hEdit, _T(text));
+                        break;
+                    }
+                }
+            }
+
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        } 
+    }
+
+    int hotkey_name(int modifiers, int vk, char text[]) {
+        char mod_name[256];
+        char key_name[256];
+
+        mod_name[0] = '\0';
+
+        /* Get modifier names */
+        if (modifiers&MOD_SHIFT)
+            strcpy(mod_name, "SHIFT");
+        if (modifiers&MOD_CONTROL) {
+            if (strlen(mod_name)>0)
+                strcat(mod_name, "+CTRL");
+            else
+                strcpy(mod_name, "CTRL");
+        }
+        if (modifiers&MOD_ALT) {
+            if (strlen(mod_name)>0)
+                strcat(mod_name, "+ALT");
+            else
+                strcpy(mod_name, "ALT");
+        }
+
+        /* Key name, skip weirdo keys we don't know */
+        GetKeyNameText(MapVirtualKey(vk, 0) << 16, key_name, 256);
+        if(strlen(key_name) == 0) return 0;
+
+        /* Get final string */
+        sprintf(text, "%s+%s", mod_name, key_name);
+        return 1;
     }
 
     /**
@@ -158,12 +314,27 @@
     }
 
     /** 
+     * Key window event callbacks
+     */
+    LRESULT CALLBACK key_callback(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+        switch (message) {
+            case WM_DESTROY:
+                DestroyWindow(hWnd);
+                UnregisterClass(HOTKEY_CALLBACK, GetModuleHandle(NULL));
+            break;
+        }
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+
+    /** 
      * Windows event callbacks
      */
     LRESULT CALLBACK wnd_callback(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
         static UINT wndMsg = 0;
         static INPUT control_c[] = {
             {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
+            {INPUT_KEYBOARD, .ki={VK_MENU,0,KEYEVENTF_KEYUP,0,0}},
+            {INPUT_KEYBOARD, .ki={VK_SHIFT,0,KEYEVENTF_KEYUP,0,0}},
             {INPUT_KEYBOARD, .ki={VK_CONTROL,0,0,0,0}},
             {INPUT_KEYBOARD, .ki={0x43,0,0,0,0}},
             {INPUT_KEYBOARD, .ki={VK_CONTROL,0,KEYEVENTF_KEYUP,0,0}},
@@ -292,6 +463,10 @@
                         language_set_current(LANG_FR);
                     break;
 
+                    case CMD_REGKEY:
+                        key_registrar();
+                    break;
+
                     /* One of the equations was clicked. Put in it the clipboard */
                     default:
                         if (LOWORD(wParam) < CMD_CPX) break;
@@ -358,6 +533,7 @@
 
         /* System menu */
         AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
+        AppendMenuW(hMenu, MF_STRING, CMD_REGKEY, language_str(LANG_STR_HOTKEY));
         AppendMenuW(hMenu, MF_STRING, CMD_ABOUT, language_str(LANG_STR_ABOUT));
         AppendMenuW(hMenu, MF_STRING, CMD_EXIT, language_str(LANG_STR_EXIT));
 

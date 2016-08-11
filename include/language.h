@@ -44,6 +44,7 @@
 		LANG_STR_TOO_LONG,
 		LANG_STR_ERR_CONFIG,
 		LANG_STR_UNRECOGNIZED_COMMAND,
+		LANG_STR_HOTKEY,
 
 		NUM_LANG_STR
 	};
@@ -192,6 +193,11 @@
 		[LANG_STR_UNRECOGNIZED_COMMAND] = {
 			[LANG_EN] = L"Argument not recognized",
 			[LANG_FR] = L"Argument inconnu"
+		},
+
+		[LANG_STR_HOTKEY] = {
+			[LANG_EN] = L"Change keyboard shortcut",
+			[LANG_FR] = L"Change le raccourci clavier"
 		},
 	};
 

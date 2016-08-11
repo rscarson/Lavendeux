@@ -48,6 +48,11 @@
 	void update_interface( void );
 
 	/**
+     * Prepare to register a new hothey
+     */
+    void key_registrar( void );
+
+	/**
      * Enable debug console
      */
     void debug_enable( void );
