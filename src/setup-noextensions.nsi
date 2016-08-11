@@ -36,7 +36,7 @@
 !define MUI_FINISHPAGE_RUN_TEXT "Run Lavendeux"
 !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Open documentation"
-!define MUI_FINISHPAGE_SHOWREADME "https://github.com/rscarson/Lavendeux/wiki"
+!define MUI_FINISHPAGE_SHOWREADME "http://rscarson.github.io/Lavendeux/features"
 !insertmacro MUI_PAGE_FINISH
 
 Function LaunchLink
@@ -70,7 +70,6 @@ Section "MainSection" SEC01
   CreateDirectory "$SMPROGRAMS\Lavendeux"
   CreateShortCut "$SMPROGRAMS\Lavendeux\Lavendeux.lnk" "$INSTDIR\lavendeux.exe"
   CreateShortCut "$DESKTOP\Lavendeux.lnk" "$INSTDIR\lavendeux.exe"
-  File "..\README"
   File "..\LICENSE"
   File "..\CHANGELOG"
 SectionEnd

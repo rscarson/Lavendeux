@@ -53,3 +53,8 @@ Moved strlen to builtins
 Added string concatenation
 Fixed bug with base operators
 Added @c/@color/@colour decorators for html color codes
+
+0.55
+----
+The right DLL!
+New documentation link on installer
