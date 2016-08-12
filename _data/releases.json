@@ -1,5 +1,33 @@
 [
 	{
+		"name": "Version 0.6.1",
+		"changelog": [
+			"Added Cygwin build",
+			"Bugfix with hotkeys and silent errors"
+		],
+		"downloads": {
+			"win_install": "https://github.com/rscarson/Lavendeux/releases/download/v0.6.1/lavendeux-setup.exe",
+			"win_zip": "https://github.com/rscarson/Lavendeux/releases/download/v0.6.1/lavendeux.zip",
+			"github": "https://github.com/rscarson/Lavendeux/releases/tag/v0.6.1",
+			"source": "https://github.com/rscarson/Lavendeux/archive/v0.6.1.tar.gz",
+		}
+	},
+	
+{
+		"name": "Version 0.6.1 (No extensions)",
+		"changelog": [
+			"Added Cygwin build",
+			"Bugfix with hotkeys and silent errors"
+		],
+		"downloads": {
+			"win_install": "https://github.com/rscarson/Lavendeux/releases/download/v0.6.1/lavendeux-noextensions-setup.exe",
+			"win_zip": "https://github.com/rscarson/Lavendeux/releases/download/v0.6.1/lavendeux-noextensions.zip",
+			"github": "https://github.com/rscarson/Lavendeux/releases/tag/v0.6.1",
+			"source": "https://github.com/rscarson/Lavendeux/archive/v0.6.1.tar.gz",
+		}
+	},
+	
+	{
 		"name": "Beta Version 0.6.0",
 		"changelog": [
 			"Added hotkey selection"
