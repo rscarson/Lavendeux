@@ -1,7 +1,15 @@
 # Configuration options
 #NO_EXTENSIONS=1
+ifneq ($(shell echo $$OSTYPE),cygwin)
 PYTHON_DIR = C:\\Python27
 PYTHON_INCLUDE_DIR = $(PYTHON_DIR)\\include
+PYTHON_LIB_DIR = $(PYTHON_DIR)\\lib
+PYTHON_LIB = python27
+else
+PYTHON_INCLUDE_DIR = /usr/include/python2.7
+PYTHON_LIB_DIR = /usr/lib/python2.7
+PYTHON_LIB = python2.7.dll
+endif
 
 SRC_DIR = src
 LIB_DIR = lib
@@ -37,7 +45,7 @@ SETUP_SCRIPT = src/setup-noextensions.nsi
 
 COMPILE_FLAGS = $(_COMPILE_FLAGS)
 ifndef NO_EXTENSIONS
-	PYTHON_FLAGS = -lpython27 -static -static-libgcc
+	PYTHON_FLAGS = -L$(PYTHON_LIB_DIR) -l$(PYTHON_LIB) -static -static-libgcc
 	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR)
 	SETUP_SCRIPT = src/setup.nsi
 endif
