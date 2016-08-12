@@ -62,3 +62,8 @@ New documentation link on installer
 0.6.0
 -----
 Hotkey selection!
+
+0.6.1
+-----
+Cygwin build
+Bugfix with hotkeys and silent errors
