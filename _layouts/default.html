@@ -96,6 +96,15 @@
 					e.style.transition = "max-height 0.25s ease-out";
 				}
 			}
+
+			function trackDownload(e) {
+				ga('send', 'event', {
+					eventCategory: 'Download', 
+					eventAction: 'download',
+					eventLabel: e.href,
+					transport: 'beacon'
+				});
+			}
 		</script>
 	</body>
 </html>

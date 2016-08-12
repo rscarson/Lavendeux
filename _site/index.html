@@ -108,7 +108,7 @@
 		<div class="well text-center">
 			<h2>Lavendeux enhances the clipboard</h2>
 			<p>Lavendeux inlines calculating, programming and testing utilities into your favourite text editor. Test the result of a remote API call, check the result of a regular expression and much more, all without needing to break your workflow.</p>
-			<h4>Most recent version <small>Beta Version 0.5.4</small></h4>
+			<h4>Most recent version <small>Version 0.6.1</small></h4>
 			<p><a href="/Lavendeux/downloads">More downloads</a></p>
 
 			<!-- For large screens -->
@@ -120,8 +120,8 @@
 						<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="https://github.com/rscarson/Lavendeux/releases/download/v0.5.4-beta5/lavendeux-setup.exe">Installer</a></li>
-						<li><a href="https://github.com/rscarson/Lavendeux/releases/download/v0.5.4-beta5/lavendeux.zip">Portable</a></li>
+						<li><a href="https://github.com/rscarson/Lavendeux/releases/download/v0.6.1/lavendeux-setup.exe" onClick="trackDownload(this);">Installer</a></li>
+						<li><a href="https://github.com/rscarson/Lavendeux/releases/download/v0.6.1/lavendeux.zip" onClick="trackDownload(this);">Portable</a></li>
 					</ul>
 				</div>
 
@@ -132,8 +132,8 @@
 						<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="https://github.com/rscarson/Lavendeux/releases/tag/v0.5.4-beta5">View on Github</a></li>
-						<li><a href="https://github.com/rscarson/Lavendeux/archive/v0.5.4-beta5.tar.gz">Download</a></li>
+						<li><a href="https://github.com/rscarson/Lavendeux/releases/tag/v0.6.1">View on Github</a></li>
+						<li><a href="https://github.com/rscarson/Lavendeux/archive/v0.6.1.tar.gz" onClick="trackDownload(this);">Download</a></li>
 					</ul>
 				</div>
 			</div>
@@ -147,8 +147,8 @@
 						<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="https://github.com/rscarson/Lavendeux/releases/download/v0.5.4-beta5/lavendeux-setup.exe">Installer</a></li>
-						<li><a href="https://github.com/rscarson/Lavendeux/releases/download/v0.5.4-beta5/lavendeux.zip">Portable</a></li>
+						<li><a href="https://github.com/rscarson/Lavendeux/releases/download/v0.6.1/lavendeux-setup.exe" onClick="trackDownload(this);">Installer</a></li>
+						<li><a href="https://github.com/rscarson/Lavendeux/releases/download/v0.6.1/lavendeux.zip" onClick="trackDownload(this);">Portable</a></li>
 					</ul>
 				</div>
 
@@ -159,8 +159,8 @@
 						<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="https://github.com/rscarson/Lavendeux/releases/tag/v0.5.4-beta5">View on Github</a></li>
-						<li><a href="https://github.com/rscarson/Lavendeux/archive/v0.5.4-beta5.tar.gz">Download</a></li>
+						<li><a href="https://github.com/rscarson/Lavendeux/releases/tag/v0.6.1">View on Github</a></li>
+						<li><a href="https://github.com/rscarson/Lavendeux/archive/v0.6.1.tar.gz" onClick="trackDownload(this);">Download</a></li>
 					</ul>
 				</div>
 			</div>
@@ -203,7 +203,7 @@ synonym("test", "verb")</textarea>
 	</div>
 	
 	<div class="panel-body">
-		Please click <a href="/Lavendeux/usage">here</a> for usage help, and a list of features
+		Please click <a href="/Lavendeux/features">here</a> for usage help, and a list of features
 	</div>
 
 	<div class="panel-body">
@@ -211,6 +211,7 @@ synonym("test", "verb")</textarea>
 		<dd><a href="/Lavendeux/extensions">More information</a></dd>
 	</div>
 </div>
+
 
 			<p class="footer text-muted">Copyright Richard Carson, 2016</p>
 		</div>
@@ -233,6 +234,15 @@ synonym("test", "verb")</textarea>
 					e.style.maxHeight = "0";
 					e.style.transition = "max-height 0.25s ease-out";
 				}
+			}
+
+			function trackDownload(e) {
+				ga('send', 'event', {
+					eventCategory: 'Download', 
+					eventAction: 'download',
+					eventLabel: e.href,
+					transport: 'beacon'
+				});
 			}
 		</script>
 	</body>
