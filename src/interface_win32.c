@@ -184,6 +184,10 @@
 
         /* Message loop */
         while (GetMessage(&msg, NULL, 0, 0)) {
+            /* Close if done */
+            if (!GetClassInfoEx(hInstance, HOTKEY_CALLBACK, &wcex))
+                return;
+
             GetKeyboardState(lpKeyState);
 
 

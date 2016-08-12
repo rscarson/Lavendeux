@@ -1,14 +1,14 @@
 # Configuration options
 #NO_EXTENSIONS=1
 ifneq ($(shell echo $$OSTYPE),cygwin)
-PYTHON_DIR = C:\\Python27
-PYTHON_INCLUDE_DIR = $(PYTHON_DIR)\\include
-PYTHON_LIB_DIR = $(PYTHON_DIR)\\lib
-PYTHON_LIB = python27
+	PYTHON_DIR = C:\\Python27
+	PYTHON_INCLUDE_DIR = $(PYTHON_DIR)\\include
+	PYTHON_LIB_DIR = $(PYTHON_DIR)\\lib
+	PYTHON_LIB = python27
 else
-PYTHON_INCLUDE_DIR = /usr/include/python2.7
-PYTHON_LIB_DIR = /usr/lib/python2.7
-PYTHON_LIB = python2.7.dll
+	PYTHON_INCLUDE_DIR = /usr/include/python2.7
+	PYTHON_LIB_DIR = /usr/lib/python2.7
+	PYTHON_LIB = python2.7.dll
 endif
 
 SRC_DIR = src

@@ -16,7 +16,7 @@
 	#define COPYRIGHT_MSG "Copyright Richard Carson, 2016."
 	#define MAJOR_VERSION "0"
 	#define MINOR_VERSION "6"
-	#define RELEASE_NUMBER "0"
+	#define RELEASE_NUMBER "1"
 	
 	#define HELP_TITLE "About " APPLICATION_NAME
 	#define HELP_URL "http://rscarson.github.io/Lavendeux/"
