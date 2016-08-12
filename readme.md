@@ -16,7 +16,7 @@ Extend Lavendeux's featureset with [extensions](http://rscarson.github.io/Lavend
 #### What it can do
 For list of supported operations and data types, please click [here](http://rscarson.github.io/Lavendeux/features)
 
-For build in extensions, click [here](http://rscarson.github.io/Lavendeux/extensions)
+For built in extensions, click [here](http://rscarson.github.io/Lavendeux/extensions)
 
 ## To do
 - Linux and OSX versions
