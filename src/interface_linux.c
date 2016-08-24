@@ -64,7 +64,7 @@
 		indicator = app_indicator_new ("lavendeux-indicator", "lavendeux", APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 		app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
 		app_indicator_set_attention_icon (indicator, "lavendeux");
-		app_indicator_set_title(indicator, "Lavendeux")
+		app_indicator_set_title(indicator, "Lavendeux");
 		app_indicator_set_menu (indicator, GTK_MENU (get_menu()));
     }
 
