@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 #include "language.h"
 
 int current_lang = LANG_EN;

@@ -3,8 +3,6 @@
 #include <string.h>
 #include <wchar.h>
 
-#include <windows.h>
-
 #include "lavendeux.h"
 #include "language.h"
 #include "parse.h"
@@ -123,7 +121,7 @@ void parse_callback(const wchar_t *target) {
 
 	/* Remove prefixing line breaks */
 	while (output[0] == L'\r' || output[0] == L'\n')
-		output = &output[1];
+		memmove(output, &output[1], wcslen(output)*sizeof(wchar_t));
 
 	/* Final output */
 	to_clipboard(output);
@@ -136,11 +134,18 @@ void parse_callback(const wchar_t *target) {
  *
  * @return The result
  */
-wchar_t* parse_expression(const wchar_t* expression) {
+wchar_t* parse_expression(const wchar_t* _expression) {
+	wchar_t* expression;
 	wchar_t* line;
 	wchar_t* response;
 	value v;
 	int i, len, result;
+
+	/* To prevent freeing something bad */
+	expression = (wchar_t*) malloc(sizeof(wchar_t)*(wcslen(_expression)+1));
+	if (expression == NULL)
+		error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_ALLOCATION), 1);
+	wcscpy(expression, _expression);
 
 	/* Get string length */
 	len = wcslen(expression);

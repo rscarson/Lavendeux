@@ -1,14 +1,17 @@
 # Configuration options
-#NO_EXTENSIONS=1
-ifneq ($(shell echo $$OSTYPE),cygwin)
+NO_EXTENSIONS=1
+ifeq ($(shell echo $$OSTYPE),cygwin)
+	# Windows, cygwin
+	PYTHON_CONFIG = -I/usr/include/python2.7 -L/usr/lib/python2.7 -lpython2.7.dll
+else ifeq ($(OS),Windows_NT)
+	# Windows, mingw
 	PYTHON_DIR = C:\\Python27
-	PYTHON_INCLUDE_DIR = $(PYTHON_DIR)\\include
-	PYTHON_LIB_DIR = $(PYTHON_DIR)\\lib
-	PYTHON_LIB = python27
+	PYTHON_CONFIG = -I$(PYTHON_DIR)\\include -L$(PYTHON_DIR)\\lib -lpython27
+else ifeq ($(shell uname -s),Linux)
+	# Linux
+	PYTHON_CONFIG = `pkg-config --cflags python2` `pkg-config --libs python2`
 else
-	PYTHON_INCLUDE_DIR = /usr/include/python2.7
-	PYTHON_LIB_DIR = /usr/lib/python2.7
-	PYTHON_LIB = python2.7.dll
+	PYTHON_CONFIG = ERROR
 endif
 
 SRC_DIR = src
@@ -26,7 +29,7 @@ TAB_HEADER = $(INC_DIR)/generated/tab.h
 _PARSE_DEPS = parse.o hashing.o builtins.o decorators.o list.o constructs.o language.o values.o settings.o extensions.o
 PARSE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_PARSE_DEPS))
 
-_INTERFACE_DEPS = language.o cmdflags.o settings.o interface_win32.o
+_INTERFACE_DEPS = language.o cmdflags.o settings.o interface_win32.o interface_linux.o
 INTERFACE_DEPS = $(patsubst %,$(OBJ_DIR)/%,$(_INTERFACE_DEPS))
 
 _TEST_HASHING_DEPS = test.o hashing.o
@@ -38,15 +41,19 @@ _TEST_PARSE_DEPS = test.o
 CC = gcc
 _COMPILE_FLAGS = -std=gnu99 -I./$(INC_DIR) -I./$(INC_DIR)/generated -L./$(LIB_DIR) -lm -Wall -g -Wno-unused
 WIN32_FLAGS = -Wl,-subsystem,windows
-LINUX_FLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
+LINUX_FLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0` `pkg-config --libs keybinder-3.0` `pkg-config appindicator3-0.1 --cflags` `pkg-config appindicator3-0.1 --libs` -lX11
 PYTHON_FLAGS = 
+
+ifeq ($(shell uname -s),Linux)
+	_COMPILE_FLAGS += $(LINUX_FLAGS)
+endif
 
 SETUP_SCRIPT = src/setup-noextensions.nsi
 
 COMPILE_FLAGS = $(_COMPILE_FLAGS)
 ifndef NO_EXTENSIONS
-	PYTHON_FLAGS = -L$(PYTHON_LIB_DIR) -l$(PYTHON_LIB) -static -static-libgcc
-	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED -I$(PYTHON_INCLUDE_DIR)
+	PYTHON_FLAGS = $(PYTHON_CONFIG) -static -static-libgcc
+	COMPILE_FLAGS += -DEXTENSIONS_INCLUDED $(PYTHON_CONFIG)
 	SETUP_SCRIPT = src/setup.nsi
 endif
 
@@ -78,13 +85,14 @@ clean:
 	rm -f $(OBJ_DIR)/*.res
 	rm -f $(BIN_DIR)/*.exe
 	rm -f $(BIN_DIR)/lavendeux.zip
+	rm -f $(BIN_DIR)/lavendeux
 
 ##################
 # Linux Platform #
 ##################
 
 linux: grammar $(LIB_DIR)/libinterface.a $(LIB_DIR)/libparse.a
-	$(CC) $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux.exe -linterface -lparse $(COMPILE_FLAGS) $(LINUX_FLAGS)
+	$(CC) $(SRC_DIR)/main.c -o $(BIN_DIR)/lavendeux -linterface -lparse $(COMPILE_FLAGS) $(LINUX_FLAGS)
 
 ####################
 # Windows Platform #
