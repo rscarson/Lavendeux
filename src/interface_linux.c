@@ -14,12 +14,11 @@
 	#include <wchar.h>
 	#include <keybinder-3.0/keybinder.h>
 
-	#define HOT_KEY "<Ctrl>space"
-
 	#include "language.h"
 	#include "settings.h"
 	#include "lavendeux.h"
 	#include "interface.h"
+	#include "interface_linux.h"
 	#include "cmdflags.h"
 	
 	/* Event globals */
@@ -28,35 +27,6 @@
 	/* Stored callbacks */
 	parseCallback _parse_callback;
 	exitCallback _exit_callback;
-
-	/* Menu equations */
-	wchar_t *stored_entries[MAX_EQUATIONS];
-
-	#define MAX_PATH 2048
-    char prefered_path[MAX_PATH+1];
-
-	#define APPLICATION_ID "richardcarson.lavendeux"
-	static void close_app (GtkWidget*, gpointer);
-	static void activate (GtkApplication*, gpointer);
-	static void handler (const char*, void*);
-
-	static GtkWidget* get_menu ();
-	static void copy_equation (GtkWidget*, gpointer);
-	void auto_copy( void );
-	void auto_paste( void );
-
-	/* Settings */
-	static void toggle_silent_mode (GtkWidget*, gpointer);
-	static void toggle_auto_copypaste (GtkWidget*, gpointer);
-
-	/* Languages */
-	static void setlang_en (GtkWidget*, gpointer);
-	static void setlang_fr (GtkWidget*, gpointer);
-
-	/* Angles */
-	static void setangle_deg (GtkWidget*, gpointer);
-	static void setangle_rad (GtkWidget*, gpointer);
-
 
 	/** 
 	 * Prepare and draw the interface 
@@ -94,6 +64,7 @@
 		indicator = app_indicator_new ("lavendeux-indicator", "lavendeux", APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 		app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
 		app_indicator_set_attention_icon (indicator, "lavendeux");
+		app_indicator_set_title(indicator, "Lavendeux")
 		app_indicator_set_menu (indicator, GTK_MENU (get_menu()));
     }
 
