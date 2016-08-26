@@ -14,6 +14,7 @@
 	#include <wchar.h>
 	#include <keybinder-3.0/keybinder.h>
 
+	#define ETC_PATH "/etc/lavendeux/"
 	#define HOT_KEY "<Ctrl>space"
 
 	/* Menu equations */
@@ -22,15 +23,19 @@
 	#define MAX_PATH 2048
     char prefered_path[MAX_PATH+1];
 
+	/* Auto copy and paste */
+	#define auto_copy() auto_key(XK_C, GDK_CONTROL_MASK)
+	#define auto_paste() auto_key(XK_V, GDK_CONTROL_MASK)
+
 	#define APPLICATION_ID "richardcarson.lavendeux"
+
 	static void close_app (GtkWidget*, gpointer);
 	static void activate (GtkApplication*, gpointer);
 	static void handler (const char*, void*);
+	static void registrar_keystroke(GtkWidget*, GdkEventKey*, GtkWidget*);
 
 	static GtkWidget* get_menu ();
 	static void copy_equation (GtkWidget*, gpointer);
-	void auto_copy( void );
-	void auto_paste( void );
 
 	/* Settings */
 	static void toggle_silent_mode (GtkWidget*, gpointer);
@@ -43,4 +48,8 @@
 	/* Angles */
 	static void setangle_deg (GtkWidget*, gpointer);
 	static void setangle_rad (GtkWidget*, gpointer);
+
+	/* Event creation */
+	XKeyEvent createKeyEvent(Display*, Window, Window, int, int, int);
+	void auto_key(int, int);
 #endif

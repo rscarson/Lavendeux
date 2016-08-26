@@ -12,6 +12,7 @@
 	void extensions_init( void ) {
 		PyObject *syspath, *pName, *pModule, *stdOut;
 		char* path;
+
 		_extensions_available = 0;
 		printf("Attempting to load extensions\n");
 
@@ -57,9 +58,9 @@
 
 		PyList_Insert(syspath, 0, PyString_FromString(EXTENSIONS_PATH));
 		PyList_Insert(syspath, 0, PyString_FromString(EXTENSIONS_LIB_PATH));
+		PySys_SetObject("path", syspath);
 		PyList_Insert(syspath, 0, PyString_FromString("python27.zip"));
 		PyList_Insert(syspath, 0, PyString_FromString("python27.zip/site-packages"));
-		PySys_SetObject("path", syspath);
 
 		/* Test libraries */
 		pModule = PyImport_ImportModule("_socket");

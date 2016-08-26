@@ -7,6 +7,7 @@
 	#include <X11/keysymdef.h>
 	#include <gdk/gdkkeysyms.h>
 
+	#include <unistd.h>
 	#include <pthread.h>
 	#include <stdio.h>
 	#include <stdlib.h>
@@ -23,6 +24,7 @@
 	
 	/* Event globals */
 	GtkWidget *window;
+	AppIndicator *indicator;
 
 	/* Stored callbacks */
 	parseCallback _parse_callback;
@@ -37,7 +39,7 @@
     	GtkApplication *app;
 		GtkWidget* widget;
 		GtkWidget* button_box;
-		AppIndicator *indicator;
+		gchar *key_name;
         int i;
 
         /* Callback methods */
@@ -48,10 +50,20 @@
         for (i=0; i<MAX_EQUATIONS; ++i)
 			stored_entries[i] = NULL;
 
+		/* Start up */
 		gtk_init(0, NULL);
-
   		keybinder_init();
-  		keybinder_bind(HOT_KEY, handler, NULL);	
+
+  		/* Default key code */
+		if (get_setting(SETTING_HOTMOD) == 0 || get_setting(SETTING_HOTKEY) == 0) {
+			set_setting(SETTING_HOTMOD, GDK_CONTROL_MASK);
+			set_setting(SETTING_HOTKEY, XK_space);
+		}
+
+		/* Set hotkey */
+		key_name = gtk_accelerator_name(get_setting(SETTING_HOTKEY), get_setting(SETTING_HOTMOD));
+		keybinder_bind(key_name, handler, NULL);
+		g_free(key_name);
 
     	app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
     	g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
@@ -72,80 +84,133 @@
     	const wchar_t* str = from_clipboard();
     	if (!str) return;
 
-    	if (0 && get_setting(SETTING_AUTOCOPY) == SETTING_AUTOCOPY_ON)
+    	if (get_setting(SETTING_AUTOCOPY) == SETTING_AUTOCOPY_ON)
     		auto_copy();
 
     	_parse_callback( str );
 
-    	if (0 && get_setting(SETTING_AUTOCOPY) == SETTING_AUTOCOPY_ON)
+    	if (get_setting(SETTING_AUTOCOPY) == SETTING_AUTOCOPY_ON)
     		auto_paste();
     }
 
     static void copy_equation (GtkWidget* app, gpointer user_data) {
     	to_clipboard((wchar_t*) user_data);
-    	_parse_callback( (wchar_t*) user_data );
     }
 
-    /* Not working! */
-    void auto_copy( void ) {
-    	GdkKeymapKey *keys;
-    	gint n_keys;
+	XKeyEvent createKeyEvent(Display *display, Window win, Window winRoot, int press, int keycode, int modifiers) {
+		XKeyEvent event;
 
-    	if (gdk_keymap_get_entries_for_keyval (gdk_keymap_get_default (), GDK_KEY_C, &keys, &n_keys)) {
-      		guint16 hardware_keycode;
-      		GdkEvent *event;
+		event.display     = display;
+		event.window      = win;
+		event.root        = winRoot;
+		event.subwindow   = None;
+		event.time        = CurrentTime;
+		event.x           = 1;
+		event.y           = 1;
+		event.x_root      = 1;
+		event.y_root      = 1;
+		event.same_screen = True;
+		event.keycode     = XKeysymToKeycode(display, keycode);
+		event.state       = modifiers;
 
-      		hardware_keycode = keys[0].keycode;
-      		g_free(keys);
+		if(press)
+			event.type = KeyPress;
+		else
+			event.type = KeyRelease;
 
-			event = gdk_event_new (GDK_KEY_PRESS);
-			event->key.window = gdk_screen_get_active_window(gdk_screen_get_default());
-			event->key.state = GDK_CONTROL_MASK;
-			event->key.hardware_keycode = hardware_keycode;
+		return event;
+	}
 
-			event->key.keyval = gdk_unicode_to_keyval (GDK_KEY_C);
-			event->key.length = 1;
-			event->key.string = g_strdup ("c");
+	void auto_key(int keycode, int modifiers) {
+		XKeyEvent event;
+		Window winFocus;
+		int revert;
 
-			event->key.send_event = FALSE;
-			event->key.time = GDK_CURRENT_TIME;
+		/* Get X11 display */
+		Display *display = XOpenDisplay(0);
+		if (!display) return;
 
-			gtk_main_do_event (event);
-			gdk_event_free (event);
-		}
-    }
+		/* Get root window, and focused window */
+		Window winRoot = XDefaultRootWindow(display);
+		XGetInputFocus(display, &winFocus, &revert);
 
-    /* Not working! */
-    void auto_paste( void ) {
-    	GdkKeymapKey *keys;
-    	gint n_keys;
+		/* Key release
+		event = createKeyEvent(display, winFocus, winRoot, 0, keycode, modifiers);
+		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event); */
 
-    	if (gdk_keymap_get_entries_for_keyval (gdk_keymap_get_default (), GDK_KEY_V, &keys, &n_keys)) {
-      		guint16 hardware_keycode;
-      		GdkEvent *event;
+		/* Keypress */
+		event = createKeyEvent(display, winFocus, winRoot, 1, keycode, modifiers);
+		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event);
 
-      		hardware_keycode = keys[0].keycode;
-      		g_free(keys);
+		/* Wait a tad */
+		g_usleep (10000);
 
-			event = gdk_event_new (GDK_KEY_PRESS);
-			event->key.window = gdk_screen_get_active_window(gdk_screen_get_default());
-			event->key.state = GDK_CONTROL_MASK;
-			event->key.hardware_keycode = hardware_keycode;
+		/* Key release */
+		event = createKeyEvent(display, winFocus, winRoot, 0, keycode, modifiers);
+		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event);
 
-			event->key.keyval = gdk_unicode_to_keyval (GDK_KEY_V);
-			event->key.length = 1;
-			event->key.string = g_strdup ("v");
+		XCloseDisplay(display);
+	}
 
-			event->key.send_event = FALSE;
-			event->key.time = GDK_CURRENT_TIME;
+    void key_registrar( void ) {
+		GtkWidget *label, *window;
+		gchar *key_current;
+		char text[0xFF];
 
-			gtk_main_do_event (event);
-			gdk_event_free (event);
-		}
-    }
+		/* Create window */
+		window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		gtk_container_set_border_width(GTK_CONTAINER (window), 10);
+		gtk_window_set_title(GTK_WINDOW(window), "Hotkey selection");
 
-    /* Not implemented yet */
-    void key_registrar( void ) {}
+		/* Set up label */
+		key_current = gtk_accelerator_get_label(get_setting(SETTING_HOTKEY), get_setting(SETTING_HOTMOD));
+		sprintf(text, "Current hotkey is %s\nPlease enter the new hotkey", key_current);
+		label = gtk_label_new(text);
+		gtk_container_add (GTK_CONTAINER (window), label);
+
+		/* Signal connect */
+		gtk_widget_show_all (window);
+		g_signal_connect(GTK_WINDOW(window), "key-press-event", G_CALLBACK(registrar_keystroke), label);
+
+		/* Clean up */
+		g_free(key_current);
+	}
+
+	static void registrar_keystroke(GtkWidget *widget, GdkEventKey *event, GtkWidget *label) {
+		guint modifiers, keyval;
+		gchar *key_name, *key_label, *key_current;
+		char text[0xFF];
+
+		/* Get values from event */
+		modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK);
+		keyval = event->keyval;
+
+		/* String representations */
+		key_current = gtk_accelerator_name(get_setting(SETTING_HOTKEY), get_setting(SETTING_HOTMOD));
+		key_name = gtk_accelerator_name(keyval, modifiers);
+		key_label = gtk_accelerator_get_label(keyval, modifiers);
+
+		/* Validate */
+		if (modifiers == 0 || keyval == 0)
+			return;
+
+		/* Bind new hotkey */
+		keybinder_unbind(key_current, handler);
+		keybinder_bind(key_name, handler, NULL);
+
+		/* Label */
+		sprintf(text, "Hotkey set to %s", key_label);
+		gtk_label_set_text(GTK_LABEL (label), text);
+
+		/* Settings */
+		set_setting(SETTING_HOTMOD, modifiers);
+		set_setting(SETTING_HOTKEY, keyval);
+
+		/* Clean up */
+		g_free(key_current);
+		g_free(key_name);
+		g_free(key_label);
+	}
 
     void debug_enable( void ) {}
 
@@ -174,6 +239,7 @@
             if (stored_entries[i] != NULL) {
 		    	char* str = (char*) malloc(sizeof(wchar_t)*(wcslen(stored_entries[i])+1));
 		    	str[ wcstombs(str, stored_entries[i], wcslen(stored_entries[i])) ] = '\0';
+		    	printf("%s\n", str);
 
 				item = gtk_menu_item_new_with_label(str);
 				g_signal_connect (item, "activate", G_CALLBACK (copy_equation), stored_entries[i]);
@@ -206,17 +272,17 @@
 
 		/* Silent mode */
 		item = gtk_check_menu_item_new_with_label(language_char_str(LANG_STR_SILENT_ERRS));
-		g_signal_connect (item, "select", G_CALLBACK (toggle_silent_mode), NULL);
-		gtk_check_menu_item_set_active((GtkCheckMenuItem*) item, (get_setting(SETTING_SILENT)==SETTING_SILENT_ON)); //
+		g_signal_connect (item, "toggled", G_CALLBACK (toggle_silent_mode), NULL);
+		gtk_check_menu_item_set_active((GtkCheckMenuItem*) item, (get_setting(SETTING_SILENT)==SETTING_SILENT_ON));
 		gtk_widget_show(item);
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 		
-		/* Auto copy/paste mode -- NOT WORKING
+		/* Auto copy/paste mode */
 		item = gtk_check_menu_item_new_with_label(language_char_str(LANG_STR_ENABLEAUTOCOPY));
-		g_signal_connect (item, "select", G_CALLBACK (toggle_auto_copypaste), NULL);
+		g_signal_connect (item, "toggled", G_CALLBACK (toggle_auto_copypaste), NULL);
 		gtk_check_menu_item_set_active((GtkCheckMenuItem*) item, (get_setting(SETTING_AUTOCOPY)==SETTING_AUTOCOPY_ON));
 		gtk_widget_show(item);
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item); */
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
 		submenu = gtk_menu_new();
 
@@ -243,6 +309,12 @@
 		gtk_widget_show(item);
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
+		/* Regkey */
+		item = gtk_menu_item_new_with_label(language_char_str(LANG_STR_HOTKEY));
+		g_signal_connect (item, "activate", G_CALLBACK (key_registrar), NULL);
+		gtk_widget_show(item);
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+
 		/* About */
 		item = gtk_menu_item_new_with_label(language_char_str(LANG_STR_ABOUT));
 		g_signal_connect (item, "activate", G_CALLBACK (print_help), NULL);
@@ -260,11 +332,11 @@
 	}
 
 	static void toggle_silent_mode (GtkWidget *widget, gpointer data) {
-		set_setting(SETTING_SILENT, get_setting(SETTING_SILENT)==SETTING_SILENT_ON ? SETTING_SILENT_OFF : SETTING_SILENT_ON);
+		set_setting(SETTING_SILENT, gtk_check_menu_item_get_active((GtkCheckMenuItem*) widget) ? SETTING_SILENT_ON : SETTING_SILENT_OFF );
 	}
 
 	static void toggle_auto_copypaste (GtkWidget *widget, gpointer data) {
-		set_setting(SETTING_AUTOCOPY, get_setting(SETTING_AUTOCOPY)==SETTING_AUTOCOPY_ON ? SETTING_AUTOCOPY_OFF : SETTING_AUTOCOPY_ON);
+		set_setting(SETTING_AUTOCOPY, gtk_check_menu_item_get_active((GtkCheckMenuItem*) widget) ? SETTING_AUTOCOPY_ON : SETTING_AUTOCOPY_OFF);
 	}
 
 	static void setlang_en (GtkWidget *widget, gpointer data) {
@@ -343,6 +415,9 @@
         if (stored_entries[0] == NULL)
             error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_ALLOCATION), 1);
         wcscpy( stored_entries[0], entry);
+
+        /* Update indicator menu */
+        app_indicator_set_menu (indicator, GTK_MENU (get_menu()));
     }
 
 	/** 
@@ -391,13 +466,48 @@
 	 * @return Path to the configuration file
 	 */
 	char* config_path( void ) {
-		char* path = malloc(sizeof(char) * 6);
-		strcpy(path, "12345");
-		return path;
+        FILE* test;
+        char *path, *self;
+        
+        /* Prepare to hold path */
+        path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
+        if (path == NULL)
+            error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_ALLOCATION), 1);
+
+        /* Preferences first */
+        if (strlen(prefered_path) != 0) {
+            strcpy(path, prefered_path);
+            return path;
+        }
+
+        /* Test current directory */
+        test = fopen(CONFIG_FILENAME, "r");
+        if (test != NULL) {
+            fclose(test);
+
+            path[0] = '\0';
+            strcat(path, CONFIG_FILENAME);
+
+            printf("Found configuration path: %s\n", path);
+            return path;
+        }
+
+        strcpy(path, "~/");
+        strcat(path, CONFIG_FILENAME);
+        printf("Found configuration path: %s\n", path);
+        return path;
 	}
 
 	char* self_path( void ) {
-		return "./";
+        char *path;
+
+        /* Prepare to hold path */
+        path = (char*) malloc(sizeof(char)*(MAX_PATH+1));
+        if (path == NULL)
+            error_msg(language_str(LANG_STR_RUNTIME_ERR), language_str(LANG_STR_ERR_ALLOCATION), 1);
+
+        strcpy(path, ETC_PATH);
+        return path;
 	}
 
 	void config_set(const char* path) {
@@ -416,6 +526,9 @@
 		GtkWidget *label;
 		GtkWidget *dialog;
 		GtkDialogFlags flags = GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT;
+
+		if (get_setting(SETTING_SILENT) == SETTING_SILENT_ON)
+			return;
 
 		dialog = gtk_message_dialog_new ((GtkWindow*) window,
 			flags,

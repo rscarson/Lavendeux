@@ -1,9 +1,10 @@
 #if defined(_WIN32) || defined(__CYGWIN__)
-#ifndef __CYGWIN__
-    #define NTDDI_VERSION NTDDI_WIN2K
-#endif /*__CYGWIN__*/
-#define _WIN32_IE 0x0500
-#define _WIN32_WINNT 0x0500
+    #ifndef __CYGWIN__
+        #define NTDDI_VERSION NTDDI_WIN2K
+    #endif /*__CYGWIN__*/
+
+    #define _WIN32_IE 0x0500
+    #define _WIN32_WINNT 0x0500
 
     #include <stdio.h>
     #include <windows.h>

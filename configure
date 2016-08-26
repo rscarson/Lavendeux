@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+if ! uname -s | grep "Linux" &> /dev/null ;then
+	printf "Install using 'sudo make install'\n"
+	exit 0
+fi
+
+printf "Checking for gcc... "
+if ! type "gcc" &> /dev/null ;then
+	printf "Missing! Compilation would fail\n"
+	exit 1
+fi
+printf "Ok.\n"
+
+printf "Checking for flex... "
+if ! type "flex" &> /dev/null ;then
+	printf "Missing! Compilation would fail\n"
+	exit 1
+fi
+printf "Ok.\n"
+
+printf "Checking for bison... "
+if ! type "bison" &> /dev/null ;then
+	printf "Missing! Compilation would fail\n"
+	exit 1
+fi
+printf "Ok.\n"
+
+printf "Checking for gtk3 library... "
+if ! pkg-config --modversion gtk+-3.0 &> /dev/null ;then
+	printf "Missing! Compilation would fail\n"
+	exit 1
+fi
+printf "Ok.\n"
+
+printf "Checking for keybinder 3.0 library... "
+if ! pkg-config --modversion keybinder-3.0 &> /dev/null ;then
+	printf "Missing! Compilation would fail\n"
+	exit 1
+fi
+printf "Ok.\n"
+
+printf "Checking for appindicator3 0.1 library... "
+if ! pkg-config --modversion appindicator3-0.1 &> /dev/null ;then
+	printf "Missing! Compilation would fail\n"
+	exit 1
+fi
+printf "Ok.\n"
+
+printf "Checking for python 2.7 library... "
+if ! pkg-config --modversion python2 &> /dev/null ;then
+	printf "Missing! Compilation would fail\n"
+	exit 1
+fi
+printf "Ok.\n"
+
+printf "\nAll dependencies present. Install using 'sudo make install'\n"
