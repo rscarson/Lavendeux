@@ -70,15 +70,17 @@
 		}
 		Py_DECREF(pModule);
 
-		/* Reopen console output */
-		pModule = PyImport_ImportModule("io");
-		if (pModule == NULL) {
-			/* Cannot load standard library! */
-			printf("Could not find standard library! python27.zip missing or corrupted.\n");
-			return;
-		}
-		stdOut = PyObject_CallMethod(pModule, "open", "ssi", "CONOUT$", "wb", 0);
-		Py_DECREF(pModule);
+		#if defined(_WIN32) || defined(__CYGWIN__)
+			/* Reopen console output */
+			pModule = PyImport_ImportModule("io");
+			if (pModule == NULL) {
+				/* Cannot load standard library! */
+				printf("Could not find standard library! python27.zip missing or corrupted.\n");
+				return;
+			}
+			stdOut = PyObject_CallMethod(pModule, "open", "ssi", "CONOUT$", "wb", 0);
+			Py_DECREF(pModule);
+		#endif
 
 		/* Redirect errors */
 		pModule = PyImport_ImportModule("sys");

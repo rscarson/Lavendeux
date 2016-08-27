@@ -80,12 +80,14 @@
 		app_indicator_set_menu (indicator, GTK_MENU (get_menu()));
     }
 
-    static void handler (const char *keystring, void *user_data) {
-    	const wchar_t* str = from_clipboard();
-    	if (!str) return;
+    static void activate (GtkApplication* app, gpointer user_data) { }
 
+    static void handler (const char *keystring, void *user_data) {
     	if (get_setting(SETTING_AUTOCOPY) == SETTING_AUTOCOPY_ON)
     		auto_copy();
+
+    	const wchar_t* str = from_clipboard();
+    	if (!str) return;
 
     	_parse_callback( str );
 
@@ -134,20 +136,20 @@
 		Window winRoot = XDefaultRootWindow(display);
 		XGetInputFocus(display, &winFocus, &revert);
 
-		/* Key release
+		/* Key release */
 		event = createKeyEvent(display, winFocus, winRoot, 0, keycode, modifiers);
-		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event); */
+		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event);
+		XFlush(display);
 
 		/* Keypress */
 		event = createKeyEvent(display, winFocus, winRoot, 1, keycode, modifiers);
 		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event);
-
-		/* Wait a tad */
-		g_usleep (10000);
+		XFlush(display);
 
 		/* Key release */
 		event = createKeyEvent(display, winFocus, winRoot, 0, keycode, modifiers);
 		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event);
+		XFlush(display);
 
 		XCloseDisplay(display);
 	}
@@ -214,17 +216,13 @@
 
     void debug_enable( void ) {}
 
-	static void activate (GtkApplication* app, gpointer user_data) {
-		char* help = cmdflag_help(HELP_MSG);
-		GtkWidget* widget;
-		GtkWidget* button_box;
-		GtkWidget *view;
-		GtkTextBuffer *buffer;
-		GtkWidget *container;
-	}
-
 	static void close_app (GtkWidget *widget, gpointer data) {
-		keybinder_unbind(HOT_KEY, handler);
+		gchar *key_current;
+
+		key_current = gtk_accelerator_name(get_setting(SETTING_HOTKEY), get_setting(SETTING_HOTMOD));
+		keybinder_unbind(key_current, handler);
+
+		g_free(key_current);
 		_exit_callback();
 	}
 
@@ -322,7 +320,6 @@
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
 		/* Exit */
-
 		item = gtk_menu_item_new_with_label(language_char_str(LANG_STR_EXIT));
 		g_signal_connect (item, "activate", G_CALLBACK (close_app), NULL);
 		gtk_widget_show(item);

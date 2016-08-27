@@ -29,8 +29,8 @@
 
 	#define APPLICATION_ID "richardcarson.lavendeux"
 
+    static void activate (GtkApplication*, gpointer);
 	static void close_app (GtkWidget*, gpointer);
-	static void activate (GtkApplication*, gpointer);
 	static void handler (const char*, void*);
 	static void registrar_keystroke(GtkWidget*, GdkEventKey*, GtkWidget*);
 
