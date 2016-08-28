@@ -27,6 +27,11 @@ LEX_HEADER = $(INC_DIR)/generated/lex.h
 TAB_SOURCE = $(SRC_DIR)/generated/tab.c
 TAB_HEADER = $(INC_DIR)/generated/tab.h
 
+# Versions
+MAJOR_VERSION = 0
+MINOR_VERSION = 7
+RELEASE_NUMBER = 0
+
 # Platform specific flags
 ifeq ($(shell echo $$OSTYPE),cygwin)
 	BUILD_DEPS += $(OBJ_DIR)/lavendeux.res
@@ -93,6 +98,15 @@ grammar:
 	bison $(SRC_DIR)/grammar.y --output=$(TAB_SOURCE) --defines=$(TAB_HEADER)
 	flex --outfile=$(LEX_SOURCE) --header-file=$(LEX_HEADER) -B $(SRC_DIR)/grammar.lex
 
+# Version build
+version:
+	echo '#ifndef VERSION_H' > include/generated/version.h
+	echo '	#define VERSION_H' >> include/generated/version.h
+	echo '	#define MAJOR_VERSION "$(MAJOR_VERSION)"' >> include/generated/version.h
+	echo '	#define MINOR_VERSION "$(MINOR_VERSION)"' >> include/generated/version.h
+	echo '	#define RELEASE_NUMBER "$(RELEASE_NUMBER)"' >> include/generated/version.h
+	echo '#endif' >> include/generated/version.h
+
 # Cleanup
 clean:
 	rm -f $(LIB_DIR)/*.a
@@ -101,7 +115,7 @@ clean:
 	rm -f $(BIN_DIR)/lavendeux*
 
 # Binary build
-all: $(BUILD_DEPS)
+all: version $(BUILD_DEPS)
 	$(CC) $(BUILD_ARGS) $(COMPILE_FLAGS) $(PLATFORM_FLAGS)
 
 # Setup stuff
@@ -144,13 +158,13 @@ $(OBJ_DIR)/lavendeux.res: $(SRC_DIR)/lavendeux.rc
 
 winstall:
 	makensis $(SRC_DIR)/setup.nsi
-	zip bin/lavendeux.zip $(BIN_DIR)/python27.dll $(BIN_DIR)/python27.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
-	cd  $(BIN_DIR); zip -r lavendeux.zip extensions
-	cd  $(BIN_DIR); zip -r lavendeux.zip lib
+	zip bin/lavendeux-$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_NUMBER).zip $(BIN_DIR)/python27.dll $(BIN_DIR)/python27.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
+	cd  $(BIN_DIR); zip -r lavendeux-$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_NUMBER).zip extensions
+	cd  $(BIN_DIR); zip -r lavendeux-$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_NUMBER).zip lib
 
 winstall_noext:
 	makensis $(SRC_DIR)/setup-noextensions.nsi
-	zip bin/lavendeux.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
+	zip bin/lavendeux-$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_NUMBER).zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
 
 win32_uninstall:
 	@echo "Please run the uninstaller in the installation directory"
