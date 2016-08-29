@@ -167,15 +167,15 @@ $(OBJ_DIR)/lavendeux.res: $(SRC_DIR)/lavendeux.rc
 
 winstall:
 	makensis $(SRC_DIR)/setup.nsi
-	rename $(BIN_DIR)/lavendeux-setup.exe $(BIN_DIR)/lavendeux-setup-$(FILENAME).exe
-	zip bin/lavendeux-$(FILENAME).zip $(BIN_DIR)/python27.dll $(BIN_DIR)/python27.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
+	mv $(BIN_DIR)/lavendeux-setup.exe $(BIN_DIR)/lavendeux-setup-$(FILENAME).exe
+	zip bin/lavendeux-$(FILENAME).zip $(BIN_DIR)/python27.dll $(BIN_DIR)/python27.zip CHANGELOG LICENSE readme.md $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
 	cd  $(BIN_DIR); zip -r lavendeux-$(FILENAME).zip extensions
 	cd  $(BIN_DIR); zip -r lavendeux-$(FILENAME).zip lib
 
 winstall_noext:
 	makensis $(SRC_DIR)/setup-noextensions.nsi
-	rename $(BIN_DIR)/lavendeux-setup.exe $(BIN_DIR)/lavendeux-setup-$(FILENAME).exe
-	zip bin/lavendeux-$(FILENAME).zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
+	mv $(BIN_DIR)/lavendeux-setup.exe $(BIN_DIR)/lavendeux-setup-$(FILENAME).exe
+	zip bin/lavendeux-$(FILENAME).zip CHANGELOG LICENSE readme.md $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
 
 win32_uninstall:
 	@echo "Please run the uninstaller in the installation directory"

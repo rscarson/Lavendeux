@@ -67,3 +67,8 @@ Hotkey selection!
 -----
 Cygwin build
 Bugfix with hotkeys and silent errors
+
+0.7.0
+-----
+Overhaul makefile
+Added linux build
