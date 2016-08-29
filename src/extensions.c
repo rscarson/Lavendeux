@@ -80,18 +80,18 @@
 			}
 			stdOut = PyObject_CallMethod(pModule, "open", "ssi", "CONOUT$", "wb", 0);
 			Py_DECREF(pModule);
-		#endif
 
-		/* Redirect errors */
-		pModule = PyImport_ImportModule("sys");
-		if (pModule == NULL) {
-			/* Cannot load standard library! */
-			printf("Could not find standard library! python27.zip missing or corrupted.\n");
-			return;
-		}
-		PyObject_SetAttrString(pModule, "stderr", stdOut);
-		PyObject_SetAttrString(pModule, "stdout", stdOut);
-		Py_DECREF(pModule);
+			/* Redirect errors */
+			pModule = PyImport_ImportModule("sys");
+			if (pModule == NULL) {
+				/* Cannot load standard library! */
+				printf("Could not find standard library! python27.zip missing or corrupted.\n");
+				return;
+			}
+			PyObject_SetAttrString(pModule, "stderr", stdOut);
+			PyObject_SetAttrString(pModule, "stdout", stdOut);
+			Py_DECREF(pModule);
+		#endif
 
 
 		printf("Extensions ready\n");

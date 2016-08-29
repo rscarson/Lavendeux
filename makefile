@@ -121,7 +121,6 @@ clean:
 
 # Binary build
 all: version $(BUILD_DEPS)
-	touch $(BIN_DIR)/$(FILENAME).test
 	$(CC) $(BUILD_ARGS) $(COMPILE_FLAGS) $(PLATFORM_FLAGS)
 
 # Setup stuff
