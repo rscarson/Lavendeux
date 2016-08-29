@@ -62,15 +62,20 @@ ifeq ($(DEBUG), 1)
 	_COMPILE_FLAGS += -g
 endif
 
-# Setumake p extensions support
+# Setup make extensions support
 _COMPILE_FLAGS += $(PLATFORM_FLAGS)
 COMPILE_FLAGS = $(_COMPILE_FLAGS)
 SETUP = $(_SETUP_NOEXT)
+SUFFIX = -no-extensions
 ifeq ($(EXTENSIONS),1)
 	OBJ_FLAGS = -static -static-libgcc
 	COMPILE_FLAGS += $(EXTENSIONS_FLAGS)
 	SETUP = $(_SETUP)
+	SUFFIX = 
 endif
+
+# And filename
+FILENAME = $(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_NUMBER)$(SUFFIX)
 
 ###############
 # Build Stuff #
@@ -116,6 +121,7 @@ clean:
 
 # Binary build
 all: version $(BUILD_DEPS)
+	touch $(BIN_DIR)/$(FILENAME).test
 	$(CC) $(BUILD_ARGS) $(COMPILE_FLAGS) $(PLATFORM_FLAGS)
 
 # Setup stuff
@@ -125,6 +131,10 @@ uninstall: $(UNINSTALL)
 ##################
 # Linux Specific #
 ##################
+
+tar: clean
+	tar --exclude='./.git' -zcvf ../lavendeux-$(FILENAME).tar.gz *
+	mv ../lavendeux-$(FILENAME).tar.gz $(BIN_DIR)/lavendeux-$(FILENAME).tar.gz
 
 linstall: linstall_noext
 	cp -r $(BIN_DIR)/extensions/ /etc/lavendeux/
@@ -158,13 +168,15 @@ $(OBJ_DIR)/lavendeux.res: $(SRC_DIR)/lavendeux.rc
 
 winstall:
 	makensis $(SRC_DIR)/setup.nsi
-	zip bin/lavendeux-$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_NUMBER).zip $(BIN_DIR)/python27.dll $(BIN_DIR)/python27.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
-	cd  $(BIN_DIR); zip -r lavendeux-$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_NUMBER).zip extensions
-	cd  $(BIN_DIR); zip -r lavendeux-$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_NUMBER).zip lib
+	rename $(BIN_DIR)/lavendeux-setup.exe $(BIN_DIR)/lavendeux-setup-$(FILENAME).exe
+	zip bin/lavendeux-$(FILENAME).zip $(BIN_DIR)/python27.dll $(BIN_DIR)/python27.zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
+	cd  $(BIN_DIR); zip -r lavendeux-$(FILENAME).zip extensions
+	cd  $(BIN_DIR); zip -r lavendeux-$(FILENAME).zip lib
 
 winstall_noext:
 	makensis $(SRC_DIR)/setup-noextensions.nsi
-	zip bin/lavendeux-$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_NUMBER).zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
+	rename $(BIN_DIR)/lavendeux-setup.exe $(BIN_DIR)/lavendeux-setup-$(FILENAME).exe
+	zip bin/lavendeux-$(FILENAME).zip CHANGELOG LICENSE README $(BIN_DIR)/lavendeux.exe $(BIN_DIR)/.lavendeuxsettings -j
 
 win32_uninstall:
 	@echo "Please run the uninstaller in the installation directory"

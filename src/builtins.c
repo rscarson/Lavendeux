@@ -510,9 +510,7 @@ int builtin_substr(value args[], value* result, int angle_mode) {
 
 /**
  * Char from int
- * Param 0: (string) input
- * Param 1: (int) start
- * Param 2: (int) len
+ * Param 0: (int) index
  *
  * Return: int
  */
@@ -528,9 +526,7 @@ int builtin_chr(value args[], value* result, int angle_mode) {
 
 /**
  * Int from char
- * Param 0: (string) input
- * Param 1: (int) start
- * Param 2: (int) len
+ * Param 0: (string) character
  *
  * Return: int
  */

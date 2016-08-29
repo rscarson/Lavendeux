@@ -3,6 +3,7 @@
 
 	#include <stdlib.h>
 	#include <string.h>
+	#include <wchar.h>
 
 	#define TEST_FAIL(s){ printf("Failed in %s, line %d\n", __FILE__, __LINE__); return 1; }
 	

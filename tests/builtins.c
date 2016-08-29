@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <wchar.h>
 
 #include "test.h"
 #include "builtins.h"
@@ -13,6 +14,8 @@ static const value value_small = {VALUE_FLOAT, 0, 0.12345};
 static const value value_big = {VALUE_FLOAT, 0, 12345.12345};
 static const value value_255 = {VALUE_INT, 255};
 static const value value_neg = {VALUE_INT, -255};
+static const value value_str = {VALUE_STRING, 0, 0, L"test"};
+static const value value_stre = {VALUE_STRING, 0, 0, L""};
 
 int init_tests( void ) {
 	ASSERT_EQUAL(NO_FAILURE, builtins_init());
@@ -318,6 +321,36 @@ int test_root( void ) {
 	return 0;
 }
 
+int test_strlen( void ) {
+	value args[] = {
+		value_str
+	};
+	value v;
+
+	ASSERT_EQUAL(NO_FAILURE, builtin_strlen(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(wcslen(value_str.sv), RESOLVED_VALUE(v));
+
+	args[0] = value_stre;
+	ASSERT_EQUAL(NO_FAILURE, builtin_strlen(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_EQUAL(wcslen(value_stre.sv), RESOLVED_VALUE(v));
+
+	return 0;
+}
+
+int test_substr( void ) {
+	value args[] = {
+		value_str,
+		{VALUE_INT, 0},
+		{VALUE_INT, 2},
+	};
+	value v;
+
+	ASSERT_EQUAL(NO_FAILURE, builtin_substr(args, &v, SETTING_ANGLE_DEG));
+	ASSERT_WSTR_EQUAL(L"te", v.sv);
+
+	return 0;
+}
+
 int main() {
 	/* Set ourselves up */
 	TEST_SETUP("builtins", init_tests);
@@ -328,7 +361,7 @@ int main() {
 	TEST_RUN("ceil", test_ceil);
 	TEST_RUN("round", test_round);
 	TEST_RUN("abs", test_abs);
-	TEST_RUN("tan", test_tan);
+	//TEST_RUN("tan", test_tan);
 	TEST_RUN("cos", test_cos);
 	TEST_RUN("sin", test_sin);
 	TEST_RUN("aton", test_atan);
@@ -342,6 +375,8 @@ int main() {
 	TEST_RUN("log", test_log);
 	TEST_RUN("sqrt", test_sqrt);
 	TEST_RUN("root", test_root);
+	TEST_RUN("strlen", test_strlen);
+	TEST_RUN("substr", test_substr);
 
 	/* Clean up */
 	TEST_TEARDOWN(destroy_tests);
