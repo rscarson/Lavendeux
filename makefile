@@ -30,7 +30,7 @@ TAB_HEADER = $(INC_DIR)/generated/tab.h
 # Versions
 MAJOR_VERSION = 0
 MINOR_VERSION = 7
-RELEASE_NUMBER = 0
+RELEASE_NUMBER = 1
 
 # Platform specific flags
 ifeq ($(shell echo $$OSTYPE),cygwin)
