@@ -72,3 +72,7 @@ Bugfix with hotkeys and silent errors
 -----
 Overhaul makefile
 Added linux build
+
+0.7.1
+-----
+Fix bugs with linux build
