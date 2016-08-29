@@ -1,20 +1,19 @@
-/* A Bison parser, made by GNU Bison 2.4.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
-   
-      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
-   Foundation, Inc.
-   
+/* Bison interface for Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
@@ -27,70 +26,76 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-
-/* Tokens.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     END = 0,
-     IDENTIFIER = 258,
-     HEX = 259,
-     BIN = 260,
-     OCT = 261,
-     SCI = 262,
-     FLOAT = 263,
-     INT = 264,
-     STRING = 265,
-     DECORATOR = 266,
-     EQUAL = 267,
-     LPAREN = 268,
-     RPAREN = 269,
-     ERROR = 270,
-     COMMA = 271,
-     OR = 272,
-     XOR = 273,
-     AND = 274,
-     RSHIFT = 275,
-     LSHIFT = 276,
-     MINUS = 277,
-     PLUS = 278,
-     MOD = 279,
-     DIV = 280,
-     MUL = 281,
-     POW = 282,
-     FACTORIAL = 283,
-     NOT = 284
-   };
+#ifndef YY_YY_INCLUDE_GENERATED_TAB_H_INCLUDED
+# define YY_YY_INCLUDE_GENERATED_TAB_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
 #endif
 
+/* Token type.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+  enum yytokentype
+  {
+    END = 0,
+    IDENTIFIER = 258,
+    HEX = 259,
+    BIN = 260,
+    OCT = 261,
+    SCI = 262,
+    FLOAT = 263,
+    INT = 264,
+    STRING = 265,
+    DECORATOR = 266,
+    EQUAL = 267,
+    LPAREN = 268,
+    RPAREN = 269,
+    ERROR = 270,
+    COMMA = 271,
+    OR = 272,
+    XOR = 273,
+    AND = 274,
+    LSHIFT = 275,
+    RSHIFT = 276,
+    PLUS = 277,
+    MINUS = 278,
+    MUL = 279,
+    DIV = 280,
+    MOD = 281,
+    POW = 282,
+    FACTORIAL = 283,
+    NOT = 284
+  };
+#endif
 
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-{
 
-/* Line 1685 of yacc.c  */
-#line 42 "src/grammar.y"
+union YYSTYPE
+{
+#line 42 "src/grammar.y" /* yacc.c:1909  */
 
 	value val;
 	list lst;
 
+#line 90 "include/generated/tab.h" /* yacc.c:1909  */
+};
 
-
-/* Line 1685 of yacc.c  */
-#line 88 "include/generated/tab.h"
-} YYSTYPE;
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
 
 
+int yyparse (yyscan_t scanner, value *result, int angle_mode);
 
+#endif /* !YY_YY_INCLUDE_GENERATED_TAB_H_INCLUDED  */

@@ -83,7 +83,7 @@
     static void activate (GtkApplication* app, gpointer user_data) { }
 
     static void handler (const char *keystring, void *user_data) {
-    	if (get_setting(SETTING_AUTOCOPY) == SETTING_AUTOCOPY_ON)
+    	if (get_setting(SETTING_AUTOCOPY) == SETTING_AUTOCOPY_ON) 
     		auto_copy();
 
     	const wchar_t* str = from_clipboard();
@@ -139,19 +139,18 @@
 		/* Key release */
 		event = createKeyEvent(display, winFocus, winRoot, 0, keycode, modifiers);
 		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event);
-		XFlush(display);
 
 		/* Keypress */
 		event = createKeyEvent(display, winFocus, winRoot, 1, keycode, modifiers);
 		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event);
-		XFlush(display);
 
 		/* Key release */
 		event = createKeyEvent(display, winFocus, winRoot, 0, keycode, modifiers);
 		XSendEvent(event.display, event.window, True, KeyPressMask, (XEvent *)&event);
+		
 		XFlush(display);
-
 		XCloseDisplay(display);
+		g_usleep(100000);
 	}
 
     void key_registrar( void ) {
@@ -237,7 +236,6 @@
             if (stored_entries[i] != NULL) {
 		    	char* str = (char*) malloc(sizeof(wchar_t)*(wcslen(stored_entries[i])+1));
 		    	str[ wcstombs(str, stored_entries[i], wcslen(stored_entries[i])) ] = '\0';
-		    	printf("%s\n", str);
 
 				item = gtk_menu_item_new_with_label(str);
 				g_signal_connect (item, "activate", G_CALLBACK (copy_equation), stored_entries[i]);

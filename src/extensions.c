@@ -299,7 +299,6 @@
 						v->type = VALUE_STRING;
 						result = PyString_AsString(pResult);
 						v->sv[ mbstowcs(v->sv, result, EXPRESSION_MAX_LEN-1) ] = L'\0';
-						free(result);
 					}
 
 
