@@ -22,10 +22,10 @@ title: Features
 <!-- Types -->
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('d')">Supported Types <span class="caret"></h3>
+		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('tps')">Supported Types <span class="caret"></h3>
 	</div>
 
-	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="d">
+	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="tps">
 		{% for type in site.data.types %}
 			<li class="list-group-item">
 				<h5>{{ type.name }}</h5>
@@ -46,10 +46,10 @@ title: Features
 {% for operator_category in site.data.operators %}
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('o{{ forloop.index }}')">{{ operator_category.name}} <span class="caret"></h3>
+		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('ops{{ forloop.index }}')">{{ operator_category.name}} <span class="caret"></h3>
 	</div>
 
-	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="o{{ forloop.index }}">
+	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="ops{{ forloop.index }}">
 		{% for operator in operator_category.operators %}
 			<li class="list-group-item"><strong>{{ operator.name }}</strong> <small>{{ operator.operator }}</small></li>
 		{% endfor %}
@@ -65,10 +65,10 @@ title: Features
 {% for function_category in site.data.functions %}
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('f{{ forloop.index }}')">{{ function_category.name}} <span class="caret"></h3>
+		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('fns{{ forloop.index }}')">{{ function_category.name}} <span class="caret"></h3>
 	</div>
 
-	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="f{{ forloop.index }}">
+	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="fns{{ forloop.index }}">
 		{% for function in function_category.operators %}
 			<li class="list-group-item"><strong>{{ function.name }}</strong> <small>{{ function.operator }}</small></li>
 		{% endfor %}
@@ -83,10 +83,10 @@ title: Features
 <!-- Decorators -->
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('d')">Built-in Decorators <span class="caret"</h3>
+		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('dec')">Built-in Decorators <span class="caret"</h3>
 	</div>
 
-	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="d">
+	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="dec">
 		{% for decorator in site.data.decorators %}
 			<li class="list-group-item">
 				<h5>{{ decorator.name }}</h5>
@@ -110,10 +110,10 @@ title: Features
 {% for extension_category in site.data.extensions %}
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('e{{ forloop.index }}')">{{ extension_category.name}} Extensions <span class="caret"></h3>
+		<h3 class="panel-title" style="cursor:pointer" onClick="toggle('ext{{ forloop.index }}')">{{ extension_category.name}} Extensions <span class="caret"></h3>
 	</div>
 
-	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="e{{ forloop.index }}">
+	<ul class="list-group" style="overflow: hidden; max-height: 0; transition:max-height 0.25s ease-out;" id="ext{{ forloop.index }}">
 		{% for extension in extension_category.extensions %}
 			<li class="list-group-item">
 				<small class="text-muted">Added in {{ extension.added_in }}</small>
