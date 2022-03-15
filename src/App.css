@@ -1,38 +1,60 @@
-.App {
-  text-align: center;
+.nav-tabs {
+	padding-top: 30px;
+	padding-left: 30px !important;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.nav-content {
+	padding-left: 30px;
+	padding-right: 30px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.card {
+	margin-bottom: 30px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.main-nav {
+	background-color: #FFF;
 }
 
-.App-link {
-  color: #61dafb;
+.nav-tab {
+	margin-top: 88px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.arrow-button {
+	color: #000 !important;
+	background: none !important;
+	border: none !important;
+}
+
+.code-sample {
+	background-color: #1f2937;
+	color: #e5e7eb;
+	padding: 1.1111111em 1.3333333em;
+	line-height: 1.75;
+	margin-bottom: 2em;
+	border-radius: .375rem;
+}
+
+.code-sample .comment {
+	color: #33cc33;
+}
+
+.code-sample .data {
+	color: #6699ff;
+}
+
+.code-sample .radix {
+	color: #cc00cc;
+}
+
+.code-sample .decorator {
+	color: #cc3300;
+}
+
+.code-sample .function {
+	color: #ff9900;
+}
+
+body {
+	background: none !important;
 }

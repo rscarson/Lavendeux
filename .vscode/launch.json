@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src-tauri",
+            "name": "Cargo launch",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--manifest-path",
+                    "src-tauri/Cargo.toml"
+                ]
+            },
+            "program": "${cargo:program}",
+            "args": []
+        },
+        
+        {
+            "type": "lldb",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src-tauri",
+            "name": "Cargo test",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--manifest-path",
+                    "src-tauri/Cargo.toml"
+                ]
+            },
+            "program": "${cargo:program}",
+            "args": []
+        }    
+    ]
+}

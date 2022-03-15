@@ -1,0 +1,86 @@
+{
+  "package": {
+    "productName": "lavendeux",
+    "version": "0.1.0"
+  },
+  "build": {
+    "distDir": "../build",
+    "devPath": "http://localhost:3000",
+    "beforeDevCommand": "npm run start",
+    "beforeBuildCommand": "npm run build"
+  },
+  "tauri": {
+    "systemTray": {
+      "iconPath": "icons/icon",
+      "iconAsTemplate": true
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.tauri.dev",
+      "icon": [
+        "icons/32x32.png",
+        "icons/icon.png",
+        "icons/icon.ico",
+        "icons/icon.icns"
+      ],
+      "resources": [],
+      "externalBin": [],
+      "copyright": "",
+      "category": "DeveloperTool",
+      "shortDescription": "",
+      "longDescription": "",
+      "deb": {
+        "depends": [],
+        "useBootstrapper": false
+      },
+      "macOS": {
+        "frameworks": [],
+        "minimumSystemVersion": "",
+        "useBootstrapper": false,
+        "exceptionDomain": "",
+        "signingIdentity": null,
+        "providerShortName": null,
+        "entitlements": null
+      },
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "updater": {
+      "active": false
+    },
+    "allowlist": {
+      "all": true
+    },
+    "windows": [
+      {
+        "title": "Lavendeux",
+        "width": 800,
+        "height": 600,
+        "resizable": true,
+        "fullscreen": false
+      },
+
+      {
+        "label": "error",
+        "decorations": false,
+        "title": "Error",
+        "width": 500, "height": 100,
+        "x": 0, "y": 0,
+        "focus": true,
+        "resizable": false,
+        "visible": false,
+        "fullscreen": false,
+        "transparent": true,
+        "skipTaskbar": true,
+        "url": "/error"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
+}
