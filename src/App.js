@@ -13,24 +13,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { listen, emit } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/tauri'
 
-export async function updateSettings(s) {
-	return await invoke("update_settings", {'settings': s});
+export async function run(f, payload) {
+	if (payload) {
+		return await invoke(f, payload);
+	} else {
+		return await invoke(f);
+	}
 }
-export async function reloadExtensions() {
-	return await invoke("reload_extensions");
-}
-export async function getError() {
-	return await invoke("get_error");
-}
-export async function hideErrorwindow() {
-	return await invoke("hide_errorwindow");
-}
-export async function clearHistory() {
-	return await invoke("clear_history");
-}
-export async function openExtensionsDir() {
-	return await invoke("open_extensions_dir");
-}
+
 export function importExtension(f) {
 	if (f === null) return;
 	invoke("import_extension", {srcPath: f})
@@ -83,7 +73,7 @@ function App() {
 		<Switch>
 			<Route path="/error"
 					render={(_props) => (
-						<Alert variant={errorVariant} onClose={() => hideErrorwindow()} dismissible>
+						<Alert variant={errorVariant} onClose={() => run("hide_errorwindow")} dismissible>
 							<Alert.Heading>{errorTitle}</Alert.Heading>
 							<p>{error}</p>
 						</Alert>
@@ -94,15 +84,15 @@ function App() {
 					render={(_props) => (
 						<Tabs activeKey={activeTab} onSelect={k => setActiveTab(k)} id="main-nav" className="mb-3 main-nav fixed-top">
 							<Tab className="nav-tab" eventKey="history" title="History">
-								<History history={history} onClear={() => clearHistory()} />
+								<History history={history} onClear={() => run("clear_history")} />
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="extensions" title="Extensions">
-								<Extensions onImport={importExtension} extensions={extensions} onReload={reloadExtensions} onDisable={disableExtension} onOpen={openExtensionsDir} />
+								<Extensions onImport={importExtension} extensions={extensions} onReload={run("reload_extensions")} onDisable={disableExtension} onOpen={() => run("open_extensions_dir")} />
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="settings" title="Settings">
-								<Settings settings={settings} onSettingsUpdated={async s => await updateSettings(s)} />
+								<Settings settings={settings} onSettingsUpdated={async s => await run("update_settings", s)} />
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="help" title="Help">
