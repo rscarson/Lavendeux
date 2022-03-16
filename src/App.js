@@ -16,9 +16,6 @@ import { invoke } from '@tauri-apps/api/tauri'
 export async function updateSettings(s) {
 	return await invoke("update_settings", {'settings': s});
 }
-export async function getSettings() {
-	return await invoke("get_settings");
-}
 export async function reloadExtensions() {
 	return await invoke("reload_extensions");
 }
@@ -48,6 +45,7 @@ export function disableExtension(f) {
 
 function App() {
 	const [error, setError] = useState('');
+	const [activeTab, setActiveTab] = useState('history');
 	const [errorTitle, setErrorTitle] = useState('Could not parse expression');
 	const [errorVariant, setErrorVariant] = useState('danger');
 	const [settings, setSettings] = useState({});
@@ -75,6 +73,10 @@ function App() {
 		listen('history', event => {
 			setHistory(event.payload.reverse());
 		});
+
+		listen('switch_tab', event => {
+			setActiveTab(event.payload.toLowerCase());
+		});
 	}, []);
 
 	return (
@@ -90,7 +92,7 @@ function App() {
 
 			<Route path="*"
 					render={(_props) => (
-						<Tabs defaultActiveKey="history" id="main-nav" className="mb-3 main-nav fixed-top">
+						<Tabs activeKey={activeTab} onSelect={k => setActiveTab(k)} id="main-nav" className="mb-3 main-nav fixed-top">
 							<Tab className="nav-tab" eventKey="history" title="History">
 								<History history={history} onClear={() => clearHistory()} />
 							</Tab>

@@ -1,12 +1,14 @@
+use crate::{parser, keybind, extensions};
+use crate::state::SharedState;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
-use dirs::home_dir;
 use std::path::{PathBuf};
-use super::{parser, keybind, extensions, SharedState};
+use dirs::home_dir;
 
 const DEFAULT_SHORTCUT : &str = "CmdOrCtrl+Space";
 const DEFAULT_EXTDIR : &str = ".lavendeux";
 
+/// Application settings
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Settings {
 	pub auto_paste: bool,
@@ -15,6 +17,10 @@ pub struct Settings {
 	pub shortcut: String
 }
 
+/// Get a friendly representation of the current shortcut
+/// 
+/// # Arguments
+/// * `settings` - Application settings
 pub fn shortcut_name(settings: &Settings) -> String {
 	if cfg!(target_os = "macos") {
 		settings.shortcut.replace("CmdOrCtrl", "Cmd")
@@ -24,6 +30,7 @@ pub fn shortcut_name(settings: &Settings) -> String {
 }
 
 impl Settings {
+	/// Initialise blank settings
 	pub fn new() -> Self {
 		let mut ext_path = home_dir().unwrap_or(PathBuf::new());
 		ext_path.push(DEFAULT_EXTDIR);
@@ -37,22 +44,18 @@ impl Settings {
 	}
 }
 
-fn update_shortcut(app_handle: AppHandle, shortcut: &str) -> Option<String> {
-	keybind::bind_shortcut(app_handle, shortcut, DEFAULT_SHORTCUT, parser::handle_shortcut)
-}
-
-#[tauri::command]
-pub fn get_settings(state: tauri::State<SharedState>) -> Option<Settings> {
-	let lock = state.0.lock().ok()?;
-	Some(lock.settings.clone())
-}
-
+/// Update the current application settings
+/// 
+/// # Arguments
+/// * `app_handle` - AppHandle
+/// * `state` - Application state
+/// * `settings` - Application settings
 #[tauri::command]
 pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, settings: Settings) -> Result<Settings, String> {
 	match state.0.lock().ok() {
 		Some(mut lock) => {
 			// Update keyboard shortcut
-			match update_shortcut(app_handle.clone(), &settings.shortcut) {
+			match keybind::bind_shortcut(app_handle.clone(), &settings.shortcut, DEFAULT_SHORTCUT, parser::handle_shortcut) {
 				Some(e) => return Err(e),
 				None => {}
 			}
@@ -73,7 +76,7 @@ pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, 
 			}
 
 			// Reload extensions
-			extensions::reload_extension(app_handle.clone(), &mut lock)?;
+			extensions::reload_extensions(app_handle.clone(), &mut lock)?;
 			
 			// Lock in settings
 			lock.settings = settings.clone();

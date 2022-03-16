@@ -1,8 +1,38 @@
 use std::{thread::sleep, time::Duration};
 use tauri::{AppHandle, GlobalShortcutManager};
-use inputbot::KeybdKey;
 use std::{thread};
 
+#[cfg(target_os="windows")]
+mod clipboard_keys {
+    use inputbot::KeybdKey;
+    pub const MODIFIER : KeybdKey = KeybdKey::LControlKey;
+    pub const COPY : KeybdKey = KeybdKey::CKey;
+    pub const PASTE : KeybdKey = KeybdKey::VKey;
+}
+
+#[cfg(all(unix, not(any(target_os="macos", target_os="android", target_os="emscripten"))))]
+mod clipboard_keys {
+    use inputbot::KeybdKey;
+    pub const MODIFIER : KeybdKey = KeybdKey::LControlKey;
+    pub const COPY : KeybdKey = KeybdKey::CKey;
+    pub const PASTE : KeybdKey = KeybdKey::VKey;
+}
+
+#[cfg(target_os="macos")]
+mod clipboard_keys {
+    use inputbot::KeybdKey;
+    pub const MODIFIER : KeybdKey = KeybdKey::LControlKey;
+    pub const COPY : KeybdKey = KeybdKey::CKey;
+    pub const PASTE : KeybdKey = KeybdKey::VKey;
+}
+
+/// Bind a new shortcut to the host
+/// 
+/// # Arguments
+/// * `app_handle` - AppHandle
+/// * `shortcut` - New shortcut
+/// * `default_shortcut` - Fallback shortcut
+/// * `handler` - Handler function
 pub fn bind_shortcut(app_handle: tauri::AppHandle, shortcut: &str, default_shortcut: &str, handler: fn(AppHandle)) -> Option<String> {
 	let mut gsm = app_handle.global_shortcut_manager();
 	gsm.unregister_all().ok()?;
@@ -29,56 +59,20 @@ pub fn bind_shortcut(app_handle: tauri::AppHandle, shortcut: &str, default_short
 	}
 }
 
-#[cfg(all(unix, not(any(target_os="macos", target_os="android", target_os="emscripten"))))]
+/// Send a copy-command to the host
 pub fn send_copy() {
-    KeybdKey::LControlKey.release(); KeybdKey::CKey.release();
+    clipboard_keys::MODIFIER.release(); clipboard_keys::COPY.release();
     sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.press(); KeybdKey::CKey.press();
+    clipboard_keys::MODIFIER.press(); clipboard_keys::COPY.press();
     sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.release(); KeybdKey::CKey.release();
+    clipboard_keys::MODIFIER.release(); clipboard_keys::COPY.release();
 }
 
-#[cfg(all(unix, not(any(target_os="macos", target_os="android", target_os="emscripten"))))]
+/// Send a paste-command to the host
 pub fn send_paste() {
-    KeybdKey::LControlKey.release(); KeybdKey::CKey.release();
+    clipboard_keys::MODIFIER.release(); clipboard_keys::COPY.release();
     sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.press(); KeybdKey::VKey.press();
+    clipboard_keys::MODIFIER.press(); clipboard_keys::PASTE.press();
     sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.release(); KeybdKey::VKey.release();
-}
-
-#[cfg(target_os="windows")]
-pub fn send_copy() {
-    KeybdKey::LControlKey.release(); KeybdKey::CKey.release();
-    sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.press(); KeybdKey::CKey.press();
-    sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.release(); KeybdKey::CKey.release();
-}
-
-#[cfg(target_os="windows")]
-pub fn send_paste() {
-    KeybdKey::LControlKey.release(); KeybdKey::CKey.release();
-    sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.press(); KeybdKey::VKey.press();
-    sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.release(); KeybdKey::VKey.release();
-}
-
-#[cfg(target_os="macos")]
-pub fn send_copy() {
-    KeybdKey::LControlKey.release(); KeybdKey::CKey.release();
-    sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.press(); KeybdKey::CKey.press();
-    sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.release(); KeybdKey::CKey.release();
-}
-
-#[cfg(target_os="macos")]
-pub fn send_paste() {
-    KeybdKey::LControlKey.release(); KeybdKey::CKey.release();
-    sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.press(); KeybdKey::VKey.press();
-    sleep(Duration::from_millis(50));
-    KeybdKey::LControlKey.release(); KeybdKey::VKey.release();
+    clipboard_keys::MODIFIER.release(); clipboard_keys::PASTE.release();
 }
