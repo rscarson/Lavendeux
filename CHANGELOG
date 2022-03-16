@@ -1,0 +1,73 @@
+0.7.0
+-----
+Rust rewrite
+Added Linux and OSX compatibility....... In theory
+
+0.6.1
+-----
+Cygwin build
+Bugfix with hotkeys and silent errors
+
+0.6.0
+-----
+Hotkey selection!
+
+0.5.5
+----
+The right DLL!
+New documentation link on installer
+
+0.5.4
+-----
+Added new built-in functions for strings
+Moved strlen to builtins
+Added string concatenation
+Fixed bug with base operators
+Added @c/@color/@colour decorators for html color codes
+
+0.5.3
+-----
+Removed comments, and added # as a new type of hex integer
+Added capital versions of existing alternate bases (0B, 0X, 0O)
+Numbers starting with 0 are now properly octal
+Better string support in grammar
+
+0.5.2
+-----
+Fixed a crash when repeatedly calling an extension
+
+0.5.1
+-----
+Added synonyms extension
+Fixed crash bug when reloading a faulty extension
+
+0.5.0
+-----
+Overhaul of commandline flags
+Added python extensions
+Added string type
+
+0.3.1
+-----
+Added silent start option
+
+0.3.0
+-----
+Fixed a few grammar issues
+Changed how settings are integrated
+
+0.2.0
+-----
+Deprecated a few commandline options
+Added auto copy/paste
+Improved memory usage
+
+0.1.1
+-----
+Added unit tests
+Rebuilt binary decorator
+Prepare for multiplatform compatibility
+
+0.1.0
+-----
+Initial public release
