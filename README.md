@@ -1,4 +1,4 @@
-#Lavendeux [![Build Status](https://travis-ci.org/rscarson/Lavendeux.svg?branch=master)](https://travis-ci.org/rscarson/Lavendeux)
+# Lavendeux [![Build Status](https://travis-ci.org/rscarson/Lavendeux.svg?branch=master)](https://travis-ci.org/rscarson/Lavendeux)
 
 [Installer and binaries](http://rscarson.github.io/Lavendeux/) | [Syntax and usage help](https://github.com/rscarson/Lavendeux/wiki) | [Building and installing](https://github.com/rscarson/Lavendeux/wiki/Building-and-Installing)
 
