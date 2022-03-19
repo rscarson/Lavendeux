@@ -3,10 +3,15 @@ use crate::state::SharedState;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 use std::path::{PathBuf};
+use std::fs::File;
+use std::io::{BufReader, BufWriter};
+use std::error::Error;
 use dirs::home_dir;
 
 const DEFAULT_SHORTCUT : &str = "CmdOrCtrl+Space";
-const DEFAULT_EXTDIR : &str = ".lavendeux";
+const DEFAULT_CONFIGNAME : &str = "lavendeux.config.json";
+const DEFAULT_ROOTDIR : &str = ".lavendeux";
+const DEFAULT_EXTDIR : &str = "extensions";
 
 /// Application settings
 #[derive(Serialize, Deserialize, Clone)]
@@ -15,6 +20,48 @@ pub struct Settings {
 	pub silent_errors: bool,
 	pub extension_dir: String,
 	pub shortcut: String
+}
+
+/// Read settings from a file
+/// 
+/// # Arguments
+/// * `path` - Path to the config file
+pub fn read_settings(path : Option<&str>) -> Result<Settings, Box<dyn Error>> {
+	let filename : String = match path {
+		Some(s) => s.to_string(),
+		None => {
+			let mut root = home_dir().unwrap_or(PathBuf::new());
+			root.push(DEFAULT_ROOTDIR);
+			root.push(DEFAULT_CONFIGNAME);
+			root.to_str().unwrap_or(DEFAULT_CONFIGNAME).to_string()
+		}
+	};
+
+	let file = File::open(filename)?;
+	let reader = BufReader::new(file);
+	Ok(serde_json::from_reader(reader)?)
+}
+
+/// Write settings to a file
+/// 
+/// # Arguments
+/// * `settings` - Application settings
+/// * `path` - Path to the config file
+pub fn write_settings(settings: &Settings, path : Option<&str>) -> Result<(), Box<dyn Error>> {
+	let filename : String = match path {
+		Some(s) => s.to_string(),
+		None => {
+			let mut root = home_dir().unwrap_or(PathBuf::new());
+			root.push(DEFAULT_ROOTDIR);
+			root.push(DEFAULT_CONFIGNAME);
+			root.to_str().unwrap_or(DEFAULT_CONFIGNAME).to_string()
+		}
+	};
+	
+	let file = File::create(filename)?;
+	let writer = BufWriter::new(file);
+	serde_json::to_writer(writer, settings)?;
+	Ok(())
 }
 
 /// Get a friendly representation of the current shortcut
@@ -32,14 +79,20 @@ pub fn shortcut_name(settings: &Settings) -> String {
 impl Settings {
 	/// Initialise blank settings
 	pub fn new() -> Self {
-		let mut ext_path = home_dir().unwrap_or(PathBuf::new());
-		ext_path.push(DEFAULT_EXTDIR);
-
-		Self {
-			shortcut: DEFAULT_SHORTCUT.to_string(),
-			extension_dir: ext_path.to_str().unwrap_or(DEFAULT_EXTDIR).to_string(),
-			silent_errors: false,
-			auto_paste: true
+		match read_settings(None) {
+			Ok(s) => s,
+			Err(_) => {
+				let mut ext_path = home_dir().unwrap_or(PathBuf::new());
+				ext_path.push(DEFAULT_ROOTDIR);
+				ext_path.push(DEFAULT_EXTDIR);
+		
+				Self {
+					shortcut: DEFAULT_SHORTCUT.to_string(),
+					extension_dir: ext_path.to_str().unwrap_or(DEFAULT_ROOTDIR).to_string(),
+					silent_errors: false,
+					auto_paste: true
+				}
+			}
 		}
 	}
 }
@@ -81,6 +134,7 @@ pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, 
 			// Lock in settings
 			lock.settings = settings.clone();
 			app_handle.emit_all("settings", settings.clone()).unwrap();
+			write_settings(&settings, None).ok();
 			Ok(settings)
 		},
 

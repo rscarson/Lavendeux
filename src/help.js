@@ -60,8 +60,14 @@ tan(r), cos(r), sin(r), atan(r), acos(r), asin(r), tanh(r), cosh(r), sinh(r)
 ln(n) | log10(n) | log(n, base)
 sqrt(n) | root(n, base)
 
+// RNG functions
+choose("argument 1", 2, 3.0, ...) | rand() | rand(min, max)
+
+// Networking functions
+get(url, ["header-name=value", ...]) | post(url, ["header-name=value", ...]) | resolve(hostname)
+
 // Misc. functions
-to_radians(degree_value) | abs(n)
+to_radians(degree_value) | abs(n) | tail(filename, [lines]) | time()
 `;
 
 const jsSample = `
@@ -198,9 +204,7 @@ function Help(props) {
 			</p>
 			{renderSample(decoratorsSample)}
 
-			<p>
-				The following functions are supported by default:
-			</p>
+			<p>The following functions are supported by default:</p>
 			{renderSample(functionsSample)}
 
 			<p>

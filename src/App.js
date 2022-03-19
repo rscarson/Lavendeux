@@ -46,7 +46,6 @@ function App() {
 		emit("ready", "payload");
 
 		listen('message', event => {
-			console.log(JSON.stringify(event));
 			setError(event.payload.msg);
 			setErrorTitle(event.payload.title);
 			setErrorVariant(event.payload.variant);
@@ -73,9 +72,15 @@ function App() {
 		<Switch>
 			<Route path="/error"
 					render={(_props) => (
-						<Alert variant={errorVariant} onClose={() => run("hide_errorwindow")} dismissible>
-							<Alert.Heading>{errorTitle}</Alert.Heading>
-							<p>{error}</p>
+						<Alert variant={errorVariant} 
+							id="error-window"
+							onClose={() => run("hide_errorwindow")}
+							style={{cursor: "pointer"}} dismissible
+						>
+							<div onClick={() => run("show_history_tab")}>
+								<Alert.Heading>{errorTitle}</Alert.Heading>
+								<p>{error}</p>
+							</div>
 						</Alert>
 					)}
 			/>
@@ -88,7 +93,7 @@ function App() {
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="extensions" title="Extensions">
-								<Extensions onImport={importExtension} extensions={extensions} onReload={run("reload_extensions")} onDisable={disableExtension} onOpen={() => run("open_extensions_dir")} />
+								<Extensions onImport={importExtension} extensions={extensions} onReload={() => run("reload_extensions")} onDisable={disableExtension} onOpen={() => run("open_extensions_dir")} />
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="settings" title="Settings">

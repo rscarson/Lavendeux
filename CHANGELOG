@@ -1,3 +1,7 @@
+0.7.1
+-----
+Fixed a crash bug with the error modal
+
 0.7.0
 -----
 Rust rewrite

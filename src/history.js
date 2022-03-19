@@ -61,9 +61,7 @@ function History(props) {
                         <Row>
                             <Col sm="3"></Col>
                             <Col sm="6">
-                                <Form.Control as="textarea" style={{ height: '100px' }}>
-                                    {example}
-                                </Form.Control>
+                                <Form.Control as="textarea" style={{ height: '100px' }} defaultValue={example}></Form.Control>
                             </Col>
                             <Col sm="3"></Col>
                         </Row>

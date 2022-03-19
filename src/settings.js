@@ -31,18 +31,18 @@ function Settings(props) {
 			<Card>
 				<Card.Body>
 					<Card.Title>Clipboard Mode</Card.Title>
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="autoPaste" id="autopasteOn" 
-							checked={settings.auto_paste} onClick={e => updateSettings("auto_paste", true)} />
-						<label class="form-check-label" for="autopasteOn">
+					<div className="form-check">
+						<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOn" 
+							checked={settings.auto_paste} onChange={e => updateSettings("auto_paste", true)} />
+						<label className="form-check-label" htmlFor="autopasteOn">
 						The keyboard-shortcut will parse and replace highlighted text, bypassing the clipboard
 						</label>
 					</div>
 		
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="autoPaste" id="autopasteOff" 
-							checked={!settings.auto_paste} onClick={e => updateSettings("auto_paste", false)} />
-						<label class="form-check-label" for="autopasteOff">
+					<div className="form-check">
+						<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOff" 
+							checked={!settings.auto_paste} onChange={e => updateSettings("auto_paste", false)} />
+						<label className="form-check-label" htmlFor="autopasteOff">
 						The keyboard-shortcut will parse the clipboard's contents and replace it with the answer 
 						</label>
 					</div>
@@ -58,18 +58,18 @@ function Settings(props) {
 				<Card.Body>
 					<Card.Title>Error Handling Mode</Card.Title>
 		
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="silentErrors" id="silentErrorsOff" 
-							checked={!settings.silent_errors} onClick={e => updateSettings("silent_errors", false)} />
-						<label class="form-check-label" for="silentErrorsOff">
+					<div className="form-check">
+						<input className="form-check-input" type="radio" name="silentErrors" id="silentErrorsOff" 
+							checked={!settings.silent_errors} onChange={e => updateSettings("silent_errors", false)} />
+						<label className="form-check-label" htmlFor="silentErrorsOff">
 						Errors will be logged, and appears as a popup message
 						</label>
 					</div>
 		
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="silentErrors" id="silentErrorsOn" 
-							checked={settings.silent_errors} onClick={e => updateSettings("silent_errors", true)} />
-						<label class="form-check-label" for="silentErrorsOn">
+					<div className="form-check">
+						<input className="form-check-input" type="radio" name="silentErrors" id="silentErrorsOn" 
+							checked={settings.silent_errors} onChange={e => updateSettings("silent_errors", true)} />
+						<label className="form-check-label" htmlFor="silentErrorsOn">
 						Errors will be logged, but will otherwise be silent
 						</label>
 					</div>
@@ -84,24 +84,24 @@ function Settings(props) {
 				<Card.Body>
 					<Card.Title>Keyboard Shortcut</Card.Title>
 					<Row>
-						<Col sm="4">
-							<div class="form-group">
-								<select class="form-control" 
+						<Col sm="4" key={"mod"}>
+							<div className="form-group">
+								<select className="form-control" 
 									onChange={e => {setShortcutModifier(e.target.value); updateSettings("shortcut", `${e.target.value}+${shortcutKey}`)}}>
 
 									{mod_values.map(v => (
-										<option selected={shortcutModifier===v.key} value={v.key}>{v.name}</option>
+										<option key={v.key} value={shortcutModifier===v.key} value={v.key}>{v.name}</option>
 									))}
 								</select>
 							</div>
 						</Col>
-						<Col sm="4">
-							<div class="form-group">
-								<select class="form-control"
+						<Col sm="4" key={"key"}>
+							<div className="form-group">
+								<select className="form-control"
 									onChange={e => {setShortcutKey(e.target.value); updateSettings("shortcut", `${shortcutModifier}+${e.target.value}`)}}>
 
 									{keys.map(v => (
-										<option selected={shortcutKey===v} value={v}>{v}</option>
+										<option key={v} value={shortcutKey===v} value={v}>{v}</option>
 									))}
 								</select>
 							</div>
@@ -120,8 +120,8 @@ function Settings(props) {
 				
 				<Row>
 					<Col sm="8">
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Path to extensions" value={settings.extension_dir} 
+					<div className="form-group">
+						<input type="text" className="form-control" placeholder="Path to extensions" value={settings.extension_dir} 
 							onChange={e => updateSettings("extension_dir", e.target.value)}
 						/>
 					</div>

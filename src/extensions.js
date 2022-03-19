@@ -31,7 +31,7 @@ function Extensions(props) {
 				</thead>
 				<tbody>
 					{props.extensions.length ? props.extensions.map(extension => (
-					<tr>
+					<tr key={extension.filename}>
 						<td>{extension.name} <small className="text-muted">v{extension.version}</small></td>
 						<td>{Object.keys(extension.functions).length} functions, {Object.keys(extension.decorators).length} decorators</td>
 						<td>{extension.author}</td>
@@ -43,7 +43,7 @@ function Extensions(props) {
 					</tr>
 					)) : (
 						<tr>
-							<td colspan="4" className="text-center">
+							<td colSpan="4" className="text-center">
 								<strong>No extensions installed</strong>
 							</td>
 						</tr>

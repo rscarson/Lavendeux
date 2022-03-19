@@ -28,13 +28,34 @@ impl MainWindow {
     /// * `tab` - Tab to switch to
     pub fn show_tab(&self, tab: WindowTabs) -> tauri::Result<()> { 
         // Bring to front
-        self.0.show()?;
+        let w = self.0.clone();
+        thread::spawn(move || {
+            w.show().ok();
+        });
         self.0.set_always_on_top(true)?;
         self.0.request_user_attention(Some(tauri::UserAttentionType::Informational))?;
         self.0.set_always_on_top(false)?;
     
         // Set tab
         self.0.emit_all("switch_tab", tab)?;
+        Ok(())
+    }
+
+    /// Show a dialog to the user
+    /// 
+    /// # Arguments
+    /// * `title` - Window title
+    /// * `msg` - Message contents
+    pub fn show_dialog(&self, title: &str, message: &str) {
+        tauri::api::dialog::message(Some(&self.0), title, message);
+    }
+
+    /// Hide the main window
+    pub fn hide(&self) -> tauri::Result<()> {
+        let w = self.0.clone();
+        thread::spawn(move || {
+            w.hide().ok();
+        });
         Ok(())
     }
 
@@ -65,13 +86,9 @@ impl MainWindow {
 
             "exit" => {
                 let app = e.window().app_handle();
-                let _app = app.clone();
                 std::thread::spawn(move || {
-                    _app.get_window("main").unwrap().close().unwrap();
+                    app.exit(0);
                 });
-
-                app.exit(0);
-                std::process::exit(0);
             },
 
             _ => {}
@@ -101,9 +118,13 @@ impl ErrorWindow {
         Some(Self(app_handle.get_window("error")?, app_handle))
     }
 
-    /// Hide the main window
+    /// Hide the error window
     pub fn hide(&self) -> tauri::Result<()> {
-        self.0.hide()
+        let w = self.0.clone();
+        thread::spawn(move || {
+            w.hide().ok();
+        });
+        Ok(())
     }
 
     /// Show a message to the user
@@ -129,13 +150,14 @@ impl ErrorWindow {
             msg: msg.to_string(), 
             variant: payload.to_string()
         })?;
-        self.0.show()?;
-        self.0.set_position(Position::Physical(pos))?;
-        self.0.set_always_on_top(true)?;
-    
-        // Hide the window after a delay
+        
         let w = self.0.clone();
         thread::spawn(move || {
+            w.show().ok();
+            w.set_position(Position::Physical(pos)).ok();
+            w.set_always_on_top(true).ok();
+        
+            // Hide the window after a delay
             thread::sleep(time::Duration::from_millis(ERROR_WINDOW_DELAY));
             w.hide().ok();
         });
@@ -150,8 +172,14 @@ impl ErrorWindow {
 /// * `app_handle` - AppHandle
 #[tauri::command]
 pub fn hide_errorwindow(app_handle: AppHandle) {
-	match ErrorWindow::new(app_handle.clone()) {
-		Some(w) => w.hide().ok(),
-		None => Some(())
-	};
+    ErrorWindow::new(app_handle).unwrap().hide().ok();
+}
+
+/// Show the history tab
+/// 
+/// # Arguments
+/// * `app_handle` - AppHandle
+#[tauri::command]
+pub fn show_history_tab(app_handle: AppHandle) {
+    MainWindow::new(app_handle).unwrap().show_tab(WindowTabs::History).ok();
 }

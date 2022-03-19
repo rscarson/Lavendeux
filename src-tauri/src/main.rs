@@ -3,8 +3,10 @@
 	windows_subsystem = "windows"
 )]
 
+use std::{thread, time};
 use tauri::{RunEvent, Manager};
 use std::sync::Mutex;
+use single_instance::SingleInstance;
 
 extern crate lavendeux_parser;
 use lavendeux_parser::ParserState;
@@ -35,6 +37,7 @@ pub use parser::*;
 
 fn main() {
 	// Initialize base state
+	let instance = SingleInstance::new("lavendeux-instance-lock").unwrap();
 	let state = State {
 		settings: settings::Settings::new(),
 		parser: ParserState::new(),
@@ -54,12 +57,28 @@ fn main() {
 	// Add handlers
 		.invoke_handler(tauri::generate_handler![
 			settings::update_settings, 
-			windows::hide_errorwindow, history::clear_history,
+			windows::hide_errorwindow, history::clear_history, windows::show_history_tab,
 			extensions::import_extension, extensions::disable_extension, 
 			extensions::reload_all_extensions, extensions::open_extensions_dir
 		])
 		.build(tauri::generate_context!())
 		.expect("error while running tauri application");
+
+	
+	// Instance lock
+	if !instance.is_single() {
+		let w = MainWindow::new(app.handle()).unwrap();
+		w.hide().ok();
+		tauri::api::notification::Notification::new(&app.config().tauri.bundle.identifier)
+			.title("Already Running!")
+			.body("Lavendeux is already running - check running processes")
+			.show().ok();
+		let handle = app.handle();
+		std::thread::spawn(move || {
+            thread::sleep(time::Duration::from_millis(100));
+			handle.exit(0);
+		});
+	}
 		
 	app.run(move |app_handle, e| match e {
 		// Runs when the application starts
@@ -69,6 +88,7 @@ fn main() {
 
 			let app_handle_ = app_handle.clone();
 			app_handle.listen_global("ready", move |_| {
+
 				// Prepare error window
 				match ErrorWindow::new(app_handle_.clone()) {
 					Some(w) => w.show_message(
@@ -92,7 +112,10 @@ fn main() {
 			let app_handle = app_handle.clone();
 			let window = app_handle.get_window(&label).unwrap();
 			api.prevent_close();
-			window.hide().ok();
+			
+			thread::spawn(move || {
+				window.hide().ok();
+			});
 		},
 
 		// Keep the event loop running even if all windows are closed
