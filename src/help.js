@@ -7,8 +7,16 @@ const dataTypeSample = `
 // Integer, floating point or scientific notation numbers
 5 + 5.56 + .2e+3
 
+// Currency values
+// Note that no exchange rate is being applied automatically
+$1,000.00 == ¥1,000.00
+
 // Scientific numbers can be represented a number of ways
 5.6e+7 - .6E7 + .2e-3
+
+// Booleans
+in_range = 5 > 3 && 5 < 10
+true || false
 
 // Integers can also be represented in base 2, 8 or 16
 0xFFA & 0b110 & 0777
@@ -26,9 +34,13 @@ const operationsSample = `
 0xF & 0xA | 0x2 ^ 0xF
 
 // Bitwise SHIFT, and NOT
-0xF < 1
-0x1 > 2
+0xF << 1
+0x1 >> 2
 ~0xA
+
+// Boolean operators
+true || false && true
+1 < 2 > 5 // true
 `;
 
 const variablesSample = `
@@ -38,12 +50,17 @@ x - 55 // The result will be 200
 
 // A few constants are also pre-defined
 value = pi * e * tau
+
+// You can also define functions
+f(x) = 2*x**2 + 3*x + 5
+f(2.3)
 `;
 
 const decoratorsSample = `
 255 @hex // The result will be 0xFF
 8 @oct // The result will be 0o10
 5 @float // The result will be 5.0
+5 @usd // Also works with @dollars @cad, @aud, @yen, @pounds, or @euros
 `;
 
 const functionsSample = `
