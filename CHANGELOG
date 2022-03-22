@@ -1,3 +1,11 @@
+0.7.3
+-----
+Fix several parsing and history bugs
+
+0.7.2
+-----
+Add new parser features
+
 0.7.1
 -----
 Fixed a crash bug with the error modal

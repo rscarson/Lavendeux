@@ -1,7 +1,9 @@
 use crate::state::SharedState;
+use super::tray::Tray;
 use tauri::{AppHandle, Manager};
 
 const MAX_HISTORY_STR_LEN : usize = 50;
+const TRAY_HISTORY_LEN : usize = 5;
 
 /// Parser history entry
 #[derive(Clone, serde::Serialize)]
@@ -28,10 +30,24 @@ pub fn clear_history(app_handle: AppHandle, state: tauri::State<SharedState>) ->
 	match state.0.lock().ok() {
 		Some(mut lock) => {
 			lock.history.clear();
-			app_handle.emit_all("history", lock.history.clone()).ok()?;
-			None
+			update_history(app_handle, lock.history.clone())
 		},
-
 		None => Some("Could not lock settings object".to_string())
 	}
+
+}
+
+/// Update history
+/// 
+/// # Arguments
+/// * `app_handle` - AppHandle
+/// * `state` - Current application state
+pub fn update_history(app_handle: AppHandle, history: Vec<History>) -> Option<String> {	
+	// Update tray history
+	let recent_history = history.iter().rev().take(TRAY_HISTORY_LEN).clone().into_iter().map(|h| h.to_string()).collect::<Vec<String>>();
+	let tray = Tray::new(app_handle.tray_handle());
+	tray.update_menu(recent_history);
+
+	app_handle.emit_all("history", history.clone()).ok()?;
+	None
 }

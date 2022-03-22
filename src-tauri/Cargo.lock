@@ -1866,7 +1866,7 @@ dependencies = [
 
 [[package]]
 name = "lavendeux"
-version = "0.7.0"
+version = "0.7.3"
 dependencies = [
  "dirs",
  "inputbot",
@@ -1881,7 +1881,7 @@ dependencies = [
 [[package]]
 name = "lavendeux-parser"
 version = "0.3.0"
-source = "git+https://github.com/rscarson/lavendeux-parser?branch=master#89c1b2f356552ee32a78c07cf5c15f547265e993"
+source = "git+https://github.com/rscarson/lavendeux-parser?branch=master#9b84583362e25904937843426cf82844d4086de1"
 dependencies = [
  "chrono",
  "derive_more 0.9.0",
@@ -1950,9 +1950,9 @@ dependencies = [
 
 [[package]]
 name = "log"
-version = "0.4.14"
+version = "0.4.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51b9bbe6c47d51fc3e1a9b945965946b4c44142ab8792c50835a980d362c2710"
+checksum = "6389c490849ff5bc16be905ae24bc913a9c8892e19b2341dbc175e14c341c2b8"
 dependencies = [
  "cfg-if 1.0.0",
 ]

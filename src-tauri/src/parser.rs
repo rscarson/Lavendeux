@@ -3,9 +3,8 @@ use crate::keybind;
 use crate::SharedState;
 use std::error::Error;
 use lavendeux_parser::Token;
-use super::tray::Tray;
 use crate::windows::ErrorWindow;
-use crate::history::History;
+use crate::history::{History, update_history};
 
 const CLIPBOARD_RETRIES : usize = 3;
 
@@ -95,12 +94,8 @@ pub fn do_parse(app_handle: AppHandle) -> Option<Box<dyn Error>> {
 	}
 
 	// Update tray history
-	let recent_history = lock.history.iter().rev().take(10).clone().into_iter().map(|h| h.to_string()).collect::<Vec<String>>();
-	let tray = Tray::new(app_handle.tray_handle());
-	tray.update_menu(recent_history);
+	update_history(app_handle.clone(), lock.history.clone());
 
-	// Notify front-end
-	app_handle.emit_all("history", lock.history.clone()).ok()?;
 	None
 }
 
