@@ -1,6 +1,6 @@
 [package]
 name = "lavendeux"
-version = "0.7.3"
+version = "0.7.4"
 description = "Tauri port of Lavendeux"
 authors = ["rscarson"]
 license = ""
