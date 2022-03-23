@@ -2,7 +2,7 @@ use std::{thread, time};
 use crate::history;
 use tauri::{
     AppHandle, Window, Manager, Position, WindowMenuEvent, 
-    Menu, Submenu, CustomMenuItem, MenuItem
+    Menu, Submenu, CustomMenuItem, MenuItem, PhysicalPosition
 };
 
 /// Tabs on the main window
@@ -127,6 +127,29 @@ impl ErrorWindow {
         Ok(())
     }
 
+    /// Recalculate error window position 
+    #[cfg(any(target_os="windows", target_os="macos"))]
+    pub fn calculate_position(&self) -> tauri::Result<PhysicalPosition<i32>> {
+        let monitor = self.0.current_monitor()?.ok_or(tauri::Error::AssetNotFound("unable to find current monitor".to_string()))?;
+        let window_size = self.0.outer_size()?;
+    
+        // Calculate position for the error window
+        let mut pos = self.0.outer_position()?;
+        pos.x = (monitor.size().width - window_size.width - ERROR_WINDOW_OFFSET) as i32;
+        pos.y = (monitor.size().height - window_size.height - ERROR_WINDOW_OFFSET) as i32;
+
+        Ok(pos)
+    }
+
+    /// Recalculate error window position 
+    #[cfg(all(unix, not(any(target_os="macos", target_os="android", target_os="emscripten"))))]
+    pub fn calculate_position(&self) -> tauri::Result<PhysicalPosition<i32>> {
+        Ok(PhysicalPosition {
+            x: ERROR_WINDOW_OFFSET as i32,
+            y: ERROR_WINDOW_OFFSET as i32
+        })
+    }
+
     /// Show a message to the user
     /// 
     /// # Arguments
@@ -136,13 +159,7 @@ impl ErrorWindow {
     pub fn show_message(&self, title: &str, msg: &str, payload: &str) -> tauri::Result<()> { 
         // Get relevant handles
         let app_handle = self.1.clone();
-        let window_size = self.0.outer_size()?;
-        let monitor = self.0.current_monitor()?.ok_or(tauri::Error::AssetNotFound("unable to find current monitor".to_string()))?;
-    
-        // Calculate position for the error window
-        let mut pos = self.0.outer_position()?;
-        pos.x = (monitor.size().width - window_size.width - ERROR_WINDOW_OFFSET) as i32;
-        pos.y = (monitor.size().height - window_size.height - ERROR_WINDOW_OFFSET) as i32;
+        let pos = self.calculate_position()?;
     
         // Set window position and get focus
         app_handle.emit_all("message", MessagePayload {

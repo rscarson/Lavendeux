@@ -15,7 +15,7 @@ rust-version = "1.57"
 tauri-build = { version = "1.0.0-rc.3", features = [] }
 
 [dependencies]
-lavendeux-parser = { git = "https://github.com/rscarson/lavendeux-parser", branch = "master" }
+lavendeux-parser = "0.3.0"
 tauri = { version = "1.0.0-rc.3", features = ["api-all", "system-tray"] }
 serde = { version = "1.0", features = ["derive"] }
 single-instance = "0.3.3"

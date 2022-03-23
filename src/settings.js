@@ -86,22 +86,22 @@ function Settings(props) {
 					<Row>
 						<Col sm="4" key={"mod"}>
 							<div className="form-group">
-								<select className="form-control" 
+								<select className="form-control" value={shortcutModifier}
 									onChange={e => {setShortcutModifier(e.target.value); updateSettings("shortcut", `${e.target.value}+${shortcutKey}`)}}>
 
 									{mod_values.map(v => (
-										<option key={v.key} value={shortcutModifier===v.key} value={v.key}>{v.name}</option>
+										<option key={v.key} value={v.key}>{v.name}</option>
 									))}
 								</select>
 							</div>
 						</Col>
 						<Col sm="4" key={"key"}>
 							<div className="form-group">
-								<select className="form-control"
+								<select className="form-control" value={shortcutKey}
 									onChange={e => {setShortcutKey(e.target.value); updateSettings("shortcut", `${shortcutModifier}+${e.target.value}`)}}>
 
 									{keys.map(v => (
-										<option key={v} value={shortcutKey===v} value={v}>{v}</option>
+										<option key={v} value={v}>{v}</option>
 									))}
 								</select>
 							</div>

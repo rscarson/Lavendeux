@@ -75,7 +75,7 @@ function App() {
 						<Alert variant={errorVariant} 
 							id="error-window"
 							onClose={() => run("hide_errorwindow")}
-							style={{cursor: "pointer"}} dismissible
+							style={{display: error.length?'inherit':'none', cursor: "pointer"}} dismissible
 						>
 							<div onClick={() => run("show_history_tab")}>
 								<Alert.Heading>{errorTitle}</Alert.Heading>
