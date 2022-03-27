@@ -4,6 +4,7 @@
 )]
 
 use std::{thread, time};
+use tauri::api::cli::get_matches;
 use tauri::{RunEvent, Manager};
 use std::sync::Mutex;
 use single_instance::SingleInstance;
@@ -46,7 +47,9 @@ fn main() {
 
 	let app = tauri::Builder::default()
 	// Setup application state
-		.setup(|_app| { Ok(()) })
+		.setup(|_app| {    
+			Ok(())
+		})
 		.manage(SharedState(Mutex::new(state.clone())))
 	// Setup system tray
 		.system_tray(Tray::new_tray([].to_vec()))
@@ -83,8 +86,22 @@ fn main() {
 	app.run(move |app_handle, e| match e {
 		// Runs when the application starts
 		RunEvent::Ready => {
-			let settings_ = state.clone().settings.clone();
 			let app_handle = app_handle.clone();
+			let settings_ = state.clone().settings;
+			let mut_state : tauri::State<SharedState> = app_handle.state();
+
+			// Read commandline arguments
+			if let Ok(mut lock) = mut_state.0.lock() {
+				let matches = get_matches(app_handle.config().tauri.cli.as_ref().unwrap(), app_handle.package_info()).unwrap();
+				let config_path = matches.args.get("config").unwrap();
+				if config_path.occurrences > 0 {
+					let filename = config_path.value.as_str().unwrap();
+					lock.settings.filename = filename.to_string();
+					if let Ok(new_settings) = read_settings(Some(filename)) {
+						lock.settings = new_settings
+					}
+				}
+			}
 
 			let app_handle_ = app_handle.clone();
 			app_handle.listen_global("ready", move |_| {

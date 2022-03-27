@@ -6,6 +6,7 @@ use lavendeux_parser::Token;
 use crate::windows::ErrorWindow;
 use crate::history::{History, update_history};
 
+const MAX_HISTORY_LEN : usize = 50;
 const CLIPBOARD_RETRIES : usize = 3;
 
 /// Try several times to read from the clipboard
@@ -14,9 +15,8 @@ const CLIPBOARD_RETRIES : usize = 3;
 /// * `app_handle` - AppHandle
 pub fn clipboard_retry_read(app_handle: &AppHandle) -> Option<Option<String>> {
 	for _ in 0..CLIPBOARD_RETRIES {
-		match app_handle.clipboard_manager().read_text() {
-			Ok(o) => {return Some(o);},
-			Err(_) => { }
+		if let Ok(o) = app_handle.clipboard_manager().read_text() {
+			return Some(o);
 		}
 	}
 	None
@@ -29,9 +29,8 @@ pub fn clipboard_retry_read(app_handle: &AppHandle) -> Option<Option<String>> {
 /// * `text` - Text to write out
 pub fn clipboard_retry_write(app_handle: &AppHandle, text: &str) -> Result<(), ()> {
 	for _ in 0..CLIPBOARD_RETRIES {
-		match app_handle.clipboard_manager().write_text(text) {
-			Ok(_) => {return Ok(())},
-			Err(_) => { }
+		if app_handle.clipboard_manager().write_text(text).is_ok() {
+			return Ok(());
 		}
 	}
 	Err(())
@@ -50,18 +49,21 @@ pub fn do_parse(app_handle: AppHandle) -> Option<Box<dyn Error>> {
 	keybind::send_copy();
 	match clipboard_retry_read(&app_handle)? {
 		Some(input) => {
-			match Token::from_input(&input, &mut lock.parser) {
+			match Token::new(&input, &mut lock.parser) {
 				Ok(token) => {
 					// Got a result - add it to history
-					for line in token.children {
+					for line in token.children() {
 						lock.history.push(History {
-							expression: line.input.trim().to_string(),
-							result: Ok(line.text)
+							expression: line.input().trim().to_string(),
+							result: Ok(line.text().to_string())
 						});
+						if lock.history.len() > MAX_HISTORY_LEN {
+							lock.history.remove(0);
+						}
 					}
 
 					// Put the result in the clipboard
-					clipboard_retry_write(&app_handle, &token.text).ok()?;
+					clipboard_retry_write(&app_handle, &token.text()).ok()?;
 					if lock.settings.auto_paste {
 						keybind::send_paste();
 					}
@@ -104,13 +106,10 @@ pub fn do_parse(app_handle: AppHandle) -> Option<Box<dyn Error>> {
 /// # Arguments
 /// * `app_handle` - AppHandle
 pub fn handle_shortcut(app_handle: AppHandle) {
-	match do_parse(app_handle.clone()) {
-		Some(e) => {
-			match ErrorWindow::new(app_handle.clone()) {
-				Some(w) => w.show_message("Something went wrong!", &e.to_string(), "danger").ok(),
-				None => Some(())
-			};
-		},
-		None => {}
+	if let Some(e) = do_parse(app_handle.clone()) {
+		match ErrorWindow::new(app_handle) {
+			Some(w) => w.show_message("Something went wrong!", &e.to_string(), "danger").ok(),
+			None => Some(())
+		};
 	}
 }

@@ -1,7 +1,7 @@
 {
   "package": {
     "productName": "Lavendeux",
-    "version": "0.7.4"
+    "version": "../package.json"
   },
   "build": {
     "distDir": "../build",
@@ -10,6 +10,14 @@
     "beforeBuildCommand": "npm run build"
   },
   "tauri": {
+    "cli": {
+      "description": "Extensible inline parser",
+      "args": [{
+        "name": "config",
+        "short": "c",
+        "takesValue": true
+      }]
+    },
     "systemTray": {
       "iconPath": "icons/icon",
       "iconAsTemplate": true

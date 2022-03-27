@@ -15,9 +15,9 @@ import { invoke } from '@tauri-apps/api/tauri'
 
 export async function run(f, payload) {
 	if (payload) {
-		return await invoke(f, payload);
+		return await invoke(f, payload).catch(e => alert(e));
 	} else {
-		return await invoke(f);
+		return await invoke(f).catch(e => alert(e));
 	}
 }
 
@@ -97,7 +97,7 @@ function App() {
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="settings" title="Settings">
-								<Settings settings={settings} onSettingsUpdated={async s => await run("update_settings", s)} />
+								<Settings settings={settings} onSettingsUpdated={s => run("update_settings", {settings: s})} />
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="help" title="Help">

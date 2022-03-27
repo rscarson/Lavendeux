@@ -1,7 +1,6 @@
 use tauri::{AppHandle, Manager};
 use std::path::{PathBuf, Path};
 use super::settings;
-use lavendeux_parser::Extension;
 use crate::state::{State, SharedState};
 use std::process::Command;
 
@@ -20,12 +19,12 @@ const OPEN_DIR_COMMAND : &str = "open";
 /// * `app_handle` - AppHandle
 /// * `state` - Current application state
 pub fn reload_extensions(app_handle: AppHandle, state: &mut State) -> Result<(), String> {
-	match Extension::load_all(&state.settings.extension_dir) {
-		Ok(ex) => { state.parser.extensions = ex; },
-		Err(e) => { return Err(e.to_string()); }
+	if let Err(e) = state.parser.extensions.load_all(&state.settings.extension_dir) {
+		Err(e.to_string())
+	} else {
+		app_handle.emit_all("extensions", state.parser.extensions.all()).unwrap();
+		Ok(())
 	}
-	app_handle.emit_all("extensions", state.parser.extensions.clone()).unwrap();
-	Ok(())
 }
 
 /// Open the extension directory in the system explorer
@@ -50,7 +49,7 @@ pub fn reload_all_extensions(app_handle: AppHandle, state: tauri::State<SharedSt
 		Some(mut lock) => {
 			match reload_extensions(app_handle, &mut lock) {
 				Ok(_) => Ok(()),
-				Err(e) => Err(e.to_string())
+				Err(e) => Err(e)
 			}
 		},
 		None => Err("Could not access settings".to_string())

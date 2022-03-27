@@ -31,15 +31,13 @@ impl Tray {
     /// * `recent_history` - Items to display to the user
     pub fn tray_menu(recent_history: Vec<String>) -> SystemTrayMenu {
         let mut menu = SystemTrayMenu::new();
-        if recent_history.len() == 0 {
+        if recent_history.is_empty() {
             // Default entry for no history
             menu = menu.add_item(CustomMenuItem::new("no_history".to_string(), "No history to display").disabled());
         } else {
             // Display history entries
-            let mut i = 0;
-            for item in recent_history {
+            for (i, item) in recent_history.into_iter().enumerate() {
                 menu = menu.add_item(CustomMenuItem::new(format!("{}", i), item));
-                i += 1;
             }
         }
 
@@ -49,7 +47,7 @@ impl Tray {
             .add_item(CustomMenuItem::new("settings".to_string(), "Settings"))
             .add_item(CustomMenuItem::new("exit".to_string(), "Exit"));
 
-        return menu;
+        menu
     }
 
     /// Construct a new system tray
@@ -87,19 +85,12 @@ impl Tray {
                     },
     
                     _ => {
-                        match id.as_str().parse::<i32>() {
-                            Ok(n) => {
-                                let state : tauri::State<SharedState> = app.state();
-                                match state.0.lock().ok() {
-                                    Some(lock) => {
-                                        let item = &lock.history[lock.history.len() - 1 - (n as usize)];
-                                        app.clipboard_manager().write_text(item.expression.clone()).ok();
-                                    },
-                            
-                                    None => { }
-                                };
-                            },
-                            Err(_) => { },
+                        if let Ok(n) = id.as_str().parse::<i32>() {
+                            let state : tauri::State<SharedState> = app.state();
+                            if let Some(lock) = state.0.lock().ok() {
+                                let item = &lock.history[lock.history.len() - 1 - (n as usize)];
+                                app.clipboard_manager().write_text(item.expression.clone()).ok();
+                            };
                         }
                     }
                 }

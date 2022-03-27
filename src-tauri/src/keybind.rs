@@ -49,9 +49,8 @@ pub fn bind_shortcut(app_handle: tauri::AppHandle, shortcut: &str, default_short
 		Ok(_) => None,
 		Err(_) => {
 			// Error - put default shortcut back in
-			_app_handle = app_handle.clone();
 			gsm.register(default_shortcut, move || {
-				let app_handle = _app_handle.clone();
+				let app_handle = app_handle.clone();
 				handler(app_handle);
 			}).ok()?;
 			Some("invalid shortcut".to_string())

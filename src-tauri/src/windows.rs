@@ -81,7 +81,14 @@ impl MainWindow {
             },
 
             "about" => {
-                tauri::api::dialog::message(Some(e.window()), "About Lavendeux", "Parse anywhere.\nDevelopped by @rscarson");
+                let app = e.window().app_handle();
+                let config = app.config();
+
+                tauri::api::dialog::message(Some(e.window()), "About Lavendeux", 
+                    format!("{} version {}\nParse anywhere.\nDevelopped by @rscarson", 
+                        config.package.product_name.as_ref().unwrap(), config.package.version.as_ref().unwrap()
+                    )
+                );
             },
 
             "exit" => {
@@ -130,7 +137,7 @@ impl ErrorWindow {
     /// Recalculate error window position 
     #[cfg(any(target_os="windows", target_os="macos"))]
     pub fn calculate_position(&self) -> tauri::Result<PhysicalPosition<i32>> {
-        let monitor = self.0.current_monitor()?.ok_or(tauri::Error::AssetNotFound("unable to find current monitor".to_string()))?;
+        let monitor = self.0.current_monitor()?.ok_or_else(|| tauri::Error::AssetNotFound("unable to find current monitor".to_string()))?;
         let window_size = self.0.outer_size()?;
     
         // Calculate position for the error window

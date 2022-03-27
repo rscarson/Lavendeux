@@ -12,12 +12,11 @@ pub struct History {
     pub result: Result<String, String>
 }
 
-impl History {
-	/// Convert the entry into a string of limited length
-	pub fn to_string(&self) -> String {
+impl std::fmt::Display for History {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
 		let len = if self.expression.len() < MAX_HISTORY_STR_LEN {self.expression.len()} else {MAX_HISTORY_STR_LEN};
-		self.expression.clone()[..len].to_string()
-	}
+        write!(f, "{}", self.expression.clone()[..len].to_string())
+    }
 }
 
 /// Clear current history
@@ -48,6 +47,6 @@ pub fn update_history(app_handle: AppHandle, history: Vec<History>) -> Option<St
 	let tray = Tray::new(app_handle.tray_handle());
 	tray.update_menu(recent_history);
 
-	app_handle.emit_all("history", history.clone()).ok()?;
+	app_handle.emit_all("history", history).ok()?;
 	None
 }
