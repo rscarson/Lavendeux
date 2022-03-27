@@ -14,6 +14,8 @@ Highlight an expression, and press control space; Lavendeux will replace it with
 
 Or, alternatively, turn auto copy/paste off in the menu, and CTRL-Space will instead solve any expressions in your clipboard.
 
+The parser itself is also available as a separate crate - [lavendeux-parser](https://crates.io/crates/lavendeux-parser)
+
 #### Extensions
 Extend Lavendeux's featureset with [extensions](http://rscarson.github.io/Lavendeux/extensions). Extensions are written in javascript, sandboxed environment, with no network or host access.
 
