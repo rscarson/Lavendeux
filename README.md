@@ -7,6 +7,8 @@ Lavendeux inlines calculating, programming and testing utilities into your favou
 
 Test the result of a remote API call, check the result of a regular expression and much more, all without needing to break your workflow.
 
+Currently, Lavendeux is Windows only, but Linux and OSX releases are coming shortly - if you are an OSX user interested in Lavendeux, please feel free to contact me.
+
 #### How to use it
 Highlight an expression, and press control space; Lavendeux will replace it with the answer.
 
