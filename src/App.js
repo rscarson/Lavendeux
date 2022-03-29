@@ -89,11 +89,14 @@ function App() {
 					render={(_props) => (
 						<Tabs activeKey={activeTab} onSelect={k => setActiveTab(k)} id="main-nav" className="mb-3 main-nav fixed-top">
 							<Tab className="nav-tab" eventKey="history" title="History">
-								<History history={history} onClear={() => run("clear_history")} />
+								<History settings={settings} history={history} onClear={() => run("clear_history")} />
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="extensions" title="Extensions">
-								<Extensions onImport={importExtension} extensions={extensions} onReload={() => run("reload_extensions")} onDisable={disableExtension} onOpen={() => run("open_extensions_dir")} />
+								<Extensions onImport={importExtension} extensions={extensions} 
+									onReload={() => run("reload_all_extensions")} 
+									onDisable={disableExtension} 
+									onOpen={() => run("open_extensions_dir")} />
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="settings" title="Settings">

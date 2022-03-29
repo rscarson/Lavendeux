@@ -59,7 +59,7 @@ fn main() {
 		.on_menu_event(MainWindow::handle_menu_event)
 	// Add handlers
 		.invoke_handler(tauri::generate_handler![
-			settings::update_settings, 
+			settings::update_settings, settings::format_shortcut,
 			windows::hide_errorwindow, history::clear_history, windows::show_history_tab,
 			extensions::import_extension, extensions::disable_extension, 
 			extensions::reload_all_extensions, extensions::open_extensions_dir

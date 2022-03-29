@@ -110,6 +110,21 @@ impl Settings {
 	}
 }
 
+/// Format the configured shortcut as a human-readable string
+/// 
+/// # Arguments
+/// * `state` - Application state
+#[tauri::command]
+pub fn format_shortcut(state: tauri::State<SharedState>) -> Result<String, String> {
+	match state.0.lock().ok() {
+		Some(mut lock) => {
+			Ok(shortcut_name(&lock.settings))
+		},
+
+		None => Err("Could not lock settings object".to_string())
+	}
+}
+
 /// Update the current application settings
 /// 
 /// # Arguments

@@ -1,8 +1,17 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Button, ListGroup, Form, Row, Col, InputGroup, ButtonToolbar } from 'react-bootstrap';
 import { writeText } from '@tauri-apps/api/clipboard'
 
 import "bootstrap-icons/font/bootstrap-icons.css";
+
+import { invoke } from '@tauri-apps/api/tauri'
+export async function run(f, payload) {
+	if (payload) {
+		return await invoke(f, payload).catch(e => alert(e));
+	} else {
+		return await invoke(f).catch(e => alert(e));
+	}
+}
 
 const MAX_DISPLAY_LEN = 60;
 function shortenString(input, max) {
@@ -11,10 +20,18 @@ function shortenString(input, max) {
         _input += "[...]";
     }
     return _input;
-}
+} 
 
 const example = "x = 8 + 3e+2\nx = sqrt(16)\nx**3 @hex";
 function History(props) {
+	const [shortcutName, setShortcutName] = useState("Ctrl+Space");
+	const [autoPaste, setAutoPaste] = useState(true);
+
+    useEffect(() => {
+        setAutoPaste(props.settings.auto_paste === true);
+        run("format_shortcut")
+        .then(s => setShortcutName(s));
+    }, [props.settings]);
 
     return (
         <div className="nav-content">
@@ -57,7 +74,7 @@ function History(props) {
                 )) : (
                     <ListGroup.Item className="text-center">
                         <strong>No history to display.</strong>
-                        <p>To get started, try highlighting the following block of text, and pressing <kbd>ctrl + space</kbd></p>
+                        <p>To get started, try {autoPaste ? "highlighting" : "copying"} the following block of text, and pressing <kbd>{shortcutName}</kbd></p>
                         <Row>
                             <Col sm="3"></Col>
                             <Col sm="6">
