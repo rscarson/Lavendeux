@@ -14,6 +14,11 @@ function Settings(props) {
 	const [settings, setSettings] = useState(props.settings);
 
     useEffect(() => {
+		if (!props.settings.shortcut) return;
+		let shortcut = props.settings.shortcut.split("+");
+		setShortcutModifier(shortcut[0]);
+		setShortcutKey(shortcut[1]);
+
 		setSettings(props.settings);
     }, [props.settings]);
 

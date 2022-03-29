@@ -93,7 +93,10 @@ function App() {
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="extensions" title="Extensions">
-								<Extensions onImport={importExtension} extensions={extensions} onReload={() => run("reload_extensions")} onDisable={disableExtension} onOpen={() => run("open_extensions_dir")} />
+								<Extensions onImport={importExtension} extensions={extensions} 
+									onReload={() => run("reload_all_extensions")} 
+									onDisable={disableExtension} 
+									onOpen={() => run("open_extensions_dir")} />
 							</Tab>
 				
 							<Tab className="nav-tab" eventKey="settings" title="Settings">

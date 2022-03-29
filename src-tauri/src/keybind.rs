@@ -36,18 +36,18 @@ mod clipboard_keys {
 pub fn bind_shortcut(app_handle: tauri::AppHandle, shortcut: &str, default_shortcut: &str, handler: fn(AppHandle)) -> Option<String> {
 	let mut gsm = app_handle.global_shortcut_manager();
 	gsm.unregister_all().ok()?;
-
+	
 	let mut _app_handle = app_handle.clone();
 	match gsm.register(shortcut, move || {
 		let app_handle = _app_handle.clone();
-        
-        thread::spawn(move || {
-            handler(app_handle);
-        });
+        		
+		thread::spawn(move || {
+		    handler(app_handle);
+		});
 		
 	}) {
 		Ok(_) => None,
-		Err(_) => {
+		Err(e) => {
 			// Error - put default shortcut back in
 			gsm.register(default_shortcut, move || {
 				let app_handle = app_handle.clone();

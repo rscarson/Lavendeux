@@ -54,9 +54,6 @@ fn main() {
 	// Setup system tray
 		.system_tray(Tray::new_tray([].to_vec()))
 		.on_system_tray_event(Tray::handle_event)
-	// Add menu to main window
-		.menu(MainWindow::get_menu())
-		.on_menu_event(MainWindow::handle_menu_event)
 	// Add handlers
 		.invoke_handler(tauri::generate_handler![
 			settings::update_settings, 
