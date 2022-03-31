@@ -45,8 +45,12 @@ pub fn do_parse(app_handle: AppHandle) -> Option<Box<dyn Error>> {
 	let state : tauri::State<SharedState> = app_handle.state();
 	let mut lock = state.0.lock().ok()?;
 
+	// Fill the clipboard
+	if lock.settings.auto_paste {
+		keybind::send_copy();
+	}
+
 	// Read from the clipboard
-	keybind::send_copy();
 	match clipboard_retry_read(&app_handle)? {
 		Some(input) => {
 			match Token::new(&input, &mut lock.parser) {

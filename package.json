@@ -19,7 +19,7 @@
 	"scripts": {
 		"start": "cross-env BROWSER=none react-scripts start",
 		"build": "react-scripts build",
-		"test": "react-scripts test",
+		"test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!@tauri-apps)/\"",
 		"eject": "react-scripts eject",
 		"tauri": "tauri"
 	},
