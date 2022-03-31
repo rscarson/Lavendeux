@@ -192,3 +192,11 @@ export const Samples = [
     DecoratorsSample, FunctionsSample, 
     ExtensionSample
 ];
+
+/**
+ * Return the text for the help page
+ * @returns The help text
+ */
+export function helpText() {
+    return Samples.map(s => s.toString()).join('\n');
+}

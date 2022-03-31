@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
-import { Samples } from '../include/help_strings';
+import { helpText } from '../include/help_strings';
 
 /**
  * Render the help tab
@@ -10,9 +10,7 @@ import { Samples } from '../include/help_strings';
 function Help(props) {
 	return (
 		<Container dangerouslySetInnerHTML={
-            {__html: 
-                Samples.map(s => s.toString()).join('\n')
-            }
+            {__html: helpText}
         }></Container>
 	);
 }
