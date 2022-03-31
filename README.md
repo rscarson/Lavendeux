@@ -1,6 +1,6 @@
 # Lavendeux [![Build Status](https://travis-ci.org/rscarson/Lavendeux.svg?branch=master)](https://travis-ci.org/rscarson/Lavendeux)
 
-#### [Installer and binaries](http://rscarson.github.io/lavendeux/) | 
+#### [Installer and binaries](http://rscarson.github.io/lavendeux/)
 
 ### Lavendeux enhances the clipboard
 Lavendeux inlines calculating, programming and testing utilities into your favourite text editor.
