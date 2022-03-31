@@ -198,5 +198,5 @@ export const Samples = [
  * @returns The help text
  */
 export function helpText() {
-    return Samples.map(s => s.toString()).join('\n');
+    return "<h4>Expression Syntax</h4>" + Samples.map(s => s.toString()).join('\n');
 }

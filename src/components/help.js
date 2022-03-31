@@ -10,7 +10,7 @@ import { helpText } from '../include/help_strings';
 function Help(props) {
 	return (
 		<Container dangerouslySetInnerHTML={
-            {__html: helpText}
+            {__html: helpText()}
         }></Container>
 	);
 }
