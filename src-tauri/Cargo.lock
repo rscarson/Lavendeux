@@ -1896,9 +1896,9 @@ dependencies = [
 
 [[package]]
 name = "lavendeux-parser"
-version = "0.5.1"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3aaa219b29d6e00edeaeb0106bd3b6ceb78e7ab5f5a0933255a90629ff64e96"
+checksum = "291801f8179d2cdef9cb77e79d450ea625f9555d09e9675318f3bcb682ba8226"
 dependencies = [
  "chrono",
  "derive_more",
