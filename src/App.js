@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Switch, Route} from "react-router-dom";
+import {Routes, Route} from "react-router-dom";
 import { emit, listen } from './include/tauri';
 
 import Error from './components/error';
@@ -23,7 +23,7 @@ function App() {
 	}, []);
 
 	return (
-		<Switch>
+		<Routes>
 			<Route path="/error"
 				element={
 					<Error />
@@ -51,7 +51,7 @@ function App() {
 					</Tabs>
 				}
 			/>
-		</Switch>
+		</Routes>
 	)
 }
 
