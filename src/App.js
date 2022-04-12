@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Switch, Route} from "react-router-dom";
+import {Routes, Route} from "react-router-dom";
 import { emit, listen } from './include/tauri';
 
 import Error from './components/error';
@@ -23,15 +23,15 @@ function App() {
 	}, []);
 
 	return (
-		<Switch>
+		<Routes>
 			<Route path="/error"
-				render={(_props) => (
+				element={
 					<Error />
-				)}
+				}
 			/>
 
 			<Route path="*"
-				render={(_props) => (
+				element={
 					<Tabs activeKey={activeTab} onSelect={k => setActiveTab(k)} id="main-nav" className="mb-3 main-nav fixed-top">
 						<Tab className="nav-tab" eventKey="history" title="History">
 							<History />
@@ -49,9 +49,9 @@ function App() {
 							<Help />
 						</Tab>
 					</Tabs>
-				)}
+				}
 			/>
-		</Switch>
+		</Routes>
 	)
 }
 
