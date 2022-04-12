@@ -117,7 +117,7 @@ impl Settings {
 #[tauri::command]
 pub fn format_shortcut(state: tauri::State<SharedState>) -> Result<String, String> {
 	match state.0.lock().ok() {
-		Some(mut lock) => {
+		Some(lock) => {
 			Ok(shortcut_name(&lock.settings))
 		},
 
