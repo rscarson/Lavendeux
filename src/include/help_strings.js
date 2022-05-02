@@ -114,6 +114,9 @@ const DecoratorsSample = new Sample([
 const FunctionsSample = new Sample([
     'The following functions are supported by default:'
 ], `
+help() // List all functions and decorators
+help(strlen) // Get help for a specific function by name
+
 // String functions
 concat("s1", "s2", ...) | strlen("string") | substr("string", start, [length])
 uppercase("s1") | lowercase("S1") | trim("    s1    ")

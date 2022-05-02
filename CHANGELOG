@@ -1,3 +1,7 @@
+0.8.4
+-----
+Update parser core, adding help() function and implied multiplication
+
 0.8.3
 -----
 Update dependencies
