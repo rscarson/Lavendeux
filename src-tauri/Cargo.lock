@@ -1896,9 +1896,9 @@ dependencies = [
 
 [[package]]
 name = "lavendeux-parser"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84995059f80784d3a0d332ea66235900f232c4c9e5b05edc1979a85a3deee72f"
+checksum = "650787123d764a18f4bbdc3589516e5bed097cd104f94e8b7c427dcb3aa61fe1"
 dependencies = [
  "chrono",
  "derive_more",
@@ -3230,9 +3230,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.79"
+version = "1.0.81"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e8d9fa5c3b304765ce1fd9c4c8a3de2c8db365a5b91be52f186efc675681d95"
+checksum = "9b7ce2b32a1aed03c558dc61a5cd328f15aff2dbc17daad8fb8af04d2100e15c"
 dependencies = [
  "indexmap",
  "itoa 1.0.1",
