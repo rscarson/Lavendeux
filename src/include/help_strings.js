@@ -60,6 +60,11 @@ true || false
 
 // Strings are also supported
 concat("foo", "bar")
+
+// Arrays can be composed of any combination of types
+[10, 12] + [1.2, 1.3]
+2 * [10, 5] // Operations can also be applied between scalar values and arrays
+[false, 0, true] == true // An array evaluates to true if any element is true
 `, lavendeuxFormatter);
 
 const OperationsSample = new Sample([
@@ -97,6 +102,10 @@ value = pi * e * tau
 f(x) = 2*x**2 + 3*x + 5
 f(2.3)
 
+// Functions work well with arrays
+sum(a) = element(a, 0) + ( len(a)>1 ? sum(dequeue(a)) : 0 )
+sum([10, 10, 11])
+
 // Recursive functions work too!
 factorial(x) = x==0 ? 1 : (x * factorial(x - 1) )
 factorial(5)
@@ -115,21 +124,34 @@ const FunctionsSample = new Sample([
     'The following functions are supported by default:'
 ], `
 help() // List all functions and decorators
-help(strlen) // Get help for a specific function by name
+help("strlen") // Get help for a specific function by name
 
 // String functions
 concat("s1", "s2", ...) | strlen("string") | substr("string", start, [length])
 uppercase("s1") | lowercase("S1") | trim("    s1    ")
 
+// Regular expressions
+regex("foo.*", "foobar") // foobar
+regex("foo(.*)", "foobar", 1) // bar
+
+// Array functions
+len(a) | is_empty(a)
+pop(a) | push(a) | dequeue(a) | enqueue(a)
+remove(a, index) | element(a, index)
+merge(a1, a2)
+
 // Rounding functions
 ceil(n) | floor(n) | round(n, precision)
 
-// Trigonometric functions
+// Trigonometric functions - values are in radians, use to_radians to convert
 tan(r), cos(r), sin(r), atan(r), acos(r), asin(r), tanh(r), cosh(r), sinh(r)
 
 // Rounding functions
 ln(n) | log10(n) | log(n, base)
 sqrt(n) | root(n, base)
+
+// Typecasting
+bool(n) | array(n) | int(n) | float(n)
 
 // RNG functions
 choose("argument 1", 2, 3.0, ...) | rand() | rand(min, max)

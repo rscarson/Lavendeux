@@ -5,7 +5,7 @@
 
 use std::{thread, time};
 use tauri::api::cli::get_matches;
-use tauri::{RunEvent, Manager};
+use tauri::{RunEvent, WindowEvent, Manager};
 use std::sync::Mutex;
 use single_instance::SingleInstance;
 
@@ -122,14 +122,19 @@ fn main() {
 		},
 
 		// Prevent window closing
-		RunEvent::CloseRequested { label, api, .. } => {
-			let app_handle = app_handle.clone();
-			let window = app_handle.get_window(&label).unwrap();
-			api.prevent_close();
-			
-			thread::spawn(move || {
-				window.hide().ok();
-			});
+		RunEvent::WindowEvent { label, event, .. } => {
+			match event {
+				WindowEvent::CloseRequested { api, .. } => {
+					let app_handle = app_handle.clone();
+					let window = app_handle.get_window(&label).unwrap();
+					api.prevent_close();
+					
+					thread::spawn(move || {
+						window.hide().ok();
+					});
+				},
+				_ => {}
+			};
 		},
 
 		// Keep the event loop running even if all windows are closed
