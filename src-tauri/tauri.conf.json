@@ -75,7 +75,7 @@
         "label": "error",
         "decorations": false,
         "title": "Error",
-        "width": 500, "height": 100,
+        "width": 500, "height": 110,
         "x": 0, "y": 0,
         "focus": true,
         "resizable": false,

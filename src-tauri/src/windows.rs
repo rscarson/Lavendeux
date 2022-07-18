@@ -103,7 +103,8 @@ impl MainWindow {
     }
 }
 
-const ERROR_WINDOW_OFFSET : u32 = 3;
+const ERROR_WINDOW_X_OFFSET : u32 = 3;
+const ERROR_WINDOW_Y_OFFSET : u32 = 32;
 const ERROR_WINDOW_DELAY : u64 = 5000;
 
 /// Payload for a message to the error window
@@ -142,8 +143,8 @@ impl ErrorWindow {
     
         // Calculate position for the error window
         let mut pos = self.0.outer_position()?;
-        pos.x = (monitor.size().width - window_size.width - ERROR_WINDOW_OFFSET) as i32;
-        pos.y = (monitor.size().height - window_size.height - ERROR_WINDOW_OFFSET) as i32;
+        pos.x = (monitor.size().width - window_size.width - ERROR_WINDOW_X_OFFSET) as i32;
+        pos.y = (monitor.size().height - window_size.height - ERROR_WINDOW_Y_OFFSET) as i32;
 
         Ok(pos)
     }
