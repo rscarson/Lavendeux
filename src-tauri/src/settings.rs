@@ -1,8 +1,9 @@
-use crate::{parser, keybind, extensions};
+use crate::{parser, keybind, extensions, autostart};
 use crate::state::SharedState;
+use crate::windows::ErrorWindow;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
-use std::path::{PathBuf};
+use std::path::PathBuf;
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 use std::error::Error;
@@ -13,6 +14,7 @@ const DEFAULT_CONFIGNAME : &str = "lavendeux.config.json";
 const DEFAULT_ROOTDIR : &str = ".lavendeux";
 const DEFAULT_EXTDIR : &str = "extensions";
 const DEFAULT_SILENTERRORS : bool = false;
+const DEFAULT_DARK: bool = false;
 
 #[cfg(any(target_os="windows", target_os="macos"))]
 const DEFAULT_AUTOPASTE : bool = true;
@@ -29,7 +31,10 @@ pub struct Settings {
 	pub auto_paste: bool,
 	pub silent_errors: bool,
 	pub extension_dir: String,
-	pub shortcut: String
+	pub shortcut: String,
+
+	pub autostart: bool,
+	pub dark: bool
 }
 
 impl Default for Settings {
@@ -103,7 +108,9 @@ impl Settings {
 					shortcut: DEFAULT_SHORTCUT.to_string(),
 					extension_dir: ext_dir,
 					silent_errors: DEFAULT_SILENTERRORS,
-					auto_paste: DEFAULT_AUTOPASTE
+					auto_paste: DEFAULT_AUTOPASTE,
+					autostart: false,
+					dark: DEFAULT_DARK
 				}
 			}
 		}
@@ -123,6 +130,24 @@ pub fn format_shortcut(state: tauri::State<SharedState>) -> Result<String, Strin
 
 		None => Err("Could not lock settings object".to_string())
 	}
+}
+
+/// Get the application name
+/// 
+/// # Arguments
+/// * `app_handle` - AppHandle
+#[tauri::command]
+pub fn get_name(app_handle: AppHandle) -> String {
+	app_handle.config().package.product_name.clone().unwrap_or("X".to_string())
+}
+
+/// Get the current version number
+/// 
+/// # Arguments
+/// * `app_handle` - AppHandle
+#[tauri::command]
+pub fn get_version(app_handle: AppHandle) -> String {
+	app_handle.config().package.version.clone().unwrap_or("X".to_string())
 }
 
 /// Update the current application settings
@@ -155,6 +180,19 @@ pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, 
 
 			// Reload extensions
 			extensions::reload_extensions(app_handle.clone(), &mut lock)?;
+
+			// Set autostart
+			if settings.autostart {
+				if let Some(e) = autostart::set() {
+					let error_window = ErrorWindow::new(app_handle.clone()).ok_or("Error window does not exist")?;
+					error_window.show_message("Error setting autostart", &e, "danger").ok();
+				}
+			} else {
+				if let Some(e) = autostart::clear() {
+					let error_window = ErrorWindow::new(app_handle.clone()).ok_or("Error window does not exist")?;
+					error_window.show_message("Error setting autostart", &e, "danger").ok();
+				}
+			}
 			
 			// Lock in settings
 			lock.settings = settings.clone();

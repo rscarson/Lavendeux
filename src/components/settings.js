@@ -142,6 +142,31 @@ function Settings(props) {
 		);
 	}
 
+	function renderMisc() {
+		return (
+			<Card>
+				<Card.Body>
+				<Card.Title>Application Settings</Card.Title>
+				
+				<Row>
+					<Col sm="8">
+					<div className="form-group">
+						<label>
+							<input type="checkbox" autocomplete="off" checked={settings.autostart}
+								onChange={e => updateSettings("autostart", e.currentTarget.checked)} /> Start Lavendeux Automatically
+						</label><br/>
+						<label>
+							<input type="checkbox" autocomplete="off" checked={settings.dark}
+								onChange={e => updateSettings("dark", e.currentTarget.checked)} /> Dark Theme
+						</label>
+					</div>
+					</Col>
+				</Row>
+				</Card.Body>
+			</Card>
+		);
+	}
+
 	/**
 	 * Render the extension settings
 	 * @returns Rendered data
@@ -185,6 +210,7 @@ function Settings(props) {
 			{renderSaveButton()}
 			{renderClipboardMode()}
 			{renderErrorMode()}
+			{renderMisc()}
 			{renderKeyboardShortcut()}
 			{renderExtensionDir()}
 

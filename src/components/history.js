@@ -96,7 +96,7 @@ function History(props) {
         return (
             <ListGroup.Item className="text-center">
                 <strong>No history to display.</strong>
-                <p>To get started, try {autoPaste ? "highlighting" : "copying"} the following block of text, and pressing <kbd>{shortcutName}</kbd></p>
+                <p className="theme-p">To get started, try {autoPaste ? "highlighting" : "copying"} the following block of text, and pressing <kbd>{shortcutName}</kbd></p>
                 <Row>
                     <Col sm="3"></Col>
                     <Col sm="6">

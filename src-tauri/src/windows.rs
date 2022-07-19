@@ -153,8 +153,8 @@ impl ErrorWindow {
     #[cfg(all(unix, not(any(target_os="macos", target_os="android", target_os="emscripten"))))]
     pub fn calculate_position(&self) -> tauri::Result<PhysicalPosition<i32>> {
         Ok(PhysicalPosition {
-            x: ERROR_WINDOW_OFFSET as i32,
-            y: ERROR_WINDOW_OFFSET as i32
+            x: ERROR_WINDOW_X_OFFSET as i32,
+            y: ERROR_WINDOW_Y_OFFSET as i32
         })
     }
 

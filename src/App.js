@@ -20,6 +20,14 @@ function App() {
 		listen('switch_tab', event => {
 			setActiveTab(event.payload.toLowerCase());
 		});
+		
+		listen('settings', event => {
+			if (event.payload.dark) {
+				document.documentElement.classList.add('dark-theme');
+			} else {
+				document.documentElement.classList.remove('dark-theme');
+			}
+		});
 	}, []);
 
 	return (

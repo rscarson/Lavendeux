@@ -60,11 +60,11 @@ function Extensions(props) {
 
 	return (
 		<div className="nav-content">
-			<p>
+			<p className="theme-p">
 				Extensions are snippets of javascript that can be used to add functionality to Lavendeux.<br/>
 				The extensions are run in a secure sandboxed environment.
 			</p>
-			<p>For an example of how to write an extension, please see the included examples.</p>
+			<p className="theme-p">For an example of how to write an extension, please see the included examples.</p>
 			<Button variant="outline-primary" size="sm" onClick={e => importFile()}>Import Extension</Button>&nbsp;
 			<Button variant="outline-success" size="sm" onClick={e => run("reload_all_extensions")}>Reload Extensions</Button>&nbsp;
 			<Button variant="outline-secondary" size="sm" onClick={e => run("open_extensions_dir")}>Open Extensions Directory</Button>

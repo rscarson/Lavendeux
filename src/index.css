@@ -6,3 +6,19 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+.dark-theme, .dark-theme ul, .dark-theme li, .dark-theme .nav-link.active, .dark-theme .list-group-item {
+	background-color: #000 !important;
+}
+
+.dark-theme .card {
+	background-color: #222 !important;
+}
+
+.dark-theme, .dark-theme .theme-p, .dark-theme h4, .dark-theme strong, .dark-theme .card {
+	color: #FFF;
+}
+
+.dark-theme table, .dark-theme .nav-link.active, .dark-theme .btn-dark, .dark-theme .arrow-button, .dark-theme i, .dark-theme td {
+	color: #FFF !important;
+}

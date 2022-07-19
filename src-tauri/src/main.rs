@@ -36,6 +36,9 @@ pub use settings::*;
 mod parser;
 pub use parser::*;
 
+mod autostart;
+pub use autostart::*;
+
 fn main() {
 	// Initialize base state
 	let instance = SingleInstance::new("lavendeux-instance-lock").unwrap();
@@ -59,7 +62,8 @@ fn main() {
 			settings::update_settings, settings::format_shortcut,
 			windows::hide_errorwindow, history::clear_history, windows::show_history_tab,
 			extensions::import_extension, extensions::disable_extension, 
-			extensions::reload_all_extensions, extensions::open_extensions_dir
+			extensions::reload_all_extensions, extensions::open_extensions_dir,
+			settings::get_name, settings::get_version
 		])
 		.build(tauri::generate_context!())
 		.expect("error while running tauri application");

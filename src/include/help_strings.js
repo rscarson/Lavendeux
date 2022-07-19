@@ -18,7 +18,7 @@ class Sample {
      * @returns The formatted preamble for the code sample
      */
     preambleToString() {
-        return this.preamble.map(s => `<p>${s}</p>`).join('\n');
+        return this.preamble.map(s => `<p class="theme-p">${s}</p>`).join('\n');
     }
 
     /**
