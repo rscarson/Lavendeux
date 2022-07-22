@@ -14,8 +14,17 @@
       "description": "Extensible inline parser",
       "args": [{
         "name": "config",
+        "description": "path to directory that will hold the configuration and extensions. Defaults to ~/.lavendeux",
         "short": "c",
         "takesValue": true
+      },
+
+      {
+        "name": "log-level",
+        "description": "default logging level - for debug only. Defaults to error",
+        "short": "l",
+        "takesValue": true,
+        "possibleValues": ["silly", "debug", "warning", "error", "critical"]
       }]
     },
     "systemTray": {
@@ -69,7 +78,8 @@
         "resizable": true,
         "visible": false,
         "fullscreen": false,
-        "url": "/"
+        "url": "/",
+        "theme": "Light"
       },
 
       {

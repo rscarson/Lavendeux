@@ -11,6 +11,7 @@ use dirs::home_dir;
 
 const DEFAULT_SHORTCUT : &str = "CmdOrCtrl+Space";
 const DEFAULT_CONFIGNAME : &str = "lavendeux.config.json";
+const DEFAULT_LOGNAME : &str = "lavendeux.log";
 const DEFAULT_ROOTDIR : &str = ".lavendeux";
 const DEFAULT_EXTDIR : &str = "extensions";
 const DEFAULT_SILENTERRORS : bool = false;
@@ -27,6 +28,7 @@ const DEFAULT_AUTOPASTE : bool = false;
 pub struct Settings {
 	#[serde(default)]
 	pub filename: String,
+	pub logname: String,
 
 	pub auto_paste: bool,
 	pub silent_errors: bool,
@@ -99,12 +101,19 @@ impl Settings {
 				path.push(DEFAULT_ROOTDIR);
 				path.push(DEFAULT_EXTDIR);
 				let ext_dir = path.to_str().unwrap_or(DEFAULT_ROOTDIR).to_string();
+
 				path.pop();
 				path.push(DEFAULT_CONFIGNAME);
 				let config_path = path.to_str().unwrap_or(DEFAULT_CONFIGNAME).to_string();
 
+				path.pop();
+				path.push(DEFAULT_LOGNAME);
+				let log_path = path.to_str().unwrap_or(DEFAULT_LOGNAME).to_string();
+
 				Self {
 					filename: config_path,
+					logname: log_path,
+
 					shortcut: DEFAULT_SHORTCUT.to_string(),
 					extension_dir: ext_dir,
 					silent_errors: DEFAULT_SILENTERRORS,
@@ -132,24 +141,6 @@ pub fn format_shortcut(state: tauri::State<SharedState>) -> Result<String, Strin
 	}
 }
 
-/// Get the application name
-/// 
-/// # Arguments
-/// * `app_handle` - AppHandle
-#[tauri::command]
-pub fn get_name(app_handle: AppHandle) -> String {
-	app_handle.config().package.product_name.clone().unwrap_or("X".to_string())
-}
-
-/// Get the current version number
-/// 
-/// # Arguments
-/// * `app_handle` - AppHandle
-#[tauri::command]
-pub fn get_version(app_handle: AppHandle) -> String {
-	app_handle.config().package.version.clone().unwrap_or("X".to_string())
-}
-
 /// Update the current application settings
 /// 
 /// # Arguments
@@ -160,8 +151,11 @@ pub fn get_version(app_handle: AppHandle) -> String {
 pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, settings: Settings) -> Result<Settings, String> {
 	match state.0.lock().ok() {
 		Some(mut lock) => {
+			lock.logger.debug(&app_handle, "Updating settings");
+
 			// Update keyboard shortcut
 			if let Some(e) = keybind::bind_shortcut(app_handle.clone(), &settings.shortcut, DEFAULT_SHORTCUT, parser::handle_shortcut) {
+				lock.logger.error(&app_handle, &format!("Error updating the keyboard shortcut: {}", e));
 				return Err(e);
 			}
 			
@@ -169,12 +163,14 @@ pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, 
 			let mut path = PathBuf::new();
 			path.push(&settings.extension_dir);
 			if let Err(e) = std::fs::create_dir_all(path.to_str().ok_or("unicode error")?) {
+				lock.logger.error(&app_handle, &format!("Error creating the .lavendeux/extensions dir: {}", e));
 				return Err(e.to_string());
 			}
 
 			// Create a subdirectory
 			path.push("disabled_extensions");
 			if let Err(e) = std::fs::create_dir_all(path.to_str().ok_or("unicode error")?) {
+				lock.logger.error(&app_handle, &format!("Error creating the .lavendeux/disabled_extensions dir: {}", e));
 				return Err(e.to_string());
 			}
 
@@ -185,11 +181,13 @@ pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, 
 			if settings.autostart {
 				if let Some(e) = autostart::set() {
 					let error_window = ErrorWindow::new(app_handle.clone()).ok_or("Error window does not exist")?;
+					lock.logger.error(&app_handle, &format!("Error setting autostart: {}", e));
 					error_window.show_message("Error setting autostart", &e, "danger").ok();
 				}
 			} else {
 				if let Some(e) = autostart::clear() {
 					let error_window = ErrorWindow::new(app_handle.clone()).ok_or("Error window does not exist")?;
+					lock.logger.error(&app_handle, &format!("Error clearing autostart: {}", e));
 					error_window.show_message("Error setting autostart", &e, "danger").ok();
 				}
 			}
@@ -197,7 +195,10 @@ pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, 
 			// Lock in settings
 			lock.settings = settings.clone();
 			app_handle.emit_all("settings", settings.clone()).unwrap();
-			write_settings(&settings).ok();
+
+			if let Err(e) = write_settings(&settings) {
+				lock.logger.error(&app_handle, &format!("Error writing settings to '{}': {}", settings.filename.clone(), e));
+			}
 			Ok(settings)
 		},
 

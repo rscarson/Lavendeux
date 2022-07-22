@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import { helpText } from '../include/help_strings';
 import { run, listen } from '../include/tauri';
+import { getName, getVersion } from '@tauri-apps/api/app';
 
 const example = `
 x = 8 + 3e+2
@@ -22,8 +23,8 @@ function Help(props) {
 	const [autoPaste, setAutoPaste] = useState(true);
 
 	useEffect(() => {
-		run("get_name").then(s => setName(s));
-		run("get_version").then(s => setVersion(s));
+		getName().then(s => setName(s));
+		getVersion().then(s => setVersion(s));
 
 		listen('settings', event => {
             setAutoPaste(event.payload.auto_paste === true);

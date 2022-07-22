@@ -12,6 +12,9 @@ use single_instance::SingleInstance;
 extern crate lavendeux_parser;
 use lavendeux_parser::ParserState;
 
+mod logs;
+pub use logs::*;
+
 mod windows;
 pub use windows::*;
 
@@ -39,21 +42,29 @@ pub use parser::*;
 mod autostart;
 pub use autostart::*;
 
+#[cfg(debug_assertions)]
+const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Debug;
+
+#[cfg(not(debug_assertions))]
+const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Error;
+
 fn main() {
 	// Initialize base state
 	let instance = SingleInstance::new("lavendeux-instance-lock").unwrap();
-	let state = State {
-		settings: settings::Settings::new(),
+	let config = settings::Settings::new();
+	let mut state = State {
+		settings: config.clone(),
+		logger: logs::LogManager::new(config.logname.as_str(), DEFAULT_LOGLEVEL),
 		parser: ParserState::new(),
 		history: Vec::new(),
 	};
 
 	let app = tauri::Builder::default()
 	// Setup application state
-		.setup(|_app| {    
-			Ok(())
-		})
 		.manage(SharedState(Mutex::new(state.clone())))
+	// Setup main window menu
+		.menu(MainWindow::get_menu())
+		.on_menu_event(MainWindow::handle_menu_event)
 	// Setup system tray
 		.system_tray(Tray::new_tray([].to_vec()))
 		.on_system_tray_event(Tray::handle_event)
@@ -63,11 +74,10 @@ fn main() {
 			windows::hide_errorwindow, history::clear_history, windows::show_history_tab,
 			extensions::import_extension, extensions::disable_extension, 
 			extensions::reload_all_extensions, extensions::open_extensions_dir,
-			settings::get_name, settings::get_version
+			logs::get_logs
 		])
 		.build(tauri::generate_context!())
 		.expect("error while running tauri application");
-
 	
 	// Instance lock
 	if !instance.is_single() {
@@ -77,6 +87,9 @@ fn main() {
 			.title("Already Running!")
 			.body("Lavendeux is already running - check running processes")
 			.show().ok();
+
+		state.logger.debug(&app.handle(), "Existing instance found! Exiting.");
+
 		let handle = app.handle();
 		std::thread::spawn(move || {
             thread::sleep(time::Duration::from_millis(100));
@@ -97,16 +110,18 @@ fn main() {
 				let config_path = matches.args.get("config").unwrap();
 				if config_path.occurrences > 0 {
 					let filename = config_path.value.as_str().unwrap();
-					lock.settings.filename = filename.to_string();
+ 					lock.settings.filename = filename.to_string();
 					if let Ok(new_settings) = read_settings(Some(filename)) {
 						lock.settings = new_settings
 					}
 				}
+				
+				lock.logger.debug(&app_handle, "Started Lavendeux");
 			}
+
 
 			let app_handle_ = app_handle.clone();
 			app_handle.listen_global("ready", move |_| {
-
 				// Prepare error window
 				match ErrorWindow::new(app_handle_.clone()) {
 					Some(w) => w.show_message(
@@ -129,13 +144,15 @@ fn main() {
 		RunEvent::WindowEvent { label, event, .. } => {
 			match event {
 				WindowEvent::CloseRequested { api, .. } => {
-					let app_handle = app_handle.clone();
-					let window = app_handle.get_window(&label).unwrap();
-					api.prevent_close();
-					
-					thread::spawn(move || {
-						window.hide().ok();
-					});
+					if label == "main" {
+						let app_handle = app_handle.clone();
+						let window = app_handle.get_window(&label).unwrap();
+						api.prevent_close();
+						
+						thread::spawn(move || {
+							window.hide().ok();
+						});
+					}
 				},
 				_ => {}
 			};

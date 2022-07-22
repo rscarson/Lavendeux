@@ -1,5 +1,6 @@
 use crate::history::History;
 use crate::settings::Settings;
+use crate::logs::LogManager;
 use lavendeux_parser::ParserState;
 use std::sync::Mutex;
 
@@ -8,6 +9,7 @@ use std::sync::Mutex;
 pub struct State {
     pub parser: ParserState,
     pub settings: Settings,
+    pub logger: LogManager,
     pub history: Vec<History>
 }
 

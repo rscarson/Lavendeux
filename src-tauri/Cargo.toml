@@ -1,6 +1,6 @@
 [package]
 name = "lavendeux"
-version = "0.10.0"
+version = "0.11.0"
 description = "Tauri port of Lavendeux"
 authors = ["rscarson"]
 license = ""
@@ -21,6 +21,7 @@ tauri = { version = "1.0.0-rc.13", features = ["api-all", "cli", "system-tray"] 
 serde = { version = "1.0", features = ["derive"] }
 single-instance = "0.3.3"
 serde_json = "1.0"
+time = { version = "0.3.11", features = ["formatting"] }
 inputbot = "0.5.1"
 dirs = "4.0.0"
 

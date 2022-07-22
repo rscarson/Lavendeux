@@ -16,6 +16,11 @@ Or, alternatively, turn auto copy/paste off in the menu, and CTRL-Space will ins
 
 The parser itself is also available as a separate crate - [lavendeux-parser](https://crates.io/crates/lavendeux-parser)
 
+It also supports a few command line options:
+
+- config: Change the configuration directory (defaults to ~/.lavendeux)
+- log-level: Change the logging level - useful for debugging issues (defaults to ~/.lavendeux)
+
 #### Extensions
 Extend Lavendeux's featureset with [extensions](http://rscarson.github.io/Lavendeux/extensions). Extensions are written in javascript, sandboxed environment, with no network or host access.
 

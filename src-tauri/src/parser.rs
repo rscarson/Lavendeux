@@ -92,11 +92,18 @@ pub fn do_parse(app_handle: AppHandle) -> Option<Box<dyn Error>> {
 		},
 
 		// Could not read the clipboard
-		None => return Some(
-			Box::new(
-				std::io::Error::new(std::io::ErrorKind::Other, "could not read from clipboard")
+		None => {
+			let state: tauri::State<SharedState> = app_handle.state();
+			if let Ok(mut lock) = state.0.lock() {
+				lock.logger.error(&app_handle, "Unable to read from the clipboard - it may be locked by another application");
+			}
+			
+			return Some(
+				Box::new(
+					std::io::Error::new(std::io::ErrorKind::Other, "could not read from clipboard")
+				)
 			)
-		)
+		}
 	}
 
 	// Update tray history

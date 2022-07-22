@@ -1,5 +1,6 @@
 use std::{thread::sleep, time::Duration};
-use tauri::{AppHandle, GlobalShortcutManager};
+use tauri::{AppHandle, GlobalShortcutManager, Manager};
+use crate::state::SharedState;
 use std::{thread};
 
 #[cfg(target_os="windows")]
@@ -26,6 +27,17 @@ mod clipboard_keys {
     pub const PASTE : KeybdKey = KeybdKey::VKey;
 }
 
+fn handle_shortcut(app_handle: AppHandle, handler: fn(AppHandle)) {
+    thread::spawn(move || {
+        let state: tauri::State<SharedState> = app_handle.state();
+        if let Ok(mut lock) = state.0.lock() {
+            lock.logger.debug(&app_handle, "Handling keyboard shortcut!");
+        }
+        
+        handler(app_handle.clone());
+    });
+}
+
 /// Bind a new shortcut to the host
 /// 
 /// # Arguments
@@ -38,21 +50,17 @@ pub fn bind_shortcut(app_handle: tauri::AppHandle, shortcut: &str, default_short
 	gsm.unregister_all().ok()?;
 	
 	let mut _app_handle = app_handle.clone();
-	match gsm.register(shortcut, move || {
-		let app_handle = _app_handle.clone();
-        		
-		thread::spawn(move || {
-		    handler(app_handle);
-		});
-		
-	}) {
+	match gsm.register(shortcut, move || handle_shortcut(_app_handle.clone(), handler)) {
 		Ok(_) => None,
 		Err(_) => {
+            let state: tauri::State<SharedState> = app_handle.state();
+            if let Ok(mut lock) = state.0.lock() {
+                lock.logger.debug(&app_handle, "Invalid shortcut, registering default shortcut");
+            }
+
 			// Error - put default shortcut back in
-			gsm.register(default_shortcut, move || {
-				let app_handle = app_handle.clone();
-				handler(app_handle);
-			}).ok()?;
+	        _app_handle = app_handle.clone();
+			gsm.register(default_shortcut, move || handle_shortcut(_app_handle.clone(), handler)).ok()?;
 			Some("invalid shortcut".to_string())
 		}
 	}

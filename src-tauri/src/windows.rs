@@ -1,5 +1,4 @@
 use std::{thread, time};
-use crate::history;
 use tauri::{
     AppHandle, Window, Manager, Position, WindowMenuEvent, 
     Menu, Submenu, CustomMenuItem, MenuItem, PhysicalPosition
@@ -11,6 +10,26 @@ pub enum WindowTabs {
 	History, Extensions, Settings, Help
 }
 
+/// Log view window
+pub struct LogWindow(Window);
+impl LogWindow {
+    /// Create and display a new log window
+    /// 
+    /// # Arguments
+    /// * `app_handle` - AppHandle
+    pub fn new(parent: &Window) -> Option<LogWindow> {
+        let w = Window::builder(
+            parent,
+            "logs".to_string(),
+            tauri::WindowUrl::App("/logs".into())
+        )
+            .title("Log Viewer")
+            .menu(tauri::Menu::new())
+            .build().ok()?;
+        Some(Self(w))
+    }
+}
+
 /// Main application window
 pub struct MainWindow(Window);
 impl MainWindow {
@@ -20,6 +39,14 @@ impl MainWindow {
     /// * `app_handle` - AppHandle
     pub fn new(app_handle: AppHandle) -> Option<MainWindow> {
         Some(Self(app_handle.get_window("main")?))
+    }
+
+    /// Create a new handle to a window
+    /// 
+    /// # Arguments
+    /// * `app_handle` - AppHandle
+    pub fn new_with_window(window: Window) -> MainWindow {
+        Self(window)
     }
 
     /// Show the window, and switch to a tab
@@ -63,11 +90,11 @@ impl MainWindow {
     pub fn get_menu() -> Menu {
         Menu::new()
         .add_submenu(Submenu::new("File", Menu::new()
-            .add_item(CustomMenuItem::new("clear_history", "Clear History"))
-            .add_native_item(MenuItem::Separator)
-            .add_item(CustomMenuItem::new("exit", "Exit"))
+            .add_native_item(MenuItem::Quit)
         ))
         .add_submenu(Submenu::new("Help", Menu::new()
+            .add_item(CustomMenuItem::new("help", "Help"))
+            .add_item(CustomMenuItem::new("log", "View Logs"))
             .add_item(CustomMenuItem::new("about", "About"))
         ))
     }
@@ -75,27 +102,14 @@ impl MainWindow {
     /// Handle a menu event
     pub fn handle_menu_event(e: WindowMenuEvent) {
         match e.menu_item_id() {
-            "clear_history" => {
-                let app = e.window().app_handle();
-                history::clear_history(app.clone(), app.state());
+            "help" => {
+                MainWindow::new_with_window(e.window().clone()).show_tab(WindowTabs::Help).ok();
             },
-
+            "log" => {
+                LogWindow::new(e.window());
+            },
             "about" => {
-                let app = e.window().app_handle();
-                let config = app.config();
-
-                tauri::api::dialog::message(Some(e.window()), "About Lavendeux", 
-                    format!("{} version {}\nParse anywhere.\nDevelopped by @rscarson", 
-                        config.package.product_name.as_ref().unwrap(), config.package.version.as_ref().unwrap()
-                    )
-                );
-            },
-
-            "exit" => {
-                let app = e.window().app_handle();
-                std::thread::spawn(move || {
-                    app.exit(0);
-                });
+                tauri::api::dialog::message(Some(e.window()), "Lavendeux v0.10.0", "Created by @rscarson");
             },
 
             _ => {}

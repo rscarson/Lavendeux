@@ -47,9 +47,14 @@ pub fn open_extensions_dir(state: tauri::State<SharedState>) -> Option<settings:
 pub fn reload_all_extensions(app_handle: AppHandle, state: tauri::State<SharedState>) -> Result<(), String> {
 	match state.0.lock().ok() {
 		Some(mut lock) => {
-			match reload_extensions(app_handle, &mut lock) {
+			lock.logger.debug(&app_handle, "Reloading extensions");
+			match reload_extensions(app_handle.clone(), &mut lock) {
 				Ok(_) => Ok(()),
-				Err(e) => Err(e)
+				Err(e) => {
+					
+					lock.logger.error(&app_handle, &format!("Error reloading extensions: {}", e));
+					Err(e)
+				}
 			}
 		},
 		None => Err("Could not access settings".to_string())
@@ -66,6 +71,8 @@ pub fn reload_all_extensions(app_handle: AppHandle, state: tauri::State<SharedSt
 pub fn disable_extension(app_handle: AppHandle, state: tauri::State<SharedState>, src_path: &str) -> Result<(), String> {
 	match state.0.lock().ok() {
 		Some(mut lock) => {
+			lock.logger.debug(&app_handle, &format!("Disabling extension at '{}'", src_path));
+
 			// Get a path to the disabled extensions
 			let mut path = PathBuf::new();
 			path.push(&lock.settings.extension_dir);
@@ -78,12 +85,17 @@ pub fn disable_extension(app_handle: AppHandle, state: tauri::State<SharedState>
 			].iter().collect();
 
 			// Move file
-			match std::fs::rename(src_path, dest.as_path().to_str().ok_or("unicode error")?) {
+			let dst_path = dest.as_path().to_str().ok_or("unicode error")?;
+			match std::fs::rename(src_path, dst_path) {
 				Ok(_) => {
+					lock.parser.extensions.remove(src_path);
 					reload_extensions(app_handle, &mut lock)?;
 					Ok(())
 				},
-				Err(e) => Err(e.to_string())
+				Err(e) => {
+					lock.logger.error(&app_handle, &format!("Could not move file to {}: {}", dst_path, e));
+					Err(e.to_string())
+				}
 			}
 		},
 		None => Err("Could not access settings".to_string())
@@ -100,6 +112,8 @@ pub fn disable_extension(app_handle: AppHandle, state: tauri::State<SharedState>
 pub fn import_extension(app_handle: AppHandle, state: tauri::State<SharedState>, src_path: &str) -> Result<(), String> {
 	match state.0.lock().ok() {
 		Some(mut lock) => {
+			lock.logger.debug(&app_handle, &format!("Importing '{}' as an extension", src_path));
+
 			// Build destination path
 			let dest: PathBuf = [
 				lock.settings.extension_dir.clone(), 
@@ -107,12 +121,16 @@ pub fn import_extension(app_handle: AppHandle, state: tauri::State<SharedState>,
 			].iter().collect();
 
 			// Copy the file to the extensions directory
-			match std::fs::copy(src_path, dest.as_path().to_str().ok_or("unicode error")?) {
+			let dst_path = dest.as_path().to_str().ok_or("unicode error")?;
+			match std::fs::copy(src_path, dst_path) {
 				Ok(_) => {
 					reload_extensions(app_handle, &mut lock)?;
 					Ok(())
 				},
-				Err(e) => Err(e.to_string())
+				Err(e) => {
+					lock.logger.error(&app_handle, &format!("Could not copy extension to {}: {}", dst_path, e));
+					Err(e.to_string())
+				}
 			}
 		},
 		None => Err("Could not access settings".to_string())
