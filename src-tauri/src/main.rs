@@ -42,10 +42,10 @@ pub use parser::*;
 mod autostart;
 pub use autostart::*;
 
-#[cfg(debug_assertions)]
-const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Debug;
+//#[cfg(debug_assertions)]
+//const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Debug;
 
-#[cfg(not(debug_assertions))]
+//#[cfg(not(debug_assertions))]
 const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Error;
 
 fn main() {
@@ -107,8 +107,29 @@ fn main() {
 			// Read commandline arguments
 			if let Ok(mut lock) = mut_state.0.lock() {
 				let matches = get_matches(app_handle.config().tauri.cli.as_ref().unwrap(), app_handle.package_info()).unwrap();
+
+				// Configuration path
 				let config_path = matches.args.get("config").unwrap();
 				if config_path.occurrences > 0 {
+					let filename = config_path.value.as_str().unwrap();
+ 					lock.settings.filename = filename.to_string();
+					if let Ok(new_settings) = read_settings(Some(filename)) {
+						lock.settings = new_settings
+					}
+				}
+
+				// Debug level
+				let loglevel = matches.args.get("log-level").unwrap();
+				if loglevel.occurrences > 0 {
+					match config_path.value.as_str().unwrap().to_lowercase().as_str() {
+						"silly" => lock.logger.set_level(LogLevel::Silly),
+						"debug" => lock.logger.set_level(LogLevel::Debug),
+						"warning" => lock.logger.set_level(LogLevel::Warning),
+						"error" => lock.logger.set_level(LogLevel::Error),
+						"critical" => lock.logger.set_level(LogLevel::Critical),
+						_ => {}
+					}
+
 					let filename = config_path.value.as_str().unwrap();
  					lock.settings.filename = filename.to_string();
 					if let Ok(new_settings) = read_settings(Some(filename)) {

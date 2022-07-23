@@ -34,7 +34,7 @@ function Logs(props) {
     function renderEmptyLog(row) {
         return (     
         <tr>
-            <td colSpan={2} className="text-center">
+            <td colSpan={3} className="text-center">
                 Nothing to display
             </td>
         </tr>
