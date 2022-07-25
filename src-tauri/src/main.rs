@@ -4,7 +4,7 @@
 )]
 
 use std::{thread, time};
-use tauri::api::cli::get_matches;
+use tauri::api::cli::{ Matches, get_matches };
 use tauri::{RunEvent, WindowEvent, Manager};
 use std::sync::Mutex;
 use single_instance::SingleInstance;
@@ -51,7 +51,7 @@ const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Debug;
 const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Error;
 
 /// Setup tauri app
-fn setup_app() -> tauri::App {
+fn setup_app(state: &State) -> tauri::App {
 	tauri::Builder::default()
 	// Setup application state
 		.manage(SharedState(Mutex::new(state.clone())))
@@ -73,9 +73,29 @@ fn setup_app() -> tauri::App {
 		.expect("error while running tauri application")
 }
 
-// Ensure single instance
-fn instance_lock() -> SingleInstance {
+/// Process a commandline argument
+fn process_argument<F: FnMut(&str)>(argument: &str, matches: &Matches, mut handler: F) {
+	let arg_match = matches.args.get(argument).unwrap();
+	if arg_match.occurrences > 0 {
+		handler(arg_match.value.as_str().unwrap());
+	}
+}
+
+fn main() {
+	// Initialize base state
 	let instance = SingleInstance::new(INSTANCE_LOCK).unwrap();
+	let config = settings::Settings::new();
+	let mut state = State {
+		logger: logs::LogManager::new(config.logname.as_str(), DEFAULT_LOGLEVEL),
+		parser: ParserState::new(),
+		settings: config.clone(),
+		history: Vec::new(),
+	};
+
+	// Configure tauri app
+	let app = setup_app(&state);
+	
+	// Instance lock
 	if !instance.is_single() {
 		let w = MainWindow::new(app.handle()).unwrap();
 		w.hide().ok();
@@ -92,31 +112,6 @@ fn instance_lock() -> SingleInstance {
 			handle.exit(0);
 		});
 	}
-}
-
-/// Process a commandline argument
-fn process_argument(argument: &str, handler: Fn(&str)) {
-	let arg_match = matches.args.get("config").unwrap();
-	if arg_match.occurrences > 0 {
-		handler(config_path.value.as_str().unwrap());
-	}
-}
-
-fn main() {
-	// Initialize base state
-	let config = settings::Settings::new();
-	let mut state = State {
-		logger: logs::LogManager::new(config.logname.as_str(), DEFAULT_LOGLEVEL),
-		parser: ParserState::new(),
-		settings: config.clone(),
-		history: Vec::new(),
-	};
-
-	// Configure tauri app
-	let app = setup_app();
-	
-	// Instance lock
-	instance_lock();
 		
 	app.run(move |app_handle, e| match e {
 		// Runs when the application starts
@@ -130,7 +125,7 @@ fn main() {
 				let matches = get_matches(app_handle.config().tauri.cli.as_ref().unwrap(), app_handle.package_info()).unwrap();
 
 				// Configuration path
-				process_argument("config", |filename| {
+				process_argument("config", &matches, |filename| {
 				lock.settings.filename = filename.to_string();
 					if let Ok(new_settings) = read_settings(Some(filename)) {
 						lock.settings = new_settings
@@ -138,7 +133,7 @@ fn main() {
 				});
 
 				// Debug level
-				process_argument("log-level", |loglevel| {
+				process_argument("log-level", &matches, |loglevel| {
 					match loglevel.to_lowercase().as_str() {
 						"silly" => lock.logger.set_level(LogLevel::Silly),
 						"debug" => lock.logger.set_level(LogLevel::Debug),
