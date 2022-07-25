@@ -19,7 +19,7 @@ The parser itself is also available as a separate crate - [lavendeux-parser](htt
 It also supports a few command line options:
 
 - config: Change the configuration directory (defaults to ~/.lavendeux)
-- log-level: Change the logging level - useful for debugging issues (defaults to ~/.lavendeux)
+- log-level: Change the logging level - useful for debugging issues (defaults to warning)
 
 #### Extensions
 Extend Lavendeux's featureset with [extensions](http://rscarson.github.io/Lavendeux/extensions). Extensions are written in javascript, sandboxed environment, with no network or host access.
