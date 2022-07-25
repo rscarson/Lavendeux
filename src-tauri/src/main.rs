@@ -42,24 +42,17 @@ pub use parser::*;
 mod autostart;
 pub use autostart::*;
 
-//#[cfg(debug_assertions)]
-//const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Debug;
+const INSTANCE_LOCK: &str = "lavendeux-instance-lock";
 
-//#[cfg(not(debug_assertions))]
+#[cfg(debug_assertions)]
+const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Debug;
+
+#[cfg(not(debug_assertions))]
 const DEFAULT_LOGLEVEL: logs::LogLevel = logs::LogLevel::Error;
 
-fn main() {
-	// Initialize base state
-	let instance = SingleInstance::new("lavendeux-instance-lock").unwrap();
-	let config = settings::Settings::new();
-	let mut state = State {
-		settings: config.clone(),
-		logger: logs::LogManager::new(config.logname.as_str(), DEFAULT_LOGLEVEL),
-		parser: ParserState::new(),
-		history: Vec::new(),
-	};
-
-	let app = tauri::Builder::default()
+/// Setup tauri app
+fn setup_app() -> tauri::App {
+	tauri::Builder::default()
 	// Setup application state
 		.manage(SharedState(Mutex::new(state.clone())))
 	// Setup main window menu
@@ -77,9 +70,12 @@ fn main() {
 			logs::get_logs
 		])
 		.build(tauri::generate_context!())
-		.expect("error while running tauri application");
-	
-	// Instance lock
+		.expect("error while running tauri application")
+}
+
+// Ensure single instance
+fn instance_lock() -> SingleInstance {
+	let instance = SingleInstance::new(INSTANCE_LOCK).unwrap();
 	if !instance.is_single() {
 		let w = MainWindow::new(app.handle()).unwrap();
 		w.hide().ok();
@@ -96,6 +92,31 @@ fn main() {
 			handle.exit(0);
 		});
 	}
+}
+
+/// Process a commandline argument
+fn process_argument(argument: &str, handler: Fn(&str)) {
+	let arg_match = matches.args.get("config").unwrap();
+	if arg_match.occurrences > 0 {
+		handler(config_path.value.as_str().unwrap());
+	}
+}
+
+fn main() {
+	// Initialize base state
+	let config = settings::Settings::new();
+	let mut state = State {
+		logger: logs::LogManager::new(config.logname.as_str(), DEFAULT_LOGLEVEL),
+		parser: ParserState::new(),
+		settings: config.clone(),
+		history: Vec::new(),
+	};
+
+	// Configure tauri app
+	let app = setup_app();
+	
+	// Instance lock
+	instance_lock();
 		
 	app.run(move |app_handle, e| match e {
 		// Runs when the application starts
@@ -109,19 +130,16 @@ fn main() {
 				let matches = get_matches(app_handle.config().tauri.cli.as_ref().unwrap(), app_handle.package_info()).unwrap();
 
 				// Configuration path
-				let config_path = matches.args.get("config").unwrap();
-				if config_path.occurrences > 0 {
-					let filename = config_path.value.as_str().unwrap();
- 					lock.settings.filename = filename.to_string();
+				process_argument("config", |filename| {
+				lock.settings.filename = filename.to_string();
 					if let Ok(new_settings) = read_settings(Some(filename)) {
 						lock.settings = new_settings
 					}
-				}
+				});
 
 				// Debug level
-				let loglevel = matches.args.get("log-level").unwrap();
-				if loglevel.occurrences > 0 {
-					match config_path.value.as_str().unwrap().to_lowercase().as_str() {
+				process_argument("log-level", |loglevel| {
+					match loglevel.to_lowercase().as_str() {
 						"silly" => lock.logger.set_level(LogLevel::Silly),
 						"debug" => lock.logger.set_level(LogLevel::Debug),
 						"warning" => lock.logger.set_level(LogLevel::Warning),
@@ -129,18 +147,12 @@ fn main() {
 						"critical" => lock.logger.set_level(LogLevel::Critical),
 						_ => {}
 					}
-
-					let filename = config_path.value.as_str().unwrap();
- 					lock.settings.filename = filename.to_string();
-					if let Ok(new_settings) = read_settings(Some(filename)) {
-						lock.settings = new_settings
-					}
-				}
+				});
 				
 				lock.logger.debug(&app_handle, "Started Lavendeux");
 			}
 
-
+			// Await ready signal
 			let app_handle_ = app_handle.clone();
 			app_handle.listen_global("ready", move |_| {
 				// Prepare error window
