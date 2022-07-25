@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Routes, Route} from "react-router-dom";
-import { listen } from './include/tauri';
+import { listen, emit } from './include/tauri';
 
 import MainWindow from './components/main_window';
 import Logs from './components/logs';
@@ -18,6 +18,8 @@ function App() {
 				document.documentElement.classList.remove('dark-theme');
 			}
 		});
+
+		emit("ready", "payload");
 	}, []);
 
 	return (

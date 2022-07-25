@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { emit, listen } from '../include/tauri';
+import { listen } from '../include/tauri';
 
 import Help from './help';
 import History from './history';
@@ -14,7 +14,6 @@ function MainWindow() {
 	const [activeTab, setActiveTab] = useState('history');
 
 	useEffect(() => {
-		emit("ready", "payload");
 		listen('switch_tab', event => {
 			setActiveTab(event.payload.toLowerCase());
 		});

@@ -1,7 +1,7 @@
-#![cfg_attr(
-	all(not(debug_assertions), target_os = "windows"),
-	windows_subsystem = "windows"
-)]
+//#![cfg_attr(
+//	all(not(debug_assertions), target_os = "windows"),
+//	windows_subsystem = "windows"
+//)]
 
 use std::{thread, time};
 use tauri::api::cli::{ Matches, get_matches };
@@ -152,12 +152,14 @@ fn main() {
 			app_handle.listen_global("ready", move |_| {
 				// Prepare error window
 				match ErrorWindow::new(app_handle_.clone()) {
-					Some(w) => w.show_message(
-						"Ready to go!", 
-						&format!("Solve highlighted equations with {}", settings::shortcut_name(&settings_)), 
-						"success"
-					).ok(),
-					None => Some(())
+					Some(w) => {
+						w.show_message(
+							"Ready to go!", 
+							&format!("Solve highlighted equations with {}", settings::shortcut_name(&settings_)), 
+							"success"
+						).ok();
+					},
+					None => {}
 				};
 	
 				// Apply default settings

@@ -78,10 +78,7 @@ impl Tray {
                     },
     
                     "exit" => {
-                        let app_ = app.clone();
-                        std::thread::spawn(move || {
-                            app_.exit(0);
-                        });
+                        app.clone().exit(0);
                     },
     
                     _ => {
