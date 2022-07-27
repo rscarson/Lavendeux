@@ -33,6 +33,10 @@ function Settings(props) {
 
 			setSettings(event.payload);
 		});
+		
+        run("get_settings")
+        .then(e => {setSettings(e)})
+        .catch(err => console.log(`Error: ${err}`));
 	}, []);
 
 	function updateSettings(key, value) {

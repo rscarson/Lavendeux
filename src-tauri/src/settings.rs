@@ -28,6 +28,8 @@ const DEFAULT_AUTOPASTE : bool = false;
 pub struct Settings {
 	#[serde(default)]
 	pub filename: String,
+	
+	#[serde(default)]
 	pub logname: String,
 
 	pub auto_paste: bool,
@@ -141,6 +143,21 @@ pub fn format_shortcut(state: tauri::State<SharedState>) -> Result<String, Strin
 	}
 }
 
+/// Return current application settings
+/// 
+/// # Arguments
+/// * `_app_handle` - AppHandle
+/// * `state` - Application state
+#[tauri::command]
+pub fn get_settings(_app_handle: AppHandle, state: tauri::State<SharedState>) -> Option<Settings> {
+	match state.0.lock().ok() {
+		Some(lock) => {
+			Some(lock.settings.clone())
+		},
+		None => None
+	}
+}
+
 /// Update the current application settings
 /// 
 /// # Arguments
@@ -149,8 +166,8 @@ pub fn format_shortcut(state: tauri::State<SharedState>) -> Result<String, Strin
 /// * `settings` - Application settings
 #[tauri::command]
 pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, settings: Settings) -> Result<Settings, String> {
-	match state.0.lock().ok() {
-		Some(mut lock) => {
+	match state.0.try_lock() {
+		Ok(mut lock) => {
 			lock.logger.debug(&app_handle, "Updating settings");
 
 			// Update keyboard shortcut
@@ -194,14 +211,19 @@ pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, 
 			
 			// Lock in settings
 			lock.settings = settings.clone();
+			lock.logger.debug(&app_handle, "Emitted settings_updated event");
 			app_handle.emit_all("settings", settings.clone()).unwrap();
 
 			if let Err(e) = write_settings(&settings) {
 				lock.logger.error(&app_handle, &format!("Error writing settings to '{}': {}", settings.filename.clone(), e));
 			}
+
 			Ok(settings)
 		},
 
-		None => Err("Could not lock settings object".to_string())
+		Err(e) => {
+			println!("Could not lock state: {}", e);
+			Err("Could not lock settings object".to_string())
+		}
 	}
 }

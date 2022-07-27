@@ -48,16 +48,10 @@ fn handle_shortcut(app_handle: AppHandle, handler: fn(AppHandle)) {
 pub fn bind_shortcut(app_handle: tauri::AppHandle, shortcut: &str, default_shortcut: &str, handler: fn(AppHandle)) -> Option<String> {
 	let mut gsm = app_handle.global_shortcut_manager();
 	gsm.unregister_all().ok()?;
-	
 	let mut _app_handle = app_handle.clone();
 	match gsm.register(shortcut, move || handle_shortcut(_app_handle.clone(), handler)) {
 		Ok(_) => None,
 		Err(_) => {
-            let state: tauri::State<SharedState> = app_handle.state();
-            if let Ok(mut lock) = state.0.lock() {
-                lock.logger.debug(&app_handle, "Invalid shortcut, registering default shortcut");
-            }
-
 			// Error - put default shortcut back in
 	        _app_handle = app_handle.clone();
 			gsm.register(default_shortcut, move || handle_shortcut(_app_handle.clone(), handler)).ok()?;

@@ -63,7 +63,7 @@ fn setup_app(state: &State) -> tauri::App {
 		.on_system_tray_event(Tray::handle_event)
 	// Add handlers
 		.invoke_handler(tauri::generate_handler![
-			settings::update_settings, settings::format_shortcut,
+			settings::update_settings, settings::get_settings, settings::format_shortcut,
 			windows::hide_errorwindow, history::clear_history, windows::show_history_tab,
 			extensions::import_extension, extensions::disable_extension, 
 			extensions::reload_all_extensions, extensions::open_extensions_dir,
@@ -146,6 +146,12 @@ fn main() {
 				
 				lock.logger.debug(&app_handle, "Started Lavendeux");
 			}
+			
+			// Apply default settings
+			match settings::update_settings(app_handle.clone(), app_handle.clone().state(), settings_.clone()) {
+				Ok(_) => {},
+				Err(e) => println!("Could not update settings: {}", e)
+			};
 
 			// Await ready signal
 			let app_handle_ = app_handle.clone();
@@ -160,12 +166,6 @@ fn main() {
 						).ok();
 					},
 					None => {}
-				};
-	
-				// Apply default settings
-				match settings::update_settings(app_handle_.clone(), app_handle_.clone().state(), settings_.clone()) {
-					Ok(_) => {},
-					Err(e) => println!("{}", e)
 				};
 			});
 		},
