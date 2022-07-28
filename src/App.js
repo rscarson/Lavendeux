@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Routes, Route} from "react-router-dom";
-import { run, emit } from './include/tauri';
+import { run, emit, listen } from './include/tauri';
 
 import MainWindow from './components/main_window';
 import Logs from './components/logs';
@@ -9,20 +9,24 @@ import './App.css'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+function set_theme(dark) {
+	if (dark) {
+		document.documentElement.classList.add('dark-theme');
+	} else {
+		document.documentElement.classList.remove('dark-theme');
+	}
+}
+
 function App() {
 	useEffect(() => {		
         run("get_settings")
-        .then(e => {
-			if (e.dark) {
-				document.documentElement.classList.add('dark-theme');
-			} else {
-				document.documentElement.classList.remove('dark-theme');
-			}
-		})
+        .then(e => set_theme(e.dark))
         .catch(err => console.log(`Error: ${err}`));
 
 		emit("ready", "payload");
 	}, []);
+	
+	listen('settings', event => set_theme(event.payload.dark));
 
 	return (
 		<Routes>

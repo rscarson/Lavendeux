@@ -26,6 +26,15 @@
 	border: none !important;
 }
 
+.setting-name {
+	color: #000;
+	margin-bottom: 0;
+}
+
+.setting-label {
+	color: #000;
+}
+
 body {
 	background: none !important;
 }

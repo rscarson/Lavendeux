@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Row, Col, Button, ListGroup, ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { listen, run } from '../include/tauri';
 
 // Range of values for the shortcut key
@@ -54,27 +54,29 @@ function Settings(props) {
 	 */
 	function renderClipboardMode() {
 		return (
-			<Card>
-				<Card.Body>
-					<Card.Title>Clipboard Mode</Card.Title>
-					<div className="form-check">
-						<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOn" 
-							checked={settings.auto_paste} onChange={e => updateSettings("auto_paste", true)} />
-						<label className="form-check-label" htmlFor="autopasteOn">
-						The keyboard-shortcut will parse and replace highlighted text, bypassing the clipboard
-						</label>
-					</div>
-		
-					<div className="form-check">
-						<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOff" 
-							checked={!settings.auto_paste} onChange={e => updateSettings("auto_paste", false)} />
-						<label className="form-check-label" htmlFor="autopasteOff">
-						The keyboard-shortcut will parse the clipboard's contents and replace it with the answer 
-						</label>
-					</div>
+			<>
+				<h5 className="setting-name">Clipboard Mode</h5>
+				<p className="theme-p">
+					<small><strong>
+						When the keyboard-shortcut is pressed, determines where text is pulled from
+					</strong></small>
+				</p>
+				<div className="form-check">
+					<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOn" 
+						checked={settings.auto_paste} onChange={e => updateSettings("auto_paste", true)} />
+					<label className="form-check-label setting-label" htmlFor="autopasteOn">
+					Replace highlighted text, bypassing the clipboard
+					</label>
+				</div>
 
-				</Card.Body>
-			</Card>
+				<div className="form-check">
+					<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOff" 
+						checked={!settings.auto_paste} onChange={e => updateSettings("auto_paste", false)} />
+					<label className="form-check-label setting-label" htmlFor="autopasteOff">
+					Replace clipboard contents
+					</label>
+				</div>
+			</>
 		);
 	}
 
@@ -84,27 +86,70 @@ function Settings(props) {
 	 */
 	function renderErrorMode() {
 		return (
-			<Card>
-				<Card.Body>
-					<Card.Title>Error Handling Mode</Card.Title>
-		
-					<div className="form-check">
-						<input className="form-check-input" type="radio" name="silentErrors" id="silentErrorsOff" 
-							checked={!settings.silent_errors} onChange={e => updateSettings("silent_errors", false)} />
-						<label className="form-check-label" htmlFor="silentErrorsOff">
-						Errors will be logged, and appears as a popup message
-						</label>
-					</div>
-		
-					<div className="form-check">
-						<input className="form-check-input" type="radio" name="silentErrors" id="silentErrorsOn" 
-							checked={settings.silent_errors} onChange={e => updateSettings("silent_errors", true)} />
-						<label className="form-check-label" htmlFor="silentErrorsOn">
-						Errors will be logged, but will otherwise be silent
-						</label>
-					</div>
-				</Card.Body>
-			</Card>
+			<>
+				<h5 className="setting-name">Silent Errors</h5>
+				<p className="setting-description theme-p">
+					<small><strong>
+						If a problem occurs parsing an expression, suppresses the popup message
+					</strong></small>
+				</p>
+				<ButtonGroup>
+					<ToggleButton size="sm" variant="outline-danger" id="silentErrorsOff" key="off" type="radio" name="silentErrors" 
+						checked={!settings.silent_errors} onChange={e => updateSettings("silent_errors", false)}>Off</ToggleButton>
+					<ToggleButton size="sm" variant="outline-success" id="silentErrorsOn" key="on" type="radio" name="silentErrors" 
+						checked={settings.silent_errors} onChange={e => updateSettings("silent_errors", true)}>On</ToggleButton>
+				</ButtonGroup>
+			</>
+		);
+	}
+
+	/**
+	 * Render the autostart settings
+	 * @returns Rendered data
+	 */
+	function renderAutostart() {
+		return (
+			<>
+				<h5 className="setting-name">Start Automatically</h5>
+				<p className="setting-description theme-p">
+					<small><strong>
+						Opens lavendeux automatically when logging in to your computer
+					</strong></small>
+				</p>
+				<ButtonGroup>
+					<ToggleButton size="sm" variant="outline-danger" id="autostartOff" key="off" type="radio" name="autostart" 
+						checked={!settings.autostart} onChange={e => updateSettings("autostart", false)}>Off</ToggleButton>
+					<ToggleButton size="sm" variant="outline-success" id="autostartOn" key="on" type="radio" name="autostart" 
+						checked={settings.autostart} onChange={e => updateSettings("autostart", true)}>On</ToggleButton>
+				</ButtonGroup>
+			</>
+		);
+	}
+
+	/**
+	 * Render the theme settings
+	 * @returns Rendered data
+	 */
+	function renderTheme() {
+		return (
+			<>
+				<h5 className="setting-name">Theme</h5>
+				<p className="setting-description theme-p">
+					<small><strong>
+						Visual style for the settings window
+					</strong></small>
+				</p>
+				<div className="form-group">
+					<label className="setting-label">
+						<input type="radio" name="dark" autocomplete="off" checked={!settings.dark}
+							onChange={e => updateSettings("dark", false)} /> Light
+					</label><br/>
+					<label className="setting-label">
+						<input type="radio" name="dark" autocomplete="off" checked={settings.dark}
+							onChange={e => updateSettings("dark", true)} /> Dark
+					</label>
+				</div>
+			</>
 		);
 	}
 
@@ -114,60 +159,34 @@ function Settings(props) {
 	 */
 	function renderKeyboardShortcut() {
 		return (
-			<Card>
-				<Card.Body>
-					<Card.Title>Keyboard Shortcut</Card.Title>
-					<Row>
-						<Col sm="4" key={"mod"}>
-							<div className="form-group">
-								<select className="form-control" value={shortcutModifier}
-									onChange={e => {setShortcutModifier(e.target.value); updateSettings("shortcut", `${e.target.value}+${shortcutKey}`)}}>
-
-									{mod_values.map(v => (
-										<option key={v.key} value={v.key}>{v.name}</option>
-									))}
-								</select>
-							</div>
-						</Col>
-						<Col sm="4" key={"key"}>
-							<div className="form-group">
-								<select className="form-control" value={shortcutKey}
-									onChange={e => {setShortcutKey(e.target.value); updateSettings("shortcut", `${shortcutModifier}+${e.target.value}`)}}>
-
-									{keys.map(v => (
-										<option key={v} value={v}>{v}</option>
-									))}
-								</select>
-							</div>
-						</Col>
-					</Row>
-				</Card.Body>
-			</Card>
-		);
-	}
-
-	function renderMisc() {
-		return (
-			<Card>
-				<Card.Body>
-				<Card.Title>Application Settings</Card.Title>
-				
+			<>
+				<h5 className="setting-name">Keyboard Shortcut</h5>
+				<p className="setting-description theme-p">
+					<small><strong>
+						Keyboard shortcut
+					</strong></small>
+				</p>
 				<Row>
-					<Col sm="8">
-					<div className="form-group">
-						<label>
-							<input type="checkbox" autocomplete="off" checked={settings.autostart}
-								onChange={e => updateSettings("autostart", e.currentTarget.checked)} /> Start Lavendeux Automatically
-						</label><br/>
-						<label>
-							<input type="checkbox" autocomplete="off" checked={settings.dark}
-								onChange={e => updateSettings("dark", e.currentTarget.checked)} /> Dark Theme
-						</label>
-					</div>
+					<Col className="form-group">
+						<select className="form-control" value={shortcutModifier}
+							onChange={e => {setShortcutModifier(e.target.value); updateSettings("shortcut", `${e.target.value}+${shortcutKey}`)}}>
+
+							{mod_values.map(v => (
+								<option key={v.key} value={v.key}>{v.name}</option>
+							))}
+						</select>
+					</Col>
+					<Col className="form-group">
+						<select className="form-control" value={shortcutKey}
+							onChange={e => {setShortcutKey(e.target.value); updateSettings("shortcut", `${shortcutModifier}+${e.target.value}`)}}>
+
+							{keys.map(v => (
+								<option key={v} value={v}>{v}</option>
+							))}
+						</select>
 					</Col>
 				</Row>
-				</Card.Body>
-			</Card>
+			</>
 		);
 	}
 
@@ -177,21 +196,18 @@ function Settings(props) {
 	 */
 	function renderExtensionDir() {
 		return (
-			<Card>
-				<Card.Body>
-				<Card.Title>Extension directory</Card.Title>
-				
-				<Row>
-					<Col sm="8">
-					<div className="form-group">
-						<input type="text" className="form-control" placeholder="Path to extensions" value={settings.extension_dir} 
-							onChange={e => updateSettings("extension_dir", e.target.value)}
-						/>
-					</div>
-					</Col>
-				</Row>
-				</Card.Body>
-			</Card>
+			<>
+				<h5 className="setting-name">Extension directory</h5>
+				<p className="setting-description theme-p">
+					<small><strong>
+						Imported extensions will be copied to this directory
+					</strong></small>
+				</p>
+				<div className="form-group">
+					<input type="text" className="form-control" placeholder="Path to extensions" value={settings.extension_dir} 
+						onChange={e => updateSettings("extension_dir", e.target.value)} />
+				</div>
+			</>
 		);
 	}
 
@@ -201,24 +217,26 @@ function Settings(props) {
 	 */
 	function renderSaveButton() {
 		return (
-			<div style={{paddingBottom: '15px'}}>
-				<Button variant="primary" onClick={() => run("update_settings", {settings: settings})}>
-					Save
-				</Button>
-			</div>
+			<Button variant="outline-success" size="sm"  onClick={() => run("update_settings", {settings: settings})}>
+				Save Changes
+			</Button>
 		);
 	}
 
 	return (
 		<div className="nav-content">
-			{renderSaveButton()}
-			{renderClipboardMode()}
-			{renderErrorMode()}
-			{renderMisc()}
-			{renderKeyboardShortcut()}
-			{renderExtensionDir()}
+			<ListGroup variant="flush">
+                <ListGroup.Item>{renderSaveButton()}</ListGroup.Item>
 
-			{renderSaveButton()}
+                <ListGroup.Item>{renderClipboardMode()}</ListGroup.Item>
+                <ListGroup.Item>{renderErrorMode()}</ListGroup.Item>
+                <ListGroup.Item>{renderKeyboardShortcut()}</ListGroup.Item>
+                <ListGroup.Item>{renderAutostart()}</ListGroup.Item>
+                <ListGroup.Item>{renderTheme()}</ListGroup.Item>
+                <ListGroup.Item>{renderExtensionDir()}</ListGroup.Item>
+				
+                <ListGroup.Item>{renderSaveButton()}</ListGroup.Item>
+			</ListGroup>
 		</div>
 	);
 }

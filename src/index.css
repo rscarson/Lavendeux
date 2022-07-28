@@ -7,6 +7,10 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.nav-link.active {
+	color: #000 !important;
+}
+
 .dark-theme, .dark-theme ul, .dark-theme li, .dark-theme .nav-link.active, .dark-theme .list-group-item {
 	background-color: #000 !important;
 }
@@ -19,6 +23,10 @@ body {
 	color: #FFF;
 }
 
-.dark-theme table, .dark-theme .nav-link.active, .dark-theme .btn-dark, .dark-theme .arrow-button, .dark-theme i, .dark-theme td {
+.dark-theme .list-group-item {
+	border-color: #666;
+}
+
+.dark-theme table, .dark-theme .nav-link.active, .dark-theme .btn-dark, .dark-theme .arrow-button, .dark-theme i, .dark-theme td, .dark-theme .setting-name, .dark-theme .setting-label {
 	color: #FFF !important;
 }

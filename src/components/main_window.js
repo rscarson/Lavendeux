@@ -7,7 +7,7 @@ import Extensions from './extensions';
 import Settings from './settings';
 import '../App.css'
 
-import { Tabs, Tab } from 'react-bootstrap';
+import { Tabs, Tab, Navbar, Nav, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function MainWindow() {
@@ -19,25 +19,34 @@ function MainWindow() {
 		});
 	}, []);
 
-	return (
-        <Tabs activeKey={activeTab} onSelect={k => setActiveTab(k)} id="main-nav" className="mb-3 main-nav fixed-top">
-            <Tab className="nav-tab" eventKey="history" title="History">
-                <History />
-            </Tab>
+	return (<>
+        <Tab.Container id="left-tabs-example" defaultActiveKey='history'>
+            <Nav className="me-auto" style={{"borderBottom": "1px solid #666"}}>
+                <Nav.Link href="#history" eventKey="history">History</Nav.Link>
+                <Nav.Link href="#extensions" eventKey="extensions">Extensions</Nav.Link>
+                <Nav.Link href="#settings" eventKey="settings">Settings</Nav.Link>
+                <Nav.Link href="#help" eventKey="help">Help</Nav.Link>
+            </Nav>
+            <Tab.Content>
+                <br />
+                <Tab.Pane eventKey="history" title="History">
+                    <History />
+                </Tab.Pane>
 
-            <Tab className="nav-tab" eventKey="extensions" title="Extensions">
-                <Extensions />
-            </Tab>
+                <Tab.Pane eventKey="extensions" title="Extensions">
+                    <Extensions />
+                </Tab.Pane>
 
-            <Tab className="nav-tab" eventKey="settings" title="Settings">
-                <Settings />
-            </Tab>
+                <Tab.Pane eventKey="settings" title="Settings">
+                    <Settings />
+                </Tab.Pane>
 
-            <Tab className="nav-tab" eventKey="help" title="Help">
-                <Help />
-            </Tab>
-        </Tabs>
-	)
+                <Tab.Pane eventKey="help" title="Help">
+                    <Help />
+                </Tab.Pane>
+            </Tab.Content>
+        </Tab.Container>
+    </>)
 }
 
 export default MainWindow

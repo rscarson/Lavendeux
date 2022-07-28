@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table } from 'react-bootstrap';
+import { Button, Table, ListGroup } from 'react-bootstrap';
 import { openDialog, importExtension, disableExtension, listen, run } from '../include/tauri';
 
 /**
@@ -60,31 +60,31 @@ function Extensions(props) {
 
 	return (
 		<div className="nav-content">
-			<p className="theme-p">
-				Extensions are snippets of javascript that can be used to add functionality to Lavendeux.<br/>
-				The extensions are run in a secure sandboxed environment.
-			</p>
-			<p className="theme-p">For an example of how to write an extension, please see the included examples.</p>
-			<Button variant="outline-primary" size="sm" onClick={e => importFile()}>Import Extension</Button>&nbsp;
-			<Button variant="outline-success" size="sm" onClick={e => run("reload_all_extensions")}>Reload Extensions</Button>&nbsp;
-			<Button variant="outline-secondary" size="sm" onClick={e => run("open_extensions_dir")}>Open Extensions Directory</Button>
-
-			<Table striped hover>
-				<thead>
-					<tr>
-						<th>Extension</th>
-						<th>About</th>
-						<th>Author</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					{extensions.length 
-                        ? extensions.map(extension => renderExtensionRow(extension)) 
-                        : renderExtensionsEmpty()
-                    }
-				</tbody>
-			</Table>
+            <ListGroup variant="flush">
+                <ListGroup.Item>
+                    <Button variant="outline-secondary" size="sm" onClick={e => importFile()}>Import Extension</Button>&nbsp;
+                    <Button variant="outline-secondary" size="sm" onClick={e => run("reload_all_extensions")}>Reload Extensions</Button>&nbsp;
+                    <Button variant="outline-secondary" size="sm" onClick={e => run("open_extensions_dir")}>Open Extensions Directory</Button>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                    <Table striped hover>
+                        <thead>
+                            <tr>
+                                <th>Extension</th>
+                                <th>About</th>
+                                <th>Author</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {extensions.length 
+                                ? extensions.map(extension => renderExtensionRow(extension)) 
+                                : renderExtensionsEmpty()
+                            }
+                        </tbody>
+                    </Table>
+                </ListGroup.Item>
+            </ListGroup>
 		</div>
 	);
 }
