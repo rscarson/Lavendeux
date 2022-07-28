@@ -50,10 +50,14 @@ pub fn bind_shortcut(app_handle: tauri::AppHandle, shortcut: &str, default_short
 	gsm.unregister_all().ok()?;
 	let mut _app_handle = app_handle.clone();
 	match gsm.register(shortcut, move || handle_shortcut(_app_handle.clone(), handler)) {
-		Ok(_) => None,
-		Err(_) => {
+		Ok(_) => {
+            println!("Registered shortcut: {}", shortcut);
+            None
+        },
+		Err(e) => {
 			// Error - put default shortcut back in
 	        _app_handle = app_handle.clone();
+            println!("Could not register shortcut: {}", e);
 			gsm.register(default_shortcut, move || handle_shortcut(_app_handle.clone(), handler)).ok()?;
 			Some("invalid shortcut".to_string())
 		}
