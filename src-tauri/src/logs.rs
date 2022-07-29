@@ -2,7 +2,44 @@ use std::fs::{ OpenOptions };
 use std::io::{ Write };
 use tauri::{ AppHandle, Manager };
 use time::{ OffsetDateTime, format_description::well_known::Rfc2822 };
+use std::path::Path;
+use std::process::Command;
 use crate::state::SharedState;
+use crate::settings::Settings;
+
+#[cfg(all(unix, not(any(target_os="macos", target_os="android", target_os="emscripten"))))]
+const OPEN_DIR_COMMAND : &str = "xdg-open";
+
+#[cfg(target_os="windows")]
+const OPEN_DIR_COMMAND : &str = "explorer";
+
+#[cfg(target_os="macos")]
+const OPEN_DIR_COMMAND : &str = "open";
+
+/// Open the log directory in the system explorer
+/// 
+/// # Arguments
+/// * `state` - Current application state
+#[tauri::command]
+pub fn open_logs_dir(state: tauri::State<SharedState>) -> Option<Settings> {
+	let lock = state.0.lock().ok()?;
+    Command::new(OPEN_DIR_COMMAND)
+        .arg(Path::new(lock.logger.target().as_str()).parent()?)
+        .spawn().ok()?;
+    None
+}
+
+/// Open the log directory in the system explorer
+/// 
+/// # Arguments
+/// * `app_handle` - Application handle
+/// * `state` - Current application state
+#[tauri::command]
+pub fn clear_logs(app_handle: AppHandle, state: tauri::State<SharedState>) {
+    if let Ok(mut lock) = state.0.lock() {
+        lock.logger.clear(&app_handle);
+    }
+}
 
 /// Log levels
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
@@ -104,6 +141,11 @@ impl LogManager {
         }
     }
 
+    pub fn clear(&mut self, app_handle: &AppHandle) {
+        self.buffer.clear();
+        app_handle.emit_all("logs", self.entries()).unwrap();
+    }
+
     /// Change the loglevel for this manager
     /// 
     /// # Arguments
@@ -136,11 +178,14 @@ impl LogManager {
             self.buffer.push(entry);
             println!("{}", fmt);
 
-            if let Ok(mut f) = OpenOptions::new()
-                .append(true)
-                .open(self.target()) {
-            
-                write!(f, "{}\n", fmt).ok();
+            let target_exists = Path::new(&self.target().to_string()).exists();
+            match OpenOptions::new().create(!target_exists).write(true).append(target_exists).open(self.target()) {
+                Ok(mut f) => {
+                    write!(f, "{}\n", fmt).ok();
+                },
+                Err(e) => {
+                    println!("Could not write: {}", e);
+                }
             }
 
 			app_handle.emit_all("logs", self.entries()).unwrap();
