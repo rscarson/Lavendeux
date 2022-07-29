@@ -27,6 +27,10 @@ body {
 	border-color: #666;
 }
 
-.dark-theme table, .dark-theme .nav-link.active, .dark-theme .btn-dark, .dark-theme .arrow-button, .dark-theme i, .dark-theme td, .dark-theme .setting-name, .dark-theme .setting-label {
+.dark-theme dl, .dark-theme table, .dark-theme .nav-link.active, .dark-theme .btn-dark, .dark-theme .arrow-button, .dark-theme i, .dark-theme td, .dark-theme .setting-name, .dark-theme .setting-label {
 	color: #FFF !important;
+}
+
+.main-nav-menu i {
+	color: inherit !important;
 }

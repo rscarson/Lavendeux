@@ -26,17 +26,20 @@
 	border: none !important;
 }
 
-.setting-name {
-	color: #000;
+.row-setting {
 	margin-bottom: 0;
 }
 
-.setting-label {
-	color: #000;
+.setting-toggle-btn {
+	box-shadow: none !important;
 }
 
 body {
 	background: none !important;
+}
+
+.main-nav-menu {
+	border-bottom: 1px solid #666;
 }
 
 #error-window {

@@ -62,9 +62,18 @@ function Extensions(props) {
 		<div className="nav-content">
             <ListGroup variant="flush">
                 <ListGroup.Item>
-                    <Button variant="outline-secondary" size="sm" onClick={e => importFile()}>Import Extension</Button>&nbsp;
-                    <Button variant="outline-secondary" size="sm" onClick={e => run("reload_all_extensions")}>Reload Extensions</Button>&nbsp;
-                    <Button variant="outline-secondary" size="sm" onClick={e => run("open_extensions_dir")}>Open Extensions Directory</Button>
+                    <Button variant="outline-secondary" size="sm" onClick={e => importFile()}>
+                        <i class="bi bi-box-arrow-in-up">&nbsp;</i>
+                        Import Extension
+                    </Button>&nbsp;
+                    <Button variant="outline-secondary" size="sm" onClick={e => run("reload_all_extensions")}>
+                        <i class="bi bi-arrow-clockwise">&nbsp;</i>
+                        Reload Extensions
+                    </Button>&nbsp;
+                    <Button variant="outline-secondary" size="sm" onClick={e => run("open_extensions_dir")}>
+                        <i class="bi bi-folder2-open">&nbsp;</i>
+                        Open Extensions Directory
+                    </Button>
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <Table striped hover>
