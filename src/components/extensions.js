@@ -14,6 +14,8 @@ function Extensions(props) {
 		listen('extensions', event => {
 			setExtensions(event.payload);
 		});
+
+        run("reload_all_extensions");
 	}, []);
 
     /**

@@ -109,7 +109,7 @@ impl MainWindow {
                 LogWindow::new(e.window());
             },
             "about" => {
-                tauri::api::dialog::message(Some(e.window()), "Lavendeux v0.10.0", "Created by @rscarson");
+                tauri::api::dialog::message(Some(e.window()), "Lavendeux", "Created by @rscarson");
             },
 
             _ => {}
