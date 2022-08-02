@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, ListGroup } from 'react-bootstrap';
-import { openDialog, importExtension, disableExtension, listen, run } from '../include/tauri';
+import { Table, ListGroup } from 'react-bootstrap';
+
+import { IconButton } from '../icon_button';
+import { openDialog, listen, run } from '../../include/tauri';
+
+import "./extensions.css"
 
 /**
  * Render the extensions tab
@@ -23,7 +27,7 @@ function Extensions(props) {
      */
 	function importFile() {
 		openDialog()
-			.then(filename => importExtension(filename))
+			.then(filename => run("import_extension", {srcPath: filename}))
 			.catch(e => alert(e));
 	}
 
@@ -38,9 +42,7 @@ function Extensions(props) {
                 <td>{Object.keys(extension.functions).length} functions, {Object.keys(extension.decorators).length} decorators</td>
                 <td>{extension.author}</td>
                 <td>
-                    <Button variant="outline-secondary" size="sm" onClick={e => disableExtension(extension.filename)}>
-                        Disable Extension
-                    </Button>
+			        <IconButton variant="secondary" onClick={() => run("disable_extension", {srcPath: extension.filename})} icon="x-circle" title="Disable" />&nbsp;
                 </td>
             </tr>
         );
@@ -64,18 +66,9 @@ function Extensions(props) {
 		<div className="nav-content">
             <ListGroup variant="flush">
                 <ListGroup.Item>
-                    <Button variant="outline-secondary" size="sm" onClick={e => importFile()}>
-                        <i class="bi bi-box-arrow-in-up">&nbsp;</i>
-                        Import Extension
-                    </Button>&nbsp;
-                    <Button variant="outline-secondary" size="sm" onClick={e => run("reload_all_extensions")}>
-                        <i class="bi bi-arrow-clockwise">&nbsp;</i>
-                        Reload Extensions
-                    </Button>&nbsp;
-                    <Button variant="outline-secondary" size="sm" onClick={e => run("open_extensions_dir")}>
-                        <i class="bi bi-folder2-open">&nbsp;</i>
-                        Open Extensions Directory
-                    </Button>
+			        <IconButton variant="secondary" onClick={() => importFile()} icon="in-up" title="Import Extension" />&nbsp;
+			        <IconButton variant="secondary" onClick={() => run("reload_all_extensions")} icon="arrow-clockwise" title="Reload Extensions" />&nbsp;
+			        <IconButton variant="secondary" onClick={() => run("open_extensions_dir")} icon="folder2-open" title="Open Extensions Directory" />&nbsp;
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <Table striped hover>

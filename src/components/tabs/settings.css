@@ -1,0 +1,7 @@
+.row-setting {
+	margin-bottom: 5px;
+}
+
+.dark-theme .setting-name, .dark-theme .setting-label {
+	color: #FFF !important;
+}

@@ -1,6 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { Row, Col, Button, ListGroup } from 'react-bootstrap';
-import { listen, run } from '../include/tauri';
+import { Row, Col, ListGroup } from 'react-bootstrap';
+
+import { IconButton } from '../icon_button';
+import { listen, run } from '../../include/tauri';
+
+import "./settings.css"
 
 // Range of values for the shortcut key
 const alpha_range = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
@@ -154,11 +158,11 @@ function Settings(props) {
 				
 			<div className="form-group">
 				<label className="setting-label">
-					<input type="radio" name="dark" autocomplete="off" checked={!settings.dark}
+					<input type="radio" name="dark" autoComplete="off" checked={!settings.dark}
 						onChange={e => updateSettings("dark", false)} /> Light Theme
 				</label><br/>
 				<label className="setting-label">
-					<input type="radio" name="dark" autocomplete="off" checked={settings.dark}
+					<input type="radio" name="dark" autoComplete="off" checked={settings.dark}
 						onChange={e => updateSettings("dark", true)} /> Dark Theme
 				</label>
 			</div>
@@ -170,33 +174,33 @@ function Settings(props) {
 	 * @returns Rendered data
 	 */
 	function renderKeyboardShortcut() {
-		return (
-			<dl class="row">
+		return (<>
+			<dl class="row row-setting">
 				<dt class="col-sm-3">Keyboard shortcut</dt>
 				<dd class="col-sm-9">Lorem Ipsum</dd>
-				
-				<Row>
-					<Col className="form-group">
-						<select className="form-control" value={shortcutModifier}
-							onChange={e => {setShortcutModifier(e.target.value); updateSettings("shortcut", `${e.target.value}+${shortcutKey}`)}}>
-
-							{mod_values.map(v => (
-								<option key={v.key} value={v.key}>{v.name}</option>
-							))}
-						</select>
-					</Col>
-					<Col className="form-group">
-						<select className="form-control" value={shortcutKey}
-							onChange={e => {setShortcutKey(e.target.value); updateSettings("shortcut", `${shortcutModifier}+${e.target.value}`)}}>
-
-							{keys.map(v => (
-								<option key={v} value={v}>{v}</option>
-							))}
-						</select>
-					</Col>
-				</Row>
 			</dl>
-		);
+				
+			<Row>
+				<Col className="form-group">
+					<select className="form-control" value={shortcutModifier}
+						onChange={e => {setShortcutModifier(e.target.value); updateSettings("shortcut", `${e.target.value}+${shortcutKey}`)}}>
+
+						{mod_values.map(v => (
+							<option key={v.key} value={v.key}>{v.name}</option>
+						))}
+					</select>
+				</Col>
+				<Col className="form-group">
+					<select className="form-control" value={shortcutKey}
+						onChange={e => {setShortcutKey(e.target.value); updateSettings("shortcut", `${shortcutModifier}+${e.target.value}`)}}>
+
+						{keys.map(v => (
+							<option key={v} value={v}>{v}</option>
+						))}
+					</select>
+				</Col>
+			</Row>
+		</>);
 	}
 
 	/**
@@ -204,16 +208,17 @@ function Settings(props) {
 	 * @returns Rendered data
 	 */
 	function renderExtensionDir() {
-		return (
-			<dl class="row">
+		return (<>
+			<dl class="row row-setting">
 				<dt class="col-sm-3">Extension directory</dt>
 				<dd class="col-sm-9">Imported extensions will be copied to this directory</dd>
-				<div className="form-group">
-					<input type="text" className="form-control" placeholder="Path to extensions" value={settings.extension_dir} 
-						onChange={e => updateSettings("extension_dir", e.target.value)} />
-				</div>
 			</dl>
-		);
+
+			<div className="form-group">
+				<input type="text" className="form-control" placeholder="Path to extensions" value={settings.extension_dir} 
+					onChange={e => updateSettings("extension_dir", e.target.value)} />
+			</div>
+			</>);
 	}
 
 	/**
@@ -222,10 +227,7 @@ function Settings(props) {
 	 */
 	function renderSaveButton() {
 		return (
-			<Button variant="outline-success" size="sm"  onClick={() => run("update_settings", {settings: settings})}>
-				<i class="bi bi-save">&nbsp;</i>
-				Save Changes
-			</Button>
+			<IconButton variant="success" onClick={() => run("update_settings", {settings: settings})} icon="save" title="Save Changes" />
 		);
 	}
 

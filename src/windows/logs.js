@@ -1,26 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Table, ListGroup, Button } from 'react-bootstrap';
+
 import { listen, run } from '../include/tauri';
+import { registerThemeListener, updateTheme } from '../include/theme';
 
 /**
  * Render the log viewer
  * @param {Object} props Component properties
  * @returns Component contents
  */
-function Logs(props) {
+function LogsWindow(props) {
 	const [logs, setLogs] = useState([]);
 
+    /**
+     * Emitted when the window first loads
+     */
 	useEffect(() => {
 		listen('logs', event => {
 			setLogs(event.payload);
 		});
 
-
         run("get_logs")
         .then(e => setLogs(e))
         .catch(err => console.log(`Error: ${err}`));
+        
+        registerThemeListener(document.documentElement);
+        updateTheme(document.documentElement);
 	}, []);
 
+
+    /**
+     * Render a log entry in the table
+     * @param {Object} row 
+     * @returns JSX
+     */
     function renderRow(row) {
         return (     
         <tr key={row.timestamp}>
@@ -31,7 +44,11 @@ function Logs(props) {
         )
     }
 
-    function renderEmptyLog(row) {
+    /**
+     * Render the default placeholder
+     * @returns JSX
+     */
+    function renderEmptyLog() {
         return (     
         <tr>
             <td colSpan={3} className="text-center">
@@ -73,4 +90,4 @@ function Logs(props) {
     </>);
 }
 
-export default Logs;
+export default LogsWindow;

@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Form } from 'react-bootstrap';
-import { ListGroup } from 'react-bootstrap';
-import { helpText } from '../include/help_strings';
-import { run, listen } from '../include/tauri';
+import { Form, ListGroup } from 'react-bootstrap';
 import { getName, getVersion } from '@tauri-apps/api/app';
 
-const example = `
-x = 8 + 3e+2
-x = sqrt(16)
-x**3 @hex
-`.trim();
+import { SampleHTML, ExampleSample } from '../../include/formatter';
+import { run, listen } from '../../include/tauri';
+
+import "./help.css"
 
 /**
  * Render the help tab
@@ -50,11 +46,11 @@ function Help(props) {
 					<p className='theme-p'>
 						Try {autoPaste ? "highlighting" : "copying"} the following block of text, and pressing <kbd>{shortcutName}</kbd>
 					</p>
-					<Form.Control as="textarea" style={{ height: '100px' }} defaultValue={example}></Form.Control>
+					<Form.Control as="textarea" style={{ height: '100px' }} defaultValue={ExampleSample}></Form.Control>
 				</ListGroup.Item>
 				<ListGroup.Item>
 					<div dangerouslySetInnerHTML={
-						{__html: helpText()}
+						{__html: SampleHTML}
 					}></div>
 				</ListGroup.Item>
 			</ListGroup>

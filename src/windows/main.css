@@ -1,0 +1,16 @@
+.main-nav-menu {
+	border-bottom: 1px solid #666;
+}
+
+.main-nav-menu i {
+	color: inherit !important;
+}
+
+.nav-content {
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+.nav-link.active {
+	color: #000 !important;
+}

@@ -1,15 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import { Button, ListGroup, Form, Row, Col, InputGroup, ButtonToolbar } from 'react-bootstrap';
-import { writeClipboard, run, listen } from '../include/tauri';
 
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { IconButton } from '../icon_button';
+import { ExampleSample } from '../../include/formatter';
+import { writeClipboard, run, listen } from '../../include/tauri';
+
+import "./history.css"
 
 const MAX_DISPLAY_LEN = 60;
-const example = `
-x = 8 + 3e+2
-x = sqrt(16)
-x**3 @hex
-`.trim();
 
 /**
  * Shorten a given string
@@ -62,9 +60,7 @@ function History(props) {
                 <ButtonToolbar>
                     <InputGroup>
                         <InputGroup.Text id="btnGroupAddon">{shortenString(entry.expression, MAX_DISPLAY_LEN)}</InputGroup.Text>
-                        <Button variant="outline-secondary" onClick={() => writeClipboard(entry.expression)}>
-                            <i className="icon bi-clipboard"></i>
-                        </Button>
+                        <IconButton variant="secondary" onClick={() => writeClipboard(entry.expression)} icon="clipboard" title="" />
                     </InputGroup>
                     &nbsp;
                     <Button className="arrow-button" variant="dark" disabled>
@@ -74,9 +70,7 @@ function History(props) {
                     {entry.result.Ok ? (
                         <InputGroup>
                             <InputGroup.Text id="btnGroupAddon">{entry.result.Ok}</InputGroup.Text>
-                            <Button variant="outline-secondary" onClick={() => writeClipboard(entry.result.Ok)}>
-                                <i className="icon bi-clipboard"></i>
-                            </Button>
+                            <IconButton variant="secondary" onClick={() => writeClipboard(entry.result.Ok)} icon="clipboard" />
                         </InputGroup>
                     ) : (
                         <InputGroup>
@@ -100,7 +94,7 @@ function History(props) {
                 <Row>
                     <Col sm="3"></Col>
                     <Col sm="6">
-                        <Form.Control as="textarea" style={{ height: '100px' }} defaultValue={example}></Form.Control>
+                        <Form.Control as="textarea" style={{ height: '100px' }} defaultValue={ExampleSample}></Form.Control>
                     </Col>
                     <Col sm="3"></Col>
                 </Row>
@@ -112,10 +106,7 @@ function History(props) {
         <div className="nav-content">
             <ListGroup variant="flush">
                 <ListGroup.Item>
-                    <Button onClick={e => run("clear_history")} variant="outline-secondary" size="sm">
-                        <i class="bi bi-clock-history">&nbsp;</i>
-                        Clear history
-                    </Button>
+                    <IconButton variant="secondary" onClick={() => run("clear_history")} icon="clock-history" title="Clear history" />
                 </ListGroup.Item>
 
                 { history.length 

@@ -1,3 +1,5 @@
+import sampleJSON from '../data/samples.json';
+
 /**
  * Generic code formatter
  * Applies a set of formatting rules to an input string
@@ -170,3 +172,71 @@ export class JavascriptFormatter extends SampleFormatter {
         this.addRule(null, (s) => this.formatWholeSample(s)); 
 	}
 }
+
+export const FormatterInstances = {
+    "lavendeux": new LavendeuxFormatter(),
+    "javascript": new JavascriptFormatter()
+};
+
+/**
+ * A code sample object
+ */
+ export class CodeSample {
+    constructor(name, format, description, code) {
+        this.name = name;
+        this.format = format;
+        this.description = description;
+        this.code = code;
+    }
+
+    /**
+     * Retrieve a code sample from a json object
+     * @param {Object} sample_obj 
+     * @returns Code sample object
+     */
+    static from_json(sample_obj) {
+        return new CodeSample(
+            sample_obj.name, 
+            sample_obj.format,
+            sample_obj.description.join("\n"),
+            sample_obj.code.join("\n")
+        );
+    }
+
+    /**
+     * Retrieve all code samples from a json object
+     * @param {Object} source_obj 
+     * @returns Array of code sample objects
+     */
+    static all_from_json(source_obj) {
+        return source_obj.samples.map(e => this.from_json(e));
+    }
+
+    /**
+     * Formats the code sample's preamble
+     * @returns HTML string
+     */
+    description_to_html() {
+        return `<p>${this.description.replaceAll("\n", "<br/>")}</p>`;
+    }
+
+    /**
+     * Formats the code sample itself
+     * @returns HTML string
+     */
+    code_to_html() {
+        return FormatterInstances[this.format].format(this.code);
+    }
+
+    /**
+     * Formats the code sample
+     * @returns HTML string
+     */
+    to_html() {
+        return `${this.description_to_html()}${this.code_to_html()}`;
+    }
+}
+
+export const AllSamples = CodeSample.all_from_json(sampleJSON);
+export const SampleHTML = AllSamples.map(s => s.to_html()).join("\n");
+export const ExampleSample = sampleJSON.example.join("\n");

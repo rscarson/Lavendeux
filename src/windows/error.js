@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-bootstrap';
+
 import { run, listen } from '../include/tauri';
+
+import './error.css';
 
 /**
  * Render the error model
  * @param {Object} props Component properties
- * @returns Component contents
+ * @returns JSX
  */
-function Error(props) {
+function ErrorWindow(props) {
 	const [error, setError] = useState('');
 	const [errorTitle, setErrorTitle] = useState('Could not parse expression');
 	const [errorVariant, setErrorVariant] = useState('danger');
 
+    /**
+     * Emitted when the window first loads
+     */
 	useEffect(() => {
 		listen('message', errorEvent);
 	}, []);
@@ -49,4 +55,4 @@ function Error(props) {
 	);
 }
 
-export default Error;
+export default ErrorWindow;
