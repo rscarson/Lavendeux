@@ -11,6 +11,10 @@
 	padding-right: 30px;
 }
 
+.dark-theme .nav-content p {
+	color: #FFF;
+}
+
 .nav-link.active {
 	color: #000 !important;
 }

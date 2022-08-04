@@ -42,6 +42,9 @@ pub use parser::*;
 mod autostart;
 pub use autostart::*;
 
+mod language;
+pub use language::*;
+
 const INSTANCE_LOCK: &str = "lavendeux-instance-lock";
 
 #[cfg(debug_assertions)]
@@ -65,9 +68,10 @@ fn setup_app(state: &State) -> tauri::App {
 		.invoke_handler(tauri::generate_handler![
 			settings::update_settings, settings::get_settings, settings::format_shortcut,
 			windows::hide_errorwindow, history::clear_history, windows::show_history_tab,
-			extensions::import_extension, extensions::disable_extension, 
+			extensions::import_extension, extensions::disable_extension, extensions::get_extensions,
 			extensions::reload_all_extensions, extensions::open_extensions_dir,
-			logs::get_logs, logs::open_logs_dir, logs::clear_logs
+			logs::get_logs, logs::open_logs_dir, logs::clear_logs,
+			language::lang_en
 		])
 		.build(tauri::generate_context!())
 		.expect("error while running tauri application")

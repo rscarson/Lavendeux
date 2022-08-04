@@ -11,6 +11,7 @@ import { registerThemeListener, updateTheme } from '../include/theme';
  */
 function LogsWindow(props) {
 	const [logs, setLogs] = useState([]);
+    const [lang, setLang] = useState({});
 
     /**
      * Emitted when the window first loads
@@ -26,6 +27,7 @@ function LogsWindow(props) {
         
         registerThemeListener(document.documentElement);
         updateTheme(document.documentElement);
+        run("lang_en").then(l => setLang(l));
 	}, []);
 
 
@@ -52,7 +54,7 @@ function LogsWindow(props) {
         return (     
         <tr>
             <td colSpan={3} className="text-center">
-                Nothing to display
+                {lang.logview_empty}
             </td>
         </tr>
         )
@@ -63,20 +65,20 @@ function LogsWindow(props) {
             <ListGroup.Item>
                 <Button onClick={e => run("clear_logs")} variant="outline-secondary" size="sm">
                     <i class="bi bi-clock-history">&nbsp;</i>
-                    Clear Log
+                    {lang.logview_btn_clear}
                 </Button>&nbsp;
                     <Button variant="outline-secondary" size="sm" onClick={e => run("open_logs_dir")}>
                         <i class="bi bi-folder2-open">&nbsp;</i>
-                        Open Log Directory
+                        {lang.logview_btn_open}
                     </Button>
             </ListGroup.Item>
             
             <Table className="w-100" striped hover>
                 <thead>
                     <tr>
-                        <th className="col-sm-2">Timestamp</th>
-                        <th>Level</th>
-                        <th>Event</th>
+                        <th className="col-sm-2">{lang.logview_label_timestamp}</th>
+                        <th>{lang.logview_label_level}</th>
+                        <th>{lang.logview_label_event}</th>
                     </tr>
                 </thead>
                 <tbody>

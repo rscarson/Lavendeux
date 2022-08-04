@@ -13,13 +13,17 @@ import "./extensions.css"
  */
 function Extensions(props) {
 	const [extensions, setExtensions] = useState([]);
+    const [lang, setLang] = useState({});
 
 	useEffect(() => {
 		listen('extensions', event => {
 			setExtensions(event.payload);
 		});
 
-        run("reload_all_extensions");
+        run("reload_all_extensions").then(e => {
+			setExtensions(e);
+		});
+        run("lang_en").then(l => setLang(l));
 	}, []);
 
     /**
@@ -39,10 +43,14 @@ function Extensions(props) {
         return (
             <tr key={extension.filename}>
                 <td>{extension.name} <small className="text-muted">v{extension.version}</small></td>
-                <td>{Object.keys(extension.functions).length} functions, {Object.keys(extension.decorators).length} decorators</td>
+                <td>
+                    {Object.keys(extension.functions).length} {lang.extensionview_functions}
+                    , {Object.keys(extension.decorators).length} {lang.extensionview_decorators}
+                </td>
                 <td>{extension.author}</td>
                 <td>
-			        <IconButton variant="secondary" onClick={() => run("disable_extension", {srcPath: extension.filename})} icon="x-circle" title="Disable" />&nbsp;
+			        <IconButton variant="secondary" onClick={() => run("disable_extension", {srcPath: extension.filename})} 
+                        icon="x-circle" title={lang.extensionview_btn_disable} />&nbsp;
                 </td>
             </tr>
         );
@@ -56,7 +64,7 @@ function Extensions(props) {
         return (
             <tr>
                 <td colSpan="4" className="text-center">
-                    <strong>No extensions installed</strong>
+                    <strong>{lang.extensionview_no_extensions}</strong>
                 </td>
             </tr>
         );
@@ -66,17 +74,17 @@ function Extensions(props) {
 		<div className="nav-content">
             <ListGroup variant="flush">
                 <ListGroup.Item>
-			        <IconButton variant="secondary" onClick={() => importFile()} icon="in-up" title="Import Extension" />&nbsp;
-			        <IconButton variant="secondary" onClick={() => run("reload_all_extensions")} icon="arrow-clockwise" title="Reload Extensions" />&nbsp;
-			        <IconButton variant="secondary" onClick={() => run("open_extensions_dir")} icon="folder2-open" title="Open Extensions Directory" />&nbsp;
+			        <IconButton variant="secondary" onClick={() => importFile()} icon="box-arrow-in-up" title={lang.extensionview_btn_import} />&nbsp;
+			        <IconButton variant="secondary" onClick={() => run("reload_all_extensions")} icon="arrow-clockwise" title={lang.extensionview_btn_reload} />&nbsp;
+			        <IconButton variant="secondary" onClick={() => run("open_extensions_dir")} icon="folder2-open" title={lang.extensionview_btn_open} />&nbsp;
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <Table striped hover>
                         <thead>
                             <tr>
-                                <th>Extension</th>
-                                <th>About</th>
-                                <th>Author</th>
+                                <th>{lang.extensionview_extension}</th>
+                                <th>{lang.extensionview_about}</th>
+                                <th>{lang.extensionview_author}</th>
                                 <th></th>
                             </tr>
                         </thead>

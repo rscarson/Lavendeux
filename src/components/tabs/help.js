@@ -17,6 +17,7 @@ function Help(props) {
 	const [version, setVersion] = useState('[...]');
 	const [shortcutName, setShortcutName] = useState("Ctrl+Space");
 	const [autoPaste, setAutoPaste] = useState(true);
+    const [lang, setLang] = useState({});
 
 	useEffect(() => {
 		getName().then(s => setName(s));
@@ -27,6 +28,8 @@ function Help(props) {
             run("format_shortcut")
                 .then(s => setShortcutName(s));
 		});
+        
+        run("lang_en").then(l => setLang(l));
 	}, []);
 
 	return (
@@ -37,14 +40,17 @@ function Help(props) {
 				</ListGroup.Item>
 				<ListGroup.Item>
 					<p className='theme-p'>
-						In Windows, by default the keyboard shortcut (<kbd>{shortcutName}</kbd>) will interpret any currently highlighted text as an expression, 
-						parse that expression, and replace it with the resulting value.
+						{lang.helpview_help_1} (<kbd>{shortcutName}</kbd>) {lang.helpview_help_2}
 					</p>
 					<p className='theme-p'>
-						On other platforms, or when the clipboard mode has been changed, then instead of using highlighted text, {name} will use the contents of the clipboard.
+						{lang.helpview_help_3}
 					</p>
 					<p className='theme-p'>
-						Try {autoPaste ? "highlighting" : "copying"} the following block of text, and pressing <kbd>{shortcutName}</kbd>
+						{autoPaste
+						? lang.historyview_getting_started_highlight
+						: lang.historyview_getting_started_copy
+						}
+						&nbsp;<kbd>{shortcutName}</kbd>
 					</p>
 					<Form.Control as="textarea" style={{ height: '100px' }} defaultValue={ExampleSample}></Form.Control>
 				</ListGroup.Item>

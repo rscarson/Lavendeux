@@ -1,5 +1,6 @@
 use crate::state::SharedState;
 use super::tray::Tray;
+use time::{ OffsetDateTime, format_description::well_known::Rfc2822 };
 use tauri::{AppHandle, Manager};
 
 const MAX_HISTORY_STR_LEN : usize = 50;
@@ -9,6 +10,7 @@ const TRAY_HISTORY_LEN : usize = 5;
 #[derive(Clone, serde::Serialize)]
 pub struct History {
     pub expression: String,
+	pub timestamp: String,
     pub result: Result<String, String>
 }
 
@@ -17,6 +19,20 @@ impl std::fmt::Display for History {
 		let len = if self.expression.len() < MAX_HISTORY_STR_LEN {self.expression.len()} else {MAX_HISTORY_STR_LEN};
         write!(f, "{}", self.expression.clone()[..len].to_string())
     }
+}
+
+impl History {
+	pub fn new(expression: String, result: Result<String, String>) -> Self {
+		let mut h = Self {
+			expression: expression,
+			result: result,
+			timestamp: OffsetDateTime::now_utc()
+			.format(&Rfc2822)
+			.ok().ok_or("----------------------------").unwrap()
+		};
+		h.timestamp = h.timestamp.drain(..(h.timestamp.len() - 6)).collect();
+		h
+	}
 }
 
 /// Clear current history

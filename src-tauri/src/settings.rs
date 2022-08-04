@@ -171,7 +171,7 @@ pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, 
 			lock.logger.debug(&app_handle, "Updating settings");
 
 			// Update keyboard shortcut
-			if let Some(e) = keybind::bind_shortcut(app_handle.clone(), &settings.shortcut, DEFAULT_SHORTCUT, parser::handle_shortcut) {
+			if let Some(e) = keybind::bind_shortcut(&mut lock.logger, app_handle.clone(), &settings.shortcut, DEFAULT_SHORTCUT, parser::handle_shortcut) {
 				lock.logger.error(&app_handle, &format!("Error updating the keyboard shortcut: {}", e));
 				return Err(e);
 			}

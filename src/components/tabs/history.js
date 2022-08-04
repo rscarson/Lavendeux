@@ -32,6 +32,7 @@ function History(props) {
 	const [history, setHistory] = useState([]);
 	const [shortcutName, setShortcutName] = useState("Ctrl+Space");
 	const [autoPaste, setAutoPaste] = useState(true);
+    const [lang, setLang] = useState({});
 
 	useEffect(() => {
 		listen('settings', event => {
@@ -43,6 +44,8 @@ function History(props) {
 		listen('history', event => {
 			setHistory(event.payload.reverse());
 		});
+        
+        run("lang_en").then(l => setLang(l));
 	}, []);
 
     /**
@@ -54,7 +57,7 @@ function History(props) {
         return (
             <ListGroup.Item>
                 <span style={{float: "right"}} className="text-muted">
-                    <small>2022-10-03 03:41:03 PM</small>
+                    <small>{entry.timestamp}</small>
                 </span>
 
                 <ButtonToolbar>
@@ -89,8 +92,14 @@ function History(props) {
     function renderEmptyHistory() {
         return (
             <ListGroup.Item className="text-center">
-                <strong>No history to display.</strong>
-                <p className="theme-p">To get started, try {autoPaste ? "highlighting" : "copying"} the following block of text, and pressing <kbd>{shortcutName}</kbd></p>
+                <strong>{lang.historyview_no_history}</strong>
+                <p className="theme-p">
+                    {autoPaste
+                    ? lang.historyview_getting_started_highlight
+                    : lang.historyview_getting_started_copy
+                    }
+                    &nbsp;<kbd>{shortcutName}</kbd>
+                </p>
                 <Row>
                     <Col sm="3"></Col>
                     <Col sm="6">
@@ -106,7 +115,7 @@ function History(props) {
         <div className="nav-content">
             <ListGroup variant="flush">
                 <ListGroup.Item>
-                    <IconButton variant="secondary" onClick={() => run("clear_history")} icon="clock-history" title="Clear history" />
+                    <IconButton variant="secondary" onClick={() => run("clear_history")} icon="clock-history" title={lang.historyview_btn_clear} />
                 </ListGroup.Item>
 
                 { history.length 

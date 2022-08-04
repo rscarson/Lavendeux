@@ -1,5 +1,6 @@
 use tauri::{AppHandle, Manager};
 use std::path::{PathBuf, Path};
+use lavendeux_parser::Extension;
 use super::settings;
 use crate::state::{State, SharedState};
 use std::process::Command;
@@ -44,18 +45,31 @@ pub fn open_extensions_dir(state: tauri::State<SharedState>) -> Option<settings:
 /// * `app_handle` - AppHandle
 /// * `state` - Current application state
 #[tauri::command]
-pub fn reload_all_extensions(app_handle: AppHandle, state: tauri::State<SharedState>) -> Result<(), String> {
+pub fn reload_all_extensions(app_handle: AppHandle, state: tauri::State<SharedState>) -> Result<Vec<Extension>, String> {
 	match state.0.lock().ok() {
 		Some(mut lock) => {
 			lock.logger.debug(&app_handle, "Reloading extensions");
 			match reload_extensions(app_handle.clone(), &mut lock) {
-				Ok(_) => Ok(()),
+				Ok(_) => Ok(lock.parser.extensions.all()),
 				Err(e) => {
-					
 					lock.logger.error(&app_handle, &format!("Error reloading extensions: {}", e));
 					Err(e)
 				}
 			}
+		},
+		None => Err("Could not access settings".to_string())
+	}
+}
+
+/// Get all extensions
+/// 
+/// # Arguments
+/// * `state` - Current application state
+#[tauri::command]
+pub fn get_extensions(state: tauri::State<SharedState>) -> Result<Vec<Extension>, String> {
+	match state.0.lock().ok() {
+		Some(lock) => {
+			Ok(lock.parser.extensions.all())
 		},
 		None => Err("Could not access settings".to_string())
 	}

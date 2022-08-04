@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Tab, Nav } from 'react-bootstrap';
 
-import { listen, emit } from '../include/tauri';
+import { listen, emit, run } from '../include/tauri';
 import { registerThemeListener, updateTheme } from '../include/theme';
 
 import Help from '../components/tabs/help';
@@ -32,11 +32,11 @@ class WindowTab {
      * Render the nav for a tab
      * @returns JSX
      */
-    render_nav() {
+    render_nav(lang) {
         return (
             <Nav.Link href={`#${this.key}`} eventKey={this.key}>
                 <i class={`bi bi-${this.icon}`}>&nbsp;</i>
-                {this.name}
+                {lang[this.name]}
             </Nav.Link>
         );
     }
@@ -45,21 +45,21 @@ class WindowTab {
      * Render the content for a tab
      * @returns JSX
      */
-    render_content() {
+    render_content(lang) {
         return (
-            <Tab.Pane eventKey={this.key} title={this.name}>
+            <Tab.Pane eventKey={this.key} title={lang[this.name]}>
                 <this.content />
             </Tab.Pane>
         );
     }
 }
 
-const historyTab = new WindowTab('history', 'clock', 'History', History);
-const extensionsTab = new WindowTab('extensions', 'plus', 'Extensions', Extensions);
-const settingsTab = new WindowTab('settings', 'gear', 'Settings', Settings);
-const helpTab = new WindowTab('help', 'question-circle', 'Help', Help);
+const historyTab = new WindowTab('history', 'clock', 'mainview_history', History);
+const extensionsTab = new WindowTab('extensions', 'puzzle', 'mainview_extensions', Extensions);
+const settingsTab = new WindowTab('settings', 'gear', 'mainview_settings', Settings);
+const helpTab = new WindowTab('help', 'question-circle', 'mainview_help', Help);
 
-const defaultTab = historyTab;
+const defaultTab = historyTab; 
 
 /**
  * Main settings window
@@ -67,6 +67,7 @@ const defaultTab = historyTab;
  */
 function MainWindow() {
 	const [activeTab, setActiveTab] = useState(defaultTab.key);
+    const [lang, setLang] = useState({});
 
     /**
      * Emitted when the window first loads
@@ -80,21 +81,23 @@ function MainWindow() {
         updateTheme(document.documentElement);
 
 		emit("ready", "payload");
+
+        run("lang_en").then(l => setLang(l));
 	}, []);
 
 	return (<>
-        <Tab.Container defaultActiveKey={defaultTab.key}>
+        <Tab.Container activeKey={activeTab} defaultActiveKey={defaultTab.key} onSelect={k => setActiveTab(k)}>
             <Nav className="me-auto main-nav-menu">
-                {historyTab.render_nav()}
-                {extensionsTab.render_nav()}
-                {settingsTab.render_nav()}
-                {helpTab.render_nav()}
+                {historyTab.render_nav(lang)}
+                {extensionsTab.render_nav(lang)}
+                {settingsTab.render_nav(lang)}
+                {helpTab.render_nav(lang)}
             </Nav>
             <Tab.Content>
-                {historyTab.render_content()}
-                {extensionsTab.render_content()}
-                {settingsTab.render_content()}
-                {helpTab.render_content()}
+                {historyTab.render_content(lang)}
+                {extensionsTab.render_content(lang)}
+                {settingsTab.render_content(lang)}
+                {helpTab.render_content(lang)}
             </Tab.Content>
         </Tab.Container>
     </>)

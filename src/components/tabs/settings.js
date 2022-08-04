@@ -26,6 +26,7 @@ function Settings(props) {
 	const [shortcutModifier, setShortcutModifier] = useState("CmdOrCtrl");
 	const [shortcutKey, setShortcutKey] = useState("Space");
 	const [settings, setSettings] = useState({});
+    const [lang, setLang] = useState({});
 
 	useEffect(() => {
 		listen('settings', event => {
@@ -41,6 +42,8 @@ function Settings(props) {
         run("get_settings")
         .then(e => {setSettings(e)})
         .catch(err => console.log(`Error: ${err}`));
+		
+        run("lang_en").then(l => setLang(l));
 	}, []);
 
 	function updateSettings(key, value) {
@@ -59,8 +62,8 @@ function Settings(props) {
 	function renderClipboardMode() {
 		return (<>
 			<dl class="row row-setting">
-				<dt class="col-sm-3">Clipboard Mode</dt>
-				<dd class="col-sm-9">Determines where text is pulled from for parsing</dd>
+				<dt class="col-sm-3">{lang.settingview_clipboard_mode}</dt>
+				<dd class="col-sm-9">{lang.settingview_clipboard_mode_desc}</dd>
 			</dl>
 
 			<div className="form-group">
@@ -68,7 +71,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOn" 
 						checked={settings.auto_paste} onChange={e => updateSettings("auto_paste", true)} />
 					<label className="form-check-label setting-label" htmlFor="autopasteOn">
-					Replace highlighted text, bypassing the clipboard
+					{lang.settingview_clipboard_mode_auto}
 					</label>
 				</div>
 
@@ -76,7 +79,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOff" 
 						checked={!settings.auto_paste} onChange={e => updateSettings("auto_paste", false)} />
 					<label className="form-check-label setting-label" htmlFor="autopasteOff">
-					Replace clipboard contents
+					{lang.settingview_clipboard_mode_off}
 					</label>
 				</div>
 			</div>
@@ -90,8 +93,8 @@ function Settings(props) {
 	function renderErrorMode() {
 		return (<>
 			<dl class="row row-setting">
-				<dt class="col-sm-3">Silent Errors</dt>
-				<dd class="col-sm-9" style={{}}>Suppresses the popup message on parsing errors</dd>
+				<dt class="col-sm-3">{lang.settingview_silent_errors}</dt>
+				<dd class="col-sm-9" style={{}}>{lang.settingview_silent_errors_desc}</dd>
 			</dl>
 
 			<div className="form-group">
@@ -99,7 +102,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="silent_errors" id="silent_errorsOff" 
 						checked={!settings.silent_errors} onChange={e => updateSettings("silent_errors", false)} />
 					<label className="form-check-label setting-label" htmlFor="silent_errorsOff">
-					Display all parsing errors
+					{lang.settingview_silent_errors_off}
 					</label>
 				</div>
 
@@ -107,7 +110,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="silent_errors" id="silent_errorsOn" 
 						checked={settings.silent_errors} onChange={e => updateSettings("silent_errors", true)} />
 					<label className="form-check-label setting-label" htmlFor="silent_errorsOn">
-					Log errors, but do not display them
+					{lang.settingview_silent_errors_on}
 					</label>
 				</div>
 			</div>
@@ -121,8 +124,8 @@ function Settings(props) {
 	function renderAutostart() {
 		return (<>
 			<dl class="row row-setting">
-				<dt class="col-sm-3">Start Automatically</dt>
-				<dd class="col-sm-9">Opens lavendeux automatically when logging in to your computer</dd>
+				<dt class="col-sm-3">{lang.settingview_autostart}</dt>
+				<dd class="col-sm-9">{lang.settingview_autostart_desc}</dd>
 			</dl>
 
 			<div className="form-group">
@@ -130,7 +133,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="autostart" id="autostartOff" 
 						checked={!settings.autostart} onChange={e => updateSettings("autostart", false)} />
 					<label className="form-check-label setting-label" htmlFor="autostartOff">
-					Do not start Lavendeix automatically
+					{lang.settingview_autostart_off}
 					</label>
 				</div>
 
@@ -138,7 +141,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="autostart" id="autostartOn" 
 						checked={settings.autostart} onChange={e => updateSettings("autostart", true)} />
 					<label className="form-check-label setting-label" htmlFor="autostartOn">
-					Start Lavendeux when logging in
+					{lang.settingview_autostart_on}
 					</label>
 				</div>
 			</div>
@@ -152,18 +155,18 @@ function Settings(props) {
 	function renderTheme() {
 		return (<>
 			<dl class="row row-setting">
-				<dt class="col-sm-3">Theme</dt>
-				<dd class="col-sm-9">Visual style for the settings window</dd>
+				<dt class="col-sm-3">{lang.settingview_theme}</dt>
+				<dd class="col-sm-9">{lang.settingview_theme_desc}</dd>
 			</dl>
 				
 			<div className="form-group">
 				<label className="setting-label">
 					<input type="radio" name="dark" autoComplete="off" checked={!settings.dark}
-						onChange={e => updateSettings("dark", false)} /> Light Theme
+						onChange={e => updateSettings("dark", false)} /> {lang.settingview_theme_off}
 				</label><br/>
 				<label className="setting-label">
 					<input type="radio" name="dark" autoComplete="off" checked={settings.dark}
-						onChange={e => updateSettings("dark", true)} /> Dark Theme
+						onChange={e => updateSettings("dark", true)} /> {lang.settingview_theme_on}
 				</label>
 			</div>
 		</>);
@@ -176,8 +179,8 @@ function Settings(props) {
 	function renderKeyboardShortcut() {
 		return (<>
 			<dl class="row row-setting">
-				<dt class="col-sm-3">Keyboard shortcut</dt>
-				<dd class="col-sm-9">Lorem Ipsum</dd>
+				<dt class="col-sm-3">{lang.settingview_keyboard_shortcut}</dt>
+				<dd class="col-sm-9">{lang.settingview_keyboard_shortcut_desc}</dd>
 			</dl>
 				
 			<Row>
@@ -210,8 +213,8 @@ function Settings(props) {
 	function renderExtensionDir() {
 		return (<>
 			<dl class="row row-setting">
-				<dt class="col-sm-3">Extension directory</dt>
-				<dd class="col-sm-9">Imported extensions will be copied to this directory</dd>
+				<dt class="col-sm-3">{lang.settingview_extension_dir}</dt>
+				<dd class="col-sm-9">{lang.settingview_extension_dir_desc}</dd>
 			</dl>
 
 			<div className="form-group">
@@ -227,7 +230,7 @@ function Settings(props) {
 	 */
 	function renderSaveButton() {
 		return (
-			<IconButton variant="success" onClick={() => run("update_settings", {settings: settings})} icon="save" title="Save Changes" />
+			<IconButton variant="success" onClick={() => run("update_settings", {settings: settings})} icon="save" title={lang.settingview_save} />
 		);
 	}
 

@@ -1,6 +1,7 @@
 use std::{thread::sleep, time::Duration};
 use tauri::{AppHandle, GlobalShortcutManager, Manager};
 use crate::state::SharedState;
+use crate::logs::LogManager;
 use std::{thread};
 
 #[cfg(target_os="windows")]
@@ -45,19 +46,19 @@ fn handle_shortcut(app_handle: AppHandle, handler: fn(AppHandle)) {
 /// * `shortcut` - New shortcut
 /// * `default_shortcut` - Fallback shortcut
 /// * `handler` - Handler function
-pub fn bind_shortcut(app_handle: tauri::AppHandle, shortcut: &str, default_shortcut: &str, handler: fn(AppHandle)) -> Option<String> {
+pub fn bind_shortcut(logger: &mut LogManager, app_handle: tauri::AppHandle, shortcut: &str, default_shortcut: &str, handler: fn(AppHandle)) -> Option<String> {
 	let mut gsm = app_handle.global_shortcut_manager();
 	gsm.unregister_all().ok()?;
 	let mut _app_handle = app_handle.clone();
 	match gsm.register(shortcut, move || handle_shortcut(_app_handle.clone(), handler)) {
 		Ok(_) => {
-            println!("Registered shortcut: {}", shortcut);
+            logger.debug(&app_handle, &format!("Registered shortcut: {}", shortcut));
             None
         },
 		Err(e) => {
 			// Error - put default shortcut back in
 	        _app_handle = app_handle.clone();
-            println!("Could not register shortcut: {}", e);
+            logger.error(&app_handle, &format!("Could not register shortcut: {}", e));
 			gsm.register(default_shortcut, move || handle_shortcut(_app_handle.clone(), handler)).ok()?;
 			Some("invalid shortcut".to_string())
 		}

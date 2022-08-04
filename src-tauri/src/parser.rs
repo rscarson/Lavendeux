@@ -57,10 +57,10 @@ pub fn do_parse(app_handle: AppHandle) -> Option<Box<dyn Error>> {
 				Ok(token) => {
 					// Got a result - add it to history
 					for line in token.children() {
-						lock.history.push(History {
-							expression: line.input().trim().to_string(),
-							result: Ok(line.text().to_string())
-						});
+						lock.history.push(History::new(
+							line.input().trim().to_string(),
+							Ok(line.text().to_string())
+						));
 						if lock.history.len() > MAX_HISTORY_LEN {
 							lock.history.remove(0);
 						}
@@ -83,10 +83,10 @@ pub fn do_parse(app_handle: AppHandle) -> Option<Box<dyn Error>> {
 					}
 
 					// Push to history
-					lock.history.push(History {
-						expression: input.clone(),
-						result: Err(e.to_string())
-					});
+					lock.history.push(History::new(
+						input.clone(),
+						Err(e.to_string())
+					));
 				}
 			}
 		},

@@ -1,7 +1,8 @@
 use std::{thread, time};
+use crate::language;
 use tauri::{
     AppHandle, Window, Manager, Position, WindowMenuEvent, 
-    Menu, Submenu, CustomMenuItem, MenuItem, PhysicalPosition
+    Menu, Submenu, CustomMenuItem, PhysicalPosition
 };
 
 /// Tabs on the main window
@@ -18,12 +19,13 @@ impl LogWindow {
     /// # Arguments
     /// * `app_handle` - AppHandle
     pub fn new(parent: &Window) -> Option<LogWindow> {
+        let lang = language::lang_en();
         let w = Window::builder(
             parent,
             "logs".to_string(),
             tauri::WindowUrl::App("/logs".into())
         )
-            .title("Log Viewer")
+            .title(lang.logviewer_title)
             .menu(tauri::Menu::new())
             .build().ok()?;
         Some(Self(w))
@@ -88,20 +90,24 @@ impl MainWindow {
 
     /// Create a new menu for the window
     pub fn get_menu() -> Menu {
+        let lang = language::lang_en();
         Menu::new()
-        .add_submenu(Submenu::new("File", Menu::new()
-            .add_native_item(MenuItem::Quit)
+        .add_submenu(Submenu::new(lang.menu_file, Menu::new()
+            .add_item(CustomMenuItem::new("quit", lang.menu_file_quit))
         ))
-        .add_submenu(Submenu::new("Help", Menu::new()
-            .add_item(CustomMenuItem::new("help", "Help"))
-            .add_item(CustomMenuItem::new("log", "View Logs"))
-            .add_item(CustomMenuItem::new("about", "About"))
+        .add_submenu(Submenu::new(lang.menu_help, Menu::new()
+            .add_item(CustomMenuItem::new("help", lang.menu_help_help))
+            .add_item(CustomMenuItem::new("log", lang.menu_help_logs))
+            .add_item(CustomMenuItem::new("about", lang.menu_help_about))
         ))
     }
 
     /// Handle a menu event
     pub fn handle_menu_event(e: WindowMenuEvent) {
         match e.menu_item_id() {
+            "quit" => {
+                e.window().app_handle().exit(0);
+            },
             "help" => {
                 MainWindow::new_with_window(e.window().clone()).show_tab(WindowTabs::Help).ok();
             },

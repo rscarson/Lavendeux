@@ -10,6 +10,6 @@
 	border-color: #666;
 }
 
-.dark-theme dl, .dark-theme table, .dark-theme .nav-link.active, .dark-theme .btn-dark, .dark-theme i, .dark-theme td {
+.dark-theme dl, .dark-theme table, .dark-theme .nav-link.active, .dark-theme .btn-dark, .dark-theme td {
 	color: #FFF !important;
 }
