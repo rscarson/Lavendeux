@@ -11,6 +11,7 @@ use dirs::home_dir;
 
 const DEFAULT_SHORTCUT : &str = "CmdOrCtrl+Space";
 const DEFAULT_CONFIGNAME : &str = "lavendeux.config.json";
+const DEFAULT_LANGUAGE : &str = "en";
 const DEFAULT_LOGNAME : &str = "lavendeux.log";
 const DEFAULT_ROOTDIR : &str = ".lavendeux";
 const DEFAULT_EXTDIR : &str = "extensions";
@@ -35,6 +36,7 @@ pub struct Settings {
 	pub auto_paste: bool,
 	pub silent_errors: bool,
 	pub extension_dir: String,
+	pub language: String,
 	pub shortcut: String,
 
 	pub autostart: bool,
@@ -118,6 +120,7 @@ impl Settings {
 
 					shortcut: DEFAULT_SHORTCUT.to_string(),
 					extension_dir: ext_dir,
+					language: DEFAULT_LANGUAGE.to_string(),
 					silent_errors: DEFAULT_SILENTERRORS,
 					auto_paste: DEFAULT_AUTOPASTE,
 					autostart: false,

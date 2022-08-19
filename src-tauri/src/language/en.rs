@@ -57,6 +57,10 @@ pub fn lang() -> Language {
     
         settingview_extension_dir: "Extension directory",
         settingview_extension_dir_desc: "Imported extensions will be copied to this directory",
+
+        
+        settingview_language: "Language",
+        settingview_language_desc: "Language settings",
     
         settingview_save: "Save Changes",
     
@@ -70,6 +74,8 @@ pub fn lang() -> Language {
         menu_help_about: "About",
         menu_help_logs: "Logs",
         menu_help_help: "Help",
+        menu_tray_settings: "Settings",
+        menu_tray_exit: "Exit",
 
         logviewer_title: "Log Viewer"
     }

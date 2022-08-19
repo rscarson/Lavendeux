@@ -5,7 +5,7 @@ import { IconButton } from '../icon_button';
 import { ExampleSample } from '../../include/formatter';
 import { writeClipboard, run, listen } from '../../include/tauri';
 
-import "./history.css"
+import "./css/history.css"
 
 const MAX_DISPLAY_LEN = 60;
 
@@ -32,7 +32,6 @@ function History(props) {
 	const [history, setHistory] = useState([]);
 	const [shortcutName, setShortcutName] = useState("Ctrl+Space");
 	const [autoPaste, setAutoPaste] = useState(true);
-    const [lang, setLang] = useState({});
 
 	useEffect(() => {
 		listen('settings', event => {
@@ -44,8 +43,6 @@ function History(props) {
 		listen('history', event => {
 			setHistory(event.payload.reverse());
 		});
-        
-        run("lang_en").then(l => setLang(l));
 	}, []);
 
     /**
@@ -53,9 +50,9 @@ function History(props) {
      * @param {Object} entry Entry to render
      * @returns Rendered entry
      */
-    function renderEntry(entry) {
+    function renderEntry(entry, i) {
         return (
-            <ListGroup.Item>
+            <ListGroup.Item key={i}>
                 <span style={{float: "right"}} className="text-muted">
                     <small>{entry.timestamp}</small>
                 </span>
@@ -92,11 +89,11 @@ function History(props) {
     function renderEmptyHistory() {
         return (
             <ListGroup.Item className="text-center">
-                <strong>{lang.historyview_no_history}</strong>
+                <strong>{props.lang.historyview_no_history}</strong>
                 <p className="theme-p">
                     {autoPaste
-                    ? lang.historyview_getting_started_highlight
-                    : lang.historyview_getting_started_copy
+                    ? props.lang.historyview_getting_started_highlight
+                    : props.lang.historyview_getting_started_copy
                     }
                     &nbsp;<kbd>{shortcutName}</kbd>
                 </p>
@@ -114,12 +111,12 @@ function History(props) {
     return (
         <div className="nav-content">
             <ListGroup variant="flush">
-                <ListGroup.Item>
-                    <IconButton variant="secondary" onClick={() => run("clear_history")} icon="clock-history" title={lang.historyview_btn_clear} />
+                <ListGroup.Item key={0}>
+                    <IconButton variant="secondary" onClick={() => run("clear_history")} icon="clock-history" title={props.lang.historyview_btn_clear} />
                 </ListGroup.Item>
 
                 { history.length 
-                    ? history.map(entry => renderEntry(entry)) 
+                    ? history.map((entry, i) => renderEntry(entry, i+1)) 
                     : renderEmptyHistory()
                 }
             </ListGroup>

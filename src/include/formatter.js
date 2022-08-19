@@ -17,7 +17,7 @@ export class CodeFormatter {
      * @param {String} replacement New string to put in
      * @returns str, with selected range replaced
      */
-	replaceAt(str, index, len, replacement) {
+	static replaceAt(str, index, len, replacement) {
 		return str.substring(0, index) + replacement + str.substring(index + len);
 	}
 
@@ -41,27 +41,33 @@ export class CodeFormatter {
      * @param {function(String) : String} handler Handler for formatted replacement
      * @returns Formatted input
      */
-	applyRule(input, search, pattern, handler) {
-		let str = input;
+	applyRule(target, search, rule) {
+		let str = target;
 		let remainder = search;
-		let match; let regexp = pattern;
-
-        // Whole string rule
-        if (regexp === null) {
+		let match; let regexp;
+        
+        // Get the regex ready
+        if (rule.pattern !== null) {
+            regexp = new RegExp(rule.pattern.source, rule.pattern.flags
+                + (rule.pattern.global ? "" : "g")
+                + (rule.pattern.multiline ? "" : "m")
+            );
+        } else {
+            // Whole string rule
             return {
-                result: handler(input),
-                remainder: handler(input)
+                result: rule.handler(target),
+                remainder: rule.handler(target)
             };
         }
 
         // Regex rule
 		while ((match = regexp.exec(remainder)) !== null) {
 			let startIndex = regexp.lastIndex - match[0].length;
-			let replacement = handler(match[0]);
+			let replacement = rule.handler(match[0]);
 			let shadow = ''.padStart(replacement.length, ' ');
 			
-			str = this.replaceAt(str, startIndex, match[0].length, replacement);
-			remainder = this.replaceAt(remainder, startIndex, match[0].length, shadow);
+			str = CodeFormatter.replaceAt(str, startIndex, match[0].length, replacement);
+			remainder = CodeFormatter.replaceAt(remainder, startIndex, match[0].length, shadow);
 			regexp.lastIndex = startIndex + replacement.length;
 		}
 
@@ -80,7 +86,7 @@ export class CodeFormatter {
 		let str = input.trim();
 		let remainder = str;
 		for (const rule of this.rules) {
-			let result = this.applyRule(str, remainder, rule.pattern, rule.handler);
+			let result = this.applyRule(str, remainder, rule);
 			str = result.result;
 			remainder = result.remainder;
 		}
@@ -92,7 +98,7 @@ export class CodeFormatter {
 /**
  * Applies general formatting style and colouring
  */
-class SampleFormatter extends CodeFormatter {
+export class HTMLFormatter extends CodeFormatter {
     SampleStyle = "background-color: #1f2937; color: #e5e7eb; padding: 1.1111111em 1.3333333em; line-height: 1.75;  margin-bottom: 2em; border-radius: .375rem;"
 	Colours = {
         comment: "#33cc33",
@@ -104,7 +110,7 @@ class SampleFormatter extends CodeFormatter {
     };
 
     /**
-     * Formats a span with a colour
+     * Wraps a sample in a span with a colour
      * @param {String} contents String to format
      * @param {String} colour Colour code
      */
@@ -113,11 +119,11 @@ class SampleFormatter extends CodeFormatter {
     }
 
     /**
-     * Format the while sample
+     * Wrap the whole sample
      * @param {String} sample Sample contents
      * @returns Formatted sample
      */
-    formatWholeSample(sample) {
+    wrapSample(sample) {
         return `<pre style="${this.SampleStyle}"><code>${sample}</code></pre>`;
     }
 }
@@ -125,51 +131,50 @@ class SampleFormatter extends CodeFormatter {
 /**
  * Formatter for Lavendeux code
  */
-export class LavendeuxFormatter extends SampleFormatter {
+export class LavendeuxFormatter extends HTMLFormatter {
 	constructor() {
 		super();
 
-        // General syntax
-		this.addRule(/\/\/.*?$/gm, (s) => this.colouredSpan(s, this.Colours.comment));
-		this.addRule(/\/\*.*?\*\//gms, (s) => this.colouredSpan(s, this.Colours.comment));
-		this.addRule(/(?:^|[^0-9.,$])0[xXbBoO]?[a-zA-Z0-9]+/gm, (s) => this.colouredSpan(s, this.Colours.radix));
-		this.addRule(/@[0-9A-Za-z_]+/gm, (s) => this.colouredSpan(s, this.Colours.decorator));
+        // Comments
+		this.addRule(/\/\/.*?$/, (s) => this.colouredSpan(s, this.Colours.comment));
+		this.addRule(/\/\*.*?\*\//s, (s) => this.colouredSpan(s, this.Colours.comment));
 
-        // Functions
-		this.addRule(/[0-9A-Za-z_]+\(/gm, (s) => `<span style="color:${this.Colours.function}">${s}`);
-		this.addRule(/\)/gm, (s) => `${s}</span>`);
+        // Functions and decorators
+		this.addRule(/@[0-9A-Za-z_]+/, (s) => this.colouredSpan(s, this.Colours.decorator));
+		this.addRule(/[0-9A-Za-z_]+\(/, (s) => `<span style="color:${this.Colours.function}">${s}`);
+		this.addRule(/\)/, (s) => `${s}</span>`);
 
         // Values and strings
-        this.addRule(/(?:"(?:\\.|[^"']|')*?")|(?:'(?:\\.|[^"']|")*?')/gm, (s) => this.colouredSpan(s, this.Colours.string));
-		this.addRule(/[$¥€£0-9A-Za-z._,]+(?:[eE]?[-+]?[0-7])?/gm, (s) => this.colouredSpan(s, this.Colours.data));
+        this.addRule(/(?:"(?:\\.|[^"']|')*?")|(?:'(?:\\.|[^"']|")*?')/, (s) => this.colouredSpan(s, this.Colours.string));
+		this.addRule(/(?<![0-9.,$])0[xXbBoO]?[a-zA-Z0-9]+/, (s) => this.colouredSpan(s, this.Colours.radix));
+		this.addRule(/[$¥€£0-9A-Za-z._,]+(?:[eE]?[-+]?[0-7])?/, (s) => this.colouredSpan(s, this.Colours.data));
 
-        this.addRule(null, (s) => this.formatWholeSample(s)); 
+        this.addRule(null, (s) => this.wrapSample(s)); 
 	}
 }
 
 /**
  * Formatter for JS code
  */
-export class JavascriptFormatter extends SampleFormatter {
+export class JavascriptFormatter extends HTMLFormatter {
 	constructor() {
 		super();
-        // General syntax
-		this.addRule(/\/\/.*?$/gm, (s) => this.colouredSpan(s, this.Colours.comment));
-		this.addRule(/\/\*.*?\*\//gms, (s) => this.colouredSpan(s, this.Colours.comment));
-		this.addRule(/(?:^|[^0-9.,$])0[xXbBoO]?[a-zA-Z0-9]+/gm, (s) => this.colouredSpan(s, this.Colours.radix));
+        
+        // Comments
+		this.addRule(/\/\/.*?$/, (s) => this.colouredSpan(s, this.Colours.comment));
+		this.addRule(/\/\*.*?\*\//s, (s) => this.colouredSpan(s, this.Colours.comment));
 
         // Functions
-		this.addRule(/[0-9A-Za-z_]+\(/gm, (s) => `<span class="function">${s}`);
-		this.addRule(/\)/gm, (s) => `${s}</span>`);
-
-        // Strings
-		this.addRule(/(?:"(?:\\.|[^"']|')*?")|(?:'(?:\\.|[^"']|")*?')/gm, (s) => this.colouredSpan(s, this.Colours.string));
+		this.addRule(/[0-9A-Za-z_]+\(/, (s) => `<span class="function">${s}`);
+		this.addRule(/\)/, (s) => `${s}</span>`);
         
-        // Values
-		this.addRule(/\W(return|function)\W/gm, (s) => this.colouredSpan(s, this.Colours.decorator));
-		this.addRule(/[$¥€£0-9A-Za-z._,]+(?:[eE]?[-+]?[0-7])?/gm, (s) => this.colouredSpan(s, this.Colours.data));
+        // Values and strings
+		this.addRule(/(?:"(?:\\.|[^"']|')*?")|(?:'(?:\\.|[^"']|")*?')/, (s) => this.colouredSpan(s, this.Colours.string));
+		this.addRule(/\W(return|function)\W/, (s) => this.colouredSpan(s, this.Colours.decorator));
+		this.addRule(/(?<![0-9.,$])0[xXbBoO]?[a-zA-Z0-9]+/, (s) => this.colouredSpan(s, this.Colours.radix));
+		this.addRule(/[$¥€£0-9A-Za-z._,]+(?:[eE]?[-+]?[0-7])?/, (s) => this.colouredSpan(s, this.Colours.data));
 
-        this.addRule(null, (s) => this.formatWholeSample(s)); 
+        this.addRule(null, (s) => this.wrapSample(s)); 
 	}
 }
 

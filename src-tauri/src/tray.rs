@@ -1,5 +1,6 @@
 use crate::state::SharedState;
 use crate::windows::{MainWindow, WindowTabs};
+use crate::language;
 use tauri::{
 	AppHandle, Manager, ClipboardManager,
     SystemTrayHandle, SystemTrayEvent, SystemTray, 
@@ -30,10 +31,11 @@ impl Tray {
     /// # Arguments
     /// * `recent_history` - Items to display to the user
     pub fn tray_menu(recent_history: Vec<String>) -> SystemTrayMenu {
+        let lang = language::lang_en();
         let mut menu = SystemTrayMenu::new();
         if recent_history.is_empty() {
             // Default entry for no history
-            menu = menu.add_item(CustomMenuItem::new("no_history".to_string(), "No history to display").disabled());
+            menu = menu.add_item(CustomMenuItem::new("no_history".to_string(), lang.historyview_no_history).disabled());
         } else {
             // Display history entries
             for (i, item) in recent_history.into_iter().enumerate() {
@@ -44,8 +46,8 @@ impl Tray {
         // Base menu options
         menu = menu
             .add_native_item(SystemTrayMenuItem::Separator)
-            .add_item(CustomMenuItem::new("settings".to_string(), "Settings"))
-            .add_item(CustomMenuItem::new("exit".to_string(), "Exit"));
+            .add_item(CustomMenuItem::new("settings".to_string(), lang.menu_tray_settings))
+            .add_item(CustomMenuItem::new("exit".to_string(), lang.menu_tray_exit));
 
         menu
     }

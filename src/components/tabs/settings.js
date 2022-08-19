@@ -4,11 +4,18 @@ import { Row, Col, ListGroup } from 'react-bootstrap';
 import { IconButton } from '../icon_button';
 import { listen, run } from '../../include/tauri';
 
-import "./settings.css"
+import "./css/settings.css"
 
 // Range of values for the shortcut key
 const alpha_range = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
 const keys = ["Space", ...alpha_range, "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"];
+
+/*
+const languages = {
+	"en": "English", 
+	"fr": "Francais"
+};
+*/
 
 // Range of values for the shortcut modifier
 const mod_values = [
@@ -25,26 +32,28 @@ const mod_values = [
 function Settings(props) {
 	const [shortcutModifier, setShortcutModifier] = useState("CmdOrCtrl");
 	const [shortcutKey, setShortcutKey] = useState("Space");
-	const [settings, setSettings] = useState({});
-    const [lang, setLang] = useState({});
+	const [settings, _setSettings] = useState({
+		'auto_paste': false,
+		'silent_errors': false,
+		'autostart': false,
+		'dark': false,
+		'shortcut': 'CmdOrCtrl+Space',
+		'extension_dir': ''
+	});
 
 	useEffect(() => {
-		listen('settings', event => {
-			if (!event.payload.shortcut) return;
-			
-			let shortcut = event.payload.shortcut.split("+");
-			setShortcutModifier(shortcut[0]);
-			setShortcutKey(shortcut[1]);
-
-			setSettings(event.payload);
-		});
-		
-        run("get_settings")
-        .then(e => {setSettings(e)})
-        .catch(err => console.log(`Error: ${err}`));
-		
-        run("lang_en").then(l => setLang(l));
+		listen('settings', event => setSettings(event.payload));
+        run("get_settings").then(e => setSettings(e));
 	}, []);
+
+	function setSettings(payload) {
+		// Update keys
+		let [modifier, key] = payload.shortcut.split("+");
+		setShortcutModifier(modifier);
+		setShortcutKey(key);
+		
+		_setSettings(payload);
+	}
 
 	function updateSettings(key, value) {
 		const newSettings = {
@@ -61,9 +70,9 @@ function Settings(props) {
 	 */
 	function renderClipboardMode() {
 		return (<>
-			<dl class="row row-setting">
-				<dt class="col-sm-3">{lang.settingview_clipboard_mode}</dt>
-				<dd class="col-sm-9">{lang.settingview_clipboard_mode_desc}</dd>
+			<dl className="row row-setting">
+				<dt className="col-sm-3">{props.lang.settingview_clipboard_mode}</dt>
+				<dd className="col-sm-9">{props.lang.settingview_clipboard_mode_desc}</dd>
 			</dl>
 
 			<div className="form-group">
@@ -71,7 +80,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOn" 
 						checked={settings.auto_paste} onChange={e => updateSettings("auto_paste", true)} />
 					<label className="form-check-label setting-label" htmlFor="autopasteOn">
-					{lang.settingview_clipboard_mode_auto}
+					{props.lang.settingview_clipboard_mode_auto}
 					</label>
 				</div>
 
@@ -79,7 +88,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="autoPaste" id="autopasteOff" 
 						checked={!settings.auto_paste} onChange={e => updateSettings("auto_paste", false)} />
 					<label className="form-check-label setting-label" htmlFor="autopasteOff">
-					{lang.settingview_clipboard_mode_off}
+					{props.lang.settingview_clipboard_mode_off}
 					</label>
 				</div>
 			</div>
@@ -92,9 +101,9 @@ function Settings(props) {
 	 */
 	function renderErrorMode() {
 		return (<>
-			<dl class="row row-setting">
-				<dt class="col-sm-3">{lang.settingview_silent_errors}</dt>
-				<dd class="col-sm-9" style={{}}>{lang.settingview_silent_errors_desc}</dd>
+			<dl className="row row-setting">
+				<dt className="col-sm-3">{props.lang.settingview_silent_errors}</dt>
+				<dd className="col-sm-9" style={{}}>{props.lang.settingview_silent_errors_desc}</dd>
 			</dl>
 
 			<div className="form-group">
@@ -102,7 +111,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="silent_errors" id="silent_errorsOff" 
 						checked={!settings.silent_errors} onChange={e => updateSettings("silent_errors", false)} />
 					<label className="form-check-label setting-label" htmlFor="silent_errorsOff">
-					{lang.settingview_silent_errors_off}
+					{props.lang.settingview_silent_errors_off}
 					</label>
 				</div>
 
@@ -110,7 +119,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="silent_errors" id="silent_errorsOn" 
 						checked={settings.silent_errors} onChange={e => updateSettings("silent_errors", true)} />
 					<label className="form-check-label setting-label" htmlFor="silent_errorsOn">
-					{lang.settingview_silent_errors_on}
+					{props.lang.settingview_silent_errors_on}
 					</label>
 				</div>
 			</div>
@@ -123,9 +132,9 @@ function Settings(props) {
 	 */
 	function renderAutostart() {
 		return (<>
-			<dl class="row row-setting">
-				<dt class="col-sm-3">{lang.settingview_autostart}</dt>
-				<dd class="col-sm-9">{lang.settingview_autostart_desc}</dd>
+			<dl className="row row-setting">
+				<dt className="col-sm-3">{props.lang.settingview_autostart}</dt>
+				<dd className="col-sm-9">{props.lang.settingview_autostart_desc}</dd>
 			</dl>
 
 			<div className="form-group">
@@ -133,7 +142,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="autostart" id="autostartOff" 
 						checked={!settings.autostart} onChange={e => updateSettings("autostart", false)} />
 					<label className="form-check-label setting-label" htmlFor="autostartOff">
-					{lang.settingview_autostart_off}
+					{props.lang.settingview_autostart_off}
 					</label>
 				</div>
 
@@ -141,7 +150,7 @@ function Settings(props) {
 					<input className="form-check-input" type="radio" name="autostart" id="autostartOn" 
 						checked={settings.autostart} onChange={e => updateSettings("autostart", true)} />
 					<label className="form-check-label setting-label" htmlFor="autostartOn">
-					{lang.settingview_autostart_on}
+					{props.lang.settingview_autostart_on}
 					</label>
 				</div>
 			</div>
@@ -154,19 +163,19 @@ function Settings(props) {
 	 */
 	function renderTheme() {
 		return (<>
-			<dl class="row row-setting">
-				<dt class="col-sm-3">{lang.settingview_theme}</dt>
-				<dd class="col-sm-9">{lang.settingview_theme_desc}</dd>
+			<dl className="row row-setting">
+				<dt className="col-sm-3">{props.lang.settingview_theme}</dt>
+				<dd className="col-sm-9">{props.lang.settingview_theme_desc}</dd>
 			</dl>
 				
 			<div className="form-group">
 				<label className="setting-label">
-					<input type="radio" name="dark" autoComplete="off" checked={!settings.dark}
-						onChange={e => updateSettings("dark", false)} /> {lang.settingview_theme_off}
+					<input type="radio" name="dark" id="darkOff" autoComplete="off" checked={!settings.dark}
+						onChange={e => updateSettings("dark", false)} /> {props.lang.settingview_theme_off}
 				</label><br/>
 				<label className="setting-label">
-					<input type="radio" name="dark" autoComplete="off" checked={settings.dark}
-						onChange={e => updateSettings("dark", true)} /> {lang.settingview_theme_on}
+					<input type="radio" name="dark" id="darkOn" autoComplete="off" checked={settings.dark}
+						onChange={e => updateSettings("dark", true)} /> {props.lang.settingview_theme_on}
 				</label>
 			</div>
 		</>);
@@ -178,14 +187,14 @@ function Settings(props) {
 	 */
 	function renderKeyboardShortcut() {
 		return (<>
-			<dl class="row row-setting">
-				<dt class="col-sm-3">{lang.settingview_keyboard_shortcut}</dt>
-				<dd class="col-sm-9">{lang.settingview_keyboard_shortcut_desc}</dd>
+			<dl className="row row-setting">
+				<dt className="col-sm-3">{props.lang.settingview_keyboard_shortcut}</dt>
+				<dd className="col-sm-9">{props.lang.settingview_keyboard_shortcut_desc}</dd>
 			</dl>
 				
 			<Row>
 				<Col className="form-group">
-					<select className="form-control" value={shortcutModifier}
+					<select className="form-control" id="shortcut_mod" value={shortcutModifier}
 						onChange={e => {setShortcutModifier(e.target.value); updateSettings("shortcut", `${e.target.value}+${shortcutKey}`)}}>
 
 						{mod_values.map(v => (
@@ -194,7 +203,7 @@ function Settings(props) {
 					</select>
 				</Col>
 				<Col className="form-group">
-					<select className="form-control" value={shortcutKey}
+					<select className="form-control" id="shortcut_key" value={shortcutKey}
 						onChange={e => {setShortcutKey(e.target.value); updateSettings("shortcut", `${shortcutModifier}+${e.target.value}`)}}>
 
 						{keys.map(v => (
@@ -212,17 +221,38 @@ function Settings(props) {
 	 */
 	function renderExtensionDir() {
 		return (<>
-			<dl class="row row-setting">
-				<dt class="col-sm-3">{lang.settingview_extension_dir}</dt>
-				<dd class="col-sm-9">{lang.settingview_extension_dir_desc}</dd>
+			<dl className="row row-setting">
+				<dt className="col-sm-3">{props.lang.settingview_extension_dir}</dt>
+				<dd className="col-sm-9">{props.lang.settingview_extension_dir_desc}</dd>
 			</dl>
 
 			<div className="form-group">
-				<input type="text" className="form-control" placeholder="Path to extensions" value={settings.extension_dir} 
+				<input type="text" id="extension_dir" className="form-control" placeholder="Path to extensions" value={settings.extension_dir} 
 					onChange={e => updateSettings("extension_dir", e.target.value)} />
 			</div>
-			</>);
+		</>);
 	}
+
+	/**
+	 * Render the extension settings
+	 * @returns Rendered data
+	function renderLanguage() {
+		return (<>
+			<dl className="row row-setting">
+				<dt className="col-sm-3">{props.lang.settingview_language}</dt>
+				<dd className="col-sm-9">{props.lang.settingview_language_desc}</dd>
+			</dl>
+
+			<div className="form-group">
+				<select value={settings.language} type="select" className="form-control form-select" onChange={e => updateSettings("language", e.target.value)}>
+					{Object.keys(languages).map(l => (
+						<option key={l} value={l}>{languages[l]}</option>
+					))}
+				</select>
+			</div>
+		</>);
+	}
+	 */
 
 	/**
 	 * Render the save button
@@ -230,7 +260,7 @@ function Settings(props) {
 	 */
 	function renderSaveButton() {
 		return (
-			<IconButton variant="success" onClick={() => run("update_settings", {settings: settings})} icon="save" title={lang.settingview_save} />
+			<IconButton variant="success" onClick={() => run("update_settings", {settings: settings})} icon="save" title={props.lang.settingview_save} />
 		);
 	}
 

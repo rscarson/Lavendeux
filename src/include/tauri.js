@@ -21,6 +21,12 @@ export {
 } from "@tauri-apps/api/dialog";
 
 /**
+ * Get Software details
+ */
+export { getName } from "@tauri-apps/api/app";
+export { getVersion } from "@tauri-apps/api/app";
+
+/**
  * Run a tauri function
  * @param {string} f Function name
  * @param {Object} payload 
@@ -28,8 +34,8 @@ export {
  */
 export async function run(f, payload) {
 	if (payload) {
-		return await invoke(f, payload).catch(e => alert(e));
+		return await invoke(f, payload).catch(e => alert(`Error running ${f}: ${e.stack}`));
 	} else {
-		return await invoke(f).catch(e => alert(e));
+		return await invoke(f).catch(e => alert(`Error running ${f}: ${e.stack}`));
 	}
 }

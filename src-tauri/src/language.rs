@@ -1,6 +1,8 @@
+use crate::state::SharedState;
 use serde::{Deserialize, Serialize};
 
 mod en;
+mod fr;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Language {
@@ -60,6 +62,9 @@ pub struct Language {
     pub settingview_extension_dir: &'static str,
     pub settingview_extension_dir_desc: &'static str,
 
+    pub settingview_language: &'static str,
+    pub settingview_language_desc: &'static str,
+
     pub settingview_save: &'static str,
 
     pub helpview_help_1: &'static str,
@@ -72,17 +77,32 @@ pub struct Language {
     pub menu_help_about: &'static str,
     pub menu_help_logs: &'static str,
     pub menu_help_help: &'static str,
+    pub menu_tray_settings: &'static str,
+    pub menu_tray_exit: &'static str,
 
     pub logviewer_title: &'static str
 }
 
 impl Language {
-    fn en() -> Language {
-        en::lang()
+    fn get(state: tauri::State<SharedState>) -> Option<Language> {
+        if let Ok(lock) = state.0.lock() {
+            println!("{}", lock.settings.language);
+            match lock.settings.language.as_str() {
+                "fr" => Some(fr::lang()),
+                _ => Some(en::lang())
+            }
+        } else {
+            None
+        }
     }
 }
 
 #[tauri::command]
 pub fn lang_en() -> Language {
-    Language::en()
+    en::lang()
+}
+
+#[tauri::command]
+pub fn get_lang(state: tauri::State<SharedState>) -> Option<Language> {
+    Language::get(state)
 }

@@ -8,7 +8,7 @@ import Help from '../components/tabs/help';
 import History from '../components/tabs/history';
 import Extensions from '../components/tabs/extensions';
 import Settings from '../components/tabs/settings';
-import "./main.css"
+import "./css/main.css"
 
 /**
  * A tab on the main window
@@ -35,7 +35,7 @@ class WindowTab {
     render_nav(lang) {
         return (
             <Nav.Link href={`#${this.key}`} eventKey={this.key}>
-                <i class={`bi bi-${this.icon}`}>&nbsp;</i>
+                <i className={`bi bi-${this.icon}`}>&nbsp;</i>
                 {lang[this.name]}
             </Nav.Link>
         );
@@ -48,7 +48,7 @@ class WindowTab {
     render_content(lang) {
         return (
             <Tab.Pane eventKey={this.key} title={lang[this.name]}>
-                <this.content />
+                <this.content lang={lang} />
             </Tab.Pane>
         );
     }
@@ -82,7 +82,10 @@ function MainWindow() {
 
 		emit("ready", "payload");
 
-        run("lang_en").then(l => setLang(l));
+        run("get_lang").then(l => setLang(l));
+		listen('settings', event => {
+            run("get_lang").then(l => setLang(l));
+		});
 	}, []);
 
 	return (<>

@@ -27,7 +27,7 @@ function LogsWindow(props) {
         
         registerThemeListener(document.documentElement);
         updateTheme(document.documentElement);
-        run("lang_en").then(l => setLang(l));
+        run("get_lang").then(l => setLang(l));
 	}, []);
 
 
@@ -64,13 +64,13 @@ function LogsWindow(props) {
         <ListGroup variant="flush">
             <ListGroup.Item>
                 <Button onClick={e => run("clear_logs")} variant="outline-secondary" size="sm">
-                    <i class="bi bi-clock-history">&nbsp;</i>
+                    <i className="bi bi-clock-history">&nbsp;</i>
                     {lang.logview_btn_clear}
                 </Button>&nbsp;
-                    <Button variant="outline-secondary" size="sm" onClick={e => run("open_logs_dir")}>
-                        <i class="bi bi-folder2-open">&nbsp;</i>
-                        {lang.logview_btn_open}
-                    </Button>
+                <Button variant="outline-secondary" size="sm" onClick={e => run("open_logs_dir")}>
+                    <i className="bi bi-folder2-open">&nbsp;</i>
+                    {lang.logview_btn_open}
+                </Button>
             </ListGroup.Item>
             
             <Table className="w-100" striped hover>

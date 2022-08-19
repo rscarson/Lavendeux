@@ -3,7 +3,7 @@ import { Alert } from 'react-bootstrap';
 
 import { run, listen } from '../include/tauri';
 
-import './error.css';
+import './css/error.css';
 
 /**
  * Render the error model
@@ -14,17 +14,12 @@ function ErrorWindow(props) {
 	const [error, setError] = useState('');
 	const [errorTitle, setErrorTitle] = useState('');
 	const [errorVariant, setErrorVariant] = useState('danger');
-    const [lang, setLang] = useState({});
 
     /**
      * Emitted when the window first loads
      */
 	useEffect(() => {
 		listen('message', errorEvent);
-        run("lang_en").then(l => {
-			setLang(l);
-			setErrorTitle(l.errorview_parsing_error);
-		});
 	}, []);
 
 	/**

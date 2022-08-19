@@ -71,7 +71,7 @@ fn setup_app(state: &State) -> tauri::App {
 			extensions::import_extension, extensions::disable_extension, extensions::get_extensions,
 			extensions::reload_all_extensions, extensions::open_extensions_dir,
 			logs::get_logs, logs::open_logs_dir, logs::clear_logs,
-			language::lang_en
+			language::lang_en, language::get_lang
 		])
 		.build(tauri::generate_context!())
 		.expect("error while running tauri application")
