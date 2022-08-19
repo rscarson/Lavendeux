@@ -86,7 +86,6 @@ pub struct Language {
 impl Language {
     fn get(state: tauri::State<SharedState>) -> Option<Language> {
         if let Ok(lock) = state.0.lock() {
-            println!("{}", lock.settings.language);
             match lock.settings.language.as_str() {
                 "fr" => Some(fr::lang()),
                 _ => Some(en::lang())
