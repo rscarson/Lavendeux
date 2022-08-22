@@ -1,0 +1,13 @@
+name: Front end tests
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install deps
+        run: npm install
+
+      - name: Test front-end
+        run: npm test --watchAll=false
