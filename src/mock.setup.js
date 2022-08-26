@@ -52,6 +52,8 @@ export function setupMock(handler) {
 				return {};
 			}
 		}
+
+		return undefined;
 	});
 }
 

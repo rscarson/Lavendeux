@@ -1,0 +1,33 @@
+.formatted-sample {
+    background-color: #1f2937;
+    color: #e5e7eb;
+    padding: 1.1111111em 1.3333333em;
+    line-height: 1.75;
+    margin-bottom: 2em;
+    border-radius: .375rem;
+}
+
+
+.formatted-sample .comment {
+    color: #33cc33;
+}
+
+.formatted-sample .string {
+    color: #b1cbff;
+}
+
+.formatted-sample .data {
+    color: #6699ff;
+}
+
+.formatted-sample .radix {
+    color: #cc00cc;
+}
+
+.formatted-sample .decorator {
+    color: #cc3300;
+}
+
+.formatted-sample .function {
+    color: #ff9900;
+}

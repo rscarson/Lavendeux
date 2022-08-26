@@ -10,17 +10,10 @@ import './css/error.css';
  * @param {Object} props Component properties
  * @returns JSX
  */
-function ErrorWindow(props) {
+function ErrorWindow() {
 	const [error, setError] = useState('');
 	const [errorTitle, setErrorTitle] = useState('');
 	const [errorVariant, setErrorVariant] = useState('danger');
-
-    /**
-     * Emitted when the window first loads
-     */
-	useEffect(() => {
-		listen('message', errorEvent);
-	}, []);
 
 	/**
 	 * Receive a new error from the host
@@ -33,25 +26,31 @@ function ErrorWindow(props) {
 	}
 
 	/**
-	 * Hide the error modal
-	 */
-	function hideErrorWindow() { run("hide_errorwindow"); }
+     * Emitted when the window first loads
+     */
+	useEffect(() => {
+		listen('message', errorEvent);
+	}, []);
 
 	/**
-	 * Open the settings window to the history tab
+	 * Event handlers
 	 */
-	function showHistoryTab() { run("show_history_tab"); }
+	const hideErrorWindow = () => run('hide_errorwindow');
+	const showHistoryTab = () => run('show_history_tab');
 
 	return (
-        <Alert variant={errorVariant} 
-            id="error-window" onClose={hideErrorWindow}
-            style={{display: error.length?'inherit':'none', cursor: "pointer"}} dismissible
-        >
-            <div onClick={showHistoryTab}>
-                <Alert.Heading>{errorTitle}</Alert.Heading>
-                <p>{error}</p>
-            </div>
-        </Alert>
+		<Alert
+			variant={errorVariant}
+			id="error-window"
+			onClose={hideErrorWindow}
+			style={{ display: error.length ? 'inherit' : 'none', cursor: 'pointer' }}
+			dismissible
+		>
+			<div onKeyDown={showHistoryTab} onClick={showHistoryTab} role="button" tabIndex={0}>
+				<Alert.Heading>{errorTitle}</Alert.Heading>
+				<p>{error}</p>
+			</div>
+		</Alert>
 	);
 }
 

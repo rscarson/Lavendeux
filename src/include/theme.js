@@ -2,18 +2,18 @@ import { run, listen } from './tauri';
 
 /**
  * Set the theme on an element
- * @param {DOM Object} element 
- * @param {bool} is_dark 
+ * @param {DOM Object} element
+ * @param {bool} isDark
  */
-export function setTheme(element, is_dark) {
-	is_dark 
-    ? element.classList.add('dark-theme')
-    : element.classList.remove('dark-theme');
+export function setTheme(element, isDark) {
+	isDark
+		? element.classList.add('dark-theme')
+		: element.classList.remove('dark-theme');
 }
 
 /**
  * Register a listener for theme changes
- * @param {DOM Object} element 
+ * @param {DOM Object} element
  */
 export function registerThemeListener(element) {
 	listen('settings', event => setTheme(element, event.payload.dark));
@@ -21,10 +21,10 @@ export function registerThemeListener(element) {
 
 /**
  * Update the current theme
- * @param {DOM Object} element 
+ * @param {DOM Object} element
  */
 export function updateTheme(element) {
-    run("get_settings")
-    .then(e => setTheme(element, e.dark))
-    .catch(err => console.log(`Error updating theme: ${err}`));
+	run('get_settings')
+		.then(e => setTheme(element, e.dark))
+		.catch(err => console.log(`Error updating theme: ${err}`));
 }

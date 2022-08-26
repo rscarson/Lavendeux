@@ -9,14 +9,20 @@ import 'bootstrap/dist/css/bootstrap.min.css';
  * @param {Object} props Component properties
  * @returns JSX
  */
- export function IconButton(props) {
-    let DEFAULT_VARIANT = "secondary";
+export function IconButton(props) {
+	const DEFAULT_VARIANT = 'secondary';
+	const {
+		variant = DEFAULT_VARIANT,
+		onClick = () => {},
+		icon = '',
+		title = ' ',
+	} = props;
 
 	return (
-		<Button variant={`outline-${props.variant || DEFAULT_VARIANT}`} size="sm" onClick={() => props.onClick && props.onClick()}>
-            <i className={`bi bi-${props.icon}`}>{props.title && " "}</i>
-            {props.title}
-        </Button>
+		<Button variant={`outline-${variant}`} size="sm" onClick={onClick}>
+			<i className={`bi bi-${icon}`}>{title}</i>
+			{title}
+		</Button>
 	);
 }
 
