@@ -19,11 +19,25 @@ afterEach(() => {
 	container = null;
 });
 
+it('renders', () => {
+	act(() => {
+		root.render(<IconButton title="test" />);
+	});
+	expect(container.firstChild.innerHTML).toMatch('> </i>test');
+});
+
 it('renders without a variant', () => {
 	act(() => {
 		root.render(<IconButton title="test" />);
 	});
 	expect(container.firstChild.classList.contains('btn-outline-secondary')).toBe(true);
+});
+
+it('renders without a title', () => {
+	act(() => {
+		root.render(<IconButton />);
+	});
+	expect(container.firstChild.innerHTML).toMatch('></i>');
 });
 
 it('renders without an onClick handler', () => {

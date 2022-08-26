@@ -15,12 +15,12 @@ export function IconButton(props) {
 		variant = DEFAULT_VARIANT,
 		onClick = () => {},
 		icon = '',
-		title = ' ',
+		title = '',
 	} = props;
 
 	return (
 		<Button variant={`outline-${variant}`} size="sm" onClick={onClick}>
-			<i className={`bi bi-${icon}`}>{title}</i>
+			<i className={`bi bi-${icon}`}>{title.length ? ' ' : ''}</i>
 			{title}
 		</Button>
 	);
