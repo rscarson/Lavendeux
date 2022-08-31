@@ -22,7 +22,7 @@ function Extensions(props) {
      * Reload the list of available extensions
      */
 	function reloadExtensions() {
-		run('reload_all_extensions').then(e => {
+		run('reload_extensions').then(e => {
 			setExtensions(e);
 		});
 	}

@@ -4,7 +4,8 @@
         "logview_label_level": "Level",
         "logview_label_event": "Event",
         "logview_empty": "Nothing to display",
-        "logview_btn_clear": "Clear Log",
+        "logview_btn_refresh": "Refresh",
+        "logview_btn_clear": "Clear",
         "logview_btn_open": "Open Log Directory",
 
         "errorview_parsing_error": "Could not parse expression",

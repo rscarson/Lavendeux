@@ -70,9 +70,27 @@ it('renders when empty entries', async () => {
 	await waitFor(() => expect(container.firstChild.innerHTML).toMatch(/TESTEMPTY/));
 });
 
-it('clears log entries', async () => {
+it('refreshes log entries', async () => {
+	expect(container.firstChild.innerHTML).toMatch(/TESTLEVEL/);
+	expect(container.firstChild.innerHTML).not.toMatch(/TESTNEXTLEVEL/);
+
+	logs.push({
+		timestamp: 'TESTNEXTTIME',
+		level: 'TESTNEXTLEVEL',
+		text: 'tESTNEXTTEXT',
+	})
+
 	await act(async () => {
 		container.querySelectorAll('button')[0].click();
+	});
+
+	expect(container.firstChild.innerHTML).toMatch(/TESTLEVEL/);
+	expect(container.firstChild.innerHTML).toMatch(/TESTNEXTLEVEL/);
+});
+
+it('clears log entries', async () => {
+	await act(async () => {
+		container.querySelectorAll('button')[1].click();
 	});
 
 	await waitFor(() => expect(container.firstChild.innerHTML).toMatch(/TESTEMPTY/));
@@ -80,7 +98,7 @@ it('clears log entries', async () => {
 
 it('opens the log directory', async () => {
 	await act(async () => {
-		container.querySelectorAll('button')[1].click();
+		container.querySelectorAll('button')[2].click();
 	});
 
 	await waitFor(() => expect(dirOpened).toBe(1));

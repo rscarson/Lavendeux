@@ -13,6 +13,13 @@ function LogsWindow() {
 	const [lang, setLang] = useState({});
 
 	/**
+	 * Event handlers
+	 */
+	const clearLogs = () => run('clear_logs');
+	const openLogsDir = () => run('open_logs_dir');
+	const refreshLogs = () => run('get_logs').then(e => setLogs(e)).catch(err => console.log(`Error: ${err}`));
+
+	/**
      * Emitted when the window first loads
      */
 	useEffect(() => {
@@ -20,9 +27,7 @@ function LogsWindow() {
 			setLogs(event.payload);
 		});
 
-		run('get_logs')
-			.then(e => setLogs(e))
-			.catch(err => console.log(`Error: ${err}`));
+		refreshLogs();
 
 		registerThemeListener(document.documentElement);
 		updateTheme(document.documentElement);
@@ -58,20 +63,19 @@ function LogsWindow() {
 		);
 	}
 
-	/**
-	 * Event handlers
-	 */
-	const clearLogs = () => run('clear_logs');
-	const openLogsDir = () => run('open_logs_dir');
-
 	return (
 		<ListGroup variant="flush">
 			<ListGroup.Item>
+				<Button onClick={refreshLogs} variant="outline-secondary" size="sm">
+					<i className="bi bi-arrow-clockwise">&nbsp;</i>
+					{lang.logview_btn_refresh}
+				</Button>
+				&nbsp;
 				<Button onClick={clearLogs} variant="outline-secondary" size="sm">
 					<i className="bi bi-clock-history">&nbsp;</i>
 					{lang.logview_btn_clear}
 				</Button>
-&nbsp;
+				&nbsp;
 				<Button variant="outline-secondary" size="sm" onClick={openLogsDir}>
 					<i className="bi bi-folder2-open">&nbsp;</i>
 					{lang.logview_btn_open}
