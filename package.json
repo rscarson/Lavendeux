@@ -16,7 +16,7 @@
 		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.3.0",
 		"react-scripts": "5.0.1",
-		"web-vitals": "^2.1.4"
+		"web-vitals": "^3.0.1"
 	},
 	"scripts": {
 		"start": "cross-env BROWSER=none react-scripts start",
@@ -46,7 +46,7 @@
 	"devDependencies": {
 		"@tauri-apps/cli": "^1.0.5",
 		"cross-env": "^7.0.3",
-		"eslint": "^8.22.0",
+		"eslint": "^8.23.0",
 		"eslint-config-airbnb": "^19.0.4",
 		"eslint-plugin-import": "^2.26.0",
 		"eslint-plugin-jsx-a11y": "^6.6.1",
