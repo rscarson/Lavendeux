@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: apt install xorg-dev
     - name: Run tests
       working-directory: ./src-tauri
       run: cargo test --verbose

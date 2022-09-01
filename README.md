@@ -1,4 +1,7 @@
-# Lavendeux [![Build Status](https://travis-ci.org/rscarson/Lavendeux.svg?branch=master)](https://travis-ci.org/rscarson/Lavendeux)
+# Lavendeux
+[![Crates.io](https://img.shields.io/crates/v/Lavendeux.svg)](https://crates.io/crates/Lavendeux)
+[![Build Status](https://github.com/rscarson/Lavendeux/workflows/Rust/badge.svg)](https://github.com/rscarson/Lavendeux/actions?workflow=Rust)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/rscarson/Lavendeux/master/LICENSE)
 
 #### [Installer and binaries](http://rscarson.github.io/lavendeux/)
 
