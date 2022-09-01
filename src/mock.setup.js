@@ -48,7 +48,7 @@ export function setupMock(handler) {
 
 			switch (cmd) {
 			case 'get_settings':
-			case 'get_lang':
+			case 'get_language_strings':
 				return {};
 			}
 		}

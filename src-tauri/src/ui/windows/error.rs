@@ -8,15 +8,6 @@ const ERROR_WINDOW_X_OFFSET : u32 = 3;
 const ERROR_WINDOW_Y_OFFSET : u32 = 32;
 const ERROR_WINDOW_DELAY : u64 = 5000;
 
-/// Hide the error window
-/// 
-/// # Arguments
-/// * `app_handle` - AppHandle
-#[tauri::command]
-pub fn hide_error(app_handle: AppHandle) {
-    Error::new(app_handle).unwrap().hide().ok();
-}
-
 /// Payload for a message to the error window
 #[derive(Clone, serde::Serialize)]
 struct MessagePayload {

@@ -31,7 +31,7 @@ function LogsWindow() {
 
 		registerThemeListener(document.documentElement);
 		updateTheme(document.documentElement);
-		run('get_lang').then(l => setLang(l));
+		run('get_language_strings').then(l => setLang(l));
 	}, []);
 
 	/**

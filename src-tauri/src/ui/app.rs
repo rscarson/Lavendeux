@@ -1,4 +1,5 @@
 use std::sync::Mutex;
+use std::path::Path;
 use tauri::api::cli::{ Matches, get_matches };
 use tauri::{
     AppHandle, Manager, WindowMenuEvent, 
@@ -6,8 +7,8 @@ use tauri::{
     WindowEvent, Runtime, Builder, Invoke
 };
 
-use crate::core::{ SharedState, State, settings };
-use crate::utils::logs;
+use crate::core::{ SharedState, State, settings, extensions };
+use crate::utils::{ fs, logs, autostart };
 use crate::ui::{ windows, cmds, tray::Tray, keyboard };
 use crate::parser;
 
@@ -82,12 +83,12 @@ impl App {
             .manage_tray(Tray::new_tray([].to_vec()), Tray::handle_event)
             .set_menu(windows::Main::get_menu(), windows::Main::handle_menu_event)
             .set_handler(tauri::generate_handler![
-                cmds::update_settings, cmds::get_settings, cmds::format_shortcut,		// Settings
-                windows::hide_error, cmds::clear_history, windows::show_history_tab,	// Windows
-                cmds::get_lang,														    // Language
-                cmds::import_extension, cmds::disable_extension, cmds::get_extensions,	// Extensions
+                cmds::update_settings, cmds::get_settings, cmds::format_shortcut,		    // Settings
+                cmds::hide_error, cmds::clear_history, cmds::show_history_tab,	            // Windows
+                cmds::get_logs, cmds::open_logs_dir, cmds::clear_logs,					    // Logs
+                cmds::get_language_strings, cmds::get_language_string, cmds::set_language,  // Language
+                cmds::import_extension, cmds::disable_extension, cmds::get_extensions,	    // Extensions
                 cmds::reload_extensions, cmds::open_extensions_dir,
-                cmds::get_logs, cmds::open_logs_dir, cmds::clear_logs					// Logs
             ]);
 
         Self(builder.build())
@@ -154,7 +155,7 @@ impl App {
         });
     }
 
-    /// Signal readiness
+    /// Update application state in response to settings
     /// 
     /// # Arguments
     /// * `app_handle` - Application handle
@@ -162,21 +163,46 @@ impl App {
     /// * `settings` - App settings
     pub fn update_settings(app_handle: &AppHandle, state: &mut State, settings: settings::Settings) -> Result<settings::Settings, String> {
         let error_window = windows::Error::new(app_handle.clone()).ok_or("Error window does not exist")?;
+		state.logger.debug("Updating settings");
 
-        if let Err(e) = settings.update(state) {
-            error_window.show_message("Error saving settings", &e, "danger").ok();
+        // Reload extensions
+		extensions::reload(state)?;
+        
+        // Update keyboard shortcut
+        if let Some(e) = keyboard::bind_shortcut(&app_handle, state, &settings.shortcut, parser::handle_shortcut) {
+            state.logger.error(&e);
+            error_window.show_message("Error saving keyboard shortcut", &e, "danger").ok();
             return Err(e);
-        } else {
-            // Update keyboard shortcut
-            if let Some(e) = keyboard::bind_shortcut(&app_handle, state, &settings.shortcut, parser::handle_shortcut) {
-                state.logger.error(&e);
-                error_window.show_message("Error saving keyboard shortcut", &e, "danger").ok();
-                return Err(e);
-            }
-
-            app_handle.emit_all("settings", settings.clone()).unwrap();
         }
+        
+		// Create the extensions dir if needed
+		if let Err(e) = std::fs::create_dir_all(
+			Path::new(&(fs::compile_path(&[ settings.extension_dir.clone(), "disabled_extensions".to_string() ])?))
+		) {
+            let error = format!("Error creating the .lavendeux/extensions dir: {}", e);
+			state.logger.error(&error);
+			return Err(error);
+		}
 
+		// Update autostart
+		if let Some(e) = autostart::update(settings.autostart) {
+            let error = format!("Error updating autostart: {}", e);
+			state.logger.error(&error);
+			return Err(error);
+		}
+
+		// Update state
+		state.settings = settings.clone();
+
+		// Save settings to file
+		if let Err(e) = settings.write() {
+            let error = format!("Error saving settings: {}", e);
+			state.logger.error(&error);
+			return Err(error);
+		}
+
+        app_handle.emit_all("settings", settings.clone()).unwrap();
+		state.logger.debug("Succesfully updated settings");
         Ok(settings)
     }
 

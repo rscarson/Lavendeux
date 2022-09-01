@@ -6,42 +6,29 @@ use crate::core::{ SharedState, State };
 
 type HotkeyHandler = fn(&AppHandle, &mut State);
 
-/// Send a single keypress to the system
-/// 
-/// # Arguments
-/// * `key` - Key to send
-pub fn send_key(key: KeybdKey, release: bool) {
-    key.release();
-    thread::sleep(Duration::from_millis(20));
-    key.press();
-    if release {
-        thread::sleep(Duration::from_millis(20));
-        key.release();
-    }
-}
-
 /// Send a sequence of keypresses to the system
 /// 
 /// # Arguments
+/// * `mod_key` - Modifier to use
 /// * `sequence` - Keys to send
-pub fn send_sequence(mod_key: KeybdKey, sequence: &[KeybdKey]) {
-    send_key(mod_key, false);
-    for key in sequence { send_key(*key, true) }
-    mod_key.release();
+pub fn send_sequence(modifier: KeybdKey, key: KeybdKey) {
+    modifier.release(); key.release();
+    thread::sleep(Duration::from_millis(50));
+
+    modifier.press(); key.press();
+    thread::sleep(Duration::from_millis(50));
+
+    modifier.release(); key.release();
 }
 
 /// Send a CTRL-C key sequence to the system
 pub fn send_copy() {
-    send_sequence(KeybdKey::LControlKey, &[
-        KeybdKey::CKey
-    ]);
+    send_sequence(KeybdKey::LControlKey, KeybdKey::CKey);
 }
 
 /// Send a CTRL-V key sequence to the system
 pub fn send_paste() {
-    send_sequence(KeybdKey::LControlKey, &[
-        KeybdKey::VKey
-    ]);
+    send_sequence(KeybdKey::LControlKey, KeybdKey::VKey);
 }
 
 /// Spawns a thread to handle the hotkey

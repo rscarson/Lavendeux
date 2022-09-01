@@ -13,7 +13,7 @@ const DEFAULT_LEVEL: Level = Level::Error;
 /// Manages log entries
 #[derive(Clone)]
 pub struct Manager {
-    target: String,
+    target: Option<String>,
     level: Level,
     buffer: Vec<Entry>
 }
@@ -23,7 +23,7 @@ impl Manager {
     /// 
     /// # Arguments
     /// * `target` - Target filename
-    pub fn new(target: &str) -> Self {
+    pub fn new(target: Option<String>) -> Self {
         Self::new_with_level(target, DEFAULT_LEVEL)
     }
 
@@ -32,10 +32,10 @@ impl Manager {
     /// # Arguments
     /// * `target` - Target filename
     /// * `level` - Logging level
-    pub fn new_with_level(target: &str, level: Level) -> Self {
+    pub fn new_with_level(target: Option<String>, level: Level) -> Self {
         let buffer : Vec<Entry> = Vec::new();
         Self {
-            target: target.to_string(), 
+            target: target, 
             level, buffer
         }
     }
@@ -54,7 +54,7 @@ impl Manager {
     }
 
     /// Return target file
-    pub fn target(&self) -> String {
+    pub fn target(&self) -> Option<String> {
         self.target.clone()
     }
 
@@ -75,13 +75,15 @@ impl Manager {
             self.buffer.push(entry);
             println!("{}", fmt);
 
-            let target_exists = Path::new(&self.target().to_string()).exists();
-            match OpenOptions::new().create(!target_exists).write(true).append(target_exists).open(self.target()) {
-                Ok(mut f) => {
-                    write!(f, "{}\n", fmt).ok();
-                },
-                Err(e) => {
-                    println!("Could not write: {}", e);
+            if let Some(target) = self.target() {
+                let target_exists = Path::new(&target).exists();
+                match OpenOptions::new().create(!target_exists).write(true).append(target_exists).open(target) {
+                    Ok(mut f) => {
+                        write!(f, "{}\n", fmt).ok();
+                    },
+                    Err(e) => {
+                        println!("Could not write: {}", e);
+                    }
                 }
             }
         }

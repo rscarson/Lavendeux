@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 use dirs::home_dir;
 
-use crate::utils::{ autostart, language, fs };
-use crate::core::{ State, extensions };
+use crate::utils::{ fs };
+use crate::core::language;
 
 pub const DEFAULT_SHORTCUT : &str = "CmdOrCtrl+Space";
 pub const DEFAULT_ROOTDIR : &str = ".lavendeux";
@@ -105,44 +104,6 @@ impl Settings {
 		} else {
 			Ok(())
 		}
-	}
-
-	// Verify settings and propagate changes
-	/// 
-	/// # Arguments
-	/// * `state` - Current application state
-	pub fn update(&self, state: &mut State) -> Result<(), String> {
-		state.logger.debug("Updating settings");
-			
-		// Create the extensions dir if needed
-		if let Err(e) = std::fs::create_dir_all(
-			Path::new(&(fs::compile_path(&[ self.extension_dir.clone(), "disabled_extensions".to_string() ])?))
-		) {
-			let err = format!("Error creating the .lavendeux/extensions dir: {}", e);
-			state.logger.error(&err);
-			return Err(err);
-		}
-		extensions::reload(state)?;
-
-		// Update autostart
-		if let Some(e) = autostart::update(self.autostart) {
-			let err = format!("Error updating autostart: {}", e);
-			state.logger.error(&err);
-			return Err(err);
-		}
-
-		// Update state
-		state.settings = self.clone();
-
-		// Save settings to file
-		if let Err(e) = self.write() {
-			let err = format!("Error writing settings to '{}': {}", self.filename.clone(), e);
-			state.logger.error(&err);
-			return Err(err);
-		}
-
-		state.logger.debug("Succesfully updated settings");
-		Ok(())
 	}
 }
 

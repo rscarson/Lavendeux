@@ -2,8 +2,8 @@ use tauri::{AppHandle, Manager};
 use lavendeux_parser::Token;
 
 use crate::{
-	ui::{ keyboard, windows, clipboard },
-	core::{ State, history::History	}
+	ui::{ tray, keyboard, windows, clipboard },
+	core::{ State, history	}
 };
 
 const MAX_HISTORY_LEN : usize = 50;
@@ -37,7 +37,7 @@ fn do_parse(app_handle: &AppHandle, state: &mut State) -> Result<(), String> {
 			Ok(token) => {
 				// Got a result - add it to history
 				for line in token.children() {
-					state.history.push(History::new(
+					state.history.push(history::History::new(
 						line.input().trim().to_string(),
 						Ok(line.text().to_string())
 					));
@@ -58,7 +58,7 @@ fn do_parse(app_handle: &AppHandle, state: &mut State) -> Result<(), String> {
 				}
 
 				// Push to history
-				state.history.push(History::new(
+				state.history.push(history::History::new(
 					input.to_string(),
 					Err(e.to_string())
 				));
@@ -75,6 +75,9 @@ fn do_parse(app_handle: &AppHandle, state: &mut State) -> Result<(), String> {
 	}
 	
 	// Notify front-end
+	let recent_history = history::recent(&state.history);
+	let tray = tray::Tray::new(app_handle.tray_handle());
+	tray.update_menu(recent_history);
 	app_handle.emit_all("history", state.history.clone()).ok();
 
 	if let Err(_) = transform_result {

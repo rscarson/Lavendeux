@@ -4,7 +4,6 @@ use crate::core::SharedState;
 use crate::core::settings;
 use crate::ui::{ app::App };
 
-use crate::utils::language::Language;
 use crate::utils::logs;
 
 use crate::ui::tray::Tray;
@@ -12,6 +11,89 @@ use crate::core::history;
 
 use lavendeux_parser::Extension;
 use crate::core::extensions;
+
+use embedded_lang::{ get_string };
+use std::collections::HashMap;
+
+use crate::ui::windows;
+
+////////////////////////////////////////////////
+/// Window commands
+/// 
+////////////////////////////////////////////////
+
+/// Hide the error window
+/// 
+/// # Arguments
+/// * `app_handle` - AppHandle
+#[tauri::command]
+pub fn hide_error(app_handle: AppHandle) {
+    windows::Error::new(app_handle).unwrap().hide().ok();
+}
+
+/// Show the history tab
+/// 
+/// # Arguments
+/// * `app_handle` - AppHandle
+#[tauri::command]
+pub fn show_history_tab(app_handle: AppHandle) {
+    windows::Main::new(app_handle).unwrap().show_tab(windows::WindowTabs::History).ok();
+}
+
+////////////////////////////////////////////////
+/// Language commands
+/// 
+////////////////////////////////////////////////
+
+/// Format the configured shortcut as a human-readable string
+/// 
+/// # Arguments
+/// * `state` - Application state
+/// * `language` - New language
+#[tauri::command]
+pub fn set_language(state: tauri::State<SharedState>, language: &str) -> Result<bool, String> {
+	match state.0.lock().ok() {
+		Some(mut lock) => {
+			Ok(lock.language.set_language(language))
+		},
+
+		None => Err("Could not lock settings object".to_string())
+	}
+}
+
+/// Get language strings for current language
+/// 
+/// # Arguments
+/// * `state` - Application state
+#[tauri::command]
+pub fn get_language_strings(state: tauri::State<SharedState>) -> Result<HashMap<String, String>, String> {
+	match state.0.lock().ok() {
+		Some(lock) => {
+			match lock.language.current_language() {
+				Some(lang) => Ok(lang.strings().clone()),
+				None => Err("Error in language subsystem".to_string())
+			}
+		},
+
+		None => Err("Could not lock settings object".to_string())
+	}
+}
+
+/// Get a string from the language system
+/// 
+/// # Arguments
+/// * `state` - Application state
+/// * `string` - String to get
+#[tauri::command]
+pub fn get_language_string(state: tauri::State<SharedState>, string: &str) -> Result<String, String> {
+	match state.0.lock().ok() {
+		Some(lock) => {
+			Ok(get_string!(lock.language, string))
+		},
+
+		None => Err("Could not lock settings object".to_string())
+	}
+}
 
 ////////////////////////////////////////////////
 /// Settings commands
@@ -65,27 +147,6 @@ pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, 
 			println!("Could not lock state: {}", e);
 			Err("Could not lock settings object".to_string())
 		}
-	}
-}
-
-////////////////////////////////////////////////
-/// Language commands
-/// 
-////////////////////////////////////////////////
- 
-/// Get language strings for a given language
-/// 
-/// # Arguments
-/// * `app_handle` - Application handle
-/// * `state` - Application state
-#[tauri::command]
-pub fn get_lang(state: tauri::State<SharedState>) -> Result<Language, String> {
-	match state.0.lock().ok() {
-		Some(lock) => {
-			Ok(Language::get(&lock.settings.language))
-		},
-
-		None => Err("Could not lock settings object".to_string())
 	}
 }
 
@@ -153,10 +214,10 @@ pub fn open_logs_dir(state: tauri::State<SharedState>) -> Result<(), String> {
 pub fn clear_history(app_handle: AppHandle, state: tauri::State<SharedState>) -> Option<String> {
 	match state.0.lock().ok() {
 		Some(mut lock) => {
-            history::clear(&mut lock);
+            history::clear(&mut lock.history);
             
             // Update tray history
-            let recent_history = history::recent(&mut lock);
+            let recent_history = history::recent(&lock.history);
             let tray = Tray::new(app_handle.tray_handle());
             tray.update_menu(recent_history);
             

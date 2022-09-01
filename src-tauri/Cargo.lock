@@ -734,6 +734,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ef6b89e5b37196644d8796de5268852ff179b44e96276cf4290264843743bb7"
 
 [[package]]
+name = "embedded-lang"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5dcc3002a4fc4dba61393e11a75f923656f812d5bcdb255cdce77147b4b4e442"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "encoding_rs"
 version = "0.8.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1649,6 +1659,7 @@ name = "lavendeux"
 version = "0.11.2"
 dependencies = [
  "dirs",
+ "embedded-lang",
  "inputbot",
  "lavendeux-parser",
  "serde",

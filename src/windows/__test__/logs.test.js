@@ -22,7 +22,7 @@ beforeEach(async () => {
 	];
 
 	setupMock(cmd => {
-		if (cmd === 'get_lang') {
+		if (cmd === 'get_language_strings') {
 			return {
 				logview_empty: 'TESTEMPTY',
 			};

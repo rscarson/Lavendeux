@@ -8,7 +8,9 @@ import Help from '../components/tabs/help';
 import History from '../components/tabs/history';
 import Extensions from '../components/tabs/extensions';
 import Settings from '../components/tabs/settings';
+
 import './css/main.css';
+import '../include/formatter/formatter.css';
 
 /**
  * A tab on the main window
@@ -82,9 +84,9 @@ function MainWindow() {
 
 		emit('ready', 'payload');
 
-		run('get_lang').then(l => setLang(l));
+		run('get_language_strings').then(l => setLang(l));
 		listen('settings', () => {
-			run('get_lang').then(l => setLang(l));
+			run('get_language_strings').then(l => setLang(l));
 		});
 	}, []);
 

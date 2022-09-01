@@ -35,7 +35,7 @@ function ErrorWindow() {
 	/**
 	 * Event handlers
 	 */
-	const hideErrorWindow = () => run('hide_errorwindow');
+	const hideErrorWindow = () => run('hide_error');
 	const showHistoryTab = () => run('show_history_tab');
 
 	return (

@@ -15,8 +15,10 @@ pub use entry::Entry;
 /// # Arguments
 /// * `state` - Current application state
 pub fn open_logs_dir(state: &mut State) {
-    if let Err(e) = fs::open(state.logger.target()) {
-		state.logger.error(&format!("Error opening log directory: {}", e));
+	if let Some(target) = state.logger.target() {
+		if let Err(e) = fs::open(target) {
+			state.logger.error(&format!("Error opening log directory: {}", e));
+		}
 	}
 }
 

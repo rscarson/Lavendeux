@@ -1,25 +1,17 @@
 use std::{thread};
-use crate::utils::language::Language;
+use embedded_lang::get_string;
 use tauri::{
     AppHandle, Window, Manager, WindowMenuEvent, 
     Menu, Submenu, CustomMenuItem
 };
 
 use super::Logs;
+use crate::core::language;
 
 /// Tabs on the main window
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub enum WindowTabs {
 	History, Extensions, Settings, Help
-}
-
-/// Show the history tab
-/// 
-/// # Arguments
-/// * `app_handle` - AppHandle
-#[tauri::command]
-pub fn show_history_tab(app_handle: AppHandle) {
-    Main::new(app_handle).unwrap().show_tab(WindowTabs::History).ok();
 }
 
 /// Main application window
@@ -71,15 +63,16 @@ impl Main {
 
     /// Create a new menu for the window
     pub fn get_menu() -> Menu {
-        let lang = Language::get("en");
+        let lang = language::initialize();
+
         Menu::new()
-        .add_submenu(Submenu::new(lang.menu_file, Menu::new()
-            .add_item(CustomMenuItem::new("quit", lang.menu_file_quit))
+        .add_submenu(Submenu::new(get_string!(lang, "menu_file"), Menu::new()
+            .add_item(CustomMenuItem::new("quit", get_string!(lang, "menu_file_quit")))
         ))
-        .add_submenu(Submenu::new(lang.menu_help, Menu::new()
-            .add_item(CustomMenuItem::new("help", lang.menu_help_help))
-            .add_item(CustomMenuItem::new("log", lang.menu_help_logs))
-            .add_item(CustomMenuItem::new("about", lang.menu_help_about))
+        .add_submenu(Submenu::new(get_string!(lang, "menu_help"), Menu::new()
+            .add_item(CustomMenuItem::new("help", get_string!(lang, "menu_help_help")))
+            .add_item(CustomMenuItem::new("log", get_string!(lang, "menu_help_logs")))
+            .add_item(CustomMenuItem::new("about", get_string!(lang, "menu_help_about")))
         ))
     }
 
@@ -93,7 +86,7 @@ impl Main {
                 Main::new_with_window(e.window().clone()).show_tab(WindowTabs::Help).ok();
             },
             "log" => {
-                Logs::new(e.window());
+                Logs::new(e.window(), e.window().app_handle().state());
             },
             "about" => {
                 tauri::api::dialog::message(Some(e.window()), "Lavendeux", "Created by @rscarson");
