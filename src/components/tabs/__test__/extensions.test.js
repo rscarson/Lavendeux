@@ -25,7 +25,7 @@ beforeEach(async () => {
 	}];
 
 	setupMock(cmd => {
-		if (cmd === 'reload_all_extensions') {
+		if (cmd === 'reload_extensions') {
 			extensionsReloaded++;
 			return JSON.parse(JSON.stringify(extensions));
 		} if (cmd === 'import_extension') {
