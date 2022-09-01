@@ -1,5 +1,4 @@
-# Lavendeux
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/rscarson/Lavendeux/master/LICENSE)
+# Lavendeux [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/rscarson/Lavendeux/master/LICENSE)
 
 #### [Installer and binaries](http://rscarson.github.io/lavendeux/)
 
