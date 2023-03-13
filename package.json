@@ -8,7 +8,7 @@
 		"@testing-library/react": "^13.4.0",
 		"@testing-library/user-event": "^14.4.3",
 		"bootstrap": "^5.2.2",
-		"bootstrap-icons": "^1.9.1",
+		"bootstrap-icons": "^1.10.3",
 		"caniuse-lite": "^1.0.30001429",
 		"enzyme": "^3.11.0",
 		"react": "^18.2.0",
