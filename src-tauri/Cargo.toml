@@ -27,7 +27,7 @@ inputbot = "0.5.1"
 dirs = "4.0.0"
 
 [target.'cfg(windows)'.dependencies]
-winreg = "0.10.1"
+winreg = "0.11.0"
 
 [features]
 # by default Tauri runs in production mode
