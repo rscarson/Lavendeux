@@ -1,5 +1,4 @@
 use tauri::{ Window };
-use embedded_lang::get_string;
 
 use crate::core::SharedState;
 
@@ -18,7 +17,7 @@ impl Logs {
                     "logs".to_string(),
                     tauri::WindowUrl::App("/logs".into())
                 )
-                    .title(get_string!(lock.language, "logviewer_title"))
+                    .title(lock.language["logviewer_title"].to_string())
                     .menu(tauri::Menu::new())
                     .build().ok()?;
                 Some(Self(w))

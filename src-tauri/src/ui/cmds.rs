@@ -12,7 +12,6 @@ use crate::core::history;
 use lavendeux_parser::Extension;
 use crate::core::extensions;
 
-use embedded_lang::{ get_string };
 use std::collections::HashMap;
 
 use crate::ui::windows;
@@ -88,7 +87,7 @@ pub fn get_language_strings(state: tauri::State<SharedState>) -> Result<HashMap<
 pub fn get_language_string(state: tauri::State<SharedState>, string: &str) -> Result<String, String> {
 	match state.0.lock().ok() {
 		Some(lock) => {
-			Ok(get_string!(lock.language, string))
+			Ok(lock.language[string].to_string())
 		},
 
 		None => Err("Could not lock settings object".to_string())
