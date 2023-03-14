@@ -16,10 +16,11 @@ export function IconButton(props) {
 		onClick = () => {},
 		icon = '',
 		title = '',
+		disabled = false,
 	} = props;
 
 	return (
-		<Button variant={`outline-${variant}`} size="sm" onClick={onClick}>
+		<Button variant={`outline-${variant}`} size="sm" onClick={onClick} disabled={disabled}>
 			<i className={`bi bi-${icon}`}>{title.length ? ' ' : ''}</i>
 			{title}
 		</Button>

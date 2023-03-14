@@ -119,7 +119,13 @@ function History(props) {
 		<div className="nav-content">
 			<ListGroup variant="flush">
 				<ListGroup.Item key={0}>
-					<IconButton variant="secondary" onClick={() => run('clear_history')} icon="clock-history" title={lang.historyview_btn_clear} />
+					<IconButton
+						disabled={history.length === 0}
+						variant="secondary"
+						onClick={() => run('clear_history')}
+						icon="clock-history"
+						title={lang.historyview_btn_clear}
+					/>
 				</ListGroup.Item>
 
 				{ history.length
