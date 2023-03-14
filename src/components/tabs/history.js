@@ -7,7 +7,7 @@ import { writeClipboard, run, listen } from '../../include/tauri';
 
 import './css/history.css';
 
-const MAX_DISPLAY_LEN = 60;
+const MAX_DISPLAY_LEN = 20;
 
 /**
  * Shorten a given string
@@ -76,7 +76,7 @@ function History(props) {
                     &nbsp;
 					{entry.result.Ok ? (
 						<InputGroup>
-							<InputGroup.Text id="btnGroupAddon">{entry.result.Ok}</InputGroup.Text>
+							<InputGroup.Text id="btnGroupAddon">{shortenString(entry.result.Ok, MAX_DISPLAY_LEN)}</InputGroup.Text>
 							<IconButton variant="secondary" onClick={() => writeClipboard(entry.result.Ok)} icon="clipboard" />
 						</InputGroup>
 					) : (
