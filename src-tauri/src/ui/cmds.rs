@@ -139,6 +139,7 @@ pub fn get_settings(_app_handle: AppHandle, state: tauri::State<SharedState>) ->
 pub fn update_settings(app_handle: AppHandle, state: tauri::State<SharedState>, settings: settings::Settings) -> Result<settings::Settings, String> {
 	match state.0.try_lock() {
 		Ok(mut lock) => {
+			println!("Updating settings: {:?}", settings);
 			App::update_settings(&app_handle, &mut lock, settings)
 		},
 

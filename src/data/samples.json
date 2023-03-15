@@ -8,6 +8,7 @@
     "samples": [
         {
             "name": "datatypes",
+            "short_desc": "Supported Datatypes",
             "description": [
                 "A number of datatypes are supported:"
             ],
@@ -42,6 +43,7 @@
 
         {
             "name": "operations",
+            "short_desc": "Available Operators",
             "description": [
                 "The following operations are available:"
             ],
@@ -69,6 +71,7 @@
     
         {
             "name": "variables",
+            "short_desc": "Variables and Function Assignments",
             "description": [
                 "You can also assign values to variables to be used later:",
                 "They are case sensitive, and can be composed of underscores or alphanumeric characters"
@@ -98,6 +101,7 @@
     
         {
             "name": "decorators",
+            "short_desc": "Output formatting through Decorators",
             "description": [
                 "Decorators can be put at the end of a line to change the output format. Valid decorators include:"
             ],
@@ -112,6 +116,7 @@
     
         {
             "name": "functions",
+            "short_desc": "Built-in Functions",
             "description": [
                 "The following functions and decorators are supported by default:"
             ],
@@ -223,6 +228,7 @@
     
         {
             "name": "extensions",
+            "short_desc": "Extending Lavendeux",
             "description": [
                 "Lavendeux can be extended with javascript. Extensions are run in a sandboxed environment, with no network or host access.",
                 "Below is an example of a simple extension:"

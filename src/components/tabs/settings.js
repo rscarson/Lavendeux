@@ -10,12 +10,10 @@ import './css/settings.css';
 const alphaRange = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
 const keys = ['Space', ...alphaRange, 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'];
 
-/*
 const languages = {
-	"en": "English",
-	"fr": "Francais"
+	en: 'English',
+	fr: 'Francais',
 };
-*/
 
 // Range of values for the shortcut modifier
 const modValues = [
@@ -42,6 +40,7 @@ function Settings(props) {
 		autostart: false,
 		dark: false,
 		shortcut: 'CmdOrCtrl+Space',
+		language: 'en',
 		extension_dir: '',
 	});
 
@@ -64,7 +63,7 @@ function Settings(props) {
 			...settings,
 			[key]: value,
 		};
-
+		console.log(newSettings);
 		setSettings(newSettings);
 	}
 
@@ -319,24 +318,30 @@ function Settings(props) {
 	/**
 	 * Render the extension settings
 	 * @returns Rendered data
-	function renderLanguage() {
-		return (<>
-			<dl className="row row-setting">
-				<dt className="col-sm-3">{lang.settingview_language}</dt>
-				<dd className="col-sm-9">{lang.settingview_language_desc}</dd>
-			</dl>
-
-			<div className="form-group">
-				<select value={settings.language} type="select" className="form-control form-select"
-					onChange={e => updateSettings("language", e.target.value)}>
-					{Object.keys(languages).map(l => (
-						<option key={l} value={l}>{languages[l]}</option>
-					))}
-				</select>
-			</div>
-		</>);
-	}
 	 */
+	function renderLanguage() {
+		return (
+			<>
+				<dl className="row row-setting">
+					<dt className="col-sm-3">{lang.settingview_language}</dt>
+					<dd className="col-sm-9">{lang.settingview_language_desc}</dd>
+				</dl>
+
+				<div className="form-group">
+					<select
+						value={settings.language}
+						type="select"
+						className="form-control form-select"
+						onChange={e => updateSettings('language', e.target.value)}
+					>
+						{Object.keys(languages).map(l => (
+							<option key={l} value={l}>{languages[l]}</option>
+						))}
+					</select>
+				</div>
+			</>
+		);
+	}
 
 	/**
 	 * Render the save button
@@ -358,6 +363,7 @@ function Settings(props) {
 				<ListGroup.Item>{renderKeyboardShortcut()}</ListGroup.Item>
 				<ListGroup.Item>{renderAutostart()}</ListGroup.Item>
 				<ListGroup.Item>{renderTheme()}</ListGroup.Item>
+				<ListGroup.Item>{renderLanguage()}</ListGroup.Item>
 				<ListGroup.Item>{renderExtensionDir()}</ListGroup.Item>
 
 				<ListGroup.Item>{renderSaveButton()}</ListGroup.Item>

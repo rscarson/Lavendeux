@@ -29,10 +29,18 @@ export function getAllSamples() {
  * Format all sample data
  * @returns All HTML formatted samples
  */
-export function getSampleHTML() {
+export function getAllFormattedSamples() {
 	return getAllSamples().map(s => s.toHTML(
 		FormatterInstances.get(s.formatter),
-	)).join('\n');
+	));
+}
+
+/**
+ * Format all sample data
+ * @returns All HTML formatted samples
+ */
+export function getSampleHTML() {
+	return getAllFormattedSamples().join('\n');
 }
 
 /**

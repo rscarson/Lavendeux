@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Form, ListGroup } from 'react-bootstrap';
+import Accordion from 'react-bootstrap/Accordion';
 
-import { getSampleHTML, getExampleSample } from '../../include/formatter';
+import { getExampleSample, getAllSamples } from '../../include/formatter';
 import { run, listen, getName, getVersion } from '../../include/tauri';
 
 import './css/help.css';
@@ -20,11 +21,11 @@ function Help(props) {
 	const [version, setVersion] = useState('[...]');
 	const [shortcutName, setShortcutName] = useState('Ctrl+Space');
 	const [autoPaste, setAutoPaste] = useState(true);
-	const [codeSamples, setCodeSamples] = useState('');
+	const [codeSamples, setCodeSamples] = useState([]);
 	const [example, setExample] = useState('');
 
 	useEffect(() => {
-		setCodeSamples(getSampleHTML());
+		setCodeSamples(getAllSamples());
 		setExample(getExampleSample());
 
 		getName().then(s => setName(s));
@@ -76,12 +77,12 @@ function Help(props) {
 		);
 	}
 
-	function renderSamples() {
+	function renderSample(sample, i) {
 		return (
-			<div dangerouslySetInnerHTML={
-				{ __html: codeSamples }
-			}
-			/>
+			<Accordion.Item eventKey={i}>
+				<Accordion.Header>{sample.shortDescription}</Accordion.Header>
+				<Accordion.Body dangerouslySetInnerHTML={{ __html: sample.html }} />
+			</Accordion.Item>
 		);
 	}
 
@@ -95,7 +96,9 @@ function Help(props) {
 					{renderPreamble()}
 				</ListGroup.Item>
 				<ListGroup.Item>
-					{renderSamples()}
+					<Accordion defaultActiveKey="0">
+						{codeSamples.map((sample, i) => renderSample(sample, i))}
+					</Accordion>
 				</ListGroup.Item>
 			</ListGroup>
 		</div>

@@ -6,5 +6,6 @@ pub const DEFAULT: &str = "en";
 pub fn initialize() -> LanguageSet {
     LanguageSet::new(DEFAULT, &[
         embedded_language!("../../../language/en.lang.json"),
+        embedded_language!("../../../language/fr.lang.json"),
     ])
 }

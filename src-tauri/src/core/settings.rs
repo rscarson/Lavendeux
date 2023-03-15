@@ -14,7 +14,7 @@ pub const DEFAULT_AUTOPASTE : bool = true;
 pub const DEFAULT_AUTOPASTE : bool = false;
 
 /// Application settings
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Settings {
 	#[serde(default)]
 	pub filename: String,

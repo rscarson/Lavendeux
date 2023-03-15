@@ -174,6 +174,9 @@ impl App {
             error_window.show_message("Error saving keyboard shortcut", &e, "danger").ok();
             return Err(e);
         }
+
+        // Update language
+        state.language.set_language(&settings.language);
         
 		// Create the extensions dir if needed
 		if let Err(e) = std::fs::create_dir_all(
