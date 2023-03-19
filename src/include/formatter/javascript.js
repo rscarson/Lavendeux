@@ -18,7 +18,7 @@ export class JavascriptFormatter extends Formatter {
 		// Values and strings
 		this.addRule(/(?:"(?:\\.|[^"']|')*?")|(?:'(?:\\.|[^"']|")*?')/, s => this.span(s, 'string'));
 		this.addRule(/\W(return|function)\W/, s => this.span(s, 'decorator'));
-		this.addRule(/(?<![0-9.,$])0[xXbBoO]?[a-zA-Z0-9]+/, s => this.span(s, 'radix'));
+		this.addRule(/(?:[0-9.,$])0[xXbBoO]?[a-zA-Z0-9]+/, s => this.span(s, 'radix'));
 		this.addRule(/[$¥€£0-9A-Za-z._,]+(?:[eE]?[-+]?[0-7])?/, s => this.span(s, 'data'));
 
 		// Wrap sample
