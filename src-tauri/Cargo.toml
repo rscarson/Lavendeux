@@ -24,7 +24,8 @@ single-instance = "0.3.3"
 serde_json = "1.0.94"
 time = { version = "0.3.20", features = ["formatting"] }
 # inputbot = "0.5.1"
-inputbot = { git = "https://github.com/obv-mikhail/InputBot" }
+# inputbot = { git = "https://github.com/obv-mikhail/InputBot" }
+enigo = { git = "https://github.com/enigo-rs/enigo.git" }
 
 dirs = "4.0.0"
 

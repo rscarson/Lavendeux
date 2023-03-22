@@ -1,4 +1,4 @@
-use inputbot::KeybdKey;
+use enigo::{Enigo, Key, KeyboardControllable};
 use std::{thread, time::Duration};
 use tauri::{ Manager, AppHandle, GlobalShortcutManager };
 
@@ -11,24 +11,21 @@ type HotkeyHandler = fn(&AppHandle, &mut State);
 /// # Arguments
 /// * `mod_key` - Modifier to use
 /// * `sequence` - Keys to send
-pub fn send_sequence(modifier: KeybdKey, key: KeybdKey) {
-    modifier.release(); key.release();
-    thread::sleep(Duration::from_millis(50));
-
-    modifier.press(); key.press();
-    thread::sleep(Duration::from_millis(50));
-
-    modifier.release(); key.release();
+pub fn send_sequence(modifier: Key, key: char) {
+    let mut enigo = Enigo::new();
+    enigo.key_down(modifier);
+    enigo.key_click(Key::Layout(key));
+    enigo.key_up(modifier);
 }
 
 /// Send a CTRL-C key sequence to the system
 pub fn send_copy() {
-    send_sequence(KeybdKey::LControlKey, KeybdKey::CKey);
+    send_sequence(Key::Control, 'c');
 }
 
 /// Send a CTRL-V key sequence to the system
 pub fn send_paste() {
-    send_sequence(KeybdKey::LControlKey, KeybdKey::VKey);
+    send_sequence(Key::Control, 'v');
 }
 
 /// Spawns a thread to handle the hotkey
