@@ -27,7 +27,7 @@ time = { version = "0.3.20", features = ["formatting"] }
 # inputbot = { git = "https://github.com/obv-mikhail/InputBot" }
 enigo = { git = "https://github.com/enigo-rs/enigo.git" }
 
-dirs = "4.0.0"
+dirs = "5.0.0"
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.11.0"
