@@ -76,7 +76,9 @@
         "menu_help_about": "À propos",
         "menu_help_logs": "Journaux",
         "menu_help_help": "Aide",
+        "menu_tray_history": "Historique",
         "menu_tray_settings": "Paramètres",
+        "menu_tray_help": "Aide",
         "menu_tray_exit": "Quitter",
 
         "logviewer_title": "Visualisateur de Journal"

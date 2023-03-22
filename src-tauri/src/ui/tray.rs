@@ -48,7 +48,9 @@ impl Tray {
         // Base menu options
         menu = menu
             .add_native_item(SystemTrayMenuItem::Separator)
+            .add_item(CustomMenuItem::new("history".to_string(), get_string!(lang, "menu_tray_history")))
             .add_item(CustomMenuItem::new("settings".to_string(), get_string!(lang, "menu_tray_settings")))
+            .add_item(CustomMenuItem::new("help".to_string(), get_string!(lang, "menu_tray_help")))
             .add_item(CustomMenuItem::new("exit".to_string(), get_string!(lang, "menu_tray_exit")));
 
         menu
@@ -74,9 +76,21 @@ impl Tray {
             
             SystemTrayEvent::MenuItemClick {id, ..} => {
                 match id.as_str() {
+                    "history" => {
+                        match windows::Main::new(app.clone()) {
+                            Some(w) => w.show_tab(windows::WindowTabs::History).ok(),
+                            None => Some(())
+                        };
+                    },
                     "settings" => {
                         match windows::Main::new(app.clone()) {
                             Some(w) => w.show_tab(windows::WindowTabs::Settings).ok(),
+                            None => Some(())
+                        };
+                    },
+                    "help" => {
+                        match windows::Main::new(app.clone()) {
+                            Some(w) => w.show_tab(windows::WindowTabs::Help).ok(),
                             None => Some(())
                         };
                     },

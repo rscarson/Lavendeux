@@ -144,6 +144,7 @@ impl App {
             // Prepare error window
             match windows::Error::new(_app_handle.clone()) {
                 Some(w) => {
+                    w.hide_menu();
                     w.show_message(
                         "Ready to go!", 
                         &format!("Solve highlighted equations with {}", settings::shortcut_name(&settings.inner_settings.shortcut)), 

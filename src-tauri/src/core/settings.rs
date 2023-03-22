@@ -11,11 +11,7 @@ pub const DEFAULT_EXTENSIONS_DIR : &str = "extensions";
 pub const DEFAULT_SHORTCUT : &str = "CmdOrCtrl+Space";
 pub const DEFAULT_ROOTDIR : &str = ".lavendeux";
 
-#[cfg(any(target_os="windows", target_os="macos"))]
 pub const DEFAULT_AUTOPASTE : bool = true;
-
-#[cfg(all(unix, not(any(target_os="macos", target_os="android", target_os="emscripten"))))]
-pub const DEFAULT_AUTOPASTE : bool = false;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct WriteableSettings {

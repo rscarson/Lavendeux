@@ -36,6 +36,11 @@ impl Error {
         Ok(())
     }
 
+    /// Hide the window menu bar
+    pub fn hide_menu(&self) {
+        self.0.menu_handle().hide().ok();
+    }
+
     /// Recalculate error window position 
     #[cfg(any(target_os="windows", target_os="macos"))]
     pub fn calculate_position(&self) -> tauri::Result<PhysicalPosition<i32>> {
