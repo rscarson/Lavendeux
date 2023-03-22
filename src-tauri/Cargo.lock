@@ -1608,7 +1608,7 @@ dependencies = [
 
 [[package]]
 name = "lavendeux"
-version = "0.13.0"
+version = "0.20.0"
 dependencies = [
  "dirs",
  "embedded-lang",

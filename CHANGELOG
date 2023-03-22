@@ -1,8 +1,10 @@
-0.13.0
+0.20.0
 ------
 Add array datatype and several new functions
 Update dependencies
 Language modes
+Linux compatibility
+Startup script
 
 0.12.0
 ------
