@@ -53,7 +53,7 @@ pub fn bind_shortcut(app_handle: &AppHandle, state: &mut State, hotkey: &str, ha
     let _app_handle = app_handle.clone();
     let __app_handle = app_handle.clone();
 	let mut manager = app_handle.global_shortcut_manager();
-    if manager.unregister(&state.settings.shortcut).is_ok() {
+    if manager.unregister(&state.settings.inner_settings.shortcut).is_ok() {
         thread::sleep(Duration::from_millis(2000));
         if manager.register(hotkey, move || spawn_handler(_app_handle.clone(), handler)).is_ok() {
             state.logger.debug(&format!("Registered shortcut {}", hotkey));
@@ -64,6 +64,6 @@ pub fn bind_shortcut(app_handle: &AppHandle, state: &mut State, hotkey: &str, ha
     // Error - put last working shortcut back in
     let error = format!("Could not register shortcut {}", hotkey);
     state.logger.warning(&error);
-    manager.register(&state.settings.shortcut, move || spawn_handler(__app_handle.clone(), handler)).ok()?;
+    manager.register(&state.settings.inner_settings.shortcut, move || spawn_handler(__app_handle.clone(), handler)).ok()?;
     Some(error)
 }

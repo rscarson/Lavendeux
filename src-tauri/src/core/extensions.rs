@@ -8,7 +8,7 @@ use crate::utils::fs;
 /// # Arguments
 /// * `state` - Current application state
 pub fn reload(state: &mut State) -> Result<Vec<Extension>, String> {
-	match state.parser.extensions.load_all(&state.settings.extension_dir) {
+	match state.parser.extensions.load_all(&state.settings.inner_settings.extension_dir) {
 		Ok(_) => Ok(state.parser.extensions.all()),
 		Err(e) => {
 			let error = format!("Error reloading extensions: {}", e);
@@ -23,7 +23,7 @@ pub fn reload(state: &mut State) -> Result<Vec<Extension>, String> {
 /// # Arguments
 /// * `state` - Current application state
 pub fn open_extensions_dir(state: &mut State) {
-    if let Err(e) = fs::open(state.settings.extension_dir.clone()) {
+    if let Err(e) = fs::open(state.settings.inner_settings.extension_dir.clone()) {
 		state.logger.error(&format!("Error opening extensions directory: {}", e));
 	}
 }
@@ -46,7 +46,7 @@ pub fn disable(state: &mut State, src_path: &str) -> Result<(), String> {
 
 	// Get a path for the disabled extension
 	let dst_path = fs::compile_path(&[
-		state.settings.extension_dir.clone(),
+		state.settings.inner_settings.extension_dir.clone(),
 		"disabled_extensions".to_string(),
 		fs::filename(src_path.to_string())?
 	])?;
@@ -74,7 +74,7 @@ pub fn import(state: &mut State, src_path: &str) -> Result<(), String> {
 	state.logger.debug(&format!("Importing '{}' as an extension", src_path));
 
 	let dst_path = fs::compile_path(&[
-		state.settings.extension_dir.clone(),
+		state.settings.inner_settings.extension_dir.clone(),
 		fs::filename(src_path.to_string())?
 	])?;
 

@@ -1,5 +1,6 @@
 use std::path::{PathBuf, Path};
 use std::process::Command;
+use dirs::home_dir;
 
 #[cfg(all(unix, not(any(target_os="macos", target_os="android", target_os="emscripten"))))]
 const OPEN_DIR_COMMAND : &str = "xdg-open";
@@ -36,6 +37,24 @@ pub fn merge_paths(root: &PathBuf, location: &[String]) -> Result<String, String
     match path.as_path().to_str() {
         Some(s) => Ok(s.to_string()),
         None => Err("Unicode error while creating path".to_string())
+    }
+}
+
+/// Set a filename to be relative to the users home
+/// 
+/// # Arguments
+/// * `paths` - Path to the file or folder
+pub fn fix_relative_path(paths: &[String]) -> Result<String, String> {
+    match home_dir() {
+        Some(home) => {
+            match merge_paths(&home, paths) {
+                Ok(filename) => Ok(filename),
+                Err(e) => Err(e.to_string())
+            }
+        },
+        None => {
+            Err("Unable to get user's home directory".to_string())
+        }
     }
 }
 

@@ -107,7 +107,7 @@ pub fn get_language_string(state: tauri::State<SharedState>, string: &str) -> Re
 pub fn format_shortcut(state: tauri::State<SharedState>) -> Result<String, String> {
 	match state.0.lock().ok() {
 		Some(lock) => {
-			Ok(settings::shortcut_name(&lock.settings.shortcut))
+			Ok(settings::shortcut_name(&lock.settings.inner_settings.shortcut))
 		},
 
 		None => Err("Could not lock settings object".to_string())

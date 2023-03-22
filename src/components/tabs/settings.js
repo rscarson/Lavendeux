@@ -40,12 +40,14 @@ function Settings(props) {
 		autostart: false,
 		dark: false,
 		shortcut: 'CmdOrCtrl+Space',
+		onstart: '',
 		language: 'en',
 		extension_dir: '',
 	});
 
 	function setSettings(payload) {
 		// Update keys
+		console.log(payload);
 		const [modifier, key] = payload.shortcut.split('+');
 		setShortcutModifier(modifier);
 		setShortcutKey(key);
@@ -316,6 +318,31 @@ function Settings(props) {
 	}
 
 	/**
+	 * Render the startup script  settings
+	 * @returns Rendered data
+	 */
+	function renderStartupScript() {
+		return (
+			<>
+				<dl className="row row-setting">
+					<dt className="col-sm-3">{lang.settingview_startup_script}</dt>
+					<dd className="col-sm-9">{lang.settingview_startup_script_desc}</dd>
+				</dl>
+
+				<div className="form-group">
+					<textarea
+						className="form-control"
+						id="startup_script"
+						rows="5"
+						value={settings.onstart}
+						onChange={e => updateSettings('onstart', e.target.value)}
+					/>
+				</div>
+			</>
+		);
+	}
+
+	/**
 	 * Render the extension settings
 	 * @returns Rendered data
 	 */
@@ -365,6 +392,7 @@ function Settings(props) {
 				<ListGroup.Item>{renderTheme()}</ListGroup.Item>
 				<ListGroup.Item>{renderLanguage()}</ListGroup.Item>
 				<ListGroup.Item>{renderExtensionDir()}</ListGroup.Item>
+				<ListGroup.Item>{renderStartupScript()}</ListGroup.Item>
 
 				<ListGroup.Item>{renderSaveButton()}</ListGroup.Item>
 			</ListGroup>

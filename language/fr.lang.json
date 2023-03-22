@@ -58,6 +58,8 @@
         "settingview_extension_dir": "Répertoire d'extension",
         "settingview_extension_dir_desc": "Les extensions importées seront copiées dans ce répertoire",
 
+        "settingview_startup_script": "Exécuter au démarrage",
+        "settingview_startup_script_desc": "Initialise les variables, fonctions ou API au démarrage",
         
         "settingview_language": "Langue",
         "settingview_language_desc": "Paramètres de langue",

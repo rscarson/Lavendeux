@@ -146,7 +146,7 @@ impl App {
                 Some(w) => {
                     w.show_message(
                         "Ready to go!", 
-                        &format!("Solve highlighted equations with {}", settings::shortcut_name(&settings.shortcut)), 
+                        &format!("Solve highlighted equations with {}", settings::shortcut_name(&settings.inner_settings.shortcut)), 
                         "success"
                     ).ok();
                 },
@@ -169,18 +169,18 @@ impl App {
 		extensions::reload(state)?;
         
         // Update keyboard shortcut
-        if let Some(e) = keyboard::bind_shortcut(&app_handle, state, &settings.shortcut, parser::handle_shortcut) {
+        if let Some(e) = keyboard::bind_shortcut(&app_handle, state, &settings.inner_settings.shortcut, parser::handle_shortcut) {
             state.logger.error(&e);
             error_window.show_message("Error saving keyboard shortcut", &e, "danger").ok();
             return Err(e);
         }
 
         // Update language
-        state.language.set_language(&settings.language);
+        state.language.set_language(&settings.inner_settings.language);
         
 		// Create the extensions dir if needed
 		if let Err(e) = std::fs::create_dir_all(
-			Path::new(&(fs::compile_path(&[ settings.extension_dir.clone(), "disabled_extensions".to_string() ])?))
+			Path::new(&(fs::compile_path(&[ settings.inner_settings.extension_dir.clone(), "disabled_extensions".to_string() ])?))
 		) {
             let error = format!("Error creating the .lavendeux/extensions dir: {}", e);
 			state.logger.error(&error);
@@ -188,11 +188,19 @@ impl App {
 		}
 
 		// Update autostart
-		if let Some(e) = autostart::update(settings.autostart) {
+		if let Some(e) = autostart::update(settings.inner_settings.autostart) {
             let error = format!("Error updating autostart: {}", e);
 			state.logger.error(&error);
 			return Err(error);
 		}
+
+        // Update startup script
+        if settings.onstart.trim().len() > 0 {
+            if let Err(e) = parser::parse_expression(&settings.onstart, app_handle, state) {
+                let error = format!("Syntax error in {}: {}", settings.inner_settings.script, e);
+                state.logger.error(&error);
+            }
+        }
 
 		// Update state
 		state.settings = settings.clone();

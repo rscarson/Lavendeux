@@ -58,6 +58,8 @@
         "settingview_extension_dir": "Extension directory",
         "settingview_extension_dir_desc": "Imported extensions will be copied to this directory",
 
+        "settingview_startup_script": "Run on Start",
+        "settingview_startup_script_desc": "Initialize variables, functions, or APIs on startup",
         
         "settingview_language": "Language",
         "settingview_language_desc": "Language settings",
