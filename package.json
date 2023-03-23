@@ -1,6 +1,6 @@
 {
 	"name": "lavendeux",
-	"version": "0.13.0",
+	"version": "0.20.0",
 	"private": true,
 	"dependencies": {
 		"@tauri-apps/api": "^1.2.0",
