@@ -1,3 +1,7 @@
+0.20.1
+------
+Fix for Linux directory issue
+
 0.20.0
 ------
 Add array datatype and several new functions
