@@ -100,6 +100,7 @@ impl Settings {
 		if let Ok(result) = Self::read(&settings.filename) {
 			Ok(result)
 		} else {
+			fs::build_dir_tree(&settings.inner_settings.extension_dir)?;
 			Ok(settings)
 		}
 	}

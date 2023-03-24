@@ -1,5 +1,6 @@
 use std::path::{PathBuf, Path};
 use std::process::Command;
+use std::fs;
 use dirs::home_dir;
 
 #[cfg(all(unix, not(any(target_os="macos", target_os="android", target_os="emscripten"))))]
@@ -85,6 +86,17 @@ pub fn filename(location: String) -> Result<String, String> {
 /// * `dst` - Target path 
 pub fn copy(src: String, dst: String) -> Result<(), String> {
     match std::fs::copy(src, dst) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e.to_string())
+    }
+}
+
+/// Build a directory tree
+/// 
+/// # Arguments
+/// * `dst` - Path to create
+pub fn build_dir_tree(dst: &str) -> Result<(), String> {
+    match fs::create_dir_all(dst) {
         Ok(_) => Ok(()),
         Err(e) => Err(e.to_string())
     }
