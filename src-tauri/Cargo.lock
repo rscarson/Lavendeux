@@ -725,15 +725,17 @@ dependencies = [
 
 [[package]]
 name = "enigo"
-version = "0.0.14"
-source = "git+https://github.com/enigo-rs/enigo.git#c4b5c0f8190e6570c9f8d1e84c85c537cfeab82a"
+version = "0.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eda7d7521944cbc3d00d0d4f934e1cc6b415889742f7f6691b867a9d6bad0363"
 dependencies = [
+ "core-foundation",
+ "core-foundation-sys",
  "core-graphics",
  "libc",
  "objc",
  "pkg-config",
- "unicode-segmentation",
- "windows 0.44.0",
+ "windows 0.46.0",
 ]
 
 [[package]]
