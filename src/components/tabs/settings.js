@@ -8,7 +8,7 @@ import './css/settings.css';
 
 // Range of values for the shortcut key
 const alphaRange = Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i));
-const keys = ['Space', ...alphaRange, 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'];
+const keys = ['Space', ...alphaRange, 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17', 'F18', 'F19', 'F20', 'F21', 'F22', 'F23', 'F24'];
 
 const languages = {
 	en: 'English',
@@ -17,9 +17,10 @@ const languages = {
 
 // Range of values for the shortcut modifier
 const modValues = [
-	{ key: 'CmdOrCtrl', name: 'CTRL' },
-	{ key: 'Shift', name: 'SHIFT' },
-	{ key: 'CmdOrCtrl+Shift', name: 'CTRL+SHIFT' },
+	{ key: '', name: 'NONE' },
+	{ key: 'CmdOrCtrl+', name: 'CTRL' },
+	{ key: 'Shift+', name: 'SHIFT' },
+	{ key: 'CmdOrCtrl+Shift+', name: 'CTRL+SHIFT' },
 ];
 
 /**
@@ -32,7 +33,7 @@ function Settings(props) {
 		lang = {},
 	} = props;
 
-	const [shortcutModifier, setShortcutModifier] = useState('CmdOrCtrl');
+	const [shortcutModifier, setShortcutModifier] = useState('CmdOrCtrl+');
 	const [shortcutKey, setShortcutKey] = useState('Space');
 	const [settings, _setSettings] = useState({
 		auto_paste: false,
@@ -48,7 +49,9 @@ function Settings(props) {
 	function setSettings(payload) {
 		// Update keys
 		console.log(payload);
-		const [modifier, key] = payload.shortcut.split('+');
+		const index = payload.shortcut.lastIndexOf('+');
+		const modifier = index === -1 ? '' : payload.shortcut.slice(0, index + 1);
+		const key = index === -1 ? payload.shortcut : payload.shortcut.slice(index + 1);
 		setShortcutModifier(modifier);
 		setShortcutKey(key);
 
@@ -265,7 +268,7 @@ function Settings(props) {
 							className="form-control"
 							id="shortcut_mod"
 							value={shortcutModifier}
-							onChange={e => { setShortcutModifier(e.target.value); updateSettings('shortcut', `${e.target.value}+${shortcutKey}`); }}
+							onChange={e => { updateSettings('shortcut', `${e.target.value}${shortcutKey}`); }}
 						>
 
 							{modValues.map(v => (
@@ -278,7 +281,7 @@ function Settings(props) {
 							className="form-control"
 							id="shortcut_key"
 							value={shortcutKey}
-							onChange={e => { setShortcutKey(e.target.value); updateSettings('shortcut', `${shortcutModifier}+${e.target.value}`); }}
+							onChange={e => { updateSettings('shortcut', `${shortcutModifier}${e.target.value}`); }}
 						>
 
 							{keys.map(v => (

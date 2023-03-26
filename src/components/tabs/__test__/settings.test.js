@@ -142,13 +142,13 @@ describe('renderKeyboardShortcut', () => {
 	it('renders the form correctly', () => {
 		expect(container.querySelectorAll('#shortcut_mod').length).toBe(1);
 		expect(container.querySelectorAll('#shortcut_key').length).toBe(1);
-		expect(container.querySelector('#shortcut_mod').value).toBe('Shift');
+		expect(container.querySelector('#shortcut_mod').value).toBe('Shift+');
 		expect(container.querySelector('#shortcut_key').value).toBe('A');
 	});
 
 	it('updates the settings', () => {
 		act(() => {
-			fireEvent.change(container.querySelector('#shortcut_mod'), { target: { value: 'CmdOrCtrl' } });
+			fireEvent.change(container.querySelector('#shortcut_mod'), { target: { value: 'CmdOrCtrl+' } });
 			fireEvent.change(container.querySelector('#shortcut_key'), { target: { value: 'Space' } });
 			container.querySelector('button').click();
 		});
