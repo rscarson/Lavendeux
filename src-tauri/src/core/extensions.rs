@@ -41,7 +41,7 @@ pub fn all(state: &mut State) -> Result<Vec<Extension>, String> {
 /// # Arguments
 /// * `state` - Current application state
 /// * `src_path` - Path to the extension
-pub fn disable(state: &mut State, src_path: &str) -> Result<(), String> {
+pub fn disable(state: &mut State, src_path: &str) -> Result<Vec<Extension>, String> {
 	state.logger.debug(&format!("Disabling extension at '{}'", src_path));
 
 	// Get a path for the disabled extension
@@ -55,8 +55,7 @@ pub fn disable(state: &mut State, src_path: &str) -> Result<(), String> {
 	match std::fs::rename(src_path, dst_path.clone()) {
 		Ok(_) => {
 			state.parser.extensions.remove(src_path);
-			reload(state)?;
-			Ok(())
+			Ok(state.parser.extensions.all())
 		},
 		Err(e) => {
 			state.logger.error(&format!("Could not move file to {}: {}", dst_path, e));
@@ -70,7 +69,7 @@ pub fn disable(state: &mut State, src_path: &str) -> Result<(), String> {
 /// # Arguments
 /// * `state` - Current application state
 /// * `src_path` - Path to the extension
-pub fn import(state: &mut State, src_path: &str) -> Result<(), String> {
+pub fn import(state: &mut State, src_path: &str) -> Result<Vec<Extension>, String> {
 	state.logger.debug(&format!("Importing '{}' as an extension", src_path));
 
 	let dst_path = fs::compile_path(&[
@@ -81,8 +80,7 @@ pub fn import(state: &mut State, src_path: &str) -> Result<(), String> {
 	// Copy the file to the extensions directory
 	match fs::copy(src_path.to_string(), dst_path.clone()) {
 		Ok(_) => {
-			reload(state)?;
-			Ok(())
+			Ok(reload(state)?)
 		},
 		Err(e) => {
 			state.logger.error(&format!("Could not copy extension to {}: {}", dst_path, e));

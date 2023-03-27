@@ -41,7 +41,7 @@ function Help(props) {
 	function renderTitle() {
 		return (
 			<h4>
-				{name}
+				<img src={`${process.env.PUBLIC_URL}/logo.png`} alt={name} />
 				{' '}
 				<small>
 					v

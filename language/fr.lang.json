@@ -67,7 +67,7 @@
         "settingview_save": "Enregistrer les modifications",
     
         "helpview_help_1": "In Windows, by default the keyboard shortcut",
-        "helpview_help_2": "will interpret any currently highlighted text as an expression, parse that expression, and replace it with the resulting value.",
+        "helpview_help_2": " will interpret any currently highlighted text as an expression, parse that expression, and replace it with the resulting value.",
         "helpview_help_3": "Sur d'autres plateformes, ou lorsque le mode presse-papiers a été modifié, Lavendeux utilisera plutôt le contenu du presse-papiers à la place du texte surligné.",
 
         "menu_file": "Fichier",

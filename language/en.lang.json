@@ -67,7 +67,7 @@
         "settingview_save": "Save Changes",
 
         "helpview_help_1": "In Windows, by default the keyboard shortcut",
-        "helpview_help_2": "will interpret any currently highlighted text as an expression, parse that expression, and replace it with the resulting value.",
+        "helpview_help_2": " will interpret any currently highlighted text as an expression, parse that expression, and replace it with the resulting value.",
         "helpview_help_3": "On other platforms, or when the clipboard mode has been changed, then instead of using highlighted text, Lavendeux will use the contents of the clipboard.",
 
         "menu_file": "File",

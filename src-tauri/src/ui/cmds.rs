@@ -243,8 +243,7 @@ pub fn clear_history(app_handle: AppHandle, state: tauri::State<SharedState>) ->
 pub fn import_extension(app_handle: AppHandle, state: tauri::State<SharedState>, src_path: &str) -> Result<(), String> {
 	match state.0.lock().ok() {
 		Some(mut lock) => {
-			extensions::import(&mut lock, src_path)?;
-            app_handle.emit_all("extensions", extensions::all(&mut lock)).ok();
+            app_handle.emit_all("extensions", extensions::import(&mut lock, src_path)?).ok();
             Ok(())
 		},
 		None => Err("Could not lock settings object".to_string())
@@ -260,8 +259,7 @@ pub fn import_extension(app_handle: AppHandle, state: tauri::State<SharedState>,
 pub fn disable_extension(app_handle: AppHandle, state: tauri::State<SharedState>, src_path: &str) -> Result<(), String> {
 	match state.0.lock().ok() {
 		Some(mut lock) => {
-			extensions::disable(&mut lock, src_path)?;
-            app_handle.emit_all("extensions", extensions::all(&mut lock)).ok();
+            app_handle.emit_all("extensions", extensions::disable(&mut lock, src_path)?).ok();
             Ok(())
 		},
 		None => Err("Could not lock settings object".to_string())

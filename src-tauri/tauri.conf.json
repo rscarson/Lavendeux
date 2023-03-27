@@ -43,10 +43,10 @@
       ],
       "resources": [],
       "externalBin": [],
-      "copyright": "",
+      "copyright": "Copyright Richard Carson 2023",
       "category": "DeveloperTool",
-      "shortDescription": "",
-      "longDescription": "",
+      "shortDescription": "Lavendeux enhances the clipboard",
+      "longDescription": "Lavendeux inlines calculating, programming and testing utilities into your favourite text editor.\nTest the result of a remote API call, check the result of a regular expression and much more, all without needing to break your workflow.",
       "deb": {
         "depends": []
       },
@@ -56,19 +56,32 @@
         "exceptionDomain": "",
         "signingIdentity": null,
         "providerShortName": null,
-        "entitlements": null
+        "entitlements": null,
+        "license": "../LICENSE"
       },
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "timestampUrl": "",
+        "wix": {
+          "language": ["en-US", "fr-FR"],
+          "license": "../LICENSE"
+        }
       }
     },
     "updater": {
       "active": false
     },
     "allowlist": {
-      "all": true
+      "clipboard":  {
+        "all": true
+      },
+      "globalShortcut": {
+        "all": true
+      },
+      "dialog": {
+        "all": true
+      }
     },
     "windows": [
       {

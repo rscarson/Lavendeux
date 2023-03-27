@@ -39,8 +39,10 @@ function Extensions(props) {
      * Import an extension through tauri
      */
 	function importFile() {
-		openDialog()
-			.then(filename => run('import_extension', { srcPath: filename }))
+		openDialog({
+			filters: [{ name: 'Javascript', extensions: ['js'] }],
+		})
+			.then(filename => filename && run('import_extension', { srcPath: filename }))
 			.catch(e => alert(e));
 	}
 
