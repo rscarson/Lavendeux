@@ -763,9 +763,9 @@ dependencies = [
 
 [[package]]
 name = "enigo"
-version = "0.0.15"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eda7d7521944cbc3d00d0d4f934e1cc6b415889742f7f6691b867a9d6bad0363"
+checksum = "19b409a2316111716c3a8ceb59934a5ea9d1c83bbb58bf29d85006fd1786b07b"
 dependencies = [
  "core-foundation",
  "core-foundation-sys",
