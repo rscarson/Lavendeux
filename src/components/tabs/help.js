@@ -17,6 +17,8 @@ function Help(props) {
 		lang = {},
 	} = props;
 
+	const donateLink = 'https://www.paypal.com/donate/?business=UXKPLM89RVU5L&no_recurring=0&item_name=Thank+you+for+supporting+open-source+software%21&currency_code=CAD';
+
 	const [name, setName] = useState('[...]');
 	const [version, setVersion] = useState('[...]');
 	const [shortcutName, setShortcutName] = useState('Ctrl+Space');
@@ -99,6 +101,13 @@ function Help(props) {
 					<Accordion defaultActiveKey="0">
 						{codeSamples.map((sample, i) => renderSample(sample, i))}
 					</Accordion>
+				</ListGroup.Item>
+				<ListGroup.Item>
+					<a href={donateLink} target="_blank" rel="noreferrer">
+						<i className="bi bi-cup-hot">
+							&nbsp;Support Lavendeux by buying me a coffee
+						</i>
+					</a>
 				</ListGroup.Item>
 			</ListGroup>
 		</div>
