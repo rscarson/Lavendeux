@@ -752,12 +752,10 @@ dependencies = [
 
 [[package]]
 name = "enigo"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19b409a2316111716c3a8ceb59934a5ea9d1c83bbb58bf29d85006fd1786b07b"
+checksum = "a121ab4168f5fe7f2fb64469cb6e2d73239fb6a4a40625da87a85760324ed48c"
 dependencies = [
- "core-foundation",
- "core-foundation-sys",
  "core-graphics",
  "libc",
  "objc",
