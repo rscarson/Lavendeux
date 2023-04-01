@@ -58,7 +58,7 @@ impl<R: Runtime> AppBuilder<R> {
     /// # Arguments
     /// * `handler` - Event handler
     pub fn set_handler<F>(self, handler: F) -> Self
-    where F: Fn(Invoke<R>) + Send + Sync + 'static {
+    where F: Fn(Invoke<R>) -> bool + Send + Sync + 'static {
         Self(
             self.0.invoke_handler(handler)
         )
@@ -167,7 +167,11 @@ impl App {
 		state.logger.debug("Updating settings");
 
         // Reload extensions
-		extensions::reload(state)?;
+		if let Err(e) = extensions::reload(state) {
+            state.logger.error(&e);
+            error_window.show_message("Error reloading extensions", &e, "danger").ok();
+            return Err(e.to_string());
+        }
         
         // Update keyboard shortcut
         if let Some(e) = keyboard::bind_shortcut(&app_handle, state, &settings.inner_settings.shortcut, parser::handle_shortcut) {

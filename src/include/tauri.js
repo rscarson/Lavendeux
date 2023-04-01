@@ -34,7 +34,7 @@ export { getVersion } from '@tauri-apps/api/app';
  */
 export function run(f, payload) {
 	if (payload) {
-		return invoke(f, payload).catch(e => alert(`Error running ${f}: ${e.stack}`));
+		return invoke(f, payload).catch(e => false && alert(`Error running ${f}: ${e.stack}`));
 	}
-	return invoke(f).catch(e => alert(`Error running ${f}: ${e.stack}`));
+	return invoke(f).catch(e => false && alert(`Error running ${f}: ${e.stack}`));
 }

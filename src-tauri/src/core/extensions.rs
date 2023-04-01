@@ -8,14 +8,12 @@ use crate::utils::fs;
 /// # Arguments
 /// * `state` - Current application state
 pub fn reload(state: &mut State) -> Result<Vec<Extension>, String> {
-	match state.parser.extensions.load_all(&state.settings.inner_settings.extension_dir) {
-		Ok(_) => Ok(state.parser.extensions.all()),
-		Err(e) => {
-			let error = format!("Error reloading extensions: {}", e);
-			state.logger.error(&error);
-			Err(error)
+	for result in state.parser.extensions.load_all(&state.settings.inner_settings.extension_dir) {
+		if let Err(e) = result {
+			state.logger.error(&e.to_string());
 		}
 	}
+	Ok(state.parser.extensions.all())
 }
 
 /// Open the extension directory in the system explorer
