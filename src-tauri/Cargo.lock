@@ -1645,8 +1645,8 @@ checksum = "8eaf4bc02d17cbdd7ff4c7438cafcdf7fb9a4613313ad11b4f8fefe7d3fa0130"
 
 [[package]]
 name = "js-sandbox"
-version = "0.2.0-rc.0"
-source = "git+https://github.com/rscarson/js-sandbox#5c6b8b21573782f74df95618087dcafad376a587"
+version = "0.2.0-rc.1"
+source = "git+https://github.com/rscarson/js-sandbox#f05d29c9c363d66b6b2fedd6bce55239dbd77ddf"
 dependencies = [
  "deno_core",
  "js-sandbox-macros",
@@ -1656,12 +1656,12 @@ dependencies = [
 
 [[package]]
 name = "js-sandbox-macros"
-version = "0.2.0-rc.0"
-source = "git+https://github.com/rscarson/js-sandbox#5c6b8b21573782f74df95618087dcafad376a587"
+version = "0.2.0-rc.1"
+source = "git+https://github.com/rscarson/js-sandbox#f05d29c9c363d66b6b2fedd6bce55239dbd77ddf"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.109",
+ "syn 2.0.12",
 ]
 
 [[package]]
@@ -1717,7 +1717,7 @@ dependencies = [
 [[package]]
 name = "lavendeux-parser"
 version = "0.9.0"
-source = "git+https://github.com/rscarson/lavendeux-parser#ea600f2331b52769ab1eed3c103225b7b3595d26"
+source = "git+https://github.com/rscarson/lavendeux-parser#55c06bfb2124612c22275fe6f87666b634abe718"
 dependencies = [
  "chrono",
  "js-sandbox",
@@ -2986,9 +2986,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.95"
+version = "1.0.96"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d721eca97ac802aa7777b701877c8004d950fc142651367300d21c1cc0194744"
+checksum = "057d394a50403bcac12672b2b18fb387ab6d289d957dab67dd201875391e52f1"
 dependencies = [
  "indexmap",
  "itoa 1.0.6",
