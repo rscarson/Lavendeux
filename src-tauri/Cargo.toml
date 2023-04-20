@@ -21,7 +21,7 @@ lavendeux-parser = { git = "https://github.com/rscarson/lavendeux-parser" }
 tauri = { version = "2.0.0-alpha.8", features = ["cli", "clipboard-all", "dialog-all", "global-shortcut-all", "shell-open", "system-tray"] }
 serde = { version = "1.0.160", features = ["derive"] }
 single-instance = "0.3.3"
-serde_json = "1.0.95"
+serde_json = "1.0.96"
 time = { version = "^0.3.15", features = ["formatting"] }
 enigo = "0.1.2"
 
