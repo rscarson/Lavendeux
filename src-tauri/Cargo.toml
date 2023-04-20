@@ -28,7 +28,7 @@ enigo = "0.1.2"
 dirs = "5.0.0"
 
 [target.'cfg(windows)'.dependencies]
-winreg = "0.11.0"
+winreg = "0.50.0"
 
 [features]
 # by default Tauri runs in production mode
