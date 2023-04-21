@@ -1645,8 +1645,8 @@ checksum = "8eaf4bc02d17cbdd7ff4c7438cafcdf7fb9a4613313ad11b4f8fefe7d3fa0130"
 
 [[package]]
 name = "js-sandbox"
-version = "0.2.0-rc.0"
-source = "git+https://github.com/rscarson/js-sandbox#5c6b8b21573782f74df95618087dcafad376a587"
+version = "0.2.0-rc.1"
+source = "git+https://github.com/rscarson/js-sandbox#198e760faa376a2c790a41e99d9fed3ccefc7b1e"
 dependencies = [
  "deno_core",
  "js-sandbox-macros",
@@ -1656,12 +1656,12 @@ dependencies = [
 
 [[package]]
 name = "js-sandbox-macros"
-version = "0.2.0-rc.0"
-source = "git+https://github.com/rscarson/js-sandbox#5c6b8b21573782f74df95618087dcafad376a587"
+version = "0.2.0-rc.1"
+source = "git+https://github.com/rscarson/js-sandbox#198e760faa376a2c790a41e99d9fed3ccefc7b1e"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.109",
+ "syn 2.0.12",
 ]
 
 [[package]]
@@ -1717,8 +1717,9 @@ dependencies = [
 [[package]]
 name = "lavendeux-parser"
 version = "0.9.0"
-source = "git+https://github.com/rscarson/lavendeux-parser#ea600f2331b52769ab1eed3c103225b7b3595d26"
+source = "git+https://github.com/rscarson/lavendeux-parser#234490f6d126da9a6c67724f2726292391943f8a"
 dependencies = [
+ "base64 0.21.0",
  "chrono",
  "js-sandbox",
  "md-5",
@@ -1730,6 +1731,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "urlencoding",
 ]
 
 [[package]]
@@ -3906,6 +3908,12 @@ dependencies = [
  "percent-encoding",
  "serde",
 ]
+
+[[package]]
+name = "urlencoding"
+version = "2.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8db7427f936968176eaa7cdf81b7f98b980b18495ec28f1b5791ac3bfe3eea9"
 
 [[package]]
 name = "utf-8"
