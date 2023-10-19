@@ -1,0 +1,44 @@
+.lav-nav {
+  background-color: #235daa;
+}
+
+.lav-nav a {
+  color: #DDD;
+}
+
+.lav-nav .nav-link:hover {
+  color: #FFF;
+}
+
+.lav-nav .nav-link.active {
+  color: #FFF !important;
+}
+
+html, body {
+  user-select: none;
+  min-height: 100vh;
+  flex-shrink: 0;
+  width: 100%;
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.inner-wrapper {
+  min-height: 100vh;
+}
+
+.nav-sidebar {
+  max-width: 150px !important;
+}
+
+.tablist .nav-link,.active {
+  color: #235daa !important;
+}
+
+.root-container {
+  
+}
