@@ -15,7 +15,7 @@ rust-version = "1.57"
 tauri-build = { version = "2.0.0-alpha.6", features = [] }
 
 [dependencies]
-embedded-lang = "0.7.0"
+embedded-lang = "0.8.0"
 #lavendeux-parser = "0.8.1"
 lavendeux-parser = { git = "https://github.com/rscarson/lavendeux-parser" }
 tauri = { version = "2.0.0-alpha.8", features = ["cli", "clipboard-all", "dialog-all", "global-shortcut-all", "shell-open", "system-tray"] }

@@ -765,9 +765,9 @@ checksum = "4ef6b89e5b37196644d8796de5268852ff179b44e96276cf4290264843743bb7"
 
 [[package]]
 name = "embedded-lang"
-version = "0.7.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30a94dbad4ad1c6bd431d5645318345decf76f6bef9a6417a70db759db7dad25"
+checksum = "08ab8366ec5e7ffc33dc5fc96b7b5ccd3bd6858554191395a8f2903ffa096897"
 dependencies = [
  "serde",
  "serde_json",
