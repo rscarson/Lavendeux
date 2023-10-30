@@ -1,0 +1,88 @@
+{
+    "name": "Français",
+    "short_name": "fr",
+    "strings": {
+        "tray": {},
+
+        "general": {
+            "components": {
+                "shortcut": {
+                    "lbl_key_bind_title": "Assigner un raccourci clavier",
+                    "lbl_key_press": "Appuyez sur la combinaison de touches que vous souhaitez utiliser",
+                    "lbl_key_press_default": "L'option par défaut est CTRL+Espace",
+                    "btn_record": "Enregistrer"
+                },
+
+                "tutorial": {
+                    "lbl_getting_started_noecm": "Pour commencer, essayez de copier le bloc de texte suivant et d'appuyer sur {SHORTCUT}",
+                    "lbl_getting_started_ecm": "Pour commencer, essayez de surligner le bloc de texte suivant et d'appuyer sur {SHORTCUT}"
+                }
+            }
+        },
+
+        "history": {
+            "lbl_no_history_to_display": "Aucun historique à afficher",
+
+            "lbl_input": "Entrée",
+            "lbl_output": "Sortie",
+            "lbl_error": "Erreur",
+
+            "btn_clear": "Effacer",
+            "btn_export": "Exporter"
+        },
+
+        "extensions": {
+            "lbl_by": "Par",
+            "lbl_toggle": "Activer/désactiver l'extension",
+            "lbl_delete": "Supprimer l'extension",
+            "lbl_decorators": "Décorateurs exportés",
+            "lbl_functions": "Fonctions exportées",
+            "lbl_disabled": "désactivé",
+            "lbl_disabled_by_user": "Désactivé par l'utilisateur",
+
+            "btn_import": "Importer",
+            "btn_reload": "Recharger",
+            "btn_browse": "Parcourir"
+        },
+
+        "settings": {
+            "btn_browse": "Parcourir",
+
+            "general": {
+                "title": "Général",
+
+                "lbl_shortcut": "Raccourci clavier",
+                "desc_shortcut": "Le raccourci clavier qui activera le parseur. Par défaut, c'est CTRL+Espace",
+
+                "lbl_autostart": "Démarrer Lavendeux automatiquement",
+                "desc_autostart": "Lorsqu'il est activé, Lavendeux démarre automatiquement avec le système d'exploitation",
+
+                "lbl_lang": "Langue",
+                "desc_lang": "Langue à utiliser dans le logiciel. Les erreurs du parseur seront affichées en anglais",
+                "lbl_lang_disclaimer": "Les traductions ci-dessous sont grossières et automatisées, vos commentaires sont grandement appréciés"
+            },
+            
+            "parsing": {
+                "title": "Analyse",
+                
+                "lbl_ecm": "Activer le mode de presse-papiers amélioré",
+                "desc_ecm": "Lorsqu'il est activé, remplace le texte surligné directement, contournant le presse-papiers. Sinon, remplace le contenu du presse-papiers",
+
+                "lbl_script": "Démarrer le script",
+                "desc_script": "Un script Lavendeux à exécuter chaque fois que le parseur démarre"
+            },
+            
+            "display": {
+                "title": "Affichage",
+
+                "lbl_errors": "Afficher les erreurs d'analyse",
+                "desc_errors": "Lorsqu'il est activé, les erreurs d'analyse apparaissent dans le coin de votre écran sous forme de petite fenêtre contextuelle. Les erreurs peuvent toujours être consultées dans le journal si cette option est désactivée",
+
+                "lbl_dark": "Mode sombre",
+                "desc_dark": "Lorsqu'il est activé, utilise un thème plus sombre et moins intrusif"
+            }
+        },
+
+        "help": {}
+    }
+}

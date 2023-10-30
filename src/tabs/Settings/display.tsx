@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+
 import { TextboxSetting, SwitchSetting } from "./setting_container";
+import { Translated } from "../../components";
 
 import Form from 'react-bootstrap/Form';
 
@@ -15,8 +17,8 @@ export const DisplaySettings = (props:Props) => {
     function renderDisplayErrors() {
         return (
             <SwitchSetting
-                icon="bell-slash" title="Display parsing errors"
-                desc="When enabled, parsing errors will appear in the corner of your screen as a small popup. Errors can still be viewed in the log if turned off"
+                icon="bell-slash" title={<Translated path="settings\display\lbl_errors" />}
+                desc={<Translated path="settings\display\desc_errors" />}
                 id="display-errors" checked={props.displayErrors} 
                 onChange={(e) => {
                     let elem = e.target as HTMLInputElement;
@@ -29,8 +31,8 @@ export const DisplaySettings = (props:Props) => {
     function renderDarkMode() {
         return (
             <SwitchSetting
-                icon="sun" title="Dark mode"
-                desc="When enabled, uses a darker, less intrusive theme"
+                icon="sun" title={<Translated path="settings\display\lbl_dark" />}
+                desc={<Translated path="settings\display\desc_dark" />}
                 id="display-errors" checked={props.darkMode} 
                 onChange={(e) => {
                     let elem = e.target as HTMLInputElement;

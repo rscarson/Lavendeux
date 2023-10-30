@@ -1,0 +1,88 @@
+{
+    "name": "Deutsch",
+    "short_name": "de",
+    "strings": {
+        "tray": {},
+
+        "general": {
+            "components": {
+                "shortcut": {
+                    "lbl_key_bind_title": "Tastenkombination zuweisen",
+                    "lbl_key_press": "Drücken Sie die Tastenkombination, die Sie verwenden möchten",
+                    "lbl_key_press_default": "Die Standardeinstellung ist STRG+Leertaste",
+                    "btn_record": "Aufzeichnen"
+                },
+
+                "tutorial": {
+                    "lbl_getting_started_noecm": "Um loszulegen, versuchen Sie den folgenden Textblock zu kopieren und {SHORTCUT} zu drücken",
+                    "lbl_getting_started_ecm": "Um loszulegen, versuchen Sie den folgenden Textblock zu markieren und {SHORTCUT} zu drücken"
+                }
+            }
+        },
+
+        "history": {
+            "lbl_no_history_to_display": "Kein Verlauf vorhanden",
+
+            "lbl_input": "Eingabe",
+            "lbl_output": "Ausgabe",
+            "lbl_error": "Fehler",
+
+            "btn_clear": "Löschen",
+            "btn_export": "Exportieren"
+        },
+
+        "extensions": {
+            "lbl_by": "Von",
+            "lbl_toggle": "Erweiterung aktivieren/deaktivieren",
+            "lbl_delete": "Erweiterung löschen",
+            "lbl_decorators": "Exportierte Dekorateure",
+            "lbl_functions": "Exportierte Funktionen",
+            "lbl_disabled": "deaktiviert",
+            "lbl_disabled_by_user": "Von Benutzer deaktiviert",
+
+            "btn_import": "Importieren",
+            "btn_reload": "Neu laden",
+            "btn_browse": "Durchsuchen"
+        },
+
+        "settings": {
+            "btn_browse": "Durchsuchen",
+
+            "general": {
+                "title": "Allgemein",
+
+                "lbl_shortcut": "Tastenkombination",
+                "desc_shortcut": "Die Tastenkombination, die den Parser aktiviert. Standardmäßig STRG+Leertaste",
+
+                "lbl_autostart": "Lavendeux automatisch starten",
+                "desc_autostart": "Wenn aktiviert, startet Lavendeux automatisch mit dem Betriebssystem",
+
+                "lbl_lang": "Sprache",
+                "desc_lang": "Die im Programm verwendete Sprache. Parserfehler werden in Englisch angezeigt"
+            },
+            
+            "parsing": {
+                "title": "Analyse",
+                
+                "lbl_ecm": "Erweiterter Zwischenspeichermodus aktivieren",
+                "desc_ecm": "Wenn aktiviert wird der markierte Text direkt ersetzt und umgeht den Zwischenspeicher. Andernfalls wird der Inhalt des Zwischenspeichers ersetzt",
+
+                "lbl_script": "Skript beim Start ausführen",
+                "desc_script": "Ein Lavendeux-Skript, das jedes Mal ausgeführt wird, wenn der Parser startet",
+                "lbl_lang_disclaimer": "Die folgenden Übersetzungen sind grob und automatisiert, Rückmeldung wird sehr geschätzt"
+            },
+            
+            "display": {
+                "title": "Anzeige",
+
+                "lbl_errors": "Anzeige von Analysefehlern",
+                "desc_errors": "Wenn aktiviert, werden Analysefehler in der Ecke Ihres Bildschirms als kleine Popup-Fenster angezeigt. Fehler können im Protokoll weiterhin angezeigt werden, wenn diese Option deaktiviert ist",
+
+                "lbl_dark": "Dunkler Modus",
+                "desc_dark": "Wenn aktiviert, wird ein dunkleres, weniger auffälliges Design verwendet"
+            }
+        },
+
+        "help": {}
+    }
+}

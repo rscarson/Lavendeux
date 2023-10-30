@@ -28,8 +28,8 @@ export const SettingContainer = (props: PropsWithChildren<SettingContainerProps>
 
 interface SwitchSettingProps {
     icon: string,
-    desc: string,
-    title: string
+    desc: React.JSX.Element,
+    title: React.JSX.Element
 
     id: string,
     checked: boolean,
@@ -56,8 +56,8 @@ export const SwitchSetting: React.FC<SwitchSettingProps> = (props) => {
 
 interface KeyboardSettingProps {
     icon: string,
-    desc: string,
-    title: string
+    desc: React.JSX.Element,
+    title: React.JSX.Element
 
     value: KeyboardShortcut,
     onChange: ChangeEventHandler<HTMLInputElement>
@@ -81,10 +81,11 @@ export const KeyboardSetting: React.FC<KeyboardSettingProps> = (props) => {
 
 interface DropdownSettingProps {
     icon: string,
-    desc: string,
-    title: string
+    desc: React.JSX.Element,
+    title: React.JSX.Element
 
     value: string,
+    values: Array<React.JSX.Element>
     onChange: ChangeEventHandler<HTMLSelectElement>
 }
 export const DropdownSetting: React.FC<DropdownSettingProps> = (props) => {
@@ -96,8 +97,7 @@ export const DropdownSetting: React.FC<DropdownSettingProps> = (props) => {
             </Col>
             <Row className="mt-2">
                 <Form.Select onChange={props.onChange}>
-                    <option value="en">English</option>
-                    <option value="fr">French</option>
+                    {props.values}
                 </Form.Select>
             </Row>
         </SettingContainer>
@@ -106,8 +106,8 @@ export const DropdownSetting: React.FC<DropdownSettingProps> = (props) => {
 
 interface TextboxSettingProps {
     icon: string,
-    desc: string,
-    title: string
+    desc: React.JSX.Element,
+    title: React.JSX.Element
 
     id: string,
     value: string,

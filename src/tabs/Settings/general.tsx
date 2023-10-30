@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { invoke } from "@tauri-apps/api/primitives";
 
 import { KeyboardShortcut } from "../../types";
 import { DropdownSetting, KeyboardSetting, SwitchSetting } from "./setting_container";
 
 import Form from 'react-bootstrap/Form';
+import { Translated } from "../../components";
 
 interface Props {
     shortcut: KeyboardShortcut,
@@ -17,11 +19,21 @@ interface Props {
 }
 
 export const GeneralSettings = (props:Props) => {
+    const [languages, setLanguages] = useState<Array<[string, string]>>([['English', 'en']])
+    
+    useEffect(() => {
+        invoke("list_languages", {}).then((languages) => {
+            if (languages) {
+                setLanguages(languages as Array<[string, string]>);
+            }
+        })
+    }, []);
+
     function renderStartWithOs() {
         return (
             <SwitchSetting
-                icon="windows" title="Start Lavendeux automatically"
-                desc="When enabled, Starts Lavendeux automatically when you log in"
+                icon="windows" title={<Translated path="settings\general\lbl_autostart" />}
+                desc={<Translated path="settings\general\desc_autostart" />}
                 id="display-errors" checked={props.startWithOs} 
                 onChange={(e) => {
                     let elem = e.target as HTMLInputElement;
@@ -34,8 +46,8 @@ export const GeneralSettings = (props:Props) => {
     function renderKeyboardShortcut() {
         return (
             <KeyboardSetting
-                icon="keyboard" title="Keyboard Shortcut"
-                desc="The keyboard shortcut that will activate the parser. Defaults to CTRL-Space"
+                icon="keyboard" title={<Translated path="settings\general\lbl_shortcut" />}
+                desc={<Translated path="settings\general\desc_shortcut" />}
                 value={props.shortcut} onChange={(s) => props.onChangeShortcut(s)}
             />
         );
@@ -44,8 +56,17 @@ export const GeneralSettings = (props:Props) => {
     function renderLanguageCode() {
         return (
             <DropdownSetting
-                icon="translate" title="Language"
-                desc="Language to use in the software. Parser errors will be displayed in english"
+                icon="translate" title={<Translated path="settings\general\lbl_lang" />}
+                desc={<>
+                <Translated path="settings\general\desc_lang" /><br/>
+                <small className="text-muted">
+                    [ <Translated path="settings\general\lbl_lang_disclaimer" /> ]
+                </small>
+                </>}
+                values={languages.map((l) => {
+                    let [name, code] = l;
+                    return <option selected={props.languageCode==code} value={code}>{name}</option>
+                })}
                 value={props.languageCode} onChange={(e) => {
                     let elem = e.target as HTMLSelectElement;
                     props.onChangeLanguageCode(elem.value);

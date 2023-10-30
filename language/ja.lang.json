@@ -1,0 +1,88 @@
+{
+    "name": "日本語",
+    "short_name": "ja",
+    "strings": {
+        "tray": {},
+
+        "general": {
+            "components": {
+                "shortcut": {
+                    "lbl_key_bind_title": "キーボードショートカットの設定",
+                    "lbl_key_press": "使用したいキーコンビネーションを押してください",
+                    "lbl_key_press_default": "デフォルトオプションはCTRL+スペースです",
+                    "btn_record": "録音"
+                },
+
+                "tutorial": {
+                    "lbl_getting_started_noecm": "はじめるには、以下のテキストブロックをコピーして{SHORTCUT}を押してみてください",
+                    "lbl_getting_started_ecm": "はじめるには、以下のテキストブロックをハイライトして{SHORTCUT}を押してみてください"
+                }
+            }
+        },
+
+        "history": {
+            "lbl_no_history_to_display": "履歴はありません",
+
+            "lbl_input": "入力",
+            "lbl_output": "出力",
+            "lbl_error": "エラー",
+
+            "btn_clear": "クリア",
+            "btn_export": "エクスポート"
+        },
+
+        "extensions": {
+            "lbl_by": "作者",
+            "lbl_toggle": "拡張機能の切り替え",
+            "lbl_delete": "拡張機能の削除",
+            "lbl_decorators": "エクスポートされたデコレータ",
+            "lbl_functions": "エクスポートされた関数",
+            "lbl_disabled": "無効",
+            "lbl_disabled_by_user": "ユーザーによる無効化",
+
+            "btn_import": "インポート",
+            "btn_reload": "再読み込み",
+            "btn_browse": "閲覧"
+        },
+
+        "settings": {
+            "btn_browse": "閲覧",
+
+            "general": {
+                "title": "一般",
+
+                "lbl_shortcut": "キーボードショートカット",
+                "desc_shortcut": "パーサーをアクティブにするキーボードショートカット。デフォルトはCTRL+スペースです",
+
+                "lbl_autostart": "Lavendeuxの自動起動",
+                "desc_autostart": "有効にすると、Lavendeuxはオペレーティングシステムとともに自動的に起動します",
+
+                "lbl_lang": "言語",
+                "desc_lang": "ソフトウェアで使用する言語。パーサーエラーは英語で表示されます",
+                "lbl_lang_disclaimer": "以下の翻訳は荒削りで自動化されています。フィードバックを非常に評価します。"
+            },
+            
+            "parsing": {
+                "title": "解析",
+                
+                "lbl_ecm": "高度なクリップボードモードの有効化",
+                "desc_ecm": "有効にすると、クリップボードをバイパスしてハイライトされたテキストを直接置換します。それ以外の場合、クリップボードの内容を置換します",
+
+                "lbl_script": "スクリプトの開始",
+                "desc_script": "パーサーが起動するたびに実行されるLavendeuxスクリプト"
+            },
+            
+            "display": {
+                "title": "表示",
+
+                "lbl_errors": "解析エラーの表示",
+                "desc_errors": "有効にすると、解析エラーは画面の角に小さなポップアップとして表示されます。オフにした場合でもエラーはログで確認できます",
+
+                "lbl_dark": "ダークモード",
+                "desc_dark": "有効にすると、より暗い、目立たないテーマが使用されます"
+            }
+        },
+
+        "help": {}
+    }
+}

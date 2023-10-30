@@ -1,0 +1,88 @@
+{
+    "name": "简体中文",
+    "short_name": "zh-cn",
+    "strings": {
+        "tray": {},
+
+        "general": {
+            "components": {
+                "shortcut": {
+                    "lbl_key_bind_title": "设置键盘快捷键",
+                    "lbl_key_press": "按下您想要使用的键盘组合",
+                    "lbl_key_press_default": "默认选项是CTRL+空格",
+                    "btn_record": "录制"
+                },
+
+                "tutorial": {
+                    "lbl_getting_started_noecm": "要开始，请尝试复制以下文本块，然后按{SHORTCUT}",
+                    "lbl_getting_started_ecm": "要开始，请尝试突出显示以下文本块，然后按{SHORTCUT}"
+                }
+            }
+        },
+
+        "history": {
+            "lbl_no_history_to_display": "无历史记录",
+
+            "lbl_input": "输入",
+            "lbl_output": "输出",
+            "lbl_error": "错误",
+
+            "btn_clear": "清除",
+            "btn_export": "导出"
+        },
+
+        "extensions": {
+            "lbl_by": "作者",
+            "lbl_toggle": "切换扩展",
+            "lbl_delete": "删除扩展",
+            "lbl_decorators": "导出的装饰器",
+            "lbl_functions": "导出的函数",
+            "lbl_disabled": "已禁用",
+            "lbl_disabled_by_user": "用户禁用",
+
+            "btn_import": "导入",
+            "btn_reload": "重新加载",
+            "btn_browse": "浏览"
+        },
+
+        "settings": {
+            "btn_browse": "浏览",
+
+            "general": {
+                "title": "常规",
+
+                "lbl_shortcut": "键盘快捷键",
+                "desc_shortcut": "激活解析器的键盘快捷键。默认为CTRL+空格",
+
+                "lbl_autostart": "自动启动Lavendeux",
+                "desc_autostart": "启用后，Lavendeux将随操作系统自动启动",
+
+                "lbl_lang": "语言",
+                "desc_lang": "软件使用的语言。解析器错误将以英语显示",
+                "lbl_lang_disclaimer": "以下翻译粗糙且自动化，非常欢迎反馈。"
+            },
+            
+            "parsing": {
+                "title": "解析",
+
+                "lbl_ecm": "启用增强剪贴板模式",
+                "desc_ecm": "启用后，直接替换突出显示的文本，绕过剪贴板。否则，替换剪贴板的内容",
+
+                "lbl_script": "启动脚本",
+                "desc_script": "每次解析器启动时运行的Lavendeux脚本"
+            },
+            
+            "display": {
+                "title": "显示",
+
+                "lbl_errors": "显示解析错误",
+                "desc_errors": "启用后，解析错误将显示在屏幕角落作为小弹出窗口。即使关闭，错误仍可在日志中查看",
+
+                "lbl_dark": "深色模式",
+                "desc_dark": "启用后，使用较暗、不那么显眼的主题"
+            }
+        },
+
+        "help": {}
+    }
+}

@@ -10,7 +10,7 @@ export class KeyboardShortcutController {
         if (['Control', 'Shift', 'Alt'].includes(code)) return;
 
         let key = {
-            key: e.code.replace(/Left|Right|Key/g, ''),
+            key: e.code,
             ctrl: e.ctrlKey,
             alt: e.altKey,
             shift: e.shiftKey

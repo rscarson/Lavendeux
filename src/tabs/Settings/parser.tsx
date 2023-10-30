@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+
 import { TextboxSetting, SwitchSetting } from "./setting_container";
+import { Translated } from "../../components";
 
 import Form from 'react-bootstrap/Form';
 
@@ -15,8 +17,8 @@ export const ParserSettings = (props:Props) => {
     function renderEnhancedClipboard() {
         return (
             <SwitchSetting
-                icon="clipboard-plus" title="Enable enhanced clipboard mode"
-                desc="When enabled, replaces highlighted text directly, bypassing the clipboard. Otherwise, replaces the clipboard's contents"
+                icon="clipboard-plus" title={<Translated path="settings\parsing\lbl_ecm" />}
+                desc={<Translated path="settings\parsing\desc_ecm" />}
                 id="enhanced-clipboard" checked={props.enhancedClipboard} 
                 onChange={(e) => {
                     let elem = e.target as HTMLInputElement;
@@ -29,8 +31,8 @@ export const ParserSettings = (props:Props) => {
     function renderStartScript() {
         return (
             <TextboxSetting
-                icon="file-earmark-code" title="Start script"
-                desc="A Lavendeux script to run every time the parser starts up"
+                icon="file-earmark-code" title={<Translated path="settings\parsing\lbl_script" />}
+                desc={<Translated path="settings\parsing\desc_script" />}
                 id="enhanced-clipboard" value={props.startScript} 
                 onChange={(e) => {
                     let elem = e.target as HTMLInputElement;

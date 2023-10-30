@@ -1,47 +1,48 @@
 import React, { useState } from "react";
 
 import { KeyboardShortcutController } from "../util/keyboard_shortcut";
-import { KeyboardShortcut, Nullable } from "../types";
+import { Translated } from "./Translated";
+import { KeyboardShortcut } from "../types";
 
 import Form from 'react-bootstrap/Form';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
 import Popover from 'react-bootstrap/Popover';
 import InputGroup from 'react-bootstrap/InputGroup';
-import SplitButton from 'react-bootstrap/SplitButton';
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 
 interface Props {
     shortcut: KeyboardShortcut,
     onShortcutChanged: Function
 }
 
-const popover = (
-    <Popover id="popover-basic">
-        <Popover.Header as="h3">Bind Keyboard Shortcut</Popover.Header>
-        <Popover.Body>
-            Press the key combination you'd like to use!<br/>
-            The default option is CTRL+Space
-        </Popover.Body>
-    </Popover>
-);
-
 export const ShortcutRecorder = (props:Props) => {
     const [showPopover, setShowPopover] = useState<boolean>(false);
 
+    const popover = (
+        <Popover id="popover-basic">
+            <Popover.Header as="h3">
+                <Translated path="general\components\shortcut\lbl_key_bind_title" />
+                </Popover.Header>
+            <Popover.Body>
+                <Translated path="general\components\shortcut\lbl_key_press" /><br/>
+                <Translated path="general\components\shortcut\lbl_key_press_default" />
+            </Popover.Body>
+        </Popover>
+    );
+
     return (<>
-        <InputGroup size="sm">
+        <InputGroup size="sm" onBlur={() => setShowPopover(false)}>
             <OverlayTrigger show={showPopover} trigger="click" placement="top" overlay={popover} 
                 onEnter={() => KeyboardShortcutController.record().then((key) => {
-                    console.log(key);
+                    if (key == props.shortcut || !key.key.length) return;
                     setShowPopover(false);
                     props.onShortcutChanged(key as KeyboardShortcut);
                 })}
                 onExit={KeyboardShortcutController.stopRecording} 
             >
-                <Button variant="danger" onClick={() => setShowPopover(!showPopover)}>Record</Button>
+                <Button variant="danger" onClick={() => setShowPopover(!showPopover)}>
+                    <Translated path="general\components\shortcut\btn_record" />
+                </Button>
             </OverlayTrigger>
             <Form.Control
                 disabled={true} value={KeyboardShortcutController.toString(props.shortcut)}

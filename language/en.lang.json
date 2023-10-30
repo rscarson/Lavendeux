@@ -1,0 +1,121 @@
+{
+    "name": "English",
+    "short_name": "en",
+    "strings": {
+        "tray": {},
+
+        "general": {
+            "components": {
+                "shortcut": {
+                    "lbl_key_bind_title": "Bind Keyboard Shortcut",
+                    "lbl_key_press": "Press the key combination you'd like to use",
+                    "lbl_key_press_default": "The default option is CTRL+Space",
+                    "btn_record": "Record"
+                },
+
+                "tutorial": {
+                    "lbl_getting_started_noecm": "To get started, try copying the following block of text, and pressing {SHORTCUT}",
+                    "lbl_getting_started_ecm": "To get started, try highlighting the following block of text, and pressing {SHORTCUT}"
+                }
+            }
+        },
+
+        "history": {
+            "lbl_no_history_to_display": "No history to display",
+
+            "lbl_input": "Input",
+            "lbl_output": "Output",
+            "lbl_error": "Error",
+
+            "btn_clear": "Clear",
+            "btn_export": "Export"
+        },
+
+        "extensions": {
+            "lbl_by": "By",
+            "lbl_toggle": "Toggle extension",
+            "lbl_delete": "Delete extension",
+            "lbl_decorators": "Exported Decorators",
+            "lbl_functions": "Exported Functions",
+            "lbl_disabled": "disabled",
+            "lbl_disabled_by_user": "Disabled by user",
+
+            "btn_import": "Import",
+            "btn_reload": "Reload",
+            "btn_browse": "Browse"
+        },
+
+        "settings": {
+            "btn_browse": "Browse",
+
+            "general": {
+                "title": "General",
+
+                "lbl_shortcut": "Keyboard Shortcut",
+                "desc_shortcut": "The keyboard shortcut that will activate the parser. Defaults to CTRL-Space",
+
+                "lbl_autostart": "Start Lavendeux automatically",
+                "desc_autostart": "When enabled, Starts Lavendeux automatically with the operating system",
+
+                "lbl_lang": "Language",
+                "desc_lang": "Language to use in the software. Parser errors will be displayed in english",
+                "lbl_lang_disclaimer": "The translations below are crude and automated, feedback is much appreciated"
+            },
+            
+            "parsing": {
+                "title": "Parsing",
+                
+                "lbl_ecm": "Enable enhanced clipboard mode",
+                "desc_ecm": "When enabled, replaces highlighted text directly, bypassing the clipboard. Otherwise, replaces the clipboard's contents",
+
+                "lbl_script": "Start script",
+                "desc_script": "A Lavendeux script to run every time the parser starts up"
+            },
+            
+            "display": {
+                "title": "Display",
+
+                "lbl_errors": "Display parsing errors",
+                "desc_errors": "When enabled, parsing errors will appear in the corner of your screen as a small popup. Errors can still be viewed in the log if turned off",
+
+                "lbl_dark": "Dark mode",
+                "desc_dark": "When enabled, uses a darker, less intrusive theme"
+            }
+        },
+
+        "help": {
+            "lbl_getting_started": "Getting Started",
+            "basic_syntax": {
+                "intro_1a": "Lavendeux is mostly geared towards small mathematical expressions. It supports function calls, output formating, various bases, as well as many types of data.",
+                "intro_1b": "The sample below demonstrates a few of these features, to set up some variables, and define a function:",
+                "intro_2": "Now we can use these to display our values as hexadecimal, and to check if our value contains a flag:",
+
+                "operators_1": "There are a lot of functions and operators built in - for a complete list please see the 'operators' and 'functions' sections.",
+                "operators_2": "Here are a few examples:",
+
+                "types": "Data is also accepted in a variety of formats, including but not limited to:"
+            },
+
+            "features": {
+                "functions": "Functions can be used, or defined to simplify expressions. Below is a sample showing a few built-in functions, and how to define your own:",
+                "variables": "As seen above, variables can be defined to store values for later. Lavendeux uses weak-typing, so most operators will work on most combination of types:",
+                "decorators": "The format of the resulting string can be altered by adding an @decorator to the end of the expression - here are a few examples:",
+                "arrays_and_objects": "Compound types, such as arrays and objects are also supported, and can be formed from any combination of types:"
+            },
+
+            "datatypes": {
+                "intro": "Lavendeux is loosely typed - which means that most operations will accept most combinations of types. Below are some examples of type cooersion Lavendeux provides:",
+                "list_1": "Lavendeux provides the following types: integer, float, string, boolean, arrays, and objects. Any type can be cooerced into any other type - EXCEPT for numbers, which cannot be built from non-numeric types",
+                "list_2": "The example below shows the various representations of the available types:"
+            },
+
+            "operators": {
+                "intro": "Lavendeux supports a variety of operators to suit a wide set of usecases",
+                "bitwise": "Bitwise operators",
+                "boolean": "Boolean logic operators",
+                "math": "Mathematical operators",
+                "other": "Other operators, including ternary expressions, assignment expressions and array indexing:"
+            }
+        }
+    }
+}

@@ -1,27 +1,29 @@
 use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, Manager};
+use tauri_plugin_autostart::ManagerExt;
 
-use crate::ManagedValue;
+use crate::{bugcheck, config, models::language::TranslatorManager, ManagedValue};
 
-use super::shortcut::Shortcut;
+use super::{language::ManagedTranslator, shortcut::Shortcut};
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub struct Settings {
-    enhanced_clipboard: bool,
-    silence_errors: bool,
-    start_with_os: bool,
+    pub enhanced_clipboard: bool,
+    pub display_errors: bool,
+    pub start_with_os: bool,
 
-    start_script: String,
-    shortcut: Shortcut,
+    pub start_script: String,
+    pub shortcut: Shortcut,
 
-    dark_theme: bool,
-    language_code: String,
+    pub dark_theme: bool,
+    pub language_code: String,
 }
 
 impl Default for Settings {
     fn default() -> Self {
         Self {
             enhanced_clipboard: true,
-            silence_errors: false,
+            display_errors: true,
             start_with_os: false,
 
             start_script: String::default(),
@@ -33,7 +35,18 @@ impl Default for Settings {
     }
 }
 
-type ManagedSettings = ManagedValue<Settings>;
+pub type ManagedSettings = ManagedValue<Settings>;
+pub struct SettingsManager {}
+impl SettingsManager {
+    pub fn read(state: &ManagedSettings) -> Option<Settings> {
+        state.clone_inner()
+    }
+}
+
+#[tauri::command]
+pub fn open_config_dir(app: AppHandle) {
+    config::ConfigManager::open_config_dir(app)
+}
 
 #[tauri::command]
 pub fn read_settings(state: tauri::State<ManagedSettings>) -> Result<Settings, ()> {
@@ -41,7 +54,70 @@ pub fn read_settings(state: tauri::State<ManagedSettings>) -> Result<Settings, (
 }
 
 #[tauri::command]
-pub fn write_settings(settings: Settings, state: tauri::State<ManagedSettings>) -> Result<(), ()> {
+pub fn write_settings(
+    settings: Settings,
+    state: tauri::State<ManagedSettings>,
+    window: tauri::Window,
+    app: AppHandle,
+) -> Result<(), String> {
+    let last_known_good = read_settings(state.clone()).or(Err("unknown error".to_string()))?;
+
+    //
+    // Perform housekeeping tasks
+    //
+
+    // Has anything changed?
+    if settings == last_known_good {
+        return Ok(());
+    }
+
+    // Hotkey registration
+    if settings.shortcut != last_known_good.shortcut {
+        settings
+            .shortcut
+            .register(&app)
+            .or_else(|e| Err(e.to_string()))?;
+
+        last_known_good.shortcut.unregister(&app).or_else(|_| {
+            bugcheck::fatal(
+                app.clone(),
+                "error registering hotkey; manager is out of sync!",
+            )
+        })?;
+    }
+
+    // Set up autostart
+    if settings.start_with_os != last_known_good.start_with_os {
+        if settings.start_with_os {
+            app.autolaunch().enable().or_else(|e| Err(e.to_string()))?;
+        } else {
+            app.autolaunch().disable().or_else(|e| Err(e.to_string()))?;
+        }
+    }
+
+    // Set language
+    if settings.language_code != last_known_good.language_code {
+        if !TranslatorManager::set_language(
+            settings.language_code.clone(),
+            app.state::<ManagedTranslator>().inner(),
+        ) {
+            TranslatorManager::set_language(
+                last_known_good.language_code.clone(),
+                app.state::<ManagedTranslator>().inner(),
+            );
+        }
+        window.emit(TranslatorManager::UPDATED_EVENT, ()).ok();
+    }
+
+    //
+    // All is well - emit new settings
+    //
+
     println!("Updating settings: {:?}", settings);
-    state.write(settings)
+    state
+        .write(settings.clone())
+        .or(Err("unknown error".to_string()))?;
+    config::ConfigManager::save(app.clone()).ok();
+    window.emit("updated-settings", settings.clone()).ok();
+    Ok(())
 }

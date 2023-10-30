@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/primitives";
+import { getCurrent } from "@tauri-apps/api/window";
 
 import { Settings, KeyboardShortcut, Nullable } from '../../types';
-import { Loadable, ShortcutRecorder } from '../../components';
 
+import { RootTab } from "../Tab";
 import { ParserSettings } from "./parser";
 import { DisplaySettings } from "./display";
-
-import Card from 'react-bootstrap/Card';
-import Nav from 'react-bootstrap/Nav';
-import Form from 'react-bootstrap/Form';
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
 import { GeneralSettings } from "./general";
+
+import Alert from 'react-bootstrap/Alert';
+import Nav from 'react-bootstrap/Nav';
+import Tab from "react-bootstrap/Tab";
+import { Translated } from "../../components";
 
 interface Props {}
 
 export const SettingsTab: React.FC<Props> = ({}) => {
+    const [lastError, setLastError] = useState<string>("");
+    useEffect(() => {
+        if (!lastError) return;
+        setTimeout(() => {
+            setLastError("");
+        }, 2000);
+    }, [lastError]);
+
     const [tab, setTab] = useState<string>("general");
     const [loaded, setLoaded] = useState<boolean>(false);
 
@@ -32,90 +38,115 @@ export const SettingsTab: React.FC<Props> = ({}) => {
     const [startWithOs, setStartWithOs] = useState<boolean>(false);
     const [languageCode, setLanguageCode] = useState<string>("");
 
+    const [languages, setLanguages] = useState<Array<[string, string]>>([['English', 'en']])
+    
+    function loadFromSettings(settings: Settings) {
+        if (enhancedClipboard != settings.enhanced_clipboard) setEnhancedClipboard(settings.enhanced_clipboard);
+        if (displayErrors != settings.display_errors) setDisplayErrors(settings.display_errors);
+        if (startScript != settings.start_script) setStartScript(settings.start_script);
+        if (darkMode != settings.dark_theme) setDarkMode(settings.dark_theme);
+        if (languageCode != settings.language_code) setLanguageCode(settings.language_code);
+        if (keyboardShortcut != settings.shortcut) setKeyboardShortcut(settings.shortcut);
+        if (startWithOs != settings.start_with_os) setStartWithOs(settings.start_with_os);
+    }
+
+    function writeSettings() {
+        let settings: Settings = {
+            enhanced_clipboard: enhancedClipboard,
+            display_errors: displayErrors,
+            start_script: startScript,
+            dark_theme: darkMode,
+            language_code: languageCode,
+            shortcut: keyboardShortcut,
+            start_with_os: startWithOs,
+        };
+        invoke("write_settings", {settings}).catch(e => {
+            setLastError(`Error saving settings: ${e}`);
+        });
+    }
+
     async function load() {
         let settings: Nullable<Settings> = await invoke("read_settings", {});
         if (settings) {
-            setEnhancedClipboard(settings.enhanced_clipboard);
-            setDisplayErrors(settings.silence_errors);
-            setStartScript(settings.start_script);
-            setDarkMode(settings.dark_theme);
-            setLanguageCode(settings.language_code);
-            setKeyboardShortcut(settings.shortcut);
-            setStartWithOs(settings.start_with_os);
+            loadFromSettings(settings);
             setLoaded(true);
         }
     }
     
     useEffect(() => {
         load();
-    }, [])
 
-    useEffect(() => {
-        document.documentElement.dataset.bsTheme = darkMode?'dark':'';
-    }, [darkMode])
+        const appWindow = getCurrent();
+        appWindow.listen("updated-settings", (event) => loadFromSettings(event.payload as Settings))
+    }, []);
     
     useEffect(() => {
-        let settings: Settings = {
-            enhanced_clipboard: enhancedClipboard,
-            silence_errors: !displayErrors,
-            start_script: startScript,
-            dark_theme: darkMode,
-            language_code: languageCode,
-            shortcut: keyboardShortcut,
-            start_with_os: startWithOs
-        };
-        invoke("write_settings", {settings});
-
+        if (!loaded) return;
+        writeSettings();
     }, [enhancedClipboard, displayErrors, startScript, darkMode, languageCode, keyboardShortcut, startWithOs])
 
-    return(<>
-        <Row className="bg-body-secondary pt-2 row flex-fill flex-column">
-            <Col className="m-2">settings</Col>
-        </Row>
-        <Row>
-            <Tab.Container activeKey={tab}>
-                <Col md={2} className="bg-body-secondary nav-sidebar">
-                    <Nav className="flex-column" activeKey={tab} onSelect={(k) => k && setTab(k)}>
-                        <Nav.Link eventKey="general" className="p-3">
-                            <i className={"bi bi-gear"}>&nbsp;</i>
-                            General
-                        </Nav.Link>
-                        <Nav.Link eventKey="parser" className="p-3">
-                            <i className={"bi bi-file-earmark-code"}>&nbsp;</i>
-                            Parsing
-                        </Nav.Link>
-                        <Nav.Link eventKey="display" className="p-3">
-                            <i className={"bi bi-display"}>&nbsp;</i>
-                            Display
-                        </Nav.Link>
-                    </Nav>
-                </Col>
-                <Col className="d-flex justify-content-center mb-4">
-                    <Loadable loaded={loaded}>
-                        <Tab.Content>
-                            <Tab.Pane eventKey="general" title="General">
-                                <GeneralSettings
-                                    shortcut={keyboardShortcut} onChangeShortcut={(v) => setKeyboardShortcut(v)}
-                                    startWithOs={startWithOs} onChangeStartWithOs={(v) => setStartWithOs(v)}
-                                    languageCode={languageCode} onChangeLanguageCode={(v) => setLanguageCode(v)}
-                                />
-                            </Tab.Pane>
-                            <Tab.Pane eventKey="parser" title="Parser">
-                                <ParserSettings
-                                    enhancedClipboard={enhancedClipboard} onChangeEnhancedClipboard={(v) => setEnhancedClipboard(v)}
-                                    startScript={startScript} onChangeStartScript={(v) => setStartScript(v)}
-                                />
-                            </Tab.Pane>
-                            <Tab.Pane eventKey="display" title="Display">
-                                <DisplaySettings
-                                    displayErrors={displayErrors} onChangeDisplayErrors={(v) => setDisplayErrors(v)}
-                                    darkMode={darkMode} onChangeDarkMode={(v) => setDarkMode(v)}
-                                />
-                            </Tab.Pane>
-                        </Tab.Content>
-                    </Loadable>
-                </Col>
-            </Tab.Container>
-        </Row>
-    </>);
+    function renderSidebar() {
+        return (
+            <Nav className="flex-column" variant="pills" activeKey={tab} onSelect={(k) => k && setTab(k)}>
+                <Nav.Link eventKey="general" className="p-3">
+                    <i className={"bi bi-gear"}>&nbsp;</i>
+                    <Translated path="settings\general\title" />
+                </Nav.Link>
+
+                <Nav.Link eventKey="parser" className="p-3">
+                    <i className={"bi bi-file-earmark-code"}>&nbsp;</i>
+                    <Translated path="settings\parsing\title" />
+                </Nav.Link>
+                
+                <Nav.Link eventKey="display" className="p-3">
+                    <i className={"bi bi-display"}>&nbsp;</i>
+                    <Translated path="settings\display\title" />
+                </Nav.Link>
+
+                <hr />
+                
+                <Nav.Link className="p-3" onClick={() => invoke("open_config_dir", {})}>
+                    <i className={"bi bi-folder2-open"}>&nbsp;</i>
+                    <Translated path="settings\btn_browse" />
+                </Nav.Link>
+            </Nav>
+        );
+    }
+
+    function renderContent() {
+        return (<>
+            <Alert show={!!lastError} className="fixed-top m-3" variant="danger" onClose={() => setLastError("")} dismissible>
+                {lastError}
+            </Alert>
+            <Tab.Content>
+                <Tab.Pane eventKey="general">
+                    <GeneralSettings
+                        shortcut={keyboardShortcut} onChangeShortcut={(v) => setKeyboardShortcut(v)}
+                        startWithOs={startWithOs} onChangeStartWithOs={(v) => setStartWithOs(v)}
+                        languageCode={languageCode} onChangeLanguageCode={(v) => setLanguageCode(v)}
+                    />
+                </Tab.Pane>
+                <Tab.Pane eventKey="parser">
+                    <ParserSettings
+                        enhancedClipboard={enhancedClipboard} onChangeEnhancedClipboard={(v) => setEnhancedClipboard(v)}
+                        startScript={startScript} onChangeStartScript={(v) => setStartScript(v)}
+                    />
+                </Tab.Pane>
+                <Tab.Pane eventKey="display">
+                    <DisplaySettings
+                        displayErrors={displayErrors} onChangeDisplayErrors={(v) => setDisplayErrors(v)}
+                        darkMode={darkMode} onChangeDarkMode={(v) => setDarkMode(v)}
+                    />
+                </Tab.Pane>
+            </Tab.Content>
+        </>);
+    }
+
+    return(
+        <RootTab
+            tab={tab} loaded={loaded}
+            sidebar={renderSidebar()}
+            content={renderContent()}
+        />
+    );
 };
