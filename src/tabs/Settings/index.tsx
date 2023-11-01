@@ -109,6 +109,13 @@ export const SettingsTab: React.FC<Props> = ({}) => {
                     <i className={"bi bi-folder2-open"}>&nbsp;</i>
                     <Translated path="settings\btn_browse" />
                 </Nav.Link>
+
+                <hr />
+                
+                <Nav.Link className="p-3" onClick={() => invoke("app_exit", {})}>
+                    <i className={"bi bi-x-octagon"}>&nbsp;</i>
+                    <Translated path="settings\btn_quit" />
+                </Nav.Link>
             </Nav>
         );
     }

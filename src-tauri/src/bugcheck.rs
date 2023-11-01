@@ -1,5 +1,6 @@
 use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_notification::NotificationExt;
 
 use crate::{models::settings, ManagedValue};
 
@@ -22,17 +23,20 @@ pub fn parser(app: AppHandle, error: &str) {
     let settings = ManagedValue::<settings::Settings>::cloned_or_default(&app);
 
     if settings.display_errors {
-        app.dialog()
-            .message(error)
-            .title("Parsing error!")
-            .show(move |_| {});
+        app.notification()
+            .builder()
+            .title("Invalid expression!")
+            .body(error)
+            .show()
+            .ok();
     }
 }
 
 pub fn general(app: AppHandle, title: &str, error: &str) {
-    app.dialog()
-        .message(error)
-        .ok_button_label("ok")
+    app.notification()
+        .builder()
         .title(title)
-        .show(move |_| {});
+        .body(error)
+        .show()
+        .ok();
 }

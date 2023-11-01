@@ -48,4 +48,18 @@ export interface Settings {
     language_code: string
 }
 
+export interface MarkdownToken {
+    H2?: string,
+    H1?: string,
+    HR,
+    CodeBlock?: Array<string>,
+    PlainText?: string,
+}
+
+export interface MarkdownTree {
+    heading: string,
+    contents: Array<MarkdownToken>,
+    subheadings: Map<string, Array<MarkdownToken>>,
+}
+
 export type Nullable<T> = T | null;

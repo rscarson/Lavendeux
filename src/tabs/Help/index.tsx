@@ -4,44 +4,51 @@ import { invoke } from "@tauri-apps/api/primitives";
 import { getCurrent } from "@tauri-apps/api/window";
 
 import { RootTab } from "../Tab";
-import { Translated } from "../../components/Translated";
-import { Settings } from "../../types";
+import { MarkdownToken, MarkdownTree, Settings } from "../../types";
 import { TutorialBlock } from "../../components/tutorial";
 
 import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
 import { Badge } from "react-bootstrap";
 import { Syntax } from "../../components/Syntax/Syntax";
+import { Translated } from "../../components";
 
-import { HelpData } from "./data";
 function format_help_chunk(chunk): React.JSX.Element {
-    if (chunk.str) return <p><Translated path={chunk.str} /></p>
-    else if (chunk.code) return <Syntax code={chunk.code} />
-    else if (chunk.hr) return <hr />;
+    if (chunk.PlainText) return <p>{chunk.PlainText}</p>
+    else if (chunk.CodeBlock) return <Syntax code={chunk.CodeBlock[1]} />
+    else if (chunk.HR) return <hr />;
     else return <></>;
 }
 
 const URL_DONATE = "https://www.paypal.com/donate/?business=UXKPLM89RVU5L&no_recurring=0&item_name=Thank+you+for+supporting+open-source+software%21&currency_code=CAD";
 const URL_BUGREPORT = "https://github.com/rscarson/Lavendeux/issues/new";
 
-interface Props {}
+interface Props {};
 export const HelpTab: React.FC<Props> = ({}) => {
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const [loaded, setLoaded] = useState<boolean>(false);
     const [settings, setSettings] = useState<Settings>();
-    const [section, setSection] = useState<string>("");
+    const [data, setData] = useState<Map<string, Array<MarkdownToken>>>();
+    const [section, setSection] = useState<string>('');
+
     async function load() {        
         let _settings: Settings = await invoke("read_settings", {});
         if (_settings) {
             setSettings(_settings);
-            history && setLoaded(true);
+            
+            let _data: MarkdownTree = await invoke("help_text", {});
+            if (_data) {
+                setLoaded(true);
+                setData(_data.subheadings);
+            }
         }
     }
 
-    function changeSection(section: string) {
+    function changeSection(_section: string) {
+        if (section === _section) return;
         setLoaded(false);
-        forceUpdate(); setSection(section);
+        forceUpdate(); setSection(_section);
     }    
 
     useEffect(() => {
@@ -53,46 +60,46 @@ export const HelpTab: React.FC<Props> = ({}) => {
             <Nav className="flex-column" variant="pills">
                 <Nav.Link active={section==''} className="p-3" onClick={() => changeSection('')}>
                     <i className={"bi bi-1-circle"}>&nbsp;</i>
-                    Start Here
+                    <Translated path="help\lbl_getting_started" />
                 </Nav.Link>
 
                 <hr />
                 
-                <Nav.Link active={section=='basic_syntax'} className="p-3" onClick={() => changeSection('basic_syntax')}>
+                <Nav.Link active={section=='Basic Syntax'} className="p-3" onClick={() => changeSection('Basic Syntax')}>
                     <i className={"bi bi-2-circle"}>&nbsp;</i>
-                    Basic Syntax
+                    <Translated path="help\sections\Basic Syntax" />
                 </Nav.Link>
                 
-                <Nav.Link active={section=='features'} className="p-3" onClick={() => changeSection('features')}>
+                <Nav.Link active={section=='Features'} className="p-3" onClick={() => changeSection('Features')}>
                     <i className={"bi bi-3-circle"}>&nbsp;</i>
-                    Features
+                    <Translated path="help\sections\Features" />
                 </Nav.Link>
                 
-                <Nav.Link active={section=='datatypes'} className="p-3" onClick={() => changeSection('datatypes')}>
+                <Nav.Link active={section=='Datatypes'} className="p-3" onClick={() => changeSection('Datatypes')}>
                     <i className={"bi bi-4-circle"}>&nbsp;</i>
-                    Data Types
+                    <Translated path="help\sections\Datatypes" />
                 </Nav.Link>
 
                 <hr />
                 
-                <Nav.Link active={section=='operators'} className="p-3" onClick={() => changeSection('operators')}>
+                <Nav.Link active={section=='Operators'} className="p-3" onClick={() => changeSection('Operators')}>
                     <i className={"bi bi-5-circle"}>&nbsp;</i>
-                    Operators
+                    <Translated path="help\sections\Operators" />
                 </Nav.Link>
                 
-                <Nav.Link active={section=='functions'} className="p-3" onClick={() => changeSection('functions')}>
+                <Nav.Link active={section=='Functions'} className="p-3" onClick={() => changeSection('Functions')}>
                     <i className={"bi bi-6-circle"}>&nbsp;</i>
-                    Functions
+                    <Translated path="help\sections\Functions" />
                 </Nav.Link>
                 
-                <Nav.Link active={section=='decorators'} className="p-3" onClick={() => changeSection('decorators')}>
+                <Nav.Link active={section=='Decorators'} className="p-3" onClick={() => changeSection('Decorators')}>
                     <i className={"bi bi-7-circle"}>&nbsp;</i>
-                    Decorators
+                    <Translated path="help\sections\Decorators" />
                 </Nav.Link>
                 
-                <Nav.Link active={section=='extensions'} className="p-3" onClick={() => changeSection('extensions')}>
+                <Nav.Link active={section=='Extensions'} className="p-3" onClick={() => changeSection('Extensions')}>
                     <i className={"bi bi-8-circle"}>&nbsp;</i>
-                    Extensions
+                    <Translated path="help\sections\Extensions" />
                 </Nav.Link>
             </Nav>
         );
@@ -123,7 +130,7 @@ export const HelpTab: React.FC<Props> = ({}) => {
             <TutorialBlock settings={settings!} />
             
             <hr/>
-            <Button onClick={() => open(URL_BUGREPORT)}>Click here to report a bug</Button>&nbsp;
+            <Button variant="danger" onClick={() => open(URL_BUGREPORT)}>Click here to report a bug</Button>&nbsp;
             <Button onClick={() => open(URL_DONATE)} variant="primary">Click here support Lavendeux</Button>
         </>);
     }
@@ -131,12 +138,12 @@ export const HelpTab: React.FC<Props> = ({}) => {
     function getSection() {
         const title = section.replace('_', ' ');
         if (!section.length) return startSection();
-        let data = HelpData[section].map(chunk => format_help_chunk(chunk));
+        let sectionData = data![section].map(chunk => format_help_chunk(chunk));
 
         return (<>
             <h2 style={{textTransform:'capitalize'}}>{title}</h2>
             <hr/>
-            {data}
+            {sectionData}
         </>);
     }
 
@@ -155,4 +162,4 @@ export const HelpTab: React.FC<Props> = ({}) => {
             content={renderContent()}
         />
     );
-};
+}

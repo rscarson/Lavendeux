@@ -2,7 +2,13 @@
     "name": "Français",
     "short_name": "fr",
     "strings": {
-        "tray": {},
+        "tray": {
+            "lbl_settings": "Paramètres",
+            "lbl_history": "Historique",
+            "lbl_errors": "Afficher les erreurs d'analyse",
+            "lbl_ecm": "Activer le mode de presse-papiers amélioré",
+            "lbl_quit": "Quitter"
+        },
 
         "general": {
             "components": {
@@ -16,6 +22,13 @@
                 "tutorial": {
                     "lbl_getting_started_noecm": "Pour commencer, essayez de copier le bloc de texte suivant et d'appuyer sur {SHORTCUT}",
                     "lbl_getting_started_ecm": "Pour commencer, essayez de surligner le bloc de texte suivant et d'appuyer sur {SHORTCUT}"
+                },
+
+                "pages": {
+                    "lbl_settings": "Paramètres",
+                    "lbl_history": "Historique",
+                    "lbl_extensions": "Extensions",
+                    "lbl_help": "Aide"
                 }
             }
         },
@@ -47,6 +60,7 @@
 
         "settings": {
             "btn_browse": "Parcourir",
+            "btn_quit": "Quitter",
 
             "general": {
                 "title": "Général",

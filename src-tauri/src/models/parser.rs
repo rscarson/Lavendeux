@@ -19,7 +19,7 @@ fn read_clip(app: &AppHandle) -> Option<String> {
     for _ in 0..MAX_CLIP_TRIES {
         match app.clipboard().read() {
             Ok(clip) => match clip {
-                ClipboardContents::PlainText(s) => return Some(s),
+                ClipboardContents::PlainText { text } => return Some(text),
             },
             Err(_) => {}
         }

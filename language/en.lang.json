@@ -2,7 +2,13 @@
     "name": "English",
     "short_name": "en",
     "strings": {
-        "tray": {},
+        "tray": {
+            "lbl_settings": "Settings",
+            "lbl_history": "History",
+            "lbl_errors": "Display parsing errors",
+            "lbl_ecm": "Enable enhanced clipboard mode",
+            "lbl_quit": "Quit"
+        },
 
         "general": {
             "components": {
@@ -16,6 +22,13 @@
                 "tutorial": {
                     "lbl_getting_started_noecm": "To get started, try copying the following block of text, and pressing {SHORTCUT}",
                     "lbl_getting_started_ecm": "To get started, try highlighting the following block of text, and pressing {SHORTCUT}"
+                },
+
+                "pages": {
+                    "lbl_settings": "Settings",
+                    "lbl_history": "History",
+                    "lbl_extensions": "Extensions",
+                    "lbl_help": "Help"
                 }
             }
         },
@@ -47,6 +60,7 @@
 
         "settings": {
             "btn_browse": "Browse",
+            "btn_quit": "Quit",
 
             "general": {
                 "title": "General",
@@ -84,37 +98,15 @@
         },
 
         "help": {
-            "lbl_getting_started": "Getting Started",
-            "basic_syntax": {
-                "intro_1a": "Lavendeux is mostly geared towards small mathematical expressions. It supports function calls, output formating, various bases, as well as many types of data.",
-                "intro_1b": "The sample below demonstrates a few of these features, to set up some variables, and define a function:",
-                "intro_2": "Now we can use these to display our values as hexadecimal, and to check if our value contains a flag:",
-
-                "operators_1": "There are a lot of functions and operators built in - for a complete list please see the 'operators' and 'functions' sections.",
-                "operators_2": "Here are a few examples:",
-
-                "types": "Data is also accepted in a variety of formats, including but not limited to:"
-            },
-
-            "features": {
-                "functions": "Functions can be used, or defined to simplify expressions. Below is a sample showing a few built-in functions, and how to define your own:",
-                "variables": "As seen above, variables can be defined to store values for later. Lavendeux uses weak-typing, so most operators will work on most combination of types:",
-                "decorators": "The format of the resulting string can be altered by adding an @decorator to the end of the expression - here are a few examples:",
-                "arrays_and_objects": "Compound types, such as arrays and objects are also supported, and can be formed from any combination of types:"
-            },
-
-            "datatypes": {
-                "intro": "Lavendeux is loosely typed - which means that most operations will accept most combinations of types. Below are some examples of type cooersion Lavendeux provides:",
-                "list_1": "Lavendeux provides the following types: integer, float, string, boolean, arrays, and objects. Any type can be cooerced into any other type - EXCEPT for numbers, which cannot be built from non-numeric types",
-                "list_2": "The example below shows the various representations of the available types:"
-            },
-
-            "operators": {
-                "intro": "Lavendeux supports a variety of operators to suit a wide set of usecases",
-                "bitwise": "Bitwise operators",
-                "boolean": "Boolean logic operators",
-                "math": "Mathematical operators",
-                "other": "Other operators, including ternary expressions, assignment expressions and array indexing:"
+            "lbl_getting_started": "Start Here",
+            "sections": {
+                "Basic Syntax": "Basic Syntax",
+                "Features": "Features",
+                "Datatypes": "Datatypes",
+                "Operators": "Operators",
+                "Functions": "Functions",
+                "Decorators": "Decorators",
+                "Extensions": "Extensions"
             }
         }
     }

@@ -2,7 +2,13 @@
     "name": "简体中文",
     "short_name": "zh-cn",
     "strings": {
-        "tray": {},
+        "tray": {
+            "lbl_settings": "设置",
+            "lbl_history": "历史记录",
+            "lbl_errors": "显示解析错误",
+            "lbl_ecm": "启用增强剪贴板模式",
+            "lbl_quit": "退出"
+        },
 
         "general": {
             "components": {
@@ -16,6 +22,13 @@
                 "tutorial": {
                     "lbl_getting_started_noecm": "要开始，请尝试复制以下文本块，然后按{SHORTCUT}",
                     "lbl_getting_started_ecm": "要开始，请尝试突出显示以下文本块，然后按{SHORTCUT}"
+                },
+
+                "pages": {
+                    "lbl_settings": "设置",
+                    "lbl_history": "历史记录",
+                    "lbl_extensions": "扩展",
+                    "lbl_help": "帮助"
                 }
             }
         },
@@ -47,6 +60,7 @@
 
         "settings": {
             "btn_browse": "浏览",
+            "btn_quit": "退出",
 
             "general": {
                 "title": "常规",

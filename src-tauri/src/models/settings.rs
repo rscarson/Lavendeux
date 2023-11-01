@@ -4,7 +4,7 @@ use tauri_plugin_autostart::ManagerExt;
 
 use crate::{bugcheck, config, models::language::TranslatorManager, ManagedValue};
 
-use super::{language::ManagedTranslator, shortcut::Shortcut};
+use super::{language::ManagedTranslator, shortcut::Shortcut, tray::update_tray};
 
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub struct Settings {
@@ -57,7 +57,6 @@ pub fn read_settings(state: tauri::State<ManagedSettings>) -> Result<Settings, (
 pub fn write_settings(
     settings: Settings,
     state: tauri::State<ManagedSettings>,
-    window: tauri::Window,
     app: AppHandle,
 ) -> Result<(), String> {
     let last_known_good = read_settings(state.clone()).or(Err("unknown error".to_string()))?;
@@ -106,18 +105,23 @@ pub fn write_settings(
                 app.state::<ManagedTranslator>().inner(),
             );
         }
-        window.emit(TranslatorManager::UPDATED_EVENT, ()).ok();
+        app.emit(TranslatorManager::UPDATED_EVENT, ()).ok();
     }
 
     //
     // All is well - emit new settings
     //
 
-    println!("Updating settings: {:?}", settings);
     state
         .write(settings.clone())
         .or(Err("unknown error".to_string()))?;
     config::ConfigManager::save(app.clone()).ok();
-    window.emit("updated-settings", settings.clone()).ok();
+    update_tray(&app).ok();
+    app.emit("updated-settings", settings.clone()).ok();
     Ok(())
+}
+
+#[tauri::command]
+pub fn app_exit(app: AppHandle) {
+    app.exit(0);
 }

@@ -2,7 +2,13 @@
     "name": "日本語",
     "short_name": "ja",
     "strings": {
-        "tray": {},
+        "tray": {
+            "lbl_settings": "設定",
+            "lbl_history": "履歴",
+            "lbl_errors": "解析エラーの表示",
+            "lbl_ecm": "高度なクリップボードモードの有効化",
+            "lbl_quit": "やめる"
+        },
 
         "general": {
             "components": {
@@ -16,6 +22,13 @@
                 "tutorial": {
                     "lbl_getting_started_noecm": "はじめるには、以下のテキストブロックをコピーして{SHORTCUT}を押してみてください",
                     "lbl_getting_started_ecm": "はじめるには、以下のテキストブロックをハイライトして{SHORTCUT}を押してみてください"
+                },
+
+                "pages": {
+                    "lbl_settings": "設定",
+                    "lbl_history": "履歴",
+                    "lbl_extensions": "拡張機能",
+                    "lbl_help": "ヘルプ"
                 }
             }
         },
@@ -47,6 +60,7 @@
 
         "settings": {
             "btn_browse": "閲覧",
+            "btn_quit": "やめる",
 
             "general": {
                 "title": "一般",

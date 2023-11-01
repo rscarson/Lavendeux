@@ -3,6 +3,8 @@ use tauri::State;
 
 use crate::managed_value::ManagedValue;
 
+use super::markdown::MarkdownTree;
+
 pub type ManagedTranslator = ManagedValue<LanguageSet>;
 
 pub struct TranslatorManager {}
@@ -16,6 +18,14 @@ impl TranslatorManager {
     pub fn translate(path: String, state: &ManagedTranslator) -> Option<String> {
         if let Some(translator) = Self::read(state) {
             translator.get(&path).and_then(|s| Some(s.to_string()))
+        } else {
+            None
+        }
+    }
+
+    pub fn help_text(state: &ManagedTranslator) -> Option<MarkdownTree> {
+        if let Some(translator) = Self::read(state) {
+            translator.attachment("help")
         } else {
             None
         }
@@ -45,6 +55,11 @@ impl TranslatorManager {
 #[tauri::command]
 pub fn translate(path: String, state: State<ManagedTranslator>) -> Option<String> {
     TranslatorManager::translate(path, state.inner())
+}
+
+#[tauri::command]
+pub fn help_text(state: State<ManagedTranslator>) -> Option<MarkdownTree> {
+    TranslatorManager::help_text(state.inner())
 }
 
 #[tauri::command]

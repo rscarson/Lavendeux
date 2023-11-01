@@ -1,9 +1,11 @@
 use core::fmt;
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Write, path::Path, time::SystemTime};
-use tauri::{AppHandle, Manager, State, Window};
+use tauri::{AppHandle, Manager, State};
 
 use crate::ManagedValue;
+
+use super::tray::update_tray;
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub enum SnippetResult {
@@ -102,7 +104,8 @@ impl HistoryManager {
 pub fn append_history(snippet: Snippet, app: AppHandle) {
     let state = app.state::<ManagedHistory>();
     if let Some(history) = HistoryManager::add(snippet, state.inner()) {
-        app.emit_all(HISTORY_UPDATED_EVENT, history.clone()).ok();
+        update_tray(&app).ok();
+        app.emit(HISTORY_UPDATED_EVENT, history.clone()).ok();
     }
 }
 
@@ -112,9 +115,10 @@ pub fn read_history(state: State<ManagedHistory>) -> Option<History> {
 }
 
 #[tauri::command]
-pub fn del_history(id: usize, state: State<ManagedHistory>, window: Window) {
+pub fn del_history(id: usize, state: State<ManagedHistory>, app: AppHandle) {
     if let Some(history) = HistoryManager::remove(id, state.inner()) {
-        window.emit(HISTORY_UPDATED_EVENT, history.clone()).ok();
+        update_tray(&app).ok();
+        app.emit(HISTORY_UPDATED_EVENT, history.clone()).ok();
     }
 }
 
@@ -131,8 +135,9 @@ pub fn export_history(destination: &Path, state: State<ManagedHistory>) -> Resul
 }
 
 #[tauri::command]
-pub fn clear_history(state: State<ManagedHistory>, window: Window) {
+pub fn clear_history(state: State<ManagedHistory>, app: AppHandle) {
     if let Some(history) = HistoryManager::clear(state.inner()) {
-        window.emit(HISTORY_UPDATED_EVENT, history.clone()).ok();
+        update_tray(&app).ok();
+        app.emit(HISTORY_UPDATED_EVENT, history.clone()).ok();
     }
 }

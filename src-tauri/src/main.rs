@@ -20,12 +20,16 @@ use models::extension::ManagedParserState;
 use models::language;
 use models::language::ManagedTranslator;
 use models::language::TranslatorManager;
+use models::markdown;
 use models::parser;
 use models::settings;
 use models::settings::Settings;
 use models::snippet;
+use models::tray;
+use tauri::tray::ClickType;
 use tauri::Manager;
 use tauri::WindowEvent;
+use tauri_plugin_notification::NotificationExt;
 
 fn main() {
     let mut translator = LanguageSet::new(
@@ -39,6 +43,11 @@ fn main() {
         ],
     );
     translator.set_fallback_language("en");
+    translator.attach(
+        "en",
+        "help",
+        markdown::MarkdownTree::parse(include_str!("../../language/help/en.help.md")),
+    );
 
     let app = tauri::Builder::default()
         .manage(ManagedValue::new(settings::Settings::default()))
@@ -48,6 +57,7 @@ fn main() {
         .manage(ManagedBlacklist::new(Blacklist::default()))
         .manage(ManagedTranslator::new(translator))
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_single_instance::init(|_app, _argv, _cwd| {
@@ -63,6 +73,7 @@ fn main() {
             settings::open_config_dir,
             settings::read_settings,
             settings::write_settings,
+            settings::app_exit,
             //
             extension::read_blacklist,
             extension::disable_extension,
@@ -79,10 +90,16 @@ fn main() {
             snippet::export_history,
             //
             language::translate,
+            language::help_text,
             language::list_languages,
         ])
         .setup(|app| {
             let handle = app.handle();
+
+            // Updater
+            //tauri::async_runtime::spawn(async move {
+            //    let response = handle.updater_builder().build().unwrap().check().await;
+            //});
 
             // Load the gs handler plugin
             handle
@@ -122,6 +139,17 @@ fn main() {
 
             // Register the default shortcut
             settings.shortcut.register(app.handle()).ok();
+
+            // Activate tray icon
+            tray::init_tray(app.handle()).ok();
+
+            // Show ready msg
+            app.notification()
+                .builder()
+                .title("Lavendeux is running")
+                .body("Highlight some text, and use CTRL-Space to start parsing!")
+                .show()
+                .ok();
             Ok(())
         })
         .build(tauri::generate_context!())
@@ -138,15 +166,27 @@ fn main() {
             }
 
             // Window specific events
-            tauri::RunEvent::WindowEvent { event, .. } => match event {
+            tauri::RunEvent::WindowEvent { label, event, .. } => match event {
                 WindowEvent::CloseRequested { api, .. } => {
                     api.prevent_close();
+                    if let Some(window) = _app.get_window(&label) {
+                        window.hide().ok();
+                    };
                 }
                 _ => {}
             },
             tauri::RunEvent::Ready => {}
             tauri::RunEvent::MainEventsCleared => {}
             tauri::RunEvent::MenuEvent(_) => {}
+
+            tauri::RunEvent::TrayIconEvent(e) => {
+                if e.click_type == ClickType::Double {
+                    if let Some(window) = _app.get_window("main") {
+                        window.show().ok();
+                        window.set_focus().ok();
+                    }
+                }
+            }
 
             _ => {}
         }

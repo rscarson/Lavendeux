@@ -7,21 +7,36 @@ interface Props {
     onLoad?: (s:string) => string
 }
 
+function fallback(s) {
+    console.log(s);
+    let _s = s.split('\\');
+    console.log(_s[_s.length ? _s.length - 1 : 0]);
+    return _s[_s.length ? _s.length - 1 : 0];
+}
+
 export function translate(path: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        invoke("translate", {path}).then(s => {
-            resolve(s as string ?? path);
-        }).catch(e => reject(e));
-    })
+    return TranslationCache.fetch(path);
+}
+
+class TranslationCache {
+    static async fetch(path: string): Promise<string> {
+        const cachedValue = localStorage.getItem(path);
+        if (cachedValue === null) {
+            const s: string = await invoke("translate", {path});
+            localStorage.setItem(path, s);
+            return s;
+        } else {
+            return cachedValue;
+        }
+    }
 }
 
 export const Translated = (props: Props) => {
-    let [value, setValue] = useState<string>();
+    let [value, setValue] = useState<string>(localStorage.getItem(props.path)??props.path);
 
     function updateTranslation() {
         translate(props.path).then(s => {
             let str = s as string;
-            console.log("Translating: "+str);
             if (!str) return;
             if (props.onLoad) str = props.onLoad(str);
             setValue(str);

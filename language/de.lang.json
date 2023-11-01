@@ -2,7 +2,13 @@
     "name": "Deutsch",
     "short_name": "de",
     "strings": {
-        "tray": {},
+        "tray": {
+            "lbl_settings": "Einstellungen",
+            "lbl_history": "Verlauf",
+            "lbl_errors": "Anzeige von Analysefehlern",
+            "lbl_ecm": "Erweiterter Zwischenspeichermodus aktivieren",
+            "lbl_quit": "Beenden"
+        },
 
         "general": {
             "components": {
@@ -16,6 +22,13 @@
                 "tutorial": {
                     "lbl_getting_started_noecm": "Um loszulegen, versuchen Sie den folgenden Textblock zu kopieren und {SHORTCUT} zu drücken",
                     "lbl_getting_started_ecm": "Um loszulegen, versuchen Sie den folgenden Textblock zu markieren und {SHORTCUT} zu drücken"
+                },
+
+                "pages": {
+                    "lbl_settings": "Einstellungen",
+                    "lbl_history": "Verlauf",
+                    "lbl_extensions": "Erweiterungen",
+                    "lbl_help": "Hilfe"
                 }
             }
         },
@@ -47,6 +60,7 @@
 
         "settings": {
             "btn_browse": "Durchsuchen",
+            "btn_quit": "Beenden",
 
             "general": {
                 "title": "Allgemein",

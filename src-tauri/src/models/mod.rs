@@ -5,3 +5,4 @@ pub mod parser;
 pub mod settings;
 pub mod shortcut;
 pub mod snippet;
+pub mod tray;

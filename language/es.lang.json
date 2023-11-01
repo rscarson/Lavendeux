@@ -2,7 +2,13 @@
     "name": "Español",
     "short_name": "es",
     "strings": {
-        "tray": {},
+        "tray": {
+            "lbl_settings": "Configuración",
+            "lbl_history": "Historial",
+            "lbl_errors": "Mostrar errores de análisis",
+            "lbl_ecm": "Activar el modo avanzado del portapapeles",
+            "lbl_quit": "Salir"
+        },
 
         "general": {
             "components": {
@@ -16,6 +22,13 @@
                 "tutorial": {
                     "lbl_getting_started_noecm": "Para comenzar, intenta copiar el siguiente bloque de texto y presionar {SHORTCUT}",
                     "lbl_getting_started_ecm": "Para empezar, intenta resaltar el siguiente bloque de texto y presionar {SHORTCUT}"
+                },
+
+                "pages": {
+                    "lbl_settings": "Configuración",
+                    "lbl_history": "Historial",
+                    "lbl_extensions": "Extensiones",
+                    "lbl_help": "Ayuda"
                 }
             }
         },
@@ -47,6 +60,7 @@
 
         "settings": {
             "btn_browse": "Explorar",
+            "btn_quit": "Salir",
 
             "general": {
                 "title": "General",
