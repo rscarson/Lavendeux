@@ -60,6 +60,7 @@
 
         "settings": {
             "btn_browse": "閲覧",
+            "btn_debug": "デバッグ",
             "btn_quit": "やめる",
 
             "general": {

@@ -35,6 +35,16 @@
         "title": "Lavendeux",
         "width": 800,
         "height": 600
+      },
+      {
+        "visible": false,
+        "label": "debug",
+        "fullscreen": false,
+        "resizable": true,
+        "title": "Debug Output",
+        "width": 800,
+        "height": 400,
+        "url": "/debug"
       }
     ],
     "trayIcon": {

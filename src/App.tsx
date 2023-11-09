@@ -9,6 +9,7 @@ import { SettingsTab } from './tabs/Settings';
 import { HistoryTab } from './tabs/History';
 import { ExtensionsTab } from './tabs/Extensions';
 import { HelpTab } from "./tabs/Help";
+import { DebugConsole } from "./debug_console";
 
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -27,13 +28,38 @@ export const App: React.FC<Props> = (props) => {
     const _help = <HelpTab />;
 
     const router = createBrowserRouter([
-        { path: "/settings?", element: _settings},
-        { path: "/history", element: _history},
-        { path: "/extensions", element: _extensions},
-        { path: "/help", element: _help},
+        { path: "/settings?", element: renderTab(_settings, "settings")},
+        { path: "/history", element: renderTab(_history, "history")},
+        { path: "/extensions", element: renderTab(_extensions, "extensions")},
+        { path: "/help", element: renderTab(_help, "help")},
+        { path: "/debug", element: <DebugConsole />},
     ]);
     // @todo 'PRIVATE - DO NOT USE' on this... oops
     let location = router.state.location.pathname;
+
+    function renderTab(element: React.JSX.Element, activeKey: string): React.JSX.Element {
+        return (<>
+            <Navbar className="lav-nav">
+                  <Nav className="me-auto pt-0 pb-0 p-2">
+                      <Nav.Link active={activeKey.includes('history')} href="/history">
+                          <Translated path="general\components\pages\lbl_history" />
+                      </Nav.Link>
+                      <Nav.Link active={activeKey.includes('extensions')} href="/extensions">
+                          <Translated path="general\components\pages\lbl_extensions" />
+                      </Nav.Link>
+                      <Nav.Link active={activeKey.includes('settings')} href="/settings">
+                          <Translated path="general\components\pages\lbl_settings" />
+                      </Nav.Link>
+                      <Nav.Link active={activeKey.includes('help')} href="/help">
+                          <Translated path="general\components\pages\lbl_help" />
+                      </Nav.Link>
+                  </Nav>
+            </Navbar>
+            <Container fluid className="root-container row flex-fill flex-column">
+                    {element}
+            </Container>
+        </>);
+    }
 
     async function init_theme() {
         let settings: Nullable<Settings> = await invoke("read_settings", {});
@@ -59,25 +85,5 @@ export const App: React.FC<Props> = (props) => {
         document.documentElement.dataset.bsTheme = dark ? 'dark' : '';
     }, [dark])
 
-    return (<>
-      <Navbar className="lav-nav">
-            <Nav className="me-auto pt-0 pb-0 p-2">
-                <Nav.Link active={location.includes('history')} href="/history">
-                    <Translated path="general\components\pages\lbl_history" />
-                </Nav.Link>
-                <Nav.Link active={location.includes('extensions')} href="/extensions">
-                    <Translated path="general\components\pages\lbl_extensions" />
-                </Nav.Link>
-                <Nav.Link active={location.includes('settings')} href="/settings">
-                    <Translated path="general\components\pages\lbl_settings" />
-                </Nav.Link>
-                <Nav.Link active={location.includes('help')} href="/help">
-                    <Translated path="general\components\pages\lbl_help" />
-                </Nav.Link>
-            </Nav>
-      </Navbar>
-      <Container fluid className="root-container row flex-fill flex-column">
-            <RouterProvider router={router} />
-      </Container>
-    </>);
+    return <RouterProvider router={router} />;
 }

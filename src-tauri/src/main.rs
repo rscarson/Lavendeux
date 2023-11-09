@@ -3,63 +3,48 @@
 
 pub mod bugcheck;
 pub mod config;
+pub mod controllers;
 pub mod managed_value;
 pub mod models;
 
-use embedded_lang::embedded_language;
-use embedded_lang::LanguageSet;
-use lavendeux_parser::ParserState;
+mod commands;
+
+use controllers::{
+    BlacklistController, Controller, DebugController, DebugableResult, ExtensionsController,
+    LanguageController, ParserController, SettingsController, ShortcutController,
+};
+use controllers::{HistoryController, TrayController};
+
 use managed_value::ManagedValue;
 
-use models::extension;
-use models::extension::Blacklist;
-use models::extension::Extensions;
-use models::extension::ManagedBlacklist;
-use models::extension::ManagedExtensions;
-use models::extension::ManagedParserState;
-use models::language;
-use models::language::ManagedTranslator;
-use models::language::TranslatorManager;
-use models::markdown;
-use models::parser;
-use models::settings;
-use models::settings::Settings;
-use models::snippet;
-use models::tray;
 use tauri::tray::ClickType;
 use tauri::Manager;
 use tauri::WindowEvent;
 use tauri_plugin_notification::NotificationExt;
 
 fn main() {
-    let mut translator = LanguageSet::new(
-        "en",
-        &[
-            embedded_language!("../../language/en.lang.json"),
-            embedded_language!("../../language/fr.lang.json"),
-            embedded_language!("../../language/de.lang.json"),
-            embedded_language!("../../language/ja.lang.json"),
-            embedded_language!("../../language/zh-cn.lang.json"),
-        ],
-    );
-    translator.set_fallback_language("en");
-    translator.attach(
-        "en",
-        "help",
-        markdown::MarkdownTree::parse(include_str!("../../language/help/en.help.md")),
-    );
-
     let app = tauri::Builder::default()
-        .manage(ManagedValue::new(settings::Settings::default()))
-        .manage(ManagedValue::new(snippet::History::default()))
-        .manage(ManagedExtensions::new(Extensions::default()))
-        .manage(ManagedParserState::new(ParserState::new()))
-        .manage(ManagedBlacklist::new(Blacklist::default()))
-        .manage(ManagedTranslator::new(translator))
+        //
+        // Managed Values
+        .manage(SettingsController::new_managed())
+        .manage(LanguageController::new_managed())
+        .manage(HistoryController::new_managed())
+        .manage(BlacklistController::new_managed())
+        .manage(ExtensionsController::new_managed())
+        .manage(ParserController::new_managed())
+        .manage(DebugController::new_managed())
+        //
+        // Plugins
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::with_handler(|app, _| {
+                ParserController::main_handler(app.clone());
+            })
+            .build(),
+        )
         .plugin(tauri_plugin_single_instance::init(|_app, _argv, _cwd| {
             //    println!("{}, {argv:?}, {cwd}", app.package_info().name);
             //    app.emit_all("single-instance", Payload { args: argv, cwd })
@@ -70,28 +55,32 @@ fn main() {
             None,
         ))
         .invoke_handler(tauri::generate_handler![
-            settings::open_config_dir,
-            settings::read_settings,
-            settings::write_settings,
-            settings::app_exit,
+            commands::language::translate,
+            commands::language::help_text,
+            commands::language::list_languages,
             //
-            extension::read_blacklist,
-            extension::disable_extension,
-            extension::enable_extension,
-            extension::open_ext_dir,
-            extension::reload_extensions,
-            extension::read_extensions,
-            extension::add_extension,
-            extension::del_extension,
+            commands::settings::open_config_dir,
+            commands::settings::read_settings,
+            commands::settings::write_settings,
+            commands::settings::app_exit,
             //
-            snippet::read_history,
-            snippet::clear_history,
-            snippet::del_history,
-            snippet::export_history,
+            commands::history::read_history,
+            commands::history::clear_history,
+            commands::history::del_history,
+            commands::history::export_history,
             //
-            language::translate,
-            language::help_text,
-            language::list_languages,
+            commands::blacklist::read_blacklist,
+            commands::blacklist::disable_extension,
+            commands::blacklist::enable_extension,
+            //
+            commands::extensions::open_ext_dir,
+            commands::extensions::reload_extensions,
+            commands::extensions::read_extensions,
+            commands::extensions::add_extension,
+            commands::extensions::del_extension,
+            //
+            commands::debug::activate_debug,
+            commands::debug::read_debug
         ])
         .setup(|app| {
             let handle = app.handle();
@@ -101,55 +90,79 @@ fn main() {
             //    let response = handle.updater_builder().build().unwrap().check().await;
             //});
 
-            // Load the gs handler plugin
-            handle
-                .plugin(
-                    tauri_plugin_global_shortcut::Builder::with_handler(parser::shortcut_handler)
-                        .build(),
-                )
-                .expect("could not start hotkey handler!");
-
+            //
+            // Attempt to create directories needed by the app
             if let Err(_) = config::ConfigManager::init(handle.clone()) {
-                bugcheck::fatal(handle.clone(), "Could not write to settings").ok();
+                bugcheck::fatal(handle.clone(), "Could not write to settings");
             }
 
+            //
             // Try to load up the settings - it's ok if this fails, we'll just end up with the defaults
             let (settings, blacklist) = config::ConfigManager::load(handle.clone());
-            app.state::<ManagedValue<Settings>>()
-                .write(settings.clone())
-                .ok();
-            app.state::<ManagedValue<Blacklist>>().write(blacklist).ok();
+            SettingsController(handle.clone())
+                .write(&settings)
+                .debug_ok(&handle, "write-settings");
+            BlacklistController(handle.clone())
+                .write(&blacklist)
+                .debug_ok(&handle, "write-blacklist");
 
-            // Load extensions
-            let parser_state = app
-                .state::<ManagedValue<lavendeux_parser::ParserState>>()
-                .inner();
-            extension::ParserStateManager::reload(handle.clone(), parser_state).ok();
-
-            // Run startup sequence
-            if !settings.start_script.trim().is_empty() {
-                parser::parse(settings.start_script, handle.clone());
+            //
+            // Register default shortcut
+            if ShortcutController(handle.clone())
+                .register(&settings.shortcut)
+                .is_err()
+            {
+                bugcheck::general(
+                    handle.clone(),
+                    "Could not register shortcut",
+                    "Shortcut is not valid, please verify settings",
+                );
             }
 
-            // Set language
-            TranslatorManager::set_language(
-                settings.language_code.clone(),
-                app.state::<ManagedTranslator>().inner(),
-            );
+            //
+            // Language settings
+            if LanguageController(handle.clone())
+                .set_language(&settings.language_code)
+                .is_err()
+            {
+                bugcheck::general(
+                    handle.clone(),
+                    "Could not set language",
+                    "Language code is invalid, please verify settings",
+                );
+            }
 
-            // Register the default shortcut
-            settings.shortcut.register(app.handle()).ok();
+            //
+            // Load extensions
+            //
+            if let Err(e) = ExtensionsController(handle.clone()).reload() {
+                bugcheck::general(handle.clone(), "Could not load extensions", &e.to_string());
+            }
 
+            //
+            // Run startup sequence
+            if !settings.start_script.trim().is_empty() {
+                let snippet = ParserController(handle.clone()).parse(&settings.start_script);
+                if snippet.is_err() {
+                    bugcheck::parser(handle.clone(), &snippet.result.to_string());
+                }
+            }
+
+            //
             // Activate tray icon
-            tray::init_tray(app.handle()).ok();
+            if TrayController(handle.clone()).init().is_err() {
+                bugcheck::fatal(handle.clone(), "Could not create tray icon - exiting");
+            }
 
+            //
             // Show ready msg
             app.notification()
                 .builder()
                 .title("Lavendeux is running")
                 .body("Highlight some text, and use CTRL-Space to start parsing!")
+                .action_type_id("show_history")
                 .show()
-                .ok();
+                .debug_ok(&handle, "notify");
             Ok(())
         })
         .build(tauri::generate_context!())
@@ -170,8 +183,12 @@ fn main() {
                 WindowEvent::CloseRequested { api, .. } => {
                     api.prevent_close();
                     if let Some(window) = _app.get_window(&label) {
-                        window.hide().ok();
+                        window.hide().debug_ok(&_app, "window-hide");
                     };
+
+                    if label == "debug" {
+                        DebugController(_app.clone()).deactivate();
+                    }
                 }
                 _ => {}
             },
@@ -182,8 +199,8 @@ fn main() {
             tauri::RunEvent::TrayIconEvent(e) => {
                 if e.click_type == ClickType::Double {
                     if let Some(window) = _app.get_window("main") {
-                        window.show().ok();
-                        window.set_focus().ok();
+                        window.show().debug_ok(&_app, "window-show");
+                        window.set_focus().debug_ok(&_app, "window-focus");
                     }
                 }
             }

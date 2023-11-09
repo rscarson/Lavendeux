@@ -60,6 +60,7 @@
 
         "settings": {
             "btn_browse": "Durchsuchen",
+            "btn_debug": "Debuggen",
             "btn_quit": "Beenden",
 
             "general": {

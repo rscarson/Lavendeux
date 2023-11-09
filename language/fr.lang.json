@@ -60,6 +60,7 @@
 
         "settings": {
             "btn_browse": "Parcourir",
+            "btn_debug": "Déboguer",
             "btn_quit": "Quitter",
 
             "general": {

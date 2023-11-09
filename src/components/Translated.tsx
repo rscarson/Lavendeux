@@ -31,6 +31,10 @@ class TranslationCache {
     }
 }
 
+export function clearTranslationCache() {
+    localStorage.clear();
+}
+
 export const Translated = (props: Props) => {
     let [value, setValue] = useState<string>(localStorage.getItem(props.path)??props.path);
 
@@ -47,7 +51,9 @@ export const Translated = (props: Props) => {
         updateTranslation();
 
         const appWindow = getCurrent();
-        appWindow.listen("updated-language", () => updateTranslation())
+        appWindow.listen("language-updated", () => {
+            updateTranslation()
+        })
     }, []);
 
     return <>{value}</>

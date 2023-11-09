@@ -9,10 +9,8 @@ use tauri::{AppHandle, Manager};
 
 use crate::{
     bugcheck,
-    models::{
-        extension::{Blacklist, BlacklistManager, ManagedBlacklist},
-        settings::{ManagedSettings, Settings, SettingsManager},
-    },
+    controllers::{BlacklistController, Controller, SettingsController},
+    models::{extension::Blacklist, settings::Settings},
 };
 
 #[derive(Serialize, Deserialize)]
@@ -63,10 +61,9 @@ impl ConfigManager {
     ///
     /// Attempt to write settings to a file
     pub fn save(app: AppHandle) -> Result<(), std::io::Error> {
-        let blacklist =
-            BlacklistManager::read(app.state::<ManagedBlacklist>().inner()).unwrap_or_default();
-        let settings =
-            SettingsManager::read(app.state::<ManagedSettings>().inner()).unwrap_or_default();
+        let settings = SettingsController(app.clone()).read().unwrap_or_default();
+        let blacklist = BlacklistController(app.clone()).read().unwrap_or_default();
+
         let s = WriteableSettings {
             config: settings,
             disabled_extensions: blacklist,
@@ -87,6 +84,15 @@ impl ConfigManager {
             }
         }
         (Settings::default(), Blacklist::default())
+    }
+
+    pub fn basename(filename: &str) -> Option<String> {
+        if let Some(basename) = Path::new(filename).file_name() {
+            if let Some(s) = basename.to_str() {
+                return Some(s.to_string());
+            }
+        }
+        None
     }
 
     ///

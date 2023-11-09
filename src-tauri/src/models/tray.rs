@@ -1,81 +1,8 @@
+use crate::controllers::{Controller, HistoryController, LanguageController, SettingsController};
 use tauri::{
-    menu::{CheckMenuItem, MenuBuilder, MenuEvent, MenuItem},
-    tray::TrayIconBuilder,
-    AppHandle, Manager,
+    menu::{CheckMenuItem, MenuBuilder, MenuItem},
+    AppHandle,
 };
-use tauri_plugin_clipboard_manager::{ClipKind, ClipboardExt};
-
-use crate::managed_value::ManagedValue;
-
-use super::{
-    language::{self, TranslatorManager},
-    settings, snippet,
-};
-
-pub fn init_tray(app: &AppHandle) -> Result<(), tauri::Error> {
-    TrayIconBuilder::new()
-        .on_menu_event(handle_menu_event)
-        .on_tray_icon_event(|i, e| println!("here"))
-        .build(app)?;
-    update_tray(app)
-}
-
-fn handle_menu_event(app: &AppHandle, event: MenuEvent) {
-    let settings = settings::read_settings(app.state::<ManagedValue<settings::Settings>>());
-    if settings.is_err() {
-        return;
-    }
-    let mut settings = settings.unwrap();
-
-    match event.id().0.as_str() {
-        "Settings" => {
-            if let Some(window) = app.get_window("main") {
-                app.emit("tab-request", "/settings").ok();
-                window.show().ok();
-                window.set_focus().ok();
-            }
-        }
-        "History" => {
-            if let Some(window) = app.get_window("main") {
-                app.emit("tab-request", "/history").ok();
-                window.show().ok();
-                window.set_focus().ok();
-            }
-        }
-        "enhanced_clipboard" => {
-            settings.enhanced_clipboard = !settings.enhanced_clipboard;
-            settings::write_settings(
-                settings.clone(),
-                app.state::<ManagedValue<settings::Settings>>(),
-                app.clone(),
-            )
-            .ok();
-            app.emit("updated-settings", settings.clone()).ok();
-        }
-        "display_errors" => {
-            settings.display_errors = !settings.display_errors;
-            settings::write_settings(
-                settings.clone(),
-                app.state::<ManagedValue<settings::Settings>>(),
-                app.clone(),
-            )
-            .ok();
-            app.emit("updated-settings", settings.clone()).ok();
-        }
-        "Quit" => {
-            app.exit(0);
-        }
-        s => {
-            // Assume it's an expression and copy it
-            app.clipboard()
-                .write(ClipKind::PlainText {
-                    label: None,
-                    text: s.to_string(),
-                })
-                .ok();
-        }
-    }
-}
 
 // https://stackoverflow.com/questions/38461429/how-can-i-truncate-a-string-to-have-at-most-n-characters
 fn truncate(s: &str, max_chars: usize) -> &str {
@@ -84,94 +11,110 @@ fn truncate(s: &str, max_chars: usize) -> &str {
         Some((idx, _)) => &s[..idx],
     }
 }
+pub trait MyMenuBuilder {
+    fn add_separator(self) -> Self;
+    fn add_item(self, app: &AppHandle, label: &str, id: &str, enabled: bool) -> Self;
+    fn add_checkbox(
+        self,
+        app: &AppHandle,
+        label: &str,
+        id: &str,
+        enabled: bool,
+        checked: bool,
+    ) -> Self;
 
-pub fn update_tray(app: &AppHandle) -> Result<(), tauri::Error> {
-    let translate = |path: &str| {
-        TranslatorManager::translate(
-            path.to_string(),
-            &app.clone().state::<language::ManagedTranslator>(),
-        )
-        .unwrap_or_default()
-    };
+    fn add_all(self, app: &AppHandle) -> Self;
+}
 
-    let settings = settings::read_settings(app.state::<ManagedValue<settings::Settings>>());
-    if settings.is_err() {
-        return Err(tauri::Error::AssetNotFound("".to_string()));
+impl<'m, R> MyMenuBuilder for MenuBuilder<'m, R, AppHandle>
+where
+    R: tauri::Runtime,
+    AppHandle: tauri::Manager<R>,
+{
+    fn add_separator(self) -> Self {
+        self.separator()
     }
-    let settings = settings.unwrap();
 
-    let history = snippet::read_history(app.state::<ManagedValue<snippet::History>>());
-    if history.is_none() {
-        return Err(tauri::Error::AssetNotFound("".to_string()));
+    fn add_item(self, app: &AppHandle, label: &str, id: &str, enabled: bool) -> Self {
+        self.item(&MenuItem::with_id(app, id, label, enabled, None))
     }
-    let history = history.unwrap();
 
-    if let Some(tray) = app.tray() {
-        let mut builder = MenuBuilder::new(app);
+    fn add_checkbox(
+        self,
+        app: &AppHandle,
+        label: &str,
+        id: &str,
+        enabled: bool,
+        checked: bool,
+    ) -> Self {
+        self.item(&CheckMenuItem::with_id(
+            app, id, label, enabled, checked, None,
+        ))
+    }
 
-        let mut n = 0;
-        for snippet in history {
-            if snippet.is_err() {
-                continue;
+    fn add_all(self, app: &AppHandle) -> Self {
+        let mut builder = self;
+        let l = LanguageController(app.clone());
+        let settings = SettingsController(app.clone()).read().unwrap_or_default();
+        let history = HistoryController(app.clone()).read().unwrap_or_default();
+
+        if history.is_empty() {
+            //
+            // No history to add - use placeholder
+            //
+            builder = builder.add_item(
+                app,
+                &l.translate_or_default("history\\lbl_no_history_to_display"),
+                "empty_history",
+                false,
+            );
+        } else {
+            //
+            // Add all history items
+            //
+            for snippet in history.iter().filter(|e| !e.is_err()) {
+                let mut text =
+                    truncate(snippet.input.lines().next().unwrap_or_default(), 35).to_string();
+                if snippet.input.len() != text.len() {
+                    text += " [...]";
+                }
+                builder = builder.add_item(app, &text, &snippet.input, true);
             }
-            n += 1;
-
-            let mut text =
-                truncate(snippet.input.lines().next().unwrap_or_default(), 35).to_string();
-            if snippet.input.len() != text.len() {
-                text += " [...]";
-            }
-
-            builder = builder.item(&MenuItem::with_id(app, &snippet.input, &text, true, None));
         }
 
-        if 0 == n {
-            builder = builder.item(&MenuItem::new(app, "No history to display", false, None));
-        }
+        builder = builder.add_separator();
 
-        let menu = builder
-            .separator()
-            .item(&MenuItem::with_id(
-                app,
-                "History",
-                translate("tray\\lbl_history"),
-                true,
-                None,
-            ))
-            .item(&MenuItem::with_id(
-                app,
-                "Settings",
-                translate("tray\\lbl_settings"),
-                true,
-                None,
-            ))
-            .item(&CheckMenuItem::with_id(
-                app,
-                "enhanced_clipboard",
-                translate("tray\\lbl_ecm"),
-                true,
-                settings.enhanced_clipboard,
-                None,
-            ))
-            .item(&CheckMenuItem::with_id(
-                app,
-                "display_errors",
-                translate("tray\\lbl_errors"),
-                true,
-                settings.display_errors,
-                None,
-            ))
-            .separator()
-            .item(&MenuItem::with_id(
-                app,
-                "Quit",
-                translate("tray\\lbl_quit"),
-                true,
-                None,
-            ))
-            .build()?;
-        tray.set_menu(Some(menu))
-    } else {
-        Err(tauri::Error::AssetNotFound("".to_string()))
+        builder = builder.add_item(
+            app,
+            &l.translate_or_default("tray\\lbl_history"),
+            "history",
+            true,
+        );
+        builder = builder.add_item(
+            app,
+            &l.translate_or_default("tray\\lbl_settings"),
+            "settings",
+            true,
+        );
+
+        builder = builder.add_separator();
+
+        builder = builder.add_checkbox(
+            app,
+            &l.translate_or_default("tray\\lbl_ecm"),
+            "enhanced_clipboard",
+            true,
+            settings.enhanced_clipboard,
+        );
+        builder = builder.add_checkbox(
+            app,
+            &l.translate_or_default("tray\\lbl_errors"),
+            "display_errors",
+            true,
+            settings.display_errors,
+        );
+
+        builder = builder.add_separator();
+        builder.add_item(app, &l.translate_or_default("tray\\lbl_quit"), "quit", true)
     }
 }

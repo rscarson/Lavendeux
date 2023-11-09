@@ -2,8 +2,7 @@ use std::str::FromStr;
 
 use enigo::Key;
 use serde::{Deserialize, Serialize};
-use tauri::AppHandle;
-use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut as TauriShortcut};
+use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut as TauriShortcut};
 
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub struct Shortcut {
@@ -215,26 +214,5 @@ impl Shortcut {
         } else {
             None
         }
-    }
-
-    pub fn register(&self, app: &AppHandle) -> Result<(), tauri_plugin_global_shortcut::Error> {
-        // Checks compatibility with both enigo and tauri
-        if self.to_enigo_key().is_none() {
-            return Err(tauri_plugin_global_shortcut::Error::GlobalHotkey(
-                "invalid shortcut".to_string(),
-            ));
-        }
-
-        let hotkey = self.as_tauri_shortcut().unwrap();
-        app.global_shortcut().register(hotkey)
-    }
-
-    pub fn unregister(&self, app: &AppHandle) -> Result<(), tauri_plugin_global_shortcut::Error> {
-        let hotkey =
-            self.as_tauri_shortcut()
-                .ok_or(tauri_plugin_global_shortcut::Error::GlobalHotkey(
-                    "invalid shortcut".to_string(),
-                ))?;
-        app.global_shortcut().unregister(hotkey)
     }
 }

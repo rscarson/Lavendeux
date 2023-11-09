@@ -60,6 +60,7 @@
 
         "settings": {
             "btn_browse": "浏览",
+            "btn_debug": "调试",
             "btn_quit": "退出",
 
             "general": {

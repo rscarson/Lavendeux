@@ -60,6 +60,7 @@
 
         "settings": {
             "btn_browse": "Browse",
+            "btn_debug": "Debug",
             "btn_quit": "Quit",
 
             "general": {

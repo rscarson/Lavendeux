@@ -12,7 +12,7 @@ import { GeneralSettings } from "./general";
 import Alert from 'react-bootstrap/Alert';
 import Nav from 'react-bootstrap/Nav';
 import Tab from "react-bootstrap/Tab";
-import { Translated } from "../../components";
+import { Translated, clearTranslationCache } from "../../components";
 
 interface Props {}
 
@@ -112,6 +112,11 @@ export const SettingsTab: React.FC<Props> = ({}) => {
 
                 <hr />
                 
+                <Nav.Link className="p-3" onClick={() => invoke("activate_debug", {})}>
+                    <i className={"bi bi-bug"}>&nbsp;</i>
+                    <Translated path="settings\btn_debug" />
+                </Nav.Link>
+                
                 <Nav.Link className="p-3" onClick={() => invoke("app_exit", {})}>
                     <i className={"bi bi-x-octagon"}>&nbsp;</i>
                     <Translated path="settings\btn_quit" />
@@ -130,7 +135,10 @@ export const SettingsTab: React.FC<Props> = ({}) => {
                     <GeneralSettings
                         shortcut={keyboardShortcut} onChangeShortcut={(v) => setKeyboardShortcut(v)}
                         startWithOs={startWithOs} onChangeStartWithOs={(v) => setStartWithOs(v)}
-                        languageCode={languageCode} onChangeLanguageCode={(v) => setLanguageCode(v)}
+                        languageCode={languageCode} onChangeLanguageCode={(v) => {
+                            setLanguageCode(v);
+                            clearTranslationCache();
+                        }}
                     />
                 </Tab.Pane>
                 <Tab.Pane eventKey="parser">

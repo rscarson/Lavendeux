@@ -2,11 +2,14 @@ use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_notification::NotificationExt;
 
-use crate::{models::settings, ManagedValue};
+use crate::{
+    controllers::{Controller, DebugableResult, SettingsController},
+    debug,
+};
 
 ///
 /// Unrecoverable error that required quitting the software
-pub fn fatal(app: AppHandle, error: &str) -> Result<(), String> {
+pub fn fatal(app: AppHandle, error: &str) {
     app.dialog()
         .message(error)
         .ok_button_label("exit")
@@ -14,29 +17,29 @@ pub fn fatal(app: AppHandle, error: &str) -> Result<(), String> {
         .show(move |_| {
             app.exit(1);
         });
-    Err(error.to_string())
 }
 
 ///
 /// Normal error that may be shown to the user
 pub fn parser(app: AppHandle, error: &str) {
-    let settings = ManagedValue::<settings::Settings>::cloned_or_default(&app);
-
+    let settings = SettingsController(app.clone()).read().unwrap_or_default();
+    debug!(app.clone(), "Parser Error: {}", error);
     if settings.display_errors {
         app.notification()
             .builder()
-            .title("Invalid expression!")
+            .title("Parser Error")
             .body(error)
             .show()
-            .ok();
+            .debug_ok(&app, "notify");
     }
 }
 
 pub fn general(app: AppHandle, title: &str, error: &str) {
+    debug!(app.clone(), "{}: {}", title, error);
     app.notification()
         .builder()
         .title(title)
         .body(error)
         .show()
-        .ok();
+        .debug_ok(&app, "notify");
 }

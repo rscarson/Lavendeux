@@ -60,6 +60,7 @@
 
         "settings": {
             "btn_browse": "Explorar",
+            "btn_debug": "Depurar",
             "btn_quit": "Salir",
 
             "general": {
