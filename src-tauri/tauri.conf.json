@@ -58,6 +58,17 @@
     "updater": {
       "endpoints": [
       ]
+    },
+    "cli": {
+      "description": "Lavendeux",
+      "args": [
+        {"name": "debug"},
+        {
+          "name": "config-dir",
+          "short": "c",
+          "takesValue": true
+        }
+      ]
     }
   }
 }

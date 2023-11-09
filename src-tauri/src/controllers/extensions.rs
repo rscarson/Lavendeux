@@ -1,10 +1,8 @@
 use super::{
-    BlacklistController, Controller, DebugableResult, LanguageController, ParserController,
+    BlacklistController, ConfigController, Controller, DebugableResult, LanguageController,
+    ParserController,
 };
-use crate::{
-    bugcheck, config::ConfigManager, debug, managed_value::ManagedValue,
-    models::extension::Extensions,
-};
+use crate::{bugcheck, debug, managed_value::ManagedValue, models::extension::Extensions, FsUtils};
 use std::path::Path;
 use tauri::{AppHandle, Manager, State};
 
@@ -46,7 +44,7 @@ impl Controller<Extensions> for ExtensionsController {
 
 impl ExtensionsController {
     pub fn add(&self, filename: &str) -> Option<Extensions> {
-        if let Ok(_) = ConfigManager::add_extension(Path::new(filename), self.0.clone()) {
+        if ConfigController(self.0.clone()).add_extension(Path::new(filename)) {
             BlacklistController(self.0.clone()).enable(filename.to_string());
             self.reload().debug_ok(&self.0, "reload-extensions")
         } else {
@@ -55,7 +53,7 @@ impl ExtensionsController {
     }
 
     pub fn remove(&self, filename: &str) -> Option<Extensions> {
-        if let Ok(_) = ConfigManager::del_extension(Path::new(filename), self.0.clone()) {
+        if ConfigController(self.0.clone()).del_extension(Path::new(filename)) {
             BlacklistController(self.0.clone()).enable(filename.to_string());
             self.reload().debug_ok(&self.0, "reload-extensions")
         } else {
@@ -63,7 +61,7 @@ impl ExtensionsController {
         }
     }
 
-    pub fn reload(&self) -> Result<Extensions, std::io::Error> {
+    pub fn reload(&self) -> Result<Extensions, String> {
         let disabled_extensions = BlacklistController(self.0.clone())
             .read()
             .unwrap_or_default();
@@ -71,23 +69,31 @@ impl ExtensionsController {
             .translate("extensions\\lbl_disabled_by_user")
             .unwrap_or("Disabled by User".to_string());
 
-        let ext_path = match ConfigManager::ext_dir(self.0.clone()).to_str() {
-            Some(s) => s.to_string(),
-            None => {
+        let config = ConfigController(self.0.clone())
+            .read()
+            .ok_or("could not lock settings")?;
+
+        let ext_dir = config
+            .ext_dir()
+            .to_str()
+            .or_else(|| {
                 bugcheck::general(
                     self.0.clone(),
                     "Filesystem Error",
                     "Extensions directory is invalid; unicode translation error",
                 );
-                ".".to_string()
-            }
-        };
+                Some(".")
+            })
+            .unwrap()
+            .to_string();
 
         let mut extensions = Extensions::default();
         if let Some(mut parser) = ParserController(self.0.clone()).borrow() {
-            for module in lavendeux_parser::rustyscript::Module::load_dir(&ext_path)? {
+            for module in lavendeux_parser::rustyscript::Module::load_dir(&ext_dir)
+                .or_else(|e| Err(e.to_string()))?
+            {
                 let filepath = module.filename().to_string();
-                let filename = ConfigManager::basename(&filepath).unwrap_or_default();
+                let filename = FsUtils::basename(&filepath).unwrap_or_default();
 
                 // Do not attempt to load disabled extensions
                 if disabled_extensions.contains(&filename) {

@@ -1,14 +1,13 @@
 use tauri::AppHandle;
 
 use crate::{
-    config::ConfigManager,
-    controllers::{Controller, SettingsController},
+    controllers::{ConfigController, Controller, SettingsController},
     models::settings::Settings,
 };
 
 #[tauri::command]
 pub fn open_config_dir(app: AppHandle) {
-    ConfigManager::open_config_dir(app)
+    ConfigController(app).open_config_dir()
 }
 
 #[tauri::command]

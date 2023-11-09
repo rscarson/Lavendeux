@@ -3,12 +3,14 @@ use tauri_plugin_autostart::ManagerExt;
 
 use crate::{
     bugcheck,
-    config::ConfigManager,
     managed_value::ManagedValue,
     models::{settings::Settings, shortcut::Shortcut},
 };
 
-use super::{Controller, DebugableResult, LanguageController, ShortcutController, TrayController};
+use super::{
+    ConfigController, Controller, DebugableResult, LanguageController, ShortcutController,
+    TrayController,
+};
 
 pub struct SettingsController(pub AppHandle);
 impl Controller<Settings> for SettingsController {
@@ -43,7 +45,7 @@ impl Controller<Settings> for SettingsController {
         self.state()
             .write(value.clone())
             .or(Err("unknown error".to_string()))?;
-        ConfigManager::save(self.0.clone()).debug_ok(&self.0, "save-config");
+        ConfigController(self.0.clone()).save();
         TrayController(self.0.clone())
             .update()
             .debug_ok(&self.0, "update-tray");

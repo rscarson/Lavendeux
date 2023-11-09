@@ -43,3 +43,6 @@ pub use parser::ParserController;
 
 mod debug;
 pub use debug::{DebugController, DebugableResult};
+
+mod config;
+pub use config::ConfigController;

@@ -2,24 +2,31 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 pub mod bugcheck;
-pub mod config;
 pub mod controllers;
 pub mod managed_value;
 pub mod models;
 
+pub mod fs;
+use std::path::Path;
+
+pub use fs::FsUtils;
+
 mod commands;
 
 use controllers::{
-    BlacklistController, Controller, DebugController, DebugableResult, ExtensionsController,
-    LanguageController, ParserController, SettingsController, ShortcutController,
+    BlacklistController, ConfigController, Controller, DebugController, DebugableResult,
+    ExtensionsController, LanguageController, ParserController, SettingsController,
+    ShortcutController,
 };
 use controllers::{HistoryController, TrayController};
 
 use managed_value::ManagedValue;
 
+use models::config::ConfigurationSettings;
 use tauri::tray::ClickType;
 use tauri::Manager;
 use tauri::WindowEvent;
+use tauri_plugin_cli::CliExt;
 use tauri_plugin_notification::NotificationExt;
 
 fn main() {
@@ -33,12 +40,14 @@ fn main() {
         .manage(ExtensionsController::new_managed())
         .manage(ParserController::new_managed())
         .manage(DebugController::new_managed())
+        .manage(ConfigController::new_managed())
         //
         // Plugins
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_cli::init())
         .plugin(
             tauri_plugin_global_shortcut::Builder::with_handler(|app, _| {
                 ParserController::main_handler(app.clone());
@@ -85,6 +94,26 @@ fn main() {
         .setup(|app| {
             let handle = app.handle();
 
+            if let Ok(matches) = handle.cli().matches() {
+                let debug_mode = matches.args.get("debug").unwrap().occurrences > 0;
+                let config_dir = matches.args.get("config-dir").unwrap();
+
+                if debug_mode {
+                    DebugController(handle.clone()).activate();
+                }
+
+                if config_dir.value.is_string() {
+                    let path = Path::new(config_dir.value.as_str().unwrap()).to_owned();
+                    ConfigController(handle.clone())
+                        .write(&ConfigurationSettings::with_dir(path))
+                        .debug_ok(handle, "set-config-path");
+                } else {
+                    ConfigController(handle.clone())
+                        .write(&ConfigurationSettings::new(handle.clone()))
+                        .debug_ok(handle, "set-config-path");
+                }
+            }
+
             // Updater
             //tauri::async_runtime::spawn(async move {
             //    let response = handle.updater_builder().build().unwrap().check().await;
@@ -92,19 +121,16 @@ fn main() {
 
             //
             // Attempt to create directories needed by the app
-            if let Err(_) = config::ConfigManager::init(handle.clone()) {
+            if let Err(_) = ConfigController(handle.clone()).create_all() {
                 bugcheck::fatal(handle.clone(), "Could not write to settings");
             }
 
             //
             // Try to load up the settings - it's ok if this fails, we'll just end up with the defaults
-            let (settings, blacklist) = config::ConfigManager::load(handle.clone());
-            SettingsController(handle.clone())
-                .write(&settings)
-                .debug_ok(&handle, "write-settings");
-            BlacklistController(handle.clone())
-                .write(&blacklist)
-                .debug_ok(&handle, "write-blacklist");
+            ConfigController(handle.clone()).load();
+            let settings = SettingsController(handle.clone())
+                .read()
+                .unwrap_or_default();
 
             //
             // Register default shortcut

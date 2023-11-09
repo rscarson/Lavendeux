@@ -24,6 +24,7 @@ tauri-plugin-global-shortcut = "2.0.0-alpha.4"
 tauri-plugin-single-instance = "2.0.0-alpha.4"
 tauri-plugin-autostart = "2.0.0-alpha.4"
 tauri-plugin-shell = "2.0.0-alpha.4"
+tauri-plugin-cli = "2.0.0-alpha.4"
 
 # Parser
 lavendeux-parser = { git = "https://github.com/rscarson/lavendeux-parser.git"}

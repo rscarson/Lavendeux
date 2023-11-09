@@ -1,7 +1,7 @@
 use tauri::{AppHandle, Manager, State};
 
-use super::{Controller, DebugableResult, ExtensionsController};
-use crate::{config::ConfigManager, managed_value::ManagedValue, models::extension::Blacklist};
+use super::{ConfigController, Controller, DebugableResult, ExtensionsController};
+use crate::{managed_value::ManagedValue, models::extension::Blacklist, FsUtils};
 
 pub struct BlacklistController(pub AppHandle);
 impl Controller<Blacklist> for BlacklistController {
@@ -27,7 +27,7 @@ impl Controller<Blacklist> for BlacklistController {
         self.state()
             .write(value.clone())
             .or(Err("unknown error".to_string()))?;
-        ConfigManager::save(self.0.clone()).debug_ok(&self.0, "save-config");
+        ConfigController(self.0.clone()).save();
         self.emit(&value);
 
         Ok(value.clone())
@@ -42,7 +42,7 @@ impl Controller<Blacklist> for BlacklistController {
 
 impl BlacklistController {
     pub fn disable(&self, filename: String) -> Option<Blacklist> {
-        let filename = ConfigManager::basename(&filename).unwrap_or_default();
+        let filename = FsUtils::basename(&filename).unwrap_or_default();
         if let Some(mut blacklist) = self.read() {
             blacklist.insert(filename);
             ExtensionsController(self.0.clone())
@@ -55,7 +55,7 @@ impl BlacklistController {
     }
 
     pub fn enable(&self, filename: String) -> Option<Blacklist> {
-        let filename = ConfigManager::basename(&filename).unwrap_or_default();
+        let filename = FsUtils::basename(&filename).unwrap_or_default();
         if let Some(mut blacklist) = self.read() {
             blacklist.remove(&filename);
             ExtensionsController(self.0.clone())

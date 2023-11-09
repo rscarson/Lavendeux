@@ -1,5 +1,5 @@
 use tauri::AppHandle;
-use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_notification::NotificationExt;
 
 use crate::{
@@ -12,6 +12,7 @@ use crate::{
 pub fn fatal(app: AppHandle, error: &str) {
     app.dialog()
         .message(error)
+        .kind(MessageDialogKind::Error)
         .ok_button_label("exit")
         .title("Fatal Error!")
         .show(move |_| {

@@ -1,14 +1,13 @@
 use tauri::AppHandle;
 
 use crate::{
-    config,
-    controllers::{Controller, ExtensionsController},
+    controllers::{ConfigController, Controller, ExtensionsController},
     models::extension::Extensions,
 };
 
 #[tauri::command]
 pub fn open_ext_dir(app: AppHandle) {
-    config::ConfigManager::open_ext_dir(app)
+    ConfigController(app).open_ext_dir()
 }
 
 #[tauri::command]
