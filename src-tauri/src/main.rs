@@ -54,10 +54,12 @@ fn main() {
             })
             .build(),
         )
-        .plugin(tauri_plugin_single_instance::init(|_app, _argv, _cwd| {
-            //    println!("{}, {argv:?}, {cwd}", app.package_info().name);
-            //    app.emit_all("single-instance", Payload { args: argv, cwd })
-            //        .unwrap();
+        .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
+            bugcheck::general(
+                app.clone(), 
+                "Lavendeux is already running!", 
+                "Check the system tray icons - in Windows, that's at the bottom right of the taskbar!"
+            );
         }))
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
