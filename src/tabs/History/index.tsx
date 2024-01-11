@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/primitives";
+import { invoke } from "@tauri-apps/api/core";
 
 import { getCurrent } from "@tauri-apps/api/window";
 import { save } from "@tauri-apps/plugin-dialog";
@@ -57,11 +57,11 @@ export const HistoryTab: React.FC<Props> = ({}) => {
         load();
 
         const appWindow = getCurrent();
-        appWindow.listen("updated-history", (event) => {
+        appWindow.listen("history-updated", (event) => {
           let history = event.payload as Array<Snippet>;
           setHistory(history);
         })
-        appWindow.listen("updated-settings", (event) => {
+        appWindow.listen("updated-config", (event) => {
           let settings = event.payload as Settings;
           setSettings(settings);
         })

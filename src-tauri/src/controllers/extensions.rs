@@ -3,6 +3,7 @@ use super::{
     ParserController,
 };
 use crate::{bugcheck, debug, managed_value::ManagedValue, models::extension::Extensions, FsUtils};
+use lavendeux_parser2::rustyscript;
 use std::path::Path;
 use tauri::{AppHandle, Manager, State};
 
@@ -89,9 +90,8 @@ impl ExtensionsController {
 
         let mut extensions = Extensions::default();
         if let Some(mut parser) = ParserController(self.0.clone()).borrow() {
-            for module in lavendeux_parser::rustyscript::Module::load_dir(&ext_dir)
-                .or_else(|e| Err(e.to_string()))?
-            {
+            parser.unload_all_extensions();
+            for module in rustyscript::Module::load_dir(&ext_dir).or_else(|e| Err(e.to_string()))? {
                 let filepath = module.filename().to_string();
                 let filename = FsUtils::basename(&filepath).unwrap_or_default();
 
@@ -107,17 +107,17 @@ impl ExtensionsController {
 
                 // Not disabled - attempt to load the extension
                 debug!(self.0.clone(), "Found an extension at {}", filename);
-                let extension = parser.extensions.load(&filepath);
-                extensions.insert(
-                    filename.clone(),
-                    extension.clone().or_else(|e| Err(e.to_string())),
-                );
-                if let Ok(ext) = extension.clone() {
-                    parser.extensions.add(&filepath, ext)
-                }
+                let extension = parser
+                    .load_extension(&filepath)
+                    .or_else(|e| Err(e.to_string()));
+                extensions.insert(filename.clone(), extension.clone());
             }
         }
 
+        println!(
+            "Reloaded extensions: {} extensions loaded",
+            extensions.len()
+        );
         self.write(&extensions)
             .debug_ok(&self.0, "write-extensions");
         Ok(extensions)

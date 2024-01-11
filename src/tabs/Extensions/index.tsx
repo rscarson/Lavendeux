@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/primitives";
+import { invoke } from "@tauri-apps/api/core";
 
 import { getCurrent } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
@@ -61,12 +61,12 @@ export const ExtensionsTab: React.FC<Props> = ({}) => {
         })
     }, [])
 
-    function functionSignature(f: ExtensionFunction|string) {
-        if (typeof f == 'string') {
-            return `${f}( )`;
+    function functionSignature(f: ExtensionFunction) {
+        if (f.name.startsWith('@')) {
+            return `<${f.arguments[0]}> ${f.name}`;
         } else {
-            let args = f.argument_types.map(a => a.toLowerCase()).join(', ');
-            return `${f.fname}(${args}): ${f.returns.toLowerCase()}`;
+            let args = f.arguments.join(', ');
+            return `${f.name}(${args}): ${f.returns.toLowerCase()}`;
         }
     }
 
@@ -113,16 +113,8 @@ export const ExtensionsTab: React.FC<Props> = ({}) => {
                 </Card.Header>
                 <Card.Body>
                 {isEnabled && <>
-                        <h6><Translated path="extensions\lbl_functions" /></h6>
                         {Object.values(extension.Ok!.functions).map(f => <>
-                            <Badge key={f.fname} className="m-1" bg="secondary">{functionSignature(f)}</Badge>
-                        </>)}
-
-                        <hr />
-                            
-                        <h6><Translated path="extensions\lbl_decorators" /></h6>
-                        {Object.keys(extension.Ok!.functions).map(f => <>
-                            <Badge key={f} className="m-1" bg="secondary">@{f}</Badge>
+                            <Badge key={f.fname} className="m-1" bg="secondary" title={f.description}>{functionSignature(f)}</Badge>
                         </>)}
                 </>}
                 {!isEnabled && <small className="text-secondary">{extension.Err}</small>}

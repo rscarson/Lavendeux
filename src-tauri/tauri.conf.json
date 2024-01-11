@@ -56,8 +56,12 @@
       "open": true
     },
     "updater": {
+      "active": true,
       "endpoints": [
-      ]
+        "https://rscarson.github.io/lavendeux.updater.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDNCQTI3OEQ2NzQxQjkyMzEKUldReGtodDAxbmlpTzRpZThyN2RjY2hvZWRyVmtDVytObUhxaGdUTjRYcnFZQkFwT01qWTZLWEEK"
     },
     "cli": {
       "description": "Lavendeux",

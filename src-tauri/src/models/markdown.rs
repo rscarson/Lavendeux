@@ -4,10 +4,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 enum MarkdownToken {
+    H4(String),
+    H3(String),
     H2(String),
     H1(String),
     HR,
     CodeBlock(String, String),
+    UL(Vec<String>),
     PlainText(String),
 }
 
@@ -15,40 +18,54 @@ impl MarkdownToken {
     pub fn tokenize(input: &str) -> Vec<Self> {
         let mut tokens = Vec::default();
 
-        let mut code_syntax_buf: Option<String> = None;
-        let mut buffer = String::default();
+        let mut lines = input.lines();
+        while let Some(line) = lines.next() {
+            let mut line = line.trim();
 
-        for line in input.lines() {
-            let line = line.trim();
+            if line.starts_with("#") {
+                // Heading
+                let mut l_lvl = 0;
+                while line.starts_with("#") {
+                    l_lvl += 1;
+                    // remove the first character
+                    line = &line[1..];
+                }
 
-            if line.starts_with("##") {
-                // Heading Lvl2
-                tokens.push(Self::H2(line.replace('#', "").trim().to_string()))
-            } else if line.starts_with("#") {
-                // Heading Lvl1
-                tokens.push(Self::H1(line.replace('#', "").trim().to_string()))
+                match l_lvl {
+                    1 => tokens.push(Self::H1(line.trim().to_string())),
+                    2 => tokens.push(Self::H2(line.trim().to_string())),
+                    3 => tokens.push(Self::H3(line.trim().to_string())),
+                    4 => tokens.push(Self::H4(line.trim().to_string())),
+                    _ => tokens.push(Self::PlainText(line.trim().to_string())),
+                }
             } else if line.starts_with("---") {
                 // Heading horizontal break
                 tokens.push(Self::HR)
             } else if line.starts_with("```") {
-                if code_syntax_buf.is_none() {
-                    code_syntax_buf = Some(line.replace("```", "").trim().to_string());
-                } else {
-                    tokens.push(Self::CodeBlock(
-                        code_syntax_buf.unwrap(),
-                        buffer.trim().to_string(),
-                    ));
-                    code_syntax_buf = None;
-                    buffer = String::default();
-                }
-            } else {
-                if code_syntax_buf.is_none() {
-                    if !line.trim().is_empty() {
-                        tokens.push(Self::PlainText(line.to_string()));
+                // Codeblock
+                let syntax = line.replace("```", "").trim().to_string();
+                let mut buffer = String::default();
+                while let Some(line) = lines.next() {
+                    if line.starts_with("```") {
+                        break;
                     }
-                } else {
                     buffer += &format!("{line}\n");
                 }
+                tokens.push(Self::CodeBlock(syntax, buffer.trim().to_string()));
+            } else if line.starts_with("-") {
+                // Unordered list
+                let mut ul_lines = vec![line.replace("-", "").trim().to_string()];
+                while let Some(line) = lines.next() {
+                    if line.starts_with("-") {
+                        ul_lines.push(line.replace("-", "").trim().to_string());
+                    } else {
+                        break;
+                    }
+                }
+                tokens.push(Self::UL(ul_lines));
+            } else if !line.trim().is_empty() {
+                // Plain text
+                tokens.push(Self::PlainText(line.to_string()));
             }
         }
 

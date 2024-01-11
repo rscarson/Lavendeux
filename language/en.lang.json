@@ -101,13 +101,11 @@
         "help": {
             "lbl_getting_started": "Start Here",
             "sections": {
-                "Basic Syntax": "Basic Syntax",
-                "Features": "Features",
-                "Datatypes": "Datatypes",
+                "Values": "Values",
                 "Operators": "Operators",
-                "Functions": "Functions",
-                "Decorators": "Decorators",
-                "Extensions": "Extensions"
+                "Features": "Features",
+                "Extensions": "Extensions",
+                "Appendix": "Appendix"
             }
         }
     }

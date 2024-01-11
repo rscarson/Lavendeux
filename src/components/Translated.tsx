@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/primitives";
+import { invoke } from "@tauri-apps/api/core";
 import { getCurrent } from "@tauri-apps/api/window";
 
 interface Props {
@@ -21,7 +21,7 @@ export function translate(path: string): Promise<string> {
 class TranslationCache {
     static async fetch(path: string): Promise<string> {
         const cachedValue = localStorage.getItem(path);
-        if (cachedValue === null) {
+        if (cachedValue === null || cachedValue == "null") {
             const s: string = await invoke("translate", {path});
             localStorage.setItem(path, s);
             return s;

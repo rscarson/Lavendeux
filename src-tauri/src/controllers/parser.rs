@@ -1,6 +1,6 @@
 use std::{thread, time::Duration};
 
-use lavendeux_parser::{ParserState, Token};
+use lavendeux_parser2::{Lavendeux, ParserOptions};
 use tauri::{AppHandle, Manager, State};
 
 use crate::{
@@ -15,26 +15,29 @@ use super::{
 };
 
 pub struct ParserController(pub AppHandle);
-impl Controller<ParserState> for ParserController {
+impl Controller<Lavendeux> for ParserController {
     const EVENT_NAME: &'static str = "updated-parserstate";
 
-    fn new_managed() -> ManagedValue<ParserState> {
-        ManagedValue::new(ParserState::default())
+    fn new_managed() -> ManagedValue<Lavendeux> {
+        ManagedValue::new(Lavendeux::new(ParserOptions {
+            timeout: 2,
+            stack_size: 10 * 1024 * 1024,
+        }))
     }
 
-    fn state(&self) -> State<ManagedValue<ParserState>> {
-        self.0.state::<ManagedValue<ParserState>>()
+    fn state(&self) -> State<ManagedValue<Lavendeux>> {
+        self.0.state::<ManagedValue<Lavendeux>>()
     }
 
-    fn read(&self) -> Option<ParserState> {
+    fn read(&self) -> Option<Lavendeux> {
         self.state().clone_inner()
     }
 
-    fn borrow(&self) -> Option<std::sync::MutexGuard<'_, ParserState>> {
+    fn borrow(&self) -> Option<std::sync::MutexGuard<'_, Lavendeux>> {
         self.state().inner().read()
     }
 
-    fn write(&self, value: &ParserState) -> Result<ParserState, String> {
+    fn write(&self, value: &Lavendeux) -> Result<Lavendeux, String> {
         self.state()
             .write(value.clone())
             .or(Err("could not write to state".to_string()))?;
@@ -43,7 +46,7 @@ impl Controller<ParserState> for ParserController {
         Ok(value.clone())
     }
 
-    fn emit(&self, _: &ParserState) {
+    fn emit(&self, _: &Lavendeux) {
         self.0
             .emit(Self::EVENT_NAME, ())
             .debug_ok(&self.0, "emit-event");
@@ -55,8 +58,17 @@ impl ParserController {
     /// Parse an input using the active parser
     pub fn parse(&self, input: &str) -> Snippet {
         if let Some(mut parser) = self.borrow() {
-            let snippet = match Token::new(&input, &mut parser) {
-                Ok(token) => Snippet::new(&input, SnippetResult::Success(token.to_string())),
+            let snippet = match parser.parse(input) {
+                Ok(values) => Snippet::new(
+                    &input,
+                    SnippetResult::Success(
+                        values
+                            .iter()
+                            .map(|v| v.to_string())
+                            .collect::<Vec<_>>()
+                            .join("\n"),
+                    ),
+                ),
                 Err(e) => Snippet::new(&input, SnippetResult::Error(e.to_string())),
             };
 

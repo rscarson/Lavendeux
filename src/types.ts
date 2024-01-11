@@ -6,10 +6,10 @@ export interface KeyboardShortcut {
 }
 
 export interface ExtensionFunction {
+    name: string,
+    description: string,
+    arguments: Array<string>,
     returns: string,
-    argument_types: Array<string>,
-    fname: string,
-    ftype: string,
 };
 
 export interface Extension {
@@ -19,7 +19,6 @@ export interface Extension {
         version: string,
 
         functions: Map<String, ExtensionFunction | string>,
-        decorators: Map<String, ExtensionFunction | string>,
     },
     Err?: string
 }
@@ -49,10 +48,13 @@ export interface Settings {
 }
 
 export interface MarkdownToken {
+    H4?: string,
+    H3?: string,
     H2?: string,
     H1?: string,
     HR,
     CodeBlock?: Array<string>,
+    UL?: Array<string>,
     PlainText?: string,
 }
 

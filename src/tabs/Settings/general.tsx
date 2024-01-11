@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/primitives";
+import { invoke } from "@tauri-apps/api/core";
 
 import { KeyboardShortcut } from "../../types";
 import { DropdownSetting, KeyboardSetting, SwitchSetting } from "./setting_container";

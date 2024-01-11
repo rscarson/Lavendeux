@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/primitives";
+import { invoke } from "@tauri-apps/api/core";
 import { getCurrent } from "@tauri-apps/api/window";
 
 import { Settings, KeyboardShortcut, Nullable } from '../../types';
@@ -77,7 +77,7 @@ export const SettingsTab: React.FC<Props> = ({}) => {
         load();
 
         const appWindow = getCurrent();
-        appWindow.listen("updated-settings", (event) => loadFromSettings(event.payload as Settings))
+        appWindow.listen("updated-config", (event) => loadFromSettings(event.payload as Settings))
     }, []);
     
     useEffect(() => {

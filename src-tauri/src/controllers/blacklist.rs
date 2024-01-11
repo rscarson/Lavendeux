@@ -42,26 +42,30 @@ impl Controller<Blacklist> for BlacklistController {
 
 impl BlacklistController {
     pub fn disable(&self, filename: String) -> Option<Blacklist> {
+        println!("disable: {}", filename);
         let filename = FsUtils::basename(&filename).unwrap_or_default();
         if let Some(mut blacklist) = self.read() {
             blacklist.insert(filename);
+            let r = self.write(&blacklist).debug_ok(&self.0, "write-blacklist");
             ExtensionsController(self.0.clone())
                 .reload()
                 .debug_ok(&self.0, "reload-extensions");
-            self.write(&blacklist).debug_ok(&self.0, "write-blacklist")
+            r
         } else {
             None
         }
     }
 
     pub fn enable(&self, filename: String) -> Option<Blacklist> {
+        println!("enable: {}", filename);
         let filename = FsUtils::basename(&filename).unwrap_or_default();
         if let Some(mut blacklist) = self.read() {
             blacklist.remove(&filename);
+            let r = self.write(&blacklist).debug_ok(&self.0, "write-blacklist");
             ExtensionsController(self.0.clone())
                 .reload()
                 .debug_ok(&self.0, "reload-extensions");
-            self.write(&blacklist).debug_ok(&self.0, "write-blacklist")
+            r
         } else {
             None
         }

@@ -116,7 +116,6 @@ export class Formatter {
      * @returns Formatted HTML code sample
      */
 	format(input) {
-		console.log(input);
 		let lines = input.trim().split("\n").map(l => l.trim());
 		let output = [];
 		for (let line of lines) {

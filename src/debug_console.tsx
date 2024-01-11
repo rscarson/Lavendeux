@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getCurrent } from "@tauri-apps/api/window";
-import { invoke } from "@tauri-apps/api/primitives";
+import { invoke } from "@tauri-apps/api/core";
 
 interface Props {
 }
