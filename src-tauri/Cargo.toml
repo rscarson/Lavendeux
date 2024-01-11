@@ -1,6 +1,6 @@
 [package]
 name = "lavendeux"
-version = "1.0.0-alpha1"
+version = "0.2.0"
 description = "Lavendeux enhances the clipboard"
 authors = ["@rscarson"]
 license = "MIT"
