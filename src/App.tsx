@@ -61,8 +61,16 @@ export const App: React.FC<Props> = (props) => {
     }
 
     async function init_theme() {
+        const cachedValue = localStorage.getItem("lav-theme");
+        if (cachedValue !== null && cachedValue != "null") {
+            setDark(cachedValue == "true");
+        }
+
         let settings: Nullable<Settings> = await invoke("read_settings", {});
-        if (settings) setDark(settings.dark_theme);
+        if (settings) {
+            localStorage.setItem("lav-theme", settings.dark_theme ? "true" : "false");
+            setDark(settings.dark_theme);
+        }
     }
     
     useEffect(() => {
