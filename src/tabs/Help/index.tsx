@@ -3,7 +3,7 @@ import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrent } from "@tauri-apps/api/window";
 
-import { RootTab } from "../Tab";
+import { RootTab } from "../tab";
 import { MarkdownToken, MarkdownTree, Settings } from "../../types";
 import { TutorialBlock } from "../../components/tutorial";
 

@@ -7,7 +7,7 @@ import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 
 import { Settings, Snippet } from '../../types';
 import { TutorialBlock } from "../../components/tutorial";
-import { RootTab } from "../Tab";
+import { RootTab } from "../tab";
 
 import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';

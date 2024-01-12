@@ -4,7 +4,7 @@ import { getCurrent } from "@tauri-apps/api/window";
 
 import { Settings, KeyboardShortcut, Nullable } from '../../types';
 
-import { RootTab } from "../Tab";
+import { RootTab } from "../tab";
 import { ParserSettings } from "./parser";
 import { DisplaySettings } from "./display";
 import { GeneralSettings } from "./general";

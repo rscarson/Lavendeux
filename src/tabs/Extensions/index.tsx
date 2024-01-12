@@ -5,7 +5,7 @@ import { getCurrent } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 
 import { Extension, ExtensionFunction } from '../../types';
-import { RootTab } from "../Tab";
+import { RootTab } from "../tab";
 
 import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';
