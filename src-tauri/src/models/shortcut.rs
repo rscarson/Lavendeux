@@ -128,7 +128,9 @@ impl Shortcut {
                 Code::Space => Some(Key::Space),
                 Code::Tab => Some(Key::Tab),
 
+                #[cfg(target_os = "windows")]
                 Code::Convert => Some(Key::Convert),
+                #[cfg(target_os = "windows")]
                 Code::KanaMode => Some(Key::Kana),
 
                 Code::Delete => Some(Key::Delete),
@@ -144,43 +146,69 @@ impl Shortcut {
                 Code::ArrowRight => Some(Key::RightArrow),
                 Code::ArrowUp => Some(Key::UpArrow),
 
+                #[cfg(target_os = "windows")]
                 Code::Numpad0 => Some(Key::Numpad0),
+                #[cfg(target_os = "windows")]
                 Code::Numpad1 => Some(Key::Numpad1),
+                #[cfg(target_os = "windows")]
                 Code::Numpad2 => Some(Key::Numpad2),
+                #[cfg(target_os = "windows")]
                 Code::Numpad3 => Some(Key::Numpad3),
+                #[cfg(target_os = "windows")]
                 Code::Numpad4 => Some(Key::Numpad4),
+                #[cfg(target_os = "windows")]
                 Code::Numpad5 => Some(Key::Numpad5),
+                #[cfg(target_os = "windows")]
                 Code::Numpad6 => Some(Key::Numpad6),
+                #[cfg(target_os = "windows")]
                 Code::Numpad7 => Some(Key::Numpad7),
+                #[cfg(target_os = "windows")]
                 Code::Numpad8 => Some(Key::Numpad8),
+                #[cfg(target_os = "windows")]
                 Code::Numpad9 => Some(Key::Numpad9),
+                #[cfg(target_os = "windows")]
                 Code::NumpadAdd => Some(Key::Add),
                 Code::NumpadBackspace => Some(Key::Backspace),
                 Code::NumpadComma => Some(Key::Layout(',')),
+                #[cfg(target_os = "windows")]
                 Code::NumpadDivide => Some(Key::Divide),
                 Code::NumpadEnter => Some(Key::Return),
+                #[cfg(target_os = "windows")]
                 Code::NumpadMultiply => Some(Key::Multiply),
                 Code::NumpadParenLeft => Some(Key::Layout('(')),
                 Code::NumpadParenRight => Some(Key::Layout(')')),
+                #[cfg(target_os = "windows")]
                 Code::NumpadStar => Some(Key::Multiply),
+                #[cfg(target_os = "windows")]
                 Code::NumpadSubtract => Some(Key::Subtract),
                 Code::Escape => Some(Key::Escape),
 
                 Code::CapsLock => Some(Key::CapsLock),
                 Code::NumLock => Some(Key::Numlock),
+                #[cfg(target_os = "windows")]
                 Code::ScrollLock => Some(Key::Scroll),
                 Code::Pause => Some(Key::Pause),
 
+                #[cfg(target_os = "windows")]
                 Code::BrowserBack => Some(Key::BrowserBack),
+                #[cfg(target_os = "windows")]
                 Code::BrowserFavorites => Some(Key::BrowserFavorites),
+                #[cfg(target_os = "windows")]
                 Code::BrowserForward => Some(Key::BrowserForward),
+                #[cfg(target_os = "windows")]
                 Code::BrowserHome => Some(Key::BrowserHome),
+                #[cfg(target_os = "windows")]
                 Code::BrowserRefresh => Some(Key::BrowserRefresh),
+                #[cfg(target_os = "windows")]
                 Code::BrowserSearch => Some(Key::BrowserSearch),
+                #[cfg(target_os = "windows")]
                 Code::BrowserStop => Some(Key::BrowserStop),
 
+                #[cfg(target_os = "windows")]
                 Code::LaunchApp1 => Some(Key::LaunchApp1),
+                #[cfg(target_os = "windows")]
                 Code::LaunchApp2 => Some(Key::LaunchApp2),
+                #[cfg(target_os = "windows")]
                 Code::LaunchMail => Some(Key::LaunchMail),
                 Code::Select => Some(Key::Select),
 
