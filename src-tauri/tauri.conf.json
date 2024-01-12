@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "lavendeux",
-    "version": "0.2.0"
+    "version": "0.30.0"
   },
   "tauri": {
     "bundle": {
