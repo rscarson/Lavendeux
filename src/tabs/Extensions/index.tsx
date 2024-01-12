@@ -108,7 +108,7 @@ export const ExtensionsTab: React.FC<Props> = ({}) => {
                     </span>
 
                     <br />
-                    {isEnabled && <small className="text-muted"><Translated path="extensions\lbl_by" /> @anon</small>}
+                    {isEnabled && <small className="text-muted"><Translated path="extensions\lbl_by" /> {extension.Ok!.author}</small>}
                     
                 </Card.Header>
                 <Card.Body>
