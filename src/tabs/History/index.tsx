@@ -46,11 +46,19 @@ export const HistoryTab: React.FC<Props> = ({}) => {
     }
 
     function clearHistory() {
-        invoke("clear_history", {});
+        invoke("clear_history", {})
+        .then(() => {
+            setLoaded(false);
+            load();
+        });
     }
 
     function delHistory(id: number) {
-        invoke("del_history", {id: id});
+        invoke("del_history", {id: id})
+        .then(() => {
+            setLoaded(false);
+            load();
+        });
     }
     
     useEffect(() => {
@@ -61,7 +69,7 @@ export const HistoryTab: React.FC<Props> = ({}) => {
           let history = event.payload as Array<Snippet>;
           setHistory(history);
         })
-        appWindow.listen("updated-config", (event) => {
+        appWindow.listen("updated-settings", (event) => {
           let settings = event.payload as Settings;
           setSettings(settings);
         })
@@ -89,7 +97,7 @@ export const HistoryTab: React.FC<Props> = ({}) => {
                     <i className={`bi bi-${icon}`}>&nbsp;</i>
                     <Translated path={label} />
                 </InputGroup.Text>
-                <Button variant="secondary" onClick={() => writeText(text)}>
+                <Button variant="secondary" onClick={() => writeText(text).catch((e) => alert(`Could not write to clipboard: ${e}`))}>
                     <i className={"bi bi-clipboard"}></i>
                 </Button>
                 <InputGroup.Text className="flex-fill" title={text}>

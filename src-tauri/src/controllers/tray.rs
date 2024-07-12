@@ -2,21 +2,19 @@ use super::{ClipboardController, Controller, DebugableResult, SettingsController
 use crate::models::tray::MyMenuBuilder;
 use tauri::{
     menu::{MenuBuilder, MenuEvent},
-    tray::{TrayIcon, TrayIconBuilder},
+    tray::TrayIcon,
     AppHandle, Manager, Wry,
 };
 
 pub struct TrayController(pub AppHandle);
 impl TrayController {
     pub fn init(&self) -> Result<(), tauri::Error> {
-        TrayIconBuilder::new()
-            .on_menu_event(Self::handle_event)
-            .build(&self.0)?;
+        self.handle().on_menu_event(Self::handle_event);
         self.update()
     }
 
     fn handle(&self) -> TrayIcon<Wry> {
-        self.0.tray().unwrap()
+        self.0.tray_by_id("main").unwrap()
     }
 
     pub fn update(&self) -> Result<(), tauri::Error> {
@@ -27,8 +25,9 @@ impl TrayController {
     pub fn handle_event(app: &AppHandle, event: MenuEvent) {
         match event.id().0.as_str() {
             "settings" => {
-                if let Some(window) = app.get_window("main") {
-                    app.emit("tab-request", "/settings")
+                if let Some(window) = app.get_webview_window("main") {
+                    window
+                        .emit("tab-request", "/settings")
                         .debug_ok(&app, "tab-request-settings");
                     window.show().debug_ok(&app, "window-show");
                     window.set_focus().debug_ok(&app, "window-focus");
@@ -36,8 +35,9 @@ impl TrayController {
             }
 
             "history" => {
-                if let Some(window) = app.get_window("main") {
-                    app.emit("tab-request", "/history")
+                if let Some(window) = app.get_webview_window("main") {
+                    window
+                        .emit("tab-request", "/history")
                         .debug_ok(&app, "tab-request-history");
                     window.show().debug_ok(&app, "window-show");
                     window.set_focus().debug_ok(&app, "window-focus");
@@ -46,22 +46,26 @@ impl TrayController {
 
             "enhanced_clipboard" => {
                 let settings_controller = SettingsController(app.clone());
-                if let Some(mut settings) = settings_controller.read() {
-                    settings.enhanced_clipboard = !settings.enhanced_clipboard;
-                    settings_controller
-                        .write(&settings)
-                        .debug_ok(&app, "settings-write-ecm");
-                }
+                settings_controller
+                    .state()
+                    .mutate(|settings| {
+                        settings.enhanced_clipboard = !settings.enhanced_clipboard;
+                        settings_controller.emit(settings);
+                        settings_controller.save();
+                    })
+                    .debug_ok(&app, "settings-write-ecm");
             }
 
             "display_errors" => {
                 let settings_controller = SettingsController(app.clone());
-                if let Some(mut settings) = settings_controller.read() {
-                    settings.display_errors = !settings.display_errors;
-                    settings_controller
-                        .write(&settings)
-                        .debug_ok(&app, "settings-write-errormode");
-                }
+                settings_controller
+                    .state()
+                    .mutate(|settings| {
+                        settings.display_errors = !settings.display_errors;
+                        settings_controller.emit(settings);
+                        settings_controller.save();
+                    })
+                    .debug_ok(&app, "settings-write-errormode");
             }
 
             "quit" => {

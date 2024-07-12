@@ -96,7 +96,7 @@ export const DropdownSetting: React.FC<DropdownSettingProps> = (props) => {
                 <small>{props.desc}</small>
             </Col>
             <Row className="mt-2">
-                <Form.Select onChange={props.onChange}>
+                <Form.Select onChange={props.onChange} value={props.value}>
                     {props.values}
                 </Form.Select>
             </Row>
@@ -132,6 +132,35 @@ export const TextboxSetting: React.FC<TextboxSettingProps> = (props) => {
                     />
                 </pre>
             </Row>
+        </SettingContainer>
+    );
+}
+
+interface NumberboxSettingProps {
+    icon: string,
+    desc: React.JSX.Element,
+    title: React.JSX.Element
+
+    id: string,
+    value: number,
+    onChange: ChangeEventHandler<HTMLInputElement>
+}
+export const NumberboxSetting: React.FC<NumberboxSettingProps> = (props) => {
+    return (
+        <SettingContainer icon={props.icon}>
+            <Col>
+                <strong className="d-block">{props.title}</strong>
+                <small>{props.desc}</small>
+            </Col>
+            <Col sm="3" className="d-flex flex-column justify-content-center" style={{textAlign:"right"}}>
+                <Form.Control
+                    type="number"
+                    spellCheck={false}
+                    id={props.id}
+                    value={props.value} 
+                    onChange={props.onChange}
+                />
+            </Col>
         </SettingContainer>
     );
 }

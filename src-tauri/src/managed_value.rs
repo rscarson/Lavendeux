@@ -9,15 +9,29 @@ impl<T> ManagedValue<T> {
     }
 
     ///
+    /// Run a function that mutates the inner value of the state
+    pub fn mutate<F>(&self, f: F) -> Result<(), String>
+    where
+        F: FnOnce(&mut T),
+    {
+        if let Ok(mut lock) = self.0.try_lock() {
+            f(&mut *lock);
+            Ok(())
+        } else {
+            Err("could not lock state".to_string())
+        }
+    }
+
+    ///
     /// Attempt to read a value out of the instance
     pub fn read(&self) -> Option<MutexGuard<T>> {
-        self.0.lock().ok()
+        self.0.try_lock().ok()
     }
 
     ///
     /// Attempt to replace the value in the instance
     pub fn write(&self, value: T) -> Result<(), ()> {
-        if let Ok(mut lock) = self.0.lock() {
+        if let Ok(mut lock) = self.0.try_lock() {
             *lock = value;
             Ok(())
         } else {
@@ -29,7 +43,7 @@ impl<T> ManagedValue<T> {
     where
         T: std::marker::Send + 'static + Clone,
     {
-        self.0.lock().and_then(|s| Ok(s.clone())).ok()
+        self.0.try_lock().and_then(|s| Ok(s.clone())).ok()
     }
 
     ///

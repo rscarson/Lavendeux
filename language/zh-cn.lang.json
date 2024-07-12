@@ -47,14 +47,20 @@
         "extensions": {
             "lbl_by": "作者",
             "lbl_toggle": "切换扩展",
-            "lbl_delete": "删除扩展",
             "lbl_decorators": "导出的装饰器",
             "lbl_functions": "导出的函数",
             "lbl_disabled": "已禁用",
             "lbl_disabled_by_user": "用户禁用",
+            
+            "lbl_delete": "删除扩展",
+            "lbl_confirm_delete": "您确定要删除此扩展吗？",
+            "lbl_confirm_delete_restart": "此更改将在解析器重新启动后生效",
+            "btn_cancel": "取消",
+            "btn_delete": "删除",
+            "btn_delete_restart": "删除并重启",
 
             "btn_import": "导入",
-            "btn_reload": "重新加载",
+            "btn_restart": "重启解析器",
             "btn_browse": "浏览"
         },
 
@@ -83,6 +89,9 @@
                 "lbl_ecm": "启用增强剪贴板模式",
                 "desc_ecm": "启用后，直接替换突出显示的文本，绕过剪贴板。否则，替换剪贴板的内容",
 
+                "lbl_timeout": "超时",
+                "desc_timeout": "解析器运行表达式的最长时间；以毫秒为单位",
+
                 "lbl_script": "启动脚本",
                 "desc_script": "每次解析器启动时运行的Lavendeux脚本"
             },
@@ -98,6 +107,12 @@
             }
         },
 
-        "help": {}
+        "help": {
+            "lbl_getting_started": "从这里开始",
+            "sections": {
+                "Extensions": "扩展",
+                "Functions": "函数"
+            }
+        }
     }
 }

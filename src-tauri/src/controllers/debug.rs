@@ -3,29 +3,29 @@ use std::fmt::{Debug, Display};
 use tauri::{AppHandle, Manager, State};
 
 use super::Controller;
-use crate::{debug, managed_value::ManagedValue, models::debug::DebugOutput};
+use crate::{debug, managed_value::ManagedValue, models::debug::DebugModel};
 
 pub struct DebugController(pub AppHandle);
-impl Controller<DebugOutput> for DebugController {
+impl Controller<DebugModel> for DebugController {
     const EVENT_NAME: &'static str = "updated-debug";
 
-    fn new_managed() -> ManagedValue<DebugOutput> {
-        ManagedValue::new(DebugOutput::default())
+    fn new_managed() -> Result<crate::ManagedValue<DebugModel>, String> {
+        Ok(ManagedValue::new(DebugModel::default()))
     }
 
-    fn state(&self) -> State<ManagedValue<DebugOutput>> {
-        self.0.state::<ManagedValue<DebugOutput>>()
+    fn state(&self) -> State<ManagedValue<DebugModel>> {
+        self.0.state::<ManagedValue<DebugModel>>()
     }
 
-    fn read(&self) -> Option<DebugOutput> {
+    fn read(&self) -> Option<DebugModel> {
         self.state().clone_inner()
     }
 
-    fn borrow(&self) -> std::option::Option<std::sync::MutexGuard<'_, DebugOutput>> {
+    fn borrow(&self) -> std::option::Option<std::sync::MutexGuard<'_, DebugModel>> {
         self.state().inner().read()
     }
 
-    fn write(&self, value: &DebugOutput) -> Result<DebugOutput, String> {
+    fn write(&self, value: &DebugModel) -> Result<DebugModel, String> {
         self.state()
             .write(value.clone())
             .or(Err("unknown error".to_string()))?;
@@ -34,41 +34,32 @@ impl Controller<DebugOutput> for DebugController {
         Ok(value.clone())
     }
 
-    fn emit(&self, value: &DebugOutput) {
+    fn emit(&self, value: &DebugModel) {
         self.0.emit(Self::EVENT_NAME, value.clone()).ok();
     }
 }
 
 impl DebugController {
-    pub fn is_active(&self) -> bool {
-        if let Some(inner) = self.read() {
-            inner.is_some()
-        } else {
-            false
-        }
-    }
-
-    pub fn deactivate(&self) {
-        self.write(&None).ok();
-    }
-
     pub fn activate(&self) {
-        if self.is_active() {
-            return;
-        }
-        self.write(&Some(Vec::default())).ok();
         debug!(self.0.clone(), "Debug active");
-        if let Some(window) = self.0.get_window("debug") {
-            window.show().debug_ok(&self.0, "show-debug");
+        if let Some(window) = self.0.get_webview_window("debug") {
+            if let Err(e) = window.show() {
+                println!("Error showing debug window: {:?}", e);
+            } else {
+                window.center().debug_ok(&self.0, "center-debug");
+                window
+                    .request_user_attention(Some(tauri::UserAttentionType::Informational))
+                    .debug_ok(&self.0, "request-user-attention");
+            }
+        } else {
+            println!("No debug window found");
         }
     }
 
     pub fn debug(&self, s: String) {
-        if let Some(out) = self.read() {
-            if let Some(mut inner) = out {
-                inner.push(s);
-                self.write(&Some(inner)).ok();
-            }
+        self.state().mutate(|out| out.debug(s)).ok();
+        if let Some(debug) = self.read() {
+            self.emit(&debug)
         }
     }
 }

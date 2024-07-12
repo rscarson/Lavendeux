@@ -15,7 +15,7 @@
 }
 
 html, body {
-  //user-select: none;
+  /*user-select: none;*/
   min-height: 100vh;
   flex-shrink: 0;
   width: 100%;

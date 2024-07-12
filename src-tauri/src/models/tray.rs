@@ -36,7 +36,7 @@ where
     }
 
     fn add_item(self, app: &AppHandle, label: &str, id: &str, enabled: bool) -> Self {
-        self.item(&MenuItem::with_id(app, id, label, enabled, None))
+        self.item(&MenuItem::with_id(app, id, label, enabled, None::<&str>).unwrap())
     }
 
     fn add_checkbox(
@@ -47,9 +47,7 @@ where
         enabled: bool,
         checked: bool,
     ) -> Self {
-        self.item(&CheckMenuItem::with_id(
-            app, id, label, enabled, checked, None,
-        ))
+        self.item(&CheckMenuItem::with_id(app, id, label, enabled, checked, None::<&str>).unwrap())
     }
 
     fn add_all(self, app: &AppHandle) -> Self {

@@ -4,120 +4,114 @@ import { invoke } from "@tauri-apps/api/core";
 import { getCurrent } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 
-import { Extension, ExtensionFunction } from '../../types';
+import { Extension, FunctionDocs } from '../../types';
 import { RootTab } from "../tab";
 
 import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';
 import Badge from 'react-bootstrap/Badge';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Form from 'react-bootstrap/Form';
+
 import { Translated, translate } from "../../components";
+import { ExtensionDeletionConfirmation } from "./confirmation";
 
 interface Props {}
 export const ExtensionsTab: React.FC<Props> = ({}) => {
     const [loaded, setLoaded] = useState<boolean>(false);
-    const [extensions, setExtensions] = useState<Map<String, Extension>>(new Map<String, Extension>());
+    const [extensions, setExtensions] = useState<Array<Extension>>(new Array<Extension>());
 
     const [lblToggle, setLblToggle] = useState<string>("extensions\\lbl_toggle");
-    const [lblDelete, setLblDelete] = useState<string>("extensions\\lbl_delete");
 
     async function load() {
-        let e: Map<String, Extension> = await invoke("read_extensions", {});
+        let e: Array<Extension> = await invoke("read_extensions", {});
         if (e) {
             setExtensions(e);
             setLoaded(true);
         }
     }
 
-    function disableExtension(filename: string) {
-        invoke("disable_extension", {filename});
-    }
-
-    function enableExtension(filename: string) {
-        invoke("enable_extension", {filename});
-    }
-
     function addExtension() {
         open().then((file) => {
             let filename = file!.path;
-            invoke('add_extension', {filename});
+            invoke('add_extension', {filename})
+            .then(() => {
+                setLoaded(false);
+                load();
+            });
         });
+    }
+
+    function restartParser() {
+        invoke('restart_parser', {})
+        .then(() => {
+            setLoaded(false);
+            load();
+        })
+    }
+
+    function deleteExtension(id: number, restart: boolean) {
+        invoke('del_extension', {id})
+        .then(() => {
+            if (restart) restartParser()        
+        })
     }
     
     useEffect(() => {
         load();
 
         translate(lblToggle).then(s => setLblToggle(s));
-        translate(lblDelete).then(s => setLblDelete(s));
 
         const appWindow = getCurrent();
         appWindow.listen("updated-extensions", (event) => {
-          let e = event.payload as Map<String, Extension>;
+          let e = event.payload as Array<Extension>;
           setExtensions(e);
           setLoaded(true);
         })
     }, [])
 
-    function functionSignature(f: ExtensionFunction) {
-        if (f.name.startsWith('@')) {
-            return `<${f.arguments[0]}> ${f.name}`;
-        } else {
-            let args = f.arguments.join(', ');
-            return `${f.name}(${args}): ${f.returns.toLowerCase()}`;
-        }
-    }
+    function renderExtension(extension: Extension) {
+        let id = extension.id;
+        let path = extension.module.filename;
+        let filename = path.split('\\').pop() ?? path
+        let version = extension.metadata.version ?? "0.0.0";
+        let author = extension.metadata.author ?? "@anon";
 
-    function renderExtension(filename: string, extension: Extension) {
-        let isEnabled = !!extension.Ok;
+        let name = extension.metadata.name ?? filename;
+        
         return (
-            <Card key={filename} className={`w-100 mb-3 ${extension.Err && 'border-danger'}`} style={{maxWidth:"750px"}} title={isEnabled ? filename : extension.Err}>
+            <Card 
+                key={id} 
+                className={`w-100 mb-3 ${extension.problem !== null && 'border-danger'}`} 
+                style={{maxWidth:"585px"}} 
+                title={filename}
+            >
                 <Card.Header>
-                    {isEnabled && <>
-                        {extension.Ok!.name}
-                        &nbsp;<small className="text-muted">v{extension.Ok!.version}</small>
-                    </>}
-                    {!isEnabled && <>
-                        <span className="text-danger">[disabled] </span>
-                        {filename}
-                    </>}
+                    {extension.problem !== null && <span className="text-danger">[error] </span>}
 
-                    <span
-                        className="text-secondary float-end"
-                        style={{cursor:"pointer"}}
-                        title={lblDelete}
-                        onClick={() => invoke('del_extension', {filename})}
-                    >
-                        <i className="bi bi-trash"></i>
-                    </span>
-                    <span
-                        className="text-secondary float-end"
-                        style={{cursor:"pointer", paddingRight: "5px", paddingTop: "3px"}}
-                        title={lblToggle}
-                        onClick={() => extension.Err ? enableExtension(filename) : disableExtension(filename)}
-                    >      
-                        <Form.Check
-                        type="switch"
-                        name="extension-toggle"
-                        className="obvious-toggle"
-                        checked={!extension.Err}
-                        style={{fontSize: "0.5em"}}
-                        />
-                    </span>
+                    <>
+                        <a title={`eid-${id}`}>{name}</a>
+                        &nbsp;<small className="text-muted">v{version}</small>
+                    </>
+
+                    {extension.metadata.license && <Badge bg="" text="secondary">{extension.metadata.license}</Badge>}
+
+                    <ExtensionDeletionConfirmation onConfirm={(restart) => deleteExtension(id, restart)} />
 
                     <br />
-                    {isEnabled && <small className="text-muted"><Translated path="extensions\lbl_by" /> {extension.Ok!.author}</small>}
+                    {<small className="text-muted"><Translated path="extensions\lbl_by" /> {author}</small>}
                     
                 </Card.Header>
                 <Card.Body>
-                {isEnabled && <>
-                        {Object.values(extension.Ok!.functions).map(f => <>
-                            <Badge key={f.fname} className="m-1" bg="secondary" title={f.description}>{functionSignature(f)}</Badge>
-                        </>)}
-                </>}
-                {!isEnabled && <small className="text-secondary">{extension.Err}</small>}
+                    {extension.metadata.description && <h6 className="text-muted">{extension.metadata.description}</h6>}
+                    {extension.problem !== null && <Alert variant="danger">{extension.problem}</Alert>}
+        
+                    {Object.values(extension.functions).map(f => <>
+                        <Badge key={f.signature} className="m-1" bg="secondary" title={f.description ?? ''}>{f.signature}</Badge>
+                    </>)}
                 </Card.Body>
             </Card>
         );
@@ -136,9 +130,9 @@ export const ExtensionsTab: React.FC<Props> = ({}) => {
                     <Translated path="extensions\btn_browse" />
                 </Nav.Link>
                 
-                <Nav.Link className="p-3" onClick={() => {invoke("reload_extensions", {}); setLoaded(false)}}>
+                <Nav.Link className="p-3" onClick={() => restartParser()}>
                     <i className={"bi bi-arrow-clockwise"}>&nbsp;</i>
-                    <Translated path="extensions\btn_reload" />
+                    <Translated path="extensions\btn_restart" />
                 </Nav.Link>
             </Nav>
         );
@@ -147,7 +141,7 @@ export const ExtensionsTab: React.FC<Props> = ({}) => {
     function renderContent() {
         return (
             <div className="w-100 pt-3">
-                {Object.keys(extensions).sort().map(f => renderExtension(f, extensions[f]))}
+                {extensions.map((extension, idx) => renderExtension(extension))}
             </div>
         );
     }

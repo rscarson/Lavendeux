@@ -5,22 +5,35 @@ export interface KeyboardShortcut {
     shift: boolean;
 }
 
-export interface ExtensionFunction {
+export interface FunctionDocs {
     name: string,
-    description: string,
-    arguments: Array<string>,
-    returns: string,
+    category: string,
+    signature: string,
+    short: Nullable<string>,
+    description: Nullable<string>,
+    examples: Nullable<string>,
 };
 
 export interface Extension {
-    Ok?: {
-        name: string,
-        author: string,
-        version: string,
+    id: number,
+    module: Module,
+    metadata: ExtensionMetadata,
+    functions: Array<FunctionDocs>,
+    problem: Nullable<string>,
+}
 
-        functions: Map<String, ExtensionFunction | string>,
-    },
-    Err?: string
+export interface ExtensionMetadata {
+    
+    name: Nullable<string>,
+    version: Nullable<string>,
+    description: Nullable<string>,
+    author: Nullable<string>,
+    license: Nullable<string>,
+}
+
+export interface Module {
+    filename: string,
+    contents: string,
 }
 
 export interface Snippet {
@@ -41,10 +54,11 @@ export interface Settings {
     start_with_os: boolean,
 
     start_script: string,
+    timeout_ms: number,
     shortcut: KeyboardShortcut,
 
     dark_theme: boolean,
-    language_code: string
+    language_code: string,
 }
 
 export interface MarkdownToken {

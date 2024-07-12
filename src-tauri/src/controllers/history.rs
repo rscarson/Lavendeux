@@ -10,8 +10,8 @@ pub struct HistoryController(pub AppHandle);
 impl Controller<History> for HistoryController {
     const EVENT_NAME: &'static str = "history-updated";
 
-    fn new_managed() -> ManagedValue<History> {
-        ManagedValue::new(History::default())
+    fn new_managed() -> Result<crate::ManagedValue<History>, String> {
+        Ok(ManagedValue::new(History::default()))
     }
 
     fn state(&self) -> State<ManagedValue<History>> {
@@ -46,35 +46,35 @@ impl Controller<History> for HistoryController {
 
 impl HistoryController {
     ///
-    /// Empty the history and return the result if successful
-    pub fn clear(&mut self) -> Option<History> {
-        if let Some(mut history) = self.read() {
-            history.clear();
-            self.write(&history).debug_ok(&self.0, "write-history")
-        } else {
-            None
-        }
+    /// Empty the history
+    pub fn clear(&mut self) {
+        self.state()
+            .mutate(|history| {
+                history.clear();
+                self.emit(history)
+            })
+            .debug_ok(&self.0, "clear-history");
     }
 
     ///
-    /// Remove an item from the history and return the result if successful
-    pub fn remove(&mut self, id: usize) -> Option<History> {
-        if let Some(mut history) = self.read() {
-            history.remove(id);
-            self.write(&history).debug_ok(&self.0, "write-history")
-        } else {
-            None
-        }
+    /// Remove an item from the history
+    pub fn remove(&mut self, id: usize) {
+        self.state()
+            .mutate(|history| {
+                history.remove(id);
+                self.emit(history)
+            })
+            .debug_ok(&self.0, "remove-history");
     }
 
     ///
     /// Add an item to the history tab
-    pub fn add(&mut self, snippet: Snippet) -> Option<History> {
-        if let Some(mut history) = self.read() {
-            history.add(snippet);
-            self.write(&history).debug_ok(&self.0, "write-history")
-        } else {
-            None
-        }
+    pub fn add(&mut self, snippet: Snippet) {
+        self.state()
+            .mutate(|history| {
+                history.add(snippet);
+                self.emit(history)
+            })
+            .debug_ok(&self.0, "add-history");
     }
 }

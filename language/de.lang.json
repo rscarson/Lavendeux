@@ -47,14 +47,20 @@
         "extensions": {
             "lbl_by": "Von",
             "lbl_toggle": "Erweiterung aktivieren/deaktivieren",
-            "lbl_delete": "Erweiterung löschen",
             "lbl_decorators": "Exportierte Dekorateure",
             "lbl_functions": "Exportierte Funktionen",
             "lbl_disabled": "deaktiviert",
             "lbl_disabled_by_user": "Von Benutzer deaktiviert",
+            
+            "lbl_delete": "Erweiterung löschen",
+            "lbl_confirm_delete": "Möchten Sie diese Erweiterung wirklich löschen?",
+            "lbl_confirm_delete_restart": "Diese Änderung wird erst nach einem Neustart des Parsers wirksam",
+            "btn_cancel": "Abbrechen",
+            "btn_delete": "Löschen",
+            "btn_delete_restart": "Löschen & Neustart",
 
             "btn_import": "Importieren",
-            "btn_reload": "Neu laden",
+            "btn_restart": "Neustart",
             "btn_browse": "Durchsuchen"
         },
 
@@ -82,6 +88,9 @@
                 "lbl_ecm": "Erweiterter Zwischenspeichermodus aktivieren",
                 "desc_ecm": "Wenn aktiviert wird der markierte Text direkt ersetzt und umgeht den Zwischenspeicher. Andernfalls wird der Inhalt des Zwischenspeichers ersetzt",
 
+                "lbl_timeout": "Zeitüberschreitung",
+                "desc_timeout": "Die maximale Zeit, die der Parser Ausdrücke ausführt; in Millisekunden",
+
                 "lbl_script": "Skript beim Start ausführen",
                 "desc_script": "Ein Lavendeux-Skript, das jedes Mal ausgeführt wird, wenn der Parser startet",
                 "lbl_lang_disclaimer": "Die folgenden Übersetzungen sind grob und automatisiert, Rückmeldung wird sehr geschätzt"
@@ -98,6 +107,12 @@
             }
         },
 
-        "help": {}
+        "help": {
+            "lbl_getting_started": "Hier beginnen",
+            "sections": {
+                "Extensions": "Erweiterungen",
+                "Functions": "Funktionen"
+            }
+        }
     }
 }

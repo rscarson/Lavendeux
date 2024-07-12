@@ -1,5 +1,5 @@
 use tauri::AppHandle;
-use tauri_plugin_clipboard_manager::{ClipKind, ClipboardContents, ClipboardExt};
+use tauri_plugin_clipboard_manager::ClipboardExt;
 
 pub struct ClipboardController(pub AppHandle);
 impl ClipboardController {
@@ -7,10 +7,8 @@ impl ClipboardController {
 
     pub fn read(&self) -> Option<String> {
         for _ in 0..Self::MAX_CLIP_TRIES {
-            match self.0.clipboard().read() {
-                Ok(clip) => match clip {
-                    ClipboardContents::PlainText { text } => return Some(text),
-                },
+            match self.0.clipboard().read_text() {
+                Ok(text) => return Some(text),
                 Err(e) => {
                     println!("{e}");
                 }
@@ -21,10 +19,7 @@ impl ClipboardController {
 
     pub fn write(&self, text: &str) -> bool {
         for _ in 0..Self::MAX_CLIP_TRIES {
-            match self.0.clipboard().write(ClipKind::PlainText {
-                label: None,
-                text: text.to_string(),
-            }) {
+            match self.0.clipboard().write_text(text) {
                 Ok(_) => return true,
                 Err(e) => {
                     println!("{e}");

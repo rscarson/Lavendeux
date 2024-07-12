@@ -9,38 +9,34 @@ pub mod models;
 pub mod fs;
 use std::path::Path;
 
+use commands::debug;
 pub use fs::FsUtils;
 
 mod commands;
 
 use controllers::{
-    BlacklistController, ConfigController, Controller, DebugController, DebugableResult,
-    ExtensionsController, LanguageController, ParserController, SettingsController,
-    ShortcutController,
+    Controller, DebugController, DebugableResult, ExtensionsController, LanguageController, ParserController, ReadibotController, SettingsController, ShortcutController
 };
 use controllers::{HistoryController, TrayController};
 
 use managed_value::ManagedValue;
 
-use models::config::ConfigurationSettings;
-use tauri::tray::ClickType;
 use tauri::Manager;
 use tauri::WindowEvent;
 use tauri_plugin_cli::CliExt;
 use tauri_plugin_notification::NotificationExt;
 
+macro_rules! manage_controller {
+    ($controller:ident, $handle:ident) => {
+        match $controller::new_managed() {
+            Ok(controller) => {$handle.manage(controller);},
+            Err(e) => bugcheck::fatal($handle.clone(), &format!("Could not register {}", stringify!($controller)), &e),
+        }
+    };
+}
+
 fn main() {
     let app = tauri::Builder::default()
-        //
-        // Managed Values
-        .manage(SettingsController::new_managed())
-        .manage(LanguageController::new_managed())
-        .manage(HistoryController::new_managed())
-        .manage(BlacklistController::new_managed())
-        .manage(ExtensionsController::new_managed())
-        .manage(ParserController::new_managed())
-        .manage(DebugController::new_managed())
-        .manage(ConfigController::new_managed())
         //
         // Plugins
         .plugin(tauri_plugin_dialog::init())
@@ -49,8 +45,10 @@ fn main() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_cli::init())
         .plugin(
-            tauri_plugin_global_shortcut::Builder::with_handler(|app, _| {
-                ParserController::main_handler(app.clone());
+            tauri_plugin_global_shortcut::Builder::new().with_handler(|app, _, event| {
+                if event.state == tauri_plugin_global_shortcut::ShortcutState::Pressed {
+                    ParserController::main_handler(app.clone(), event);
+                }
             })
             .build(),
         )
@@ -74,68 +72,90 @@ fn main() {
             commands::settings::read_settings,
             commands::settings::write_settings,
             commands::settings::app_exit,
+            commands::settings::restart_parser,
             //
             commands::history::read_history,
             commands::history::clear_history,
             commands::history::del_history,
             commands::history::export_history,
             //
-            commands::blacklist::read_blacklist,
-            commands::blacklist::disable_extension,
-            commands::blacklist::enable_extension,
-            //
             commands::extensions::open_ext_dir,
-            commands::extensions::reload_extensions,
             commands::extensions::read_extensions,
             commands::extensions::add_extension,
             commands::extensions::del_extension,
             //
             commands::debug::activate_debug,
-            commands::debug::read_debug
+            commands::debug::read_debug,
+            //
+            commands::readibot::is_ready,
         ])
-        .setup(|app| {
+        .manage(ReadibotController::new_managed().unwrap())
+        .manage(LanguageController::new_managed().unwrap())
+        .setup(move |app| {
             let handle = app.handle();
 
+            manage_controller!(DebugController, handle);
+            debug!(handle.clone(), "load-controllers");
+            
+            manage_controller!(SettingsController, handle);
+            manage_controller!(HistoryController, handle);
+            manage_controller!(ExtensionsController, handle);
+            manage_controller!(ParserController, handle);
+
+            // Set the default root to the config directory
+            debug!(handle.clone(), "set-default-root");
+            SettingsController(handle.clone()).state().mutate(|settings| {
+                let path = settings.default_root(handle.clone());
+                settings.set_root(path);
+            }).ok();
+
+            debug!(handle.clone(), "process-cli-args");
             if let Ok(matches) = handle.cli().matches() {
                 let debug_mode = matches.args.get("debug").unwrap().occurrences > 0;
                 let config_dir = matches.args.get("config-dir").unwrap();
 
                 if debug_mode {
+                    debug!(handle.clone(), "activate-debug");
                     DebugController(handle.clone()).activate();
+                    DebugController(handle.clone()).state().mutate(|out| out.debug_type = models::debug::DebugType::FileSystem).ok();
                 }
 
                 if config_dir.value.is_string() {
+                    debug!(handle.clone(), "set-root-dir");
                     let path = Path::new(config_dir.value.as_str().unwrap()).to_owned();
-                    ConfigController(handle.clone())
-                        .write(&ConfigurationSettings::with_dir(path))
-                        .debug_ok(handle, "set-config-path");
-                } else {
-                    ConfigController(handle.clone())
-                        .write(&ConfigurationSettings::new(handle.clone()))
-                        .debug_ok(handle, "set-config-path");
+                    SettingsController(handle.clone()).set_root(&path);
                 }
             }
 
-            // Updater
-            //tauri::async_runtime::spawn(async move {
-            //    let response = handle.updater_builder().build().unwrap().check().await;
-            //});
-
             //
             // Attempt to create directories needed by the app
-            if let Err(_) = ConfigController(handle.clone()).create_all() {
-                bugcheck::fatal(handle.clone(), "Could not write to settings");
+            debug!(handle.clone(), "create-dirs");
+            if let Err(_) = SettingsController(handle.clone()).create_all() {
+                bugcheck::fatal(handle.clone(), 
+                    "Could not write to settings", 
+                    "Could not write to the configuration directory - do you have the right permissions?"
+                );
+            }
+
+            //
+            // Load extensions
+            //
+            debug!(handle.clone(), "load-extensions");
+            if let Err(e) = ExtensionsController(handle.clone()).load() {
+                bugcheck::general(handle.clone(), "Could not load extensions", &e.to_string());
             }
 
             //
             // Try to load up the settings - it's ok if this fails, we'll just end up with the defaults
-            ConfigController(handle.clone()).load();
+            debug!(handle.clone(), "load-settings");
+            SettingsController(handle.clone()).load();
             let settings = SettingsController(handle.clone())
                 .read()
                 .unwrap_or_default();
 
             //
             // Register default shortcut
+            debug!(handle.clone(), "register-shortcut");
             if ShortcutController(handle.clone())
                 .register(&settings.shortcut)
                 .is_err()
@@ -149,6 +169,7 @@ fn main() {
 
             //
             // Language settings
+            debug!(handle.clone(), "set-language");
             if LanguageController(handle.clone())
                 .set_language(&settings.language_code)
                 .is_err()
@@ -161,14 +182,8 @@ fn main() {
             }
 
             //
-            // Load extensions
-            //
-            if let Err(e) = ExtensionsController(handle.clone()).reload() {
-                bugcheck::general(handle.clone(), "Could not load extensions", &e.to_string());
-            }
-
-            //
             // Run startup sequence
+            debug!(handle.clone(), "run-start-script");
             if !settings.start_script.trim().is_empty() {
                 let snippet = ParserController(handle.clone()).parse(&settings.start_script);
                 if snippet.is_err() {
@@ -178,12 +193,20 @@ fn main() {
 
             //
             // Activate tray icon
+            debug!(handle.clone(), "activate-tray");
             if TrayController(handle.clone()).init().is_err() {
-                bugcheck::fatal(handle.clone(), "Could not create tray icon - exiting");
+                bugcheck::fatal(handle.clone(), 
+                    "Could not create tray icon",
+                    "Lavendeux relies on the system tray icon to function properly. Unable to continue."
+                );
             }
+
+            // Signal readiness to the frontend
+            ReadibotController(handle.clone()).set_ready(true);
 
             //
             // Show ready msg
+            debug!(handle.clone(), "show-ready-msg");
             app.notification()
                 .builder()
                 .title("Lavendeux is running")
@@ -191,6 +214,7 @@ fn main() {
                 .action_type_id("show_history")
                 .show()
                 .debug_ok(&handle, "notify");
+
             Ok(())
         })
         .build(tauri::generate_context!())
@@ -198,25 +222,29 @@ fn main() {
 
     app.run(|_app, event| {
         match event {
-            tauri::RunEvent::Exit => {}
+            tauri::RunEvent::Exit => {
+
+            }
 
             // Keep the event loop running even if all windows are closed
             // This allow us to catch system tray events when there is no window
-            tauri::RunEvent::ExitRequested { api, .. } => {
-                api.prevent_exit();
+            tauri::RunEvent::ExitRequested { api, code, .. } => {
+                match code {
+                    Some(0) => {
+                        // Do nothing
+                    }
+
+                    _ => api.prevent_exit(),
+                }
             }
 
             // Window specific events
             tauri::RunEvent::WindowEvent { label, event, .. } => match event {
                 WindowEvent::CloseRequested { api, .. } => {
                     api.prevent_close();
-                    if let Some(window) = _app.get_window(&label) {
+                    if let Some(window) = _app.get_webview_window(&label) {
                         window.hide().debug_ok(&_app, "window-hide");
                     };
-
-                    if label == "debug" {
-                        DebugController(_app.clone()).deactivate();
-                    }
                 }
                 _ => {}
             },
@@ -224,12 +252,10 @@ fn main() {
             tauri::RunEvent::MainEventsCleared => {}
             tauri::RunEvent::MenuEvent(_) => {}
 
-            tauri::RunEvent::TrayIconEvent(e) => {
-                if e.click_type == ClickType::Double {
-                    if let Some(window) = _app.get_window("main") {
-                        window.show().debug_ok(&_app, "window-show");
-                        window.set_focus().debug_ok(&_app, "window-focus");
-                    }
+            tauri::RunEvent::TrayIconEvent(tauri::tray::TrayIconEvent::Click{button, ..}) if button == tauri::tray::MouseButton::Left => {
+                if let Some(window) = _app.get_webview_window("main") {
+                    window.show().debug_ok(&_app, "window-show");
+                    window.set_focus().debug_ok(&_app, "window-focus");
                 }
             }
 

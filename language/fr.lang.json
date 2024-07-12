@@ -47,14 +47,20 @@
         "extensions": {
             "lbl_by": "Par",
             "lbl_toggle": "Activer/désactiver l'extension",
-            "lbl_delete": "Supprimer l'extension",
             "lbl_decorators": "Décorateurs exportés",
             "lbl_functions": "Fonctions exportées",
             "lbl_disabled": "désactivé",
             "lbl_disabled_by_user": "Désactivé par l'utilisateur",
+            
+            "lbl_delete": "Supprimer l'extension",
+            "lbl_confirm_delete": "Êtes-vous sûr de vouloir supprimer cette extension?",
+            "lbl_confirm_delete_restart": "Ce changement ne prendra effet qu'après le redémarrage du parseur",
+            "btn_cancel": "Annuler",
+            "btn_delete": "Supprimer",
+            "btn_delete_restart": "Supprimer et redémarrer",
 
             "btn_import": "Importer",
-            "btn_reload": "Recharger",
+            "btn_restart": "Redémarrer",
             "btn_browse": "Parcourir"
         },
 
@@ -83,6 +89,9 @@
                 "lbl_ecm": "Activer le mode de presse-papiers amélioré",
                 "desc_ecm": "Lorsqu'il est activé, remplace le texte surligné directement, contournant le presse-papiers. Sinon, remplace le contenu du presse-papiers",
 
+                "lbl_timeout": "Délai d'attente",
+                "desc_timeout": "Le temps maximum que le parseur exécutera les expressions; en millisecondes",
+
                 "lbl_script": "Démarrer le script",
                 "desc_script": "Un script Lavendeux à exécuter chaque fois que le parseur démarre"
             },
@@ -98,6 +107,12 @@
             }
         },
 
-        "help": {}
+        "help": {
+            "lbl_getting_started": "Commencer ici",
+            "sections": {
+                "Extensions": "Extensions",
+                "Functions": "Fonctions"
+            }
+        }
     }
 }

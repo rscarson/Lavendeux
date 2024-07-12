@@ -1,5 +1,4 @@
-use lavendeux_parser2::ExtensionDetails;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 pub type Blacklist = HashSet<String>;
-pub type Extensions = HashMap<String, Result<ExtensionDetails, String>>;
+pub type Extensions = Vec<lavendeux_js::Extension>;

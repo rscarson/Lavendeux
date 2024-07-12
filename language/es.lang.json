@@ -47,14 +47,20 @@
         "extensions": {
             "lbl_by": "Por",
             "lbl_toggle": "Alternar extensión",
-            "lbl_delete": "Eliminar extensión",
             "lbl_decorators": "Decoradores Exportados",
             "lbl_functions": "Funciones Exportadas",
             "lbl_disabled": "desactivado",
             "lbl_disabled_by_user": "Desactivado por el usuario",
+            
+            "lbl_delete": "Eliminar extensión",
+            "lbl_confirm_delete": "¿Estás seguro de que deseas eliminar esta extensión?",
+            "lbl_confirm_delete_restart": "Este cambio no tendrá efecto hasta que se reinicie el analizador",
+            "btn_cancel": "Cancelar",
+            "btn_delete": "Eliminar",
+            "btn_delete_restart": "Eliminar y Reiniciar",
 
             "btn_import": "Importar",
-            "btn_reload": "Recargar",
+            "btn_restart": "Reiniciar",
             "btn_browse": "Explorar"
         },
 
@@ -82,6 +88,9 @@
                 
                 "lbl_ecm": "Activar el modo avanzado del portapapeles",
                 "desc_ecm": "Cuando está activado, reemplaza el texto resaltado directamente, pasando por alto el portapapeles. De lo contrario, reemplaza el contenido del portapapeles",
+                
+                "lbl_timeout": "Timeout",
+                "desc_timeout": "El tiempo máximo que el analizador ejecutará las expresiones; en milisegundos",
 
                 "lbl_script": "Iniciar script",
                 "desc_script": "Un script de Lavendeux que se ejecutará cada vez que el analizador se inicie"
@@ -98,6 +107,12 @@
             }
         },
 
-        "help": {}
+        "help": {
+            "lbl_getting_started": "Comenzar Aquí",
+            "sections": {
+                "Extensions": "Extensiones",
+                "Functions": "Funciones"
+            }
+        }
     }
 }

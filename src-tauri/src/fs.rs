@@ -12,10 +12,10 @@ impl FsUtils {
     const OPEN_DIR_COMMAND: &str = "xdg-open";
 
     #[cfg(target_os = "windows")]
-    const OPEN_DIR_COMMAND: &str = "explorer";
+    const OPEN_DIR_COMMAND: &'static str = "explorer";
 
     #[cfg(target_os = "macos")]
-    const OPEN_DIR_COMMAND: &str = "open";
+    const OPEN_DIR_COMMAND: &'static str = "open";
 
     ///
     /// Open a directory in the system browser

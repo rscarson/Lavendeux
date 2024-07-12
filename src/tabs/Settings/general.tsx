@@ -65,7 +65,7 @@ export const GeneralSettings = (props:Props) => {
                 </>}
                 values={languages.map((l) => {
                     let [name, code] = l;
-                    return <option selected={props.languageCode==code} value={code}>{name}</option>
+                    return <option key={code} value={code}>{name}</option>
                 })}
                 value={props.languageCode} onChange={(e) => {
                     let elem = e.target as HTMLSelectElement;

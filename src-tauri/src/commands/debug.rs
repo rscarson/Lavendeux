@@ -7,7 +7,7 @@ use crate::{
 
 #[tauri::command]
 pub fn read_debug(app: AppHandle) -> Result<DebugOutput, ()> {
-    DebugController(app).read().ok_or(())
+    DebugController(app).read().map(|d| d.output).ok_or(())
 }
 
 #[tauri::command]

@@ -47,14 +47,20 @@
         "extensions": {
             "lbl_by": "作者",
             "lbl_toggle": "拡張機能の切り替え",
-            "lbl_delete": "拡張機能の削除",
             "lbl_decorators": "エクスポートされたデコレータ",
             "lbl_functions": "エクスポートされた関数",
             "lbl_disabled": "無効",
             "lbl_disabled_by_user": "ユーザーによる無効化",
+            
+            "lbl_delete": "拡張機能の削除",
+            "lbl_confirm_delete": "この拡張機能を削除してもよろしいですか？",
+            "lbl_confirm_delete_restart": "この変更はパーサーが再起動されるまで有効になりません",
+            "btn_cancel": "キャンセル",
+            "btn_delete": "削除",
+            "btn_delete_restart": "削除して再起動",
 
             "btn_import": "インポート",
-            "btn_reload": "再読み込み",
+            "btn_restart": "再起動",
             "btn_browse": "閲覧"
         },
 
@@ -83,6 +89,9 @@
                 "lbl_ecm": "高度なクリップボードモードの有効化",
                 "desc_ecm": "有効にすると、クリップボードをバイパスしてハイライトされたテキストを直接置換します。それ以外の場合、クリップボードの内容を置換します",
 
+                "lbl_timeout": "タイムアウト",
+                "desc_timeout": "パーサーが式を実行する最大時間（ミリ秒単位）",
+
                 "lbl_script": "スクリプトの開始",
                 "desc_script": "パーサーが起動するたびに実行されるLavendeuxスクリプト"
             },
@@ -98,6 +107,12 @@
             }
         },
 
-        "help": {}
+        "help": {
+            "lbl_getting_started": "はじめるには",
+            "sections": {
+                "Extensions": "拡張機能",
+                "Functions": "関数"
+            }
+        }
     }
 }

@@ -48,7 +48,7 @@ export const HelpTab: React.FC<Props> = ({}) => {
     const [loaded, setLoaded] = useState<boolean>(false);
     const [settings, setSettings] = useState<Settings>();
     const [data, setData] = useState<Map<string, Array<MarkdownToken>>>();
-    const [section, setSection] = useState<string>('');
+    const [section, setSection] = useState<string>('Getting Started');
 
     async function load() {        
         let _settings: Settings = await invoke("read_settings", {});
@@ -77,38 +77,19 @@ export const HelpTab: React.FC<Props> = ({}) => {
     function renderSidebar() {
         return (
             <Nav className="flex-column" variant="pills">
-                <Nav.Link active={section==''} className="p-3" onClick={() => changeSection('')}>
+                <Nav.Link active={section==''} className="p-3" onClick={() => changeSection('Getting Started')}>
                     <i className={"bi bi-1-circle"}>&nbsp;</i>
                     <Translated path="help\lbl_getting_started" />
                 </Nav.Link>
 
-                <hr />
-                
-                <Nav.Link active={section=='Chapter 1 - Values'} className="p-3" onClick={() => changeSection('Chapter 1 - Values')}>
-                    <i className={"bi bi-2-circle"}>&nbsp;</i>
-                    <Translated path="help\sections\Values" />
-                </Nav.Link>
-                
-                <Nav.Link active={section=='Chapter 2 - Operations'} className="p-3" onClick={() => changeSection('Chapter 2 - Operations')}>
-                    <i className={"bi bi-3-circle"}>&nbsp;</i>
-                    <Translated path="help\sections\Operators" />
-                </Nav.Link>
-                
-                <Nav.Link active={section=='Chapter 3 - Variables, Functions and Loops'} className="p-3" onClick={() => changeSection('Chapter 3 - Variables, Functions and Loops')}>
-                    <i className={"bi bi-4-circle"}>&nbsp;</i>
-                    <Translated path="help\sections\Features" />
-                </Nav.Link>
-
-                <hr />
-
-                <Nav.Link active={section=='Chapter 4 - Extensions'} className="p-3" onClick={() => changeSection('Chapter 4 - Extensions')}>
-                    <i className={"bi bi-8-circle"}>&nbsp;</i>
+                <Nav.Link active={section=='Extensions'} className="p-3" onClick={() => changeSection('Extensions')}>
+                    <i className={"bi bi-plugin"}>&nbsp;</i>
                     <Translated path="help\sections\Extensions" />
                 </Nav.Link>
                 
-                <Nav.Link active={section=='Chapter 5 - Appendix'} className="p-3" onClick={() => changeSection('Chapter 5 - Appendix')}>
-                    <i className={"bi bi-5-circle"}>&nbsp;</i>
-                    <Translated path="help\sections\Appendix" />
+                <Nav.Link active={section=='Functions'} className="p-3" onClick={() => changeSection('Functions')}>
+                    <i className={"bi bi-book"}>&nbsp;</i>
+                    <Translated path="help\sections\Functions" />
                 </Nav.Link>
             </Nav>
         );
@@ -124,17 +105,8 @@ export const HelpTab: React.FC<Props> = ({}) => {
         })
     }, [])
 
-    function startSection() {
+    function sectionFooter() {
         return (<>
-            <h2>Lavendeux enhances the clipboard</h2>
-            <h6>
-                Lavendeux inlines calculating, programming and testing utilities into your favourite text editor
-            </h6>
-
-            <Badge>
-                Select an option from the left to learn more
-            </Badge>
-            
             <hr/>
             <TutorialBlock settings={settings!} />
             
@@ -145,14 +117,17 @@ export const HelpTab: React.FC<Props> = ({}) => {
     }
 
     function getSection() {
+        if (data === undefined) return <></>;
+
         const title = section.replace('_', ' ');
-        if (!section.length) return startSection();
         let sectionData = data![section].map(chunk => format_help_chunk(chunk));
 
         return (<>
             <h2 style={{textTransform:'capitalize'}}>{title}</h2>
             <hr/>
             {sectionData}
+
+            {sectionFooter()}
         </>);
     }
 

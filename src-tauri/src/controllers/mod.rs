@@ -1,7 +1,7 @@
 pub trait Controller<T: Send + Sync> {
     const EVENT_NAME: &'static str;
 
-    fn new_managed() -> crate::ManagedValue<T>;
+    fn new_managed() -> Result<crate::ManagedValue<T>, String>;
 
     fn state(&self) -> tauri::State<crate::ManagedValue<T>>;
 
@@ -32,9 +32,6 @@ pub use history::HistoryController;
 mod clipboard;
 pub use clipboard::ClipboardController;
 
-mod blacklist;
-pub use blacklist::BlacklistController;
-
 mod extensions;
 pub use extensions::ExtensionsController;
 
@@ -44,5 +41,5 @@ pub use parser::ParserController;
 mod debug;
 pub use debug::{DebugController, DebugableResult};
 
-mod config;
-pub use config::ConfigController;
+mod readibot;
+pub use readibot::ReadibotController;

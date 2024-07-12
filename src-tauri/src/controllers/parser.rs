@@ -1,13 +1,13 @@
-use std::{thread, time::Duration};
-
-use lavendeux_parser2::{Lavendeux, ParserOptions};
-use tauri::{AppHandle, Manager, State};
-
 use crate::{
-    bugcheck, debug,
+    bugcheck,
+    controllers::ExtensionsController,
+    debug,
     managed_value::ManagedValue,
     models::history::{Snippet, SnippetResult},
 };
+use std::{thread, time::Duration};
+use tauri::{AppHandle, Manager, State};
+use tauri_plugin_global_shortcut::ShortcutEvent;
 
 use super::{
     ClipboardController, Controller, DebugableResult, HistoryController, SettingsController,
@@ -15,29 +15,28 @@ use super::{
 };
 
 pub struct ParserController(pub AppHandle);
-impl Controller<Lavendeux> for ParserController {
+impl Controller<()> for ParserController {
     const EVENT_NAME: &'static str = "updated-parserstate";
 
-    fn new_managed() -> ManagedValue<Lavendeux> {
-        ManagedValue::new(Lavendeux::new(ParserOptions {
-            timeout: 2,
-            stack_size: 10 * 1024 * 1024,
-        }))
+    fn new_managed() -> Result<crate::ManagedValue<()>, String> {
+        lavendeux_js::init_worker(std::time::Duration::from_secs(3))
+            .map_err(|e| e.as_highlighted(Default::default()))?;
+        Ok(ManagedValue::new(()))
     }
 
-    fn state(&self) -> State<ManagedValue<Lavendeux>> {
-        self.0.state::<ManagedValue<Lavendeux>>()
+    fn state(&self) -> State<ManagedValue<()>> {
+        self.0.state::<ManagedValue<()>>()
     }
 
-    fn read(&self) -> Option<Lavendeux> {
-        self.state().clone_inner()
+    fn read(&self) -> Option<()> {
+        Some(())
     }
 
-    fn borrow(&self) -> Option<std::sync::MutexGuard<'_, Lavendeux>> {
+    fn borrow(&self) -> Option<std::sync::MutexGuard<'_, ()>> {
         self.state().inner().read()
     }
 
-    fn write(&self, value: &Lavendeux) -> Result<Lavendeux, String> {
+    fn write(&self, value: &()) -> Result<(), String> {
         self.state()
             .write(value.clone())
             .or(Err("could not write to state".to_string()))?;
@@ -46,7 +45,7 @@ impl Controller<Lavendeux> for ParserController {
         Ok(value.clone())
     }
 
-    fn emit(&self, _: &Lavendeux) {
+    fn emit(&self, _: &()) {
         self.0
             .emit(Self::EVENT_NAME, ())
             .debug_ok(&self.0, "emit-event");
@@ -55,31 +54,31 @@ impl Controller<Lavendeux> for ParserController {
 
 impl ParserController {
     ///
+    /// Restart the parser
+    pub fn restart_parser(&self) -> Result<(), String> {
+        debug!(self.0.clone(), "Restarting parser");
+        lavendeux_js::with_worker(|runtime| runtime.restart()).debug_ok(&self.0, "restart-parser");
+        ExtensionsController(self.0.clone()).load()
+    }
+
+    ///
     /// Parse an input using the active parser
     pub fn parse(&self, input: &str) -> Snippet {
-        if let Some(mut parser) = self.borrow() {
-            let snippet = match parser.parse(input) {
-                Ok(values) => Snippet::new(
-                    &input,
-                    SnippetResult::Success(
-                        values
-                            .iter()
-                            .map(|v| v.to_string())
-                            .collect::<Vec<_>>()
-                            .join("\n"),
-                    ),
-                ),
-                Err(e) => Snippet::new(&input, SnippetResult::Error(e.to_string())),
-            };
+        let result = lavendeux_js::with_worker(|runtime| runtime.eval(input));
+        let snippet = match result {
+            Ok(s) => Snippet::new(&input, SnippetResult::Success(s.to_string())),
+            Err(e) => {
+                let mut str = e.as_highlighted(Default::default());
+                str = str
+                    .replace("\n  at :", "\n  at ")
+                    .replace("\n  at <anonymous>:", "\n  at ");
 
-            HistoryController(self.0.clone()).add(snippet.clone());
-            snippet
-        } else {
-            Snippet::new(
-                &input,
-                SnippetResult::Error("could not lock parser state".to_string()),
-            )
-        }
+                Snippet::new(&input, SnippetResult::Error(str))
+            }
+        };
+
+        HistoryController(self.0.clone()).add(snippet.clone());
+        snippet
     }
 
     fn handle_shortcut(&self) -> Result<(), String> {
@@ -142,7 +141,7 @@ impl ParserController {
 
     ///
     /// Threaded main handler for input events
-    pub fn main_handler(app: AppHandle) {
+    pub fn main_handler(app: AppHandle, _: ShortcutEvent) {
         thread::spawn(move || {
             if let Err(e) = ParserController(app.clone()).handle_shortcut() {
                 bugcheck::parser(app, &e);

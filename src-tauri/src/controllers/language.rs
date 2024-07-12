@@ -8,7 +8,7 @@ pub struct LanguageController(pub AppHandle);
 impl Controller<LanguageSet> for LanguageController {
     const EVENT_NAME: &'static str = "language-updated";
 
-    fn new_managed() -> ManagedValue<LanguageSet> {
+    fn new_managed() -> Result<crate::ManagedValue<LanguageSet>, String> {
         let mut translator = LanguageSet::new(
             "en",
             &[
@@ -26,7 +26,7 @@ impl Controller<LanguageSet> for LanguageController {
             MarkdownTree::parse(include_str!("../../../language/help/en.help.md")),
         );
 
-        ManagedValue::new(translator)
+        Ok(ManagedValue::new(translator))
     }
 
     fn state(&self) -> State<ManagedValue<LanguageSet>> {
@@ -67,7 +67,13 @@ impl LanguageController {
     }
 
     pub fn help_text(&self) -> Option<MarkdownTree> {
-        self.borrow().and_then(|t| t.attachment("help"))
+        match self.borrow() {
+            Some(t) => t.attachment("help"),
+            None => {
+                println!("No help text found");
+                None
+            }
+        }
     }
 
     pub fn set_language(&self, lang: &str) -> Result<(), String> {

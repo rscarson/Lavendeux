@@ -1,6 +1,6 @@
 [package]
 name = "lavendeux"
-version = "0.30.0"
+version = "0.50.0"
 description = "Lavendeux enhances the clipboard"
 authors = ["@rscarson"]
 license = "MIT"
@@ -10,24 +10,23 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-alpha.11", features = [] }
+tauri-build = { version = "2.0.0-beta.18", features = ["config-json5"] }
 
 [dependencies]
 
 # Tauri deps
-tauri = { version = "2.0.0-alpha.20", features = ["tray-icon"] }
-tauri-plugin-dialog = "2.0.0-alpha.7"
-tauri-plugin-updater = "2.0.0-alpha.6"
-tauri-plugin-notification = "2.0.0-alpha.7"
-tauri-plugin-clipboard-manager = "2.0.0-alpha.6"
-tauri-plugin-global-shortcut = "2.0.0-alpha.6"
-tauri-plugin-single-instance = "2.0.0-alpha.6"
-tauri-plugin-autostart = "2.0.0-alpha.6"
-tauri-plugin-shell = "2.0.0-alpha.6"
-tauri-plugin-cli = "2.0.0-alpha.6"
+tauri = { version = "2.0.0-beta.23", features = ["tray-icon", "config-json5"] }
+tauri-plugin-dialog = "2.0.0-beta.10"
+tauri-plugin-notification = "2.0.0-beta.9"
+tauri-plugin-clipboard-manager = "2.1.0-beta.5"
+tauri-plugin-global-shortcut = "2.0.0-beta.7"
+tauri-plugin-single-instance = "2.0.0-beta.10"
+tauri-plugin-autostart = "2.0.0-beta.8"
+tauri-plugin-shell = "2.0.0-beta.8"
+tauri-plugin-cli = "2.0.0-beta.7"
 
 # Parser
-lavendeux_parser2 = { git = "https://github.com/rscarson/lavendeux-parser2.git"}
+lavendeux_js = {path = "../lavendeux_js"}
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 

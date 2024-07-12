@@ -14,8 +14,11 @@ import Nav from 'react-bootstrap/Nav';
 import Tab from "react-bootstrap/Tab";
 import { Translated, clearTranslationCache } from "../../components";
 
-interface Props {}
+function are_shortcuts_equal(a: KeyboardShortcut, b: KeyboardShortcut): boolean {
+    return a.key == b.key && a.ctrl == b.ctrl && a.alt == b.alt && a.shift == b.shift;
+}
 
+interface Props {}
 export const SettingsTab: React.FC<Props> = ({}) => {
     const [lastError, setLastError] = useState<string>("");
     useEffect(() => {
@@ -29,6 +32,7 @@ export const SettingsTab: React.FC<Props> = ({}) => {
     const [loaded, setLoaded] = useState<boolean>(false);
 
     const [enhancedClipboard, setEnhancedClipboard] = useState<boolean>(false);
+    const [timeoutMs, setTimeoutMs] = useState<number>(0);
     const [startScript, setStartScript] = useState<string>("");
     
     const [displayErrors, setDisplayErrors] = useState<boolean>(false);
@@ -37,16 +41,15 @@ export const SettingsTab: React.FC<Props> = ({}) => {
     const [keyboardShortcut, setKeyboardShortcut] = useState<KeyboardShortcut>({key:'', ctrl:false, alt: false, shift:false});
     const [startWithOs, setStartWithOs] = useState<boolean>(false);
     const [languageCode, setLanguageCode] = useState<string>("");
-
-    const [languages, setLanguages] = useState<Array<[string, string]>>([['English', 'en']])
     
     function loadFromSettings(settings: Settings) {
         if (enhancedClipboard != settings.enhanced_clipboard) setEnhancedClipboard(settings.enhanced_clipboard);
         if (displayErrors != settings.display_errors) setDisplayErrors(settings.display_errors);
         if (startScript != settings.start_script) setStartScript(settings.start_script);
+        if (timeoutMs != settings.timeout_ms) setTimeoutMs(settings.timeout_ms);
         if (darkMode != settings.dark_theme) setDarkMode(settings.dark_theme);
         if (languageCode != settings.language_code) setLanguageCode(settings.language_code);
-        if (keyboardShortcut != settings.shortcut) setKeyboardShortcut(settings.shortcut);
+        if (!are_shortcuts_equal(settings.shortcut, keyboardShortcut)) setKeyboardShortcut(settings.shortcut);
         if (startWithOs != settings.start_with_os) setStartWithOs(settings.start_with_os);
     }
 
@@ -55,11 +58,13 @@ export const SettingsTab: React.FC<Props> = ({}) => {
             enhanced_clipboard: enhancedClipboard,
             display_errors: displayErrors,
             start_script: startScript,
+            timeout_ms: timeoutMs,
             dark_theme: darkMode,
             language_code: languageCode,
             shortcut: keyboardShortcut,
             start_with_os: startWithOs,
         };
+
         invoke("write_settings", {settings}).catch(e => {
             setLastError(`Error saving settings: ${e}`);
         });
@@ -75,15 +80,12 @@ export const SettingsTab: React.FC<Props> = ({}) => {
     
     useEffect(() => {
         load();
-
-        const appWindow = getCurrent();
-        appWindow.listen("updated-config", (event) => loadFromSettings(event.payload as Settings))
     }, []);
     
     useEffect(() => {
         if (!loaded) return;
         writeSettings();
-    }, [enhancedClipboard, displayErrors, startScript, darkMode, languageCode, keyboardShortcut, startWithOs])
+    }, [timeoutMs, enhancedClipboard, displayErrors, startScript, darkMode, languageCode, keyboardShortcut, startWithOs])
 
     function renderSidebar() {
         return (
@@ -144,6 +146,7 @@ export const SettingsTab: React.FC<Props> = ({}) => {
                 <Tab.Pane eventKey="parser">
                     <ParserSettings
                         enhancedClipboard={enhancedClipboard} onChangeEnhancedClipboard={(v) => setEnhancedClipboard(v)}
+                        timeout={timeoutMs} onChangeTimeout={(v) => setTimeoutMs(v)}
                         startScript={startScript} onChangeStartScript={(v) => setStartScript(v)}
                     />
                 </Tab.Pane>
@@ -165,3 +168,4 @@ export const SettingsTab: React.FC<Props> = ({}) => {
         />
     );
 };
+4 

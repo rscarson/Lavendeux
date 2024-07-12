@@ -47,14 +47,20 @@
         "extensions": {
             "lbl_by": "By",
             "lbl_toggle": "Toggle extension",
-            "lbl_delete": "Delete extension",
             "lbl_decorators": "Exported Decorators",
             "lbl_functions": "Exported Functions",
             "lbl_disabled": "disabled",
             "lbl_disabled_by_user": "Disabled by user",
+            
+            "lbl_delete": "Delete extension",
+            "lbl_confirm_delete": "Are you sure you want to delete this extension?",
+            "lbl_confirm_delete_restart": "This change will not take effect until the parser is restarted",
+            "btn_cancel": "Cancel",
+            "btn_delete": "Delete",
+            "btn_delete_restart": "Delete & Restart",
 
             "btn_import": "Import",
-            "btn_reload": "Reload",
+            "btn_restart": "Restart",
             "btn_browse": "Browse"
         },
 
@@ -83,6 +89,9 @@
                 "lbl_ecm": "Enable enhanced clipboard mode",
                 "desc_ecm": "When enabled, replaces highlighted text directly, bypassing the clipboard. Otherwise, replaces the clipboard's contents",
 
+                "lbl_timeout": "Timeout",
+                "desc_timeout": "The maximum time the parser will run expressions; in milliseconds",
+
                 "lbl_script": "Start script",
                 "desc_script": "A Lavendeux script to run every time the parser starts up"
             },
@@ -101,11 +110,8 @@
         "help": {
             "lbl_getting_started": "Start Here",
             "sections": {
-                "Values": "Values",
-                "Operators": "Operators",
-                "Features": "Features",
                 "Extensions": "Extensions",
-                "Appendix": "Appendix"
+                "Functions": "Functions"
             }
         }
     }
