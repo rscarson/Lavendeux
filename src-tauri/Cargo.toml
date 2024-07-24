@@ -1,6 +1,6 @@
 [package]
 name = "lavendeux"
-version = "0.50.0"
+version = "0.40.0"
 description = "Lavendeux enhances the clipboard"
 authors = ["@rscarson"]
 license = "MIT"
@@ -31,6 +31,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # Other deps
+thiserror = "1.0.63"
 embedded-lang = { git = "https://github.com/rscarson/embedded_lang.git" }
 enigo = "0.1.2"
 

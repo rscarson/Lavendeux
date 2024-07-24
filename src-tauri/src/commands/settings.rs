@@ -1,23 +1,26 @@
 use tauri::AppHandle;
 
 use crate::{
-    controllers::{Controller, DebugableResult, ParserController, SettingsController},
+    bugcheck::BugcheckedOk,
+    controllers::{Controller, ParserController, SettingsController},
+    error::Error,
     models::settings::Settings,
 };
 
 #[tauri::command]
-pub fn open_config_dir(app: AppHandle) {
-    SettingsController(app).open_config_dir()
+pub fn open_config_dir(app: AppHandle) -> Result<(), Error> {
+    SettingsController(app.clone()).open_config_dir()
 }
 
 #[tauri::command]
-pub fn read_settings(app: AppHandle) -> Result<Settings, ()> {
-    SettingsController(app).read().ok_or(())
+pub fn read_settings(app: AppHandle) -> Result<Settings, Error> {
+    SettingsController(app).read()
 }
 
 #[tauri::command]
-pub fn write_settings(settings: Settings, app: AppHandle) -> Result<(), String> {
-    SettingsController(app).write(&settings).and(Ok(()))
+pub fn write_settings(settings: Settings, app: AppHandle) -> Result<(), Error> {
+    SettingsController(app).write(&settings)?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -29,5 +32,5 @@ pub fn app_exit(app: AppHandle) {
 pub fn restart_parser(app: AppHandle) {
     ParserController(app.clone())
         .restart_parser()
-        .debug_ok(&app, "restart-parser");
+        .checked_ok(&app, "Error restarting parser");
 }

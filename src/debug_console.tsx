@@ -15,7 +15,11 @@ export const DebugConsole = (props: Props) => {
             let debugOutput = event.payload as Array<string>;
             setStrings(debugOutput);
         });
-        invoke("read_debug", {}).then(s => setStrings(s ? (s as Array<string>) : []));        
+
+        invoke<Array<string>>("read_debug", {}).then(s => setStrings(s))
+        .catch((e) => {
+            console.error(`Error reading debug: ${e}`);
+        });      
     }, [])
 
 

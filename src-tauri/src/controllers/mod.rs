@@ -1,17 +1,19 @@
+use crate::error::Error;
+
 pub trait Controller<T: Send + Sync> {
     const EVENT_NAME: &'static str;
 
-    fn new_managed() -> Result<crate::ManagedValue<T>, String>;
+    fn new_managed() -> Result<crate::ManagedValue<T>, Error>;
 
     fn state(&self) -> tauri::State<crate::ManagedValue<T>>;
 
-    fn read(&self) -> Option<T>;
+    fn read(&self) -> Result<T, Error>;
 
-    fn borrow(&self) -> Option<std::sync::MutexGuard<'_, T>>;
+    fn borrow(&self) -> Result<std::sync::MutexGuard<'_, T>, Error>;
 
-    fn write(&self, value: &T) -> Result<T, String>;
+    fn write(&self, value: &T) -> Result<T, Error>;
 
-    fn emit(&self, value: &T);
+    fn emit(&self, value: &T) -> Result<(), Error>;
 }
 
 mod tray;
@@ -39,7 +41,7 @@ mod parser;
 pub use parser::ParserController;
 
 mod debug;
-pub use debug::{DebugController, DebugableResult};
+pub use debug::DebugController;
 
 mod readibot;
 pub use readibot::ReadibotController;

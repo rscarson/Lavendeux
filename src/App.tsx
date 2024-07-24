@@ -92,11 +92,13 @@ export const App: React.FC<Props> = (props) => {
             setDark(cachedValue == "true");
         }
 
-        let settings: Nullable<Settings> = await invoke("read_settings", {});
-        if (settings) {
+        invoke<Settings>("read_settings", {}).then((settings) => {
             localStorage.setItem("lav-theme", settings.dark_theme ? "true" : "false");
             setDark(settings.dark_theme);
-        }
+        })
+        .catch((e) => {
+            console.error(`Error setting theme: ${e}`);
+        });
     }
     
     useEffect(() => {

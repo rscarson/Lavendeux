@@ -23,11 +23,11 @@ impl Default for Shortcut {
     }
 }
 
-impl Into<Modifiers> for Shortcut {
-    fn into(self) -> Modifiers {
-        let bits: u32 = (self.alt as u32 & Modifiers::ALT.bits())
-            | (self.ctrl as u32) & Modifiers::CONTROL.bits()
-            | self.shift as u32 & Modifiers::SHIFT.bits();
+impl From<Shortcut> for Modifiers {
+    fn from(value: Shortcut) -> Self {
+        let bits: u32 = (value.alt as u32 & Modifiers::ALT.bits())
+            | (value.ctrl as u32) & Modifiers::CONTROL.bits()
+            | value.shift as u32 & Modifiers::SHIFT.bits();
         Modifiers::from_bits_truncate(bits)
     }
 }
@@ -38,8 +38,7 @@ impl Shortcut {
     }
 
     fn modifier_flags(&self) -> Modifiers {
-        let bits: u32 = 0
-            | self.ctrl.then(|| Modifiers::CONTROL.bits()).unwrap_or(0)
+        let bits: u32 = self.ctrl.then(|| Modifiers::CONTROL.bits()).unwrap_or(0)
             | self.alt.then(|| Modifiers::ALT.bits()).unwrap_or(0)
             | self.shift.then(|| Modifiers::SHIFT.bits()).unwrap_or(0);
         Modifiers::from_bits_truncate(bits)
@@ -60,11 +59,8 @@ impl Shortcut {
 
         // Try and return a shortcut object
         let modifiers: Modifiers = self.modifier_flags();
-        if let Some(code) = self.key_code() {
-            Some(TauriShortcut::new(Some(modifiers), code))
-        } else {
-            None
-        }
+        self.key_code()
+            .map(|code| TauriShortcut::new(Some(modifiers), code))
     }
 
     pub fn to_enigo_key(&self) -> Option<Key> {

@@ -9,6 +9,7 @@ import { Settings, Snippet } from '../../types';
 import { TutorialBlock } from "../../components/tutorial";
 import { RootTab } from "../tab";
 
+import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';
 import InputGroup from "react-bootstrap/InputGroup";
@@ -24,29 +25,42 @@ const snipPart = (s) => {
 
 interface Props {}
 export const HistoryTab: React.FC<Props> = ({}) => {
+    const [lastError, setLastError] = useState<string>("");
+    useEffect(() => {
+        if (!lastError) return;
+        setTimeout(() => {
+            setLastError("");
+        }, 2000);
+    }, [lastError]);
+
     const [loaded, setLoaded] = useState<boolean>(false);
     const [history, setHistory] = useState<Array<Snippet>>([]);
     const [settings, setSettings] = useState<Settings>();
+
+    function call<T>(cmd: string, args: any = {}): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            invoke<T>(cmd, args).then((r) => resolve(r)).catch((e) => {
+                setLastError(`Error calling ${cmd}: ${e}`);
+            });
+        });
+    }
+
     async function load() {
-        let _history: Array<Snippet> = await invoke("read_history", {});
-        if (_history) {
-            setHistory(_history);
-            settings && setLoaded(true);
-        }
-        
-        let _settings: Settings = await invoke("read_settings", {});
-        if (_settings) {
-            setSettings(_settings);
-            history && setLoaded(true);
-        }
+        call<Settings>("read_settings").then((settings) => {
+            setSettings(settings);
+            call<Array<Snippet>>("read_history").then((history) => {
+                setHistory(history);
+                setLoaded(true);
+            });
+        });
     }
 
     function exportHistory() {
-        save().then((filename) => invoke("export_history", {destination: filename}));
+        save().then((filename) => call("export_history", {destination: filename}));
     }
 
     function clearHistory() {
-        invoke("clear_history", {})
+        call("clear_history")
         .then(() => {
             setLoaded(false);
             load();
@@ -54,7 +68,7 @@ export const HistoryTab: React.FC<Props> = ({}) => {
     }
 
     function delHistory(id: number) {
-        invoke("del_history", {id: id})
+        call("del_history", {id: id})
         .then(() => {
             setLoaded(false);
             load();
@@ -134,6 +148,10 @@ export const HistoryTab: React.FC<Props> = ({}) => {
     function renderContent() {
         return (
             <div className="w-100 pt-3">
+                <Alert show={!!lastError} className="fixed-top m-3" variant="danger" onClose={() => setLastError("")} dismissible>
+                    {lastError}
+                </Alert>
+
                 {history.length ? history.map((item,idx) => renderItem(item, idx)) : (
                     <Toast className="w-100" style={{maxWidth: "750px"}}>
                         <Toast.Header closeButton={false}>

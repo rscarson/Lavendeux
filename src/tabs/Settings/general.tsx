@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/core";
 
 import { KeyboardShortcut } from "../../types";
 import { DropdownSetting, KeyboardSetting, SwitchSetting } from "./setting_container";
 
-import Form from 'react-bootstrap/Form';
 import { Translated } from "../../components";
 
 interface Props {
@@ -14,21 +12,12 @@ interface Props {
     startWithOs: boolean,
     onChangeStartWithOs: Function,
     
+    languages: Array<[string, string]>,
     languageCode: string,
     onChangeLanguageCode: Function,
 }
 
 export const GeneralSettings = (props:Props) => {
-    const [languages, setLanguages] = useState<Array<[string, string]>>([['English', 'en']])
-    
-    useEffect(() => {
-        invoke("list_languages", {}).then((languages) => {
-            if (languages) {
-                setLanguages(languages as Array<[string, string]>);
-            }
-        })
-    }, []);
-
     function renderStartWithOs() {
         return (
             <SwitchSetting
@@ -63,7 +52,7 @@ export const GeneralSettings = (props:Props) => {
                     [ <Translated path="settings\general\lbl_lang_disclaimer" /> ]
                 </small>
                 </>}
-                values={languages.map((l) => {
+                values={props.languages.map((l) => {
                     let [name, code] = l;
                     return <option key={code} value={code}>{name}</option>
                 })}

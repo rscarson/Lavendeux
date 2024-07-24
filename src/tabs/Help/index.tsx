@@ -7,6 +7,7 @@ import { RootTab } from "../tab";
 import { MarkdownToken, MarkdownTree, Settings } from "../../types";
 import { TutorialBlock } from "../../components/tutorial";
 
+import Alert from 'react-bootstrap/Alert';
 import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
 import { Badge } from "react-bootstrap";
@@ -43,6 +44,14 @@ const URL_BUGREPORT = "https://github.com/rscarson/Lavendeux/issues/new";
 
 interface Props {};
 export const HelpTab: React.FC<Props> = ({}) => {
+    const [lastError, setLastError] = useState<string>("");
+    useEffect(() => {
+        if (!lastError) return;
+        setTimeout(() => {
+            setLastError("");
+        }, 2000);
+    }, [lastError]);
+
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -50,18 +59,22 @@ export const HelpTab: React.FC<Props> = ({}) => {
     const [data, setData] = useState<Map<string, Array<MarkdownToken>>>();
     const [section, setSection] = useState<string>('Getting Started');
 
-    async function load() {        
-        let _settings: Settings = await invoke("read_settings", {});
-        if (_settings) {
-            setSettings(_settings);
-            
-            let _data: MarkdownTree = await invoke("help_text", {});
-            if (_data) {
-                console.log(_data);
+    function call<T>(cmd: string, args: any = {}): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            invoke<T>(cmd, args).then((r) => resolve(r)).catch((e) => {
+                setLastError(`Error calling ${cmd}: ${e}`);
+            });
+        });
+    }
+
+    async function load() {      
+        call<Settings>("read_settings").then((settings) => {
+            setSettings(settings);
+            call<MarkdownTree>("help_text").then((data) => {
+                setData(data.subheadings);
                 setLoaded(true);
-                setData(_data.subheadings);
-            }
-        }
+            });
+        });
     }
 
     function changeSection(_section: string) {
@@ -134,6 +147,10 @@ export const HelpTab: React.FC<Props> = ({}) => {
     function renderContent() {
         return (
             <div className="w-100 pt-3">
+                <Alert show={!!lastError} className="fixed-top m-3" variant="danger" onClose={() => setLastError("")} dismissible>
+                    {lastError}
+                </Alert>
+
                 {getSection()}
             </div>
         );

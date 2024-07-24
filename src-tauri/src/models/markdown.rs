@@ -22,10 +22,10 @@ impl MarkdownToken {
         while let Some(line) = lines.next() {
             let mut line = line.trim();
 
-            if line.starts_with("#") {
+            if line.starts_with('#') {
                 // Heading
                 let mut l_lvl = 0;
-                while line.starts_with("#") {
+                while line.starts_with('#') {
                     l_lvl += 1;
                     // remove the first character
                     line = &line[1..];
@@ -45,19 +45,19 @@ impl MarkdownToken {
                 // Codeblock
                 let syntax = line.replace("```", "").trim().to_string();
                 let mut buffer = String::default();
-                while let Some(line) = lines.next() {
+                for line in lines.by_ref() {
                     if line.starts_with("```") {
                         break;
                     }
                     buffer += &format!("{line}\n");
                 }
                 tokens.push(Self::CodeBlock(syntax, buffer.trim().to_string()));
-            } else if line.starts_with("-") {
+            } else if line.starts_with('-') {
                 // Unordered list
-                let mut ul_lines = vec![line.replace("-", "").trim().to_string()];
-                while let Some(line) = lines.next() {
-                    if line.starts_with("-") {
-                        ul_lines.push(line.replace("-", "").trim().to_string());
+                let mut ul_lines = vec![line.replace('-', "").trim().to_string()];
+                for line in lines.by_ref() {
+                    if line.starts_with('-') {
+                        ul_lines.push(line.replace('-', "").trim().to_string());
                     } else {
                         break;
                     }
@@ -129,7 +129,7 @@ impl MarkdownTree {
 mod test_parse {
     use super::*;
 
-    static TEST_FILE: &'static str = include_str!("../../../language/help/en.help.md");
+    static TEST_FILE: &str = include_str!("../../../language/help/en.help.md");
 
     #[test]
     fn test_lex() {

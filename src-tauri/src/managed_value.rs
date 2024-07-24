@@ -1,5 +1,5 @@
+use crate::error::Error;
 use std::sync::{Mutex, MutexGuard};
-
 use tauri::{AppHandle, Manager};
 
 pub struct ManagedValue<T>(Mutex<T>);
@@ -10,45 +10,38 @@ impl<T> ManagedValue<T> {
 
     ///
     /// Run a function that mutates the inner value of the state
-    pub fn mutate<F>(&self, f: F) -> Result<(), String>
+    pub fn mutate<F, R>(&self, f: F) -> Result<R, Error>
     where
-        F: FnOnce(&mut T),
+        F: FnOnce(&mut T) -> Result<R, Error>,
     {
-        if let Ok(mut lock) = self.0.try_lock() {
-            f(&mut *lock);
-            Ok(())
-        } else {
-            Err("could not lock state".to_string())
-        }
+        let mut lock = self.0.try_lock()?;
+        f(&mut *lock)
     }
 
     ///
     /// Attempt to read a value out of the instance
-    pub fn read(&self) -> Option<MutexGuard<T>> {
-        self.0.try_lock().ok()
+    pub fn read(&self) -> Result<MutexGuard<T>, Error> {
+        Ok(self.0.try_lock()?)
     }
 
     ///
     /// Attempt to replace the value in the instance
-    pub fn write(&self, value: T) -> Result<(), ()> {
-        if let Ok(mut lock) = self.0.try_lock() {
-            *lock = value;
-            Ok(())
-        } else {
-            Err(())
-        }
+    pub fn write(&self, value: T) -> Result<(), Error> {
+        let mut lock = self.0.try_lock()?;
+        *lock = value;
+        Ok(())
     }
 
-    pub fn clone_inner(&self) -> Option<T>
+    pub fn clone_inner(&self) -> Result<T, Error>
     where
         T: std::marker::Send + 'static + Clone,
     {
-        self.0.try_lock().and_then(|s| Ok(s.clone())).ok()
+        Ok(self.0.try_lock()?.clone())
     }
 
     ///
     /// Attempt to get a clone of the inner value of a state
-    pub fn clone_from(app: &AppHandle) -> Option<T>
+    pub fn clone_from(app: &AppHandle) -> Result<T, Error>
     where
         T: std::marker::Send + 'static + Clone,
     {

@@ -5,6 +5,7 @@ pub mod bugcheck;
 pub mod controllers;
 pub mod managed_value;
 pub mod models;
+pub mod error;
 
 pub mod fs;
 use std::path::Path;
@@ -14,8 +15,9 @@ pub use fs::FsUtils;
 
 mod commands;
 
+use bugcheck::BugcheckedOk;
 use controllers::{
-    Controller, DebugController, DebugableResult, ExtensionsController, LanguageController, ParserController, ReadibotController, SettingsController, ShortcutController
+    Controller, DebugController, ExtensionsController, LanguageController, ParserController, ReadibotController, SettingsController, ShortcutController
 };
 use controllers::{HistoryController, TrayController};
 
@@ -30,7 +32,7 @@ macro_rules! manage_controller {
     ($controller:ident, $handle:ident) => {
         match $controller::new_managed() {
             Ok(controller) => {$handle.manage(controller);},
-            Err(e) => bugcheck::fatal($handle.clone(), &format!("Could not register {}", stringify!($controller)), &e),
+            Err(e) => bugcheck::fatal($handle.clone(), &format!("Could not register {}", stringify!($controller)), &e.to_string()),
         }
     };
 }
@@ -107,7 +109,8 @@ fn main() {
             SettingsController(handle.clone()).state().mutate(|settings| {
                 let path = settings.default_root(handle.clone());
                 settings.set_root(path);
-            }).ok();
+                Ok(())
+            }).checked_ok(handle, "Could not set the default root directory");
 
             debug!(handle.clone(), "process-cli-args");
             if let Ok(matches) = handle.cli().matches() {
@@ -116,39 +119,36 @@ fn main() {
 
                 if debug_mode {
                     debug!(handle.clone(), "activate-debug");
-                    DebugController(handle.clone()).activate();
-                    DebugController(handle.clone()).state().mutate(|out| out.debug_type = models::debug::DebugType::FileSystem).ok();
+                    DebugController(handle.clone()).activate().checked_ok(handle, "Could not activate debug mode");
+                    DebugController(handle.clone()).state().mutate(|out| {
+                        out.debug_type = models::debug::DebugType::FileSystem;
+                        Ok(())
+                    }).checked_ok(handle, "Could not activate debug mode");
                 }
 
                 if config_dir.value.is_string() {
                     debug!(handle.clone(), "set-root-dir");
                     let path = Path::new(config_dir.value.as_str().unwrap()).to_owned();
-                    SettingsController(handle.clone()).set_root(&path);
+                    SettingsController(handle.clone()).set_root(&path).checked_ok(handle, "Could not set config directory");
                 }
             }
 
             //
             // Attempt to create directories needed by the app
             debug!(handle.clone(), "create-dirs");
-            if let Err(_) = SettingsController(handle.clone()).create_all() {
-                bugcheck::fatal(handle.clone(), 
-                    "Could not write to settings", 
-                    "Could not write to the configuration directory - do you have the right permissions?"
-                );
-            }
+            SettingsController(handle.clone()).create_all()
+                .checked_ok(handle, "Could not create configuration subdirectories");
 
             //
             // Load extensions
             //
             debug!(handle.clone(), "load-extensions");
-            if let Err(e) = ExtensionsController(handle.clone()).load() {
-                bugcheck::general(handle.clone(), "Could not load extensions", &e.to_string());
-            }
+            ExtensionsController(handle.clone()).load().checked_ok(handle, "Could not load extensions");
 
             //
             // Try to load up the settings - it's ok if this fails, we'll just end up with the defaults
             debug!(handle.clone(), "load-settings");
-            SettingsController(handle.clone()).load();
+            SettingsController(handle.clone()).load().ok();
             let settings = SettingsController(handle.clone())
                 .read()
                 .unwrap_or_default();
@@ -156,38 +156,25 @@ fn main() {
             //
             // Register default shortcut
             debug!(handle.clone(), "register-shortcut");
-            if ShortcutController(handle.clone())
+            ShortcutController(handle.clone())
                 .register(&settings.shortcut)
-                .is_err()
-            {
-                bugcheck::general(
-                    handle.clone(),
-                    "Could not register shortcut",
-                    "Shortcut is not valid, please verify settings",
-                );
-            }
+                .checked_ok(handle, "Loaded settings contain invalid shortcut");
 
             //
             // Language settings
             debug!(handle.clone(), "set-language");
-            if LanguageController(handle.clone())
+            LanguageController(handle.clone())
                 .set_language(&settings.language_code)
-                .is_err()
-            {
-                bugcheck::general(
-                    handle.clone(),
-                    "Could not set language",
-                    "Language code is invalid, please verify settings",
-                );
-            }
+                .checked_ok(handle, "Loaded settings contain invalid language code");
 
             //
             // Run startup sequence
             debug!(handle.clone(), "run-start-script");
             if !settings.start_script.trim().is_empty() {
-                let snippet = ParserController(handle.clone()).parse(&settings.start_script);
-                if snippet.is_err() {
-                    bugcheck::parser(handle.clone(), &snippet.result.to_string());
+                if let Some(snippet) = ParserController(handle.clone()).parse(&settings.start_script).checked_ok(handle, "Could not run startup script") {
+                    if snippet.is_err() {
+                        bugcheck::parser(handle.clone(), &snippet.result.to_string());
+                    }
                 }
             }
 
@@ -213,14 +200,14 @@ fn main() {
                 .body("Highlight some text, and use CTRL-Space to start parsing!")
                 .action_type_id("show_history")
                 .show()
-                .debug_ok(&handle, "notify");
+                .checked_ok(handle, "Could not show ready message");
 
             Ok(())
         })
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
 
-    app.run(|_app, event| {
+    app.run(|app, event| {
         match event {
             tauri::RunEvent::Exit => {
 
@@ -239,23 +226,21 @@ fn main() {
             }
 
             // Window specific events
-            tauri::RunEvent::WindowEvent { label, event, .. } => match event {
-                WindowEvent::CloseRequested { api, .. } => {
-                    api.prevent_close();
-                    if let Some(window) = _app.get_webview_window(&label) {
-                        window.hide().debug_ok(&_app, "window-hide");
-                    };
-                }
-                _ => {}
-            },
+            tauri::RunEvent::WindowEvent { label, event: WindowEvent::CloseRequested { api, .. }, .. } => {
+                api.prevent_close();
+                if let Some(window) = app.get_webview_window(&label) {
+                    window.hide().checked_ok(app, "Could not hide window");
+                };
+            }
+
             tauri::RunEvent::Ready => {}
             tauri::RunEvent::MainEventsCleared => {}
             tauri::RunEvent::MenuEvent(_) => {}
 
-            tauri::RunEvent::TrayIconEvent(tauri::tray::TrayIconEvent::Click{button, ..}) if button == tauri::tray::MouseButton::Left => {
-                if let Some(window) = _app.get_webview_window("main") {
-                    window.show().debug_ok(&_app, "window-show");
-                    window.set_focus().debug_ok(&_app, "window-focus");
+            tauri::RunEvent::TrayIconEvent(tauri::tray::TrayIconEvent::Click{button: tauri::tray::MouseButton::Left, ..}) => {
+                if let Some(window) = app.get_webview_window("main") {
+                    window.show().checked_ok(app, "Could not show window");
+                    window.set_focus().checked_ok(app, "Could not show window");
                 }
             }
 

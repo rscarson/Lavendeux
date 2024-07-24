@@ -21,23 +21,39 @@ import { ExtensionDeletionConfirmation } from "./confirmation";
 
 interface Props {}
 export const ExtensionsTab: React.FC<Props> = ({}) => {
+    const [lastError, setLastError] = useState<string>("");
+    useEffect(() => {
+        if (!lastError) return;
+        setTimeout(() => {
+            setLastError("");
+        }, 2000);
+    }, [lastError]);
+
     const [loaded, setLoaded] = useState<boolean>(false);
     const [extensions, setExtensions] = useState<Array<Extension>>(new Array<Extension>());
 
     const [lblToggle, setLblToggle] = useState<string>("extensions\\lbl_toggle");
 
+    function call<T>(cmd: string, args: any = {}): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            invoke<T>(cmd, args).then((r) => resolve(r)).catch((e) => {
+                setLastError(`Error calling ${cmd}: ${e}`);
+            });
+        });
+    }
+
     async function load() {
-        let e: Array<Extension> = await invoke("read_extensions", {});
-        if (e) {
+        call<Array<Extension>>("read_extensions").then((e) => {
             setExtensions(e);
             setLoaded(true);
-        }
+        });
     }
 
     function addExtension() {
         open().then((file) => {
             let filename = file!.path;
-            invoke('add_extension', {filename})
+
+            call("add_extension", {filename})
             .then(() => {
                 setLoaded(false);
                 load();
@@ -46,7 +62,7 @@ export const ExtensionsTab: React.FC<Props> = ({}) => {
     }
 
     function restartParser() {
-        invoke('restart_parser', {})
+        call('restart_parser', {})
         .then(() => {
             setLoaded(false);
             load();
@@ -54,7 +70,7 @@ export const ExtensionsTab: React.FC<Props> = ({}) => {
     }
 
     function deleteExtension(id: number, restart: boolean) {
-        invoke('del_extension', {id})
+        call('del_extension', {id})
         .then(() => {
             if (restart) restartParser()        
         })
@@ -125,7 +141,7 @@ export const ExtensionsTab: React.FC<Props> = ({}) => {
                     <Translated path="extensions\btn_import" />
                 </Nav.Link>
 
-                <Nav.Link className="p-3" onClick={() => invoke("open_ext_dir", {})}>
+                <Nav.Link className="p-3" onClick={() => call("open_ext_dir")}>
                     <i className={"bi bi-folder2-open"}>&nbsp;</i>
                     <Translated path="extensions\btn_browse" />
                 </Nav.Link>
@@ -141,6 +157,10 @@ export const ExtensionsTab: React.FC<Props> = ({}) => {
     function renderContent() {
         return (
             <div className="w-100 pt-3">
+                <Alert show={!!lastError} className="fixed-top m-3" variant="danger" onClose={() => setLastError("")} dismissible>
+                    {lastError}
+                </Alert>
+
                 {extensions.map((extension, idx) => renderExtension(extension))}
             </div>
         );

@@ -1,0 +1,85 @@
+{
+  "productName": "lavendeux",
+  "identifier": "com.rscarson.lavendeux",
+
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
+  },
+  
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/16x16.png",    //
+      "icons/32x32.png",    // Linux icons
+      "icons/320x320.png",  //
+      
+      "icons/icon.icns",    // MacOS icon
+      "icons/icon.ico"      // Windows icon
+    ]
+  },
+
+  "app": {
+    "windows": [
+      /// Main application window
+      /// Hidden by default, appears when the tray icon is selected
+      {
+        "visible": false,
+        "label": "main",
+        "fullscreen": false,
+        "resizable": true,
+        "title": "Lavendeux",
+        "width": 800,
+        "height": 600
+      },
+
+      /// Debug output window
+      /// Hidden by default, appears when the user activates it
+      {
+        "visible": false,
+        "label": "debug",
+        "fullscreen": false,
+        "resizable": true,
+        "title": "Debug Output",
+        "width": 800,
+        "height": 400,
+        "url": "/debug"
+      }
+    ],
+    
+    // Icon for the system tray - main application window trigger
+    "trayIcon": {
+      "iconPath": "icons/icon.png",
+      "tooltip": "Lavendeux",
+    },
+    
+    // Turn off `globalThis.__TAURI`
+    "withGlobalTauri": false
+  },
+
+  "plugins": {
+    // File selection dialogs (extensions, history exporter)
+    "shell": {
+      "open": true
+    },
+
+    // command-line options
+    "cli": {
+      "description": "Lavendeux",
+      "args": [
+        // Start with debug active
+        {"name": "debug"},
+
+        // Start with a specific configuration directory, default is `<user config dir>/lavendeux`
+        {
+          "name": "config-dir",
+          "short": "c",
+          "takesValue": true
+        }
+      ]
+    }
+  }
+}

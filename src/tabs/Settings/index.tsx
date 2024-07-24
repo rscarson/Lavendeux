@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrent } from "@tauri-apps/api/window";
 
 import { Settings, KeyboardShortcut, Nullable } from '../../types';
 
@@ -41,6 +40,17 @@ export const SettingsTab: React.FC<Props> = ({}) => {
     const [keyboardShortcut, setKeyboardShortcut] = useState<KeyboardShortcut>({key:'', ctrl:false, alt: false, shift:false});
     const [startWithOs, setStartWithOs] = useState<boolean>(false);
     const [languageCode, setLanguageCode] = useState<string>("");
+
+    const [languages, setLanguages] = useState<Array<[string, string]>>([['English', 'en']])
+
+    function call<T>(cmd: string, args: any = {}): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            invoke<T>(cmd, args).then((r) => resolve(r)).catch((e) => {
+                setLastError(`Error calling ${cmd}: ${e}`);
+            });
+        });
+    }
+
     
     function loadFromSettings(settings: Settings) {
         if (enhancedClipboard != settings.enhanced_clipboard) setEnhancedClipboard(settings.enhanced_clipboard);
@@ -65,17 +75,18 @@ export const SettingsTab: React.FC<Props> = ({}) => {
             start_with_os: startWithOs,
         };
 
-        invoke("write_settings", {settings}).catch(e => {
-            setLastError(`Error saving settings: ${e}`);
-        });
+        call("write_settings", {settings});
     }
 
     async function load() {
-        let settings: Nullable<Settings> = await invoke("read_settings", {});
-        if (settings) {
+        call<Settings>("read_settings").then((settings) => {
             loadFromSettings(settings);
             setLoaded(true);
-        }
+        });
+
+        call<Array<[string, string]>>("list_languages").then((languages) => {
+            setLanguages(languages);
+        });
     }
     
     useEffect(() => {
@@ -107,19 +118,19 @@ export const SettingsTab: React.FC<Props> = ({}) => {
 
                 <hr />
                 
-                <Nav.Link className="p-3" onClick={() => invoke("open_config_dir", {})}>
+                <Nav.Link className="p-3" onClick={() => call("open_config_dir")}>
                     <i className={"bi bi-folder2-open"}>&nbsp;</i>
                     <Translated path="settings\btn_browse" />
                 </Nav.Link>
 
                 <hr />
                 
-                <Nav.Link className="p-3" onClick={() => invoke("activate_debug", {})}>
+                <Nav.Link className="p-3" onClick={() => call("activate_debug")}>
                     <i className={"bi bi-bug"}>&nbsp;</i>
                     <Translated path="settings\btn_debug" />
                 </Nav.Link>
                 
-                <Nav.Link className="p-3" onClick={() => invoke("app_exit", {})}>
+                <Nav.Link className="p-3" onClick={() => call("app_exit")}>
                     <i className={"bi bi-x-octagon"}>&nbsp;</i>
                     <Translated path="settings\btn_quit" />
                 </Nav.Link>
@@ -137,6 +148,8 @@ export const SettingsTab: React.FC<Props> = ({}) => {
                     <GeneralSettings
                         shortcut={keyboardShortcut} onChangeShortcut={(v) => setKeyboardShortcut(v)}
                         startWithOs={startWithOs} onChangeStartWithOs={(v) => setStartWithOs(v)}
+
+                        languages={languages}
                         languageCode={languageCode} onChangeLanguageCode={(v) => {
                             setLanguageCode(v);
                             clearTranslationCache();

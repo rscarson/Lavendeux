@@ -9,18 +9,19 @@ use tauri_plugin_autostart::ManagerExt;
 
 use crate::{
     bugcheck, debug,
+    error::Error,
     managed_value::ManagedValue,
     models::{settings::Settings, shortcut::Shortcut},
     FsUtils,
 };
 
-use super::{Controller, DebugableResult, LanguageController, ShortcutController, TrayController};
+use super::{Controller, LanguageController, ShortcutController, TrayController};
 
 pub struct SettingsController(pub AppHandle);
 impl Controller<Settings> for SettingsController {
     const EVENT_NAME: &'static str = "updated-settings";
 
-    fn new_managed() -> Result<crate::ManagedValue<Settings>, String> {
+    fn new_managed() -> Result<crate::ManagedValue<Settings>, Error> {
         Ok(ManagedValue::new(Settings::default()))
     }
 
@@ -28,16 +29,16 @@ impl Controller<Settings> for SettingsController {
         self.0.state::<ManagedValue<Settings>>()
     }
 
-    fn read(&self) -> Option<Settings> {
+    fn read(&self) -> Result<Settings, Error> {
         self.state().clone_inner()
     }
 
-    fn borrow(&self) -> Option<std::sync::MutexGuard<'_, Settings>> {
+    fn borrow(&self) -> Result<std::sync::MutexGuard<'_, Settings>, Error> {
         self.state().inner().read()
     }
 
-    fn write(&self, value: &Settings) -> Result<Settings, String> {
-        let last_known_good = self.read().ok_or("could not lock settings")?;
+    fn write(&self, value: &Settings) -> Result<Settings, Error> {
+        let last_known_good = self.read()?;
         let mut value = value.clone();
         value.set_root(last_known_good.root_dir().to_owned()); // Do not allow root to be changed here
 
@@ -48,39 +49,31 @@ impl Controller<Settings> for SettingsController {
         // All is well - emit new settings
         //
 
-        self.state()
-            .write(value.clone())
-            .or(Err("unknown error".to_string()))?;
-        self.save();
-        TrayController(self.0.clone())
-            .update()
-            .debug_ok(&self.0, "update-tray");
-        self.emit(&value);
+        self.state().write(value.clone())?;
+        self.save()?;
+        TrayController(self.0.clone()).update()?;
+        self.emit(&value)?;
 
         Ok(value)
     }
 
-    fn emit(&self, value: &Settings) {
-        self.0
-            .emit(Self::EVENT_NAME, value.clone())
-            .debug_ok(&self.0, "emit-event");
+    fn emit(&self, value: &Settings) -> Result<(), Error> {
+        self.0.emit(Self::EVENT_NAME, value.clone())?;
+        Ok(())
     }
 }
 
 impl SettingsController {
     ///
     /// Apply the current settings to the system
-    pub fn apply_self(&self) -> Result<Settings, String> {
-        if let Some(settings) = self.read() {
-            let settings = self.update(&settings, &settings);
-            self.write(&settings)
-        } else {
-            Err("could not lock settings".to_string())
-        }
+    pub fn apply_self(&self) -> Result<Settings, Error> {
+        let settings = self.read()?;
+        self.update(&settings, &settings);
+        self.write(&settings)
     }
 
     ///
-    /// Apply a settings object to the system
+    /// Validates the settings object and applies it to the system
     pub fn update(&self, new: &Settings, prev: &Settings) -> Settings {
         let mut settings = new.clone();
 
@@ -99,8 +92,7 @@ impl SettingsController {
             .update_language_code(&new.language_code, &prev.language_code)
             .is_err()
         {
-            println!("Could not update language");
-            settings.language_code = prev.language_code.clone();
+            settings.language_code.clone_from(&prev.language_code);
         }
 
         settings
@@ -108,15 +100,12 @@ impl SettingsController {
 
     ///
     /// Update the registered shortcut
-    pub fn update_shortcut(&self, new: &Shortcut, prev: &Shortcut) -> Result<(), String> {
+    pub fn update_shortcut(&self, new: &Shortcut, prev: &Shortcut) -> Result<(), Error> {
         if prev == new {
             Ok(())
         } else {
-            println!("Registering new shortcut: {:?}", new);
             let shortcut_controller = ShortcutController(self.0.clone());
-            shortcut_controller
-                .register(new)
-                .or(Err("invalid shortcut".to_string()))?;
+            shortcut_controller.register(new)?;
             if shortcut_controller.unregister(prev).is_err() {
                 // The old hotkey was somehow invalid? Stop because there may now be multiple registered hotkeys
                 bugcheck::fatal(
@@ -129,23 +118,18 @@ impl SettingsController {
         }
     }
 
-    pub fn update_start_with_os(&self, new: bool, prev: bool) -> Result<(), String> {
+    pub fn update_start_with_os(&self, new: bool, prev: bool) -> Result<(), Error> {
         if prev == new {
-            Ok(())
+            return Ok(());
         } else if new {
-            self.0
-                .autolaunch()
-                .enable()
-                .or(Err("could not enable autostart".to_string()))
+            self.0.autolaunch().enable()?;
         } else {
-            self.0
-                .autolaunch()
-                .disable()
-                .or(Err("could not disable autostart".to_string()))
+            self.0.autolaunch().disable()?;
         }
+        Ok(())
     }
 
-    pub fn update_language_code(&self, new: &str, prev: &str) -> Result<(), String> {
+    pub fn update_language_code(&self, new: &str, prev: &str) -> Result<(), Error> {
         if prev == new {
             Ok(())
         } else {
@@ -157,94 +141,69 @@ impl SettingsController {
 
     ///
     /// Attempt to create the directories needed for the app
-    pub fn create_all(&self) -> Result<(), String> {
-        if let Some(config) = self.read() {
-            fs::create_dir_all(config.ext_dir()).or_else(|e| Err(e.to_string()))
-        } else {
-            Err("could not lock configuration".to_string())
-        }
+    pub fn create_all(&self) -> Result<(), Error> {
+        Ok(fs::create_dir_all(self.read()?.ext_dir())?)
     }
 
     ///
     /// Open the config directory in the system file explorer
-    pub fn open_config_dir(&self) {
-        if let Some(config) = self.read() {
-            FsUtils::open_dir(self.0.clone(), &config.root_dir())
-        }
+    pub fn open_config_dir(&self) -> Result<(), Error> {
+        FsUtils::open_dir(self.read()?.root_dir())?;
+        Ok(())
     }
 
     ///
     /// Open the config directory in the system file explorer
-    pub fn open_ext_dir(&self) {
-        if let Some(config) = self.read() {
-            FsUtils::open_dir(self.0.clone(), &config.ext_dir())
-        }
+    pub fn open_ext_dir(&self) -> Result<(), Error> {
+        FsUtils::open_dir(&self.read()?.ext_dir())?;
+        Ok(())
     }
 
     ///
     /// Attempt to write settings to a file
-    pub fn save(&self) {
+    pub fn save(&self) -> Result<(), Error> {
         debug!(self.0.clone(), "save-settings");
-        if let Some(settings) = self.read() {
-            let s = serde_json::to_string_pretty(&settings).expect("could not serialize settings");
-            if let Ok(mut file) = File::create(settings.filename()) {
-                file.write_all(s.as_bytes())
-                    .debug_ok(&self.0, "write-settings-error");
-            } else {
-                debug!(self.0.clone(), "could not write settings");
-            }
-        } else {
-            debug!(self.0.clone(), "could not lock settings");
-        }
+        let settings = self.read()?;
+        let s = serde_json::to_string_pretty(&settings).expect("could not serialize settings");
+
+        let mut file = File::create(settings.filename())?;
+        file.write_all(s.as_bytes())?;
+        Ok(())
     }
 
     ///
     /// Attempt to load settings from a file
-    pub fn load(&self) {
-        if let Some(config) = self.read() {
-            if let Ok(contents) = std::fs::read_to_string(config.filename()) {
-                if let Ok(settings) = serde_json::from_str::<Settings>(&contents) {
-                    self.write(&settings).debug_ok(&self.0, "load-settings");
-                }
-            }
-        }
+    pub fn load(&self) -> Result<(), Error> {
+        let contents = std::fs::read_to_string(self.read()?.filename())?;
+        let settings = serde_json::from_str::<Settings>(&contents)?;
+        self.write(&settings)?;
+        Ok(())
     }
 
     ///
     /// Attempt to add a new extension
-    pub fn add_extension(&self, filename: &Path) -> bool {
-        if let Some(config) = self.read() {
-            FsUtils::copy(filename, &config.ext_dir())
-                .debug_ok(&self.0, "copy-extension")
-                .is_some()
-        } else {
-            false
-        }
+    pub fn add_extension(&self, filename: &Path) -> Result<(), Error> {
+        FsUtils::copy(filename, &self.read()?.ext_dir())?;
+        Ok(())
     }
 
     ///
     /// Attempt to delete an extension
-    pub fn del_extension(&self, filename: &Path) -> bool {
-        if let Some(config) = self.read() {
-            FsUtils::delete(filename, &config.ext_dir())
-                .debug_ok(&self.0, "delete-extension")
-                .is_some()
-        } else {
-            false
-        }
+    pub fn del_extension(&self, filename: &Path) -> Result<(), Error> {
+        FsUtils::delete(filename, &self.read()?.ext_dir())?;
+        Ok(())
     }
 
-    pub fn set_root(&self, root_dir: &Path) {
-        self.state()
-            .mutate(|settings| {
-                settings.set_root(root_dir.to_owned());
-                self.emit(settings);
-                self.save();
-            })
-            .debug_ok(&self.0, "set-root");
+    pub fn set_root(&self, root_dir: &Path) -> Result<(), Error> {
+        self.state().mutate(|settings| {
+            settings.set_root(root_dir.to_owned());
+            self.emit(settings)?;
+            self.save()?;
+            Ok(())
+        })
     }
 
-    pub fn root(&self) -> Option<std::path::PathBuf> {
+    pub fn root(&self) -> Result<std::path::PathBuf, Error> {
         self.read().map(|settings| settings.root_dir().to_owned())
     }
 }

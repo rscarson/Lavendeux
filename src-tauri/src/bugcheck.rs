@@ -3,9 +3,28 @@ use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_notification::NotificationExt;
 
 use crate::{
-    controllers::{Controller, DebugableResult, SettingsController},
+    controllers::{Controller, SettingsController},
     debug,
 };
+
+pub trait BugcheckedOk<T> {
+    fn checked_ok(self, app: &AppHandle, title: &str) -> Option<T>;
+}
+
+impl<T, E> BugcheckedOk<T> for Result<T, E>
+where
+    E: std::fmt::Display,
+{
+    fn checked_ok(self, app: &AppHandle, title: &str) -> Option<T> {
+        match self {
+            Ok(t) => Some(t),
+            Err(e) => {
+                general(app.clone(), title, &format!("{}", e));
+                None
+            }
+        }
+    }
+}
 
 ///
 /// Unrecoverable error that required quitting the software
@@ -15,7 +34,7 @@ pub fn fatal(app: AppHandle, title: &str, error: &str) {
         .message(error)
         .kind(MessageDialogKind::Error)
         .ok_button_label("exit")
-        .title(&format!("Fatal Error: {title}"))
+        .title(format!("Fatal Error: {title}"))
         .show(move |_| {
             app.exit(1);
         });
@@ -35,7 +54,7 @@ pub fn parser(app: AppHandle, error: &str) {
             .title("Parser Error")
             .body(error)
             .show()
-            .debug_ok(&app, "notify");
+            .ok();
     }
 }
 
@@ -50,5 +69,5 @@ pub fn general(app: AppHandle, title: &str, error: &str) {
         .title(title)
         .body(error)
         .show()
-        .debug_ok(&app, "notify");
+        .ok();
 }

@@ -1,9 +1,6 @@
-use crate::bugcheck;
 use std::{fs, path::Path, process::Command};
-use tauri::AppHandle;
 
-pub struct FsUtils();
-
+pub struct FsUtils;
 impl FsUtils {
     #[cfg(all(
         unix,
@@ -19,21 +16,9 @@ impl FsUtils {
 
     ///
     /// Open a directory in the system browser
-    pub fn open_dir(app: AppHandle, dir: &Path) {
-        if Command::new(Self::OPEN_DIR_COMMAND)
-            .arg(dir)
-            .spawn()
-            .is_err()
-        {
-            bugcheck::general(
-                app,
-                "Could not open directory",
-                &format!(
-                    "There was a problem opening a directory:\n{}",
-                    dir.display()
-                ),
-            )
-        }
+    pub fn open_dir(dir: &Path) -> Result<(), std::io::Error> {
+        Command::new(Self::OPEN_DIR_COMMAND).arg(dir).spawn()?;
+        Ok(())
     }
 
     ///
